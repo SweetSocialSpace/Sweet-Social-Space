@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 
 type Post = {
@@ -15,16 +15,18 @@ export default function Home() {
   const [posts, setPosts] = useState<Post[]>([])
   const [content, setContent] = useState('')
   const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient()
+  
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
   const router = useRouter()
 
   useEffect(() => {
-    // 1. Check who is logged in when page loads
     const getData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
       
-      // 2. Load posts
       const { data } = await supabase
         .from('posts')
         .select('id, content, created_at, profiles(username, zip_code)')
@@ -35,7 +37,6 @@ export default function Home() {
     }
     getData()
 
-    // 3. Listen for login/logout and update page instantly
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
       router.refresh()
     })
@@ -52,7 +53,7 @@ export default function Home() {
     
     if (!error) {
       setContent('')
-      router.refresh() // Reload posts
+      router.refresh()
     } else {
       alert(error.message)
     }
