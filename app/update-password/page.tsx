@@ -37,9 +37,10 @@ export default function Home() {
     }
     getData()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      router.refresh()
-    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+  setUser(session?.user ?? null)
+  router.refresh()
+})
 
     return () => subscription.unsubscribe()
   }, [supabase, router])
