@@ -26,17 +26,17 @@ export default function LoginPage() {
     setMessage('')
 
     if (isReset) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/update-password`, // ← changed
-  })
-  if (error) {
-    setError(error.message)
-  } else {
-    setMessage('Password reset email sent! Check your inbox.')
-  }
-  setLoading(false)
-  return
-}
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/update-password`,
+      })
+      if (error) {
+        setError(error.message)
+      } else {
+        setMessage('Password reset email sent! Check your inbox.')
+      }
+      setLoading(false)
+      return
+    }
 
     if (isSignUp) {
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -71,17 +71,17 @@ export default function LoginPage() {
       setMessage('Account created! You can now sign in.')
       setIsSignUp(false)
     } else {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
-  if (error) {
-    setError(error.message)
-  } else {
-    router.push('/')     // Navigate to feed
-    router.refresh()     // Tell Next.js: "re-check auth, middleware please let me in" 
-  }
-}
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+      if (error) {
+        setError(error.message)
+      } else {
+        router.push('/')
+        router.refresh() // THIS IS THE FIX THAT UNFREEZES LOGIN
+      }
+    }
     setLoading(false)
   }
 
