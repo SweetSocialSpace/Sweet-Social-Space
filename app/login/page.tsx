@@ -71,16 +71,17 @@ export default function LoginPage() {
       setMessage('Account created! You can now sign in.')
       setIsSignUp(false)
     } else {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-      if (error) {
-        setError(error.message)
-      } else {
-        router.push('/')
-      }
-    }
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  })
+  if (error) {
+    setError(error.message)
+  } else {
+    router.push('/')     // Navigate to feed
+    router.refresh()     // Tell Next.js: "re-check auth, middleware please let me in" 
+  }
+}
     setLoading(false)
   }
 
