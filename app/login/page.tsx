@@ -26,16 +26,17 @@ export default function LoginPage() {
     setMessage('')
 
     if (isReset) {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/update-password`,)
-      if (error) {
-        setError(error.message)
-      } else {
-        setMessage('Password reset email sent! Check your inbox.')
-      }
-      setLoading(false)
-      return
-    }
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/update-password`, // ← changed
+  })
+  if (error) {
+    setError(error.message)
+  } else {
+    setMessage('Password reset email sent! Check your inbox.')
+  }
+  setLoading(false)
+  return
+}
 
     if (isSignUp) {
       const { data: authData, error: authError } = await supabase.auth.signUp({
