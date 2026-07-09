@@ -19,12 +19,9 @@ export default async function RootLayout({
           <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
             <Link href="/" className="font-bold text-xl">Sweet Social Space</Link>
             <nav className="flex gap-4 text-sm">
-              <Link className="navlink" href="/feed">Feed</Link>
-              <Link className="navlink" href="/vent">Vent</Link>
-              <Link className="navlink" href="/faith">Faith</Link>
-              <Link className="navlink" href="/alerts">Alerts</Link>
+            
             </nav>
-            <AuthButton />
+            
           </div>
         </header>
         <main className="max-w-3xl mx-auto px-4 py-6">{children}</main>
