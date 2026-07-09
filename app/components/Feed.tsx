@@ -1,4 +1,4 @@
-import { supabaseServer } from '@/lib/supabaseServer'
+import { createClient } from '@/lib/supabaseServer'
 
 async function getPosts(postType?: string, zip?: string) {
   const supabase = supabaseServer()
