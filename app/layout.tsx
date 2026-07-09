@@ -1,6 +1,6 @@
 import './globals.css'
 import Link from 'next/link'
-import AuthButton from '@/components/AuthButton'
+import AuthButton from '@/app/components/AuthButton'
 import { createClient } from '@/utils/supabase/server'
 
 export const metadata = {
