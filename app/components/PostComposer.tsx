@@ -1,6 +1,6 @@
 "use client"
 import { useState } from 'react'
-import { supabaseBrowser } from '@/lib/supabaseClient'
+import { createClient } from '@/lib/supabaseClient'
 
 export default function PostComposer({ postType, zipDefault='95122' }: { postType: 'neighborhood'|'vent'|'faith', zipDefault?: string }) {
   const [body, setBody] = useState('')
