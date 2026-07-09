@@ -1,3 +1,4 @@
+import AuthButton from '@/components/AuthButton'
 import './globals.css'
 import Link from 'next/link'
 import { supabaseServer } from '@/lib/supabaseServer'
@@ -22,9 +23,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link className="navlink" href="/faith">Faith</Link>
               <Link className="navlink" href="/alerts">Alerts</Link>
             </nav>
-            <div className="text-sm">
-              {user ? <a href="/login" className="navlink">{user.email?.split('@')[0]}</a> : <a href="/login" className="btn-ghost">Sign in</a>}
-            </div>
+            <AuthButton />
+              
+           </div>
           </div>
         </header>
         <main className="max-w-3xl mx-auto px-4 py-6">{children}</main>
