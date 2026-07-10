@@ -11,7 +11,7 @@ export default async function Feed() {
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value,
+          return cookieStore.get(name)?.value
         },
       },
     }
