@@ -1,25 +1,40 @@
-'use client'
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+export default async function Feed() {
+  const supabase = createServerComponentClient({ cookies })
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-export default function Feed() {
-  const [user, setUser] = useState<any>(null)
-  const router = useRouter()
-  const supabase = createClient()
+  const { data: posts } = await supabase
+    .from('posts')
+    .select('*')
+    .order('created_at', { ascending: false })
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    getUser()
-  }, [])
+  async function createPost(formData: FormData) {
+    'use server'
+    const content = formData.get('content') as string
+    const supabase = createServerComponentClient({ cookies })
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user || !content) return
+    
+    await supabase.from('posts').insert({ 
+      content, 
+      user_id: user.id 
+    })
+    revalidatePath('/feed')
+    revalidatePath('/')
+  }
 
-  const handleLogout = async () => {
+  async function logout() {
+    'use server'
+    const supabase = createServerComponentClient({ cookies })
     await supabase.auth.signOut()
-    router.push('/')
+    redirect('/')
   }
 
   return (
@@ -27,17 +42,35 @@ export default function Feed() {
       <div className="max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Sweet Social Space</h1>
-          <button 
-            onClick={handleLogout}
-            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-          >
-            Log Out
-          </button>
+          <form action={logout}>
+            <button className="text-sm underline">Logout</button>
+          </form>
         </div>
         
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-600">Welcome, {user?.email}</p>
-          <p className="mt-4 font-semibold">You’re logged in. Feed coming next.</p>
+        <p className="mb-6">Welcome, {user.email}</p>
+
+        <form action={createPost} className="mb-8 bg-white p-4 rounded-lg shadow">
+          <textarea 
+            name="content" 
+            placeholder="Speak Freely. Love your neighbor."
+            className="w-full p-2 border rounded mb-2"
+            rows={3}
+            required
+          />
+          <button type="submit" className="bg-black text-white px-4 py-2 rounded">
+            Post
+          </button>
+        </form>
+
+        <div className="space-y-4">
+          {posts?.map((post) => (
+            <div key={post.id} className="bg-white p-4 rounded-lg shadow">
+              <p>{post.content}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                {new Date(post.created_at).toLocaleString()}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
