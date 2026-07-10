@@ -4,11 +4,7 @@ import { useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 
-type PostFormProps = {
-  userId: string
-}
-
-export default function PostForm({ userId }: PostFormProps) {
+export default function PostForm({ userId }: { userId: string }) {
   const [body, setBody] = useState('')
   const [isPosting, setIsPosting] = useState(false)
   const supabase = createClientComponentClient()
@@ -29,14 +25,14 @@ export default function PostForm({ userId }: PostFormProps) {
       zip_code: '95122'
     })
 
+    setIsPosting(false)
+
     if (error) {
       alert('Error posting: ' + error.message)
-      setIsPosting(false)
       return
     }
 
     setBody('')
-    setIsPosting(false)
     router.refresh()
   }
 
