@@ -2,7 +2,6 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import PostForm from './PostForm'
 
 export default async function Feed() {
   const cookieStore = cookies()
@@ -13,12 +12,14 @@ export default async function Feed() {
       cookies: {
         get(name: string) {
           return cookieStore.get(name)?.value
-        }
-      }
+        },
+      },
     }
   )
 
   const { data: { user } } = await supabase.auth.getUser()
+  
+  // THIS LINE FORCES LOGIN - nobody sees feed without account
   if (!user) redirect('/login')
 
   const { data: posts } = await supabase
@@ -38,8 +39,8 @@ export default async function Feed() {
         cookies: {
           get(name: string) {
             return cookieStore.get(name)?.value
-          }
-        }
+          },
+        },
       }
     )
 
@@ -69,8 +70,8 @@ export default async function Feed() {
         cookies: {
           get(name: string) {
             return cookieStore.get(name)?.value
-          }
-        }
+          },
+        },
       }
     )
     await supabase.auth.signOut()
@@ -88,7 +89,20 @@ export default async function Feed() {
       
       <p className="mb-4">Welcome, {user.email}</p>
 
-      <PostForm createPost={createPost} />
+      <form action={createPost} className="mb-6" key={posts?.length}>
+        <textarea
+          name="body"
+          placeholder="What's happening in San Jose?"
+          className="w-full p-2 border rounded"
+          rows={3}
+        />
+        <button 
+          type="submit" 
+          className="mt-2 bg-black text-white px-4 py-2 rounded"
+        >
+          Post
+        </button>
+      </form>
 
       <div className="space-y-4">
         {posts?.map((post) => (
