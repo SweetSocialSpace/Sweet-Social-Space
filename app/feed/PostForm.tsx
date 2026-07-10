@@ -112,7 +112,7 @@ export default function PostForm({ userId }: { userId: string }) {
               disabled={isPosting}
               className={`absolute right-2 top-2 p-2 rounded-full ${
                 isListening 
-                ? 'bg-red-500 text-white animate-pulse' 
+               ? 'bg-red-500 text-white animate-pulse' 
                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
               } disabled:bg-gray-100 disabled:cursor-not-allowed`}
               title={isListening? 'Stop recording' : 'Start voice typing'}
