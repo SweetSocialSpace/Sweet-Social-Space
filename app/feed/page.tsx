@@ -52,13 +52,13 @@ export default async function Feed() {
     if (!user || !body.trim()) return
     
     const { error } = await supabase.from('posts').insert({ 
-      body: body.trim(), 
-      user_id: user.id,
-      post_type: 'neighborhood',
-      is_anonymous: false,
-      city: 'San Jose, CA',
-      zip_code: '95122'
-    })
+  body: body.trim(), 
+  user_id: user.id,
+  post_type: 'neighborhood',
+  is_anonymous: false,
+  city: 'San Jose, CA',
+  zip_code: '95122'
+})
     
     if (error) console.log('Post insert error:', error)
     
