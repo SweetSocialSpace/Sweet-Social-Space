@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createBrowserClient } from '@supabase/ssr'
 import { useRouter } from 'next/navigation'
 
 export default function PostForm({ userId }: { userId: string }) {
@@ -9,12 +9,15 @@ export default function PostForm({ userId }: { userId: string }) {
   const [isPosting, setIsPosting] = useState(false)
   const [isListening, setIsListening] = useState(false)
   const [micSupported, setMicSupported] = useState(false)
-  const supabase = createClientComponentClient()
   const router = useRouter()
   const recognitionRef = useRef<any>(null)
+  
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   useEffect(() => {
-    // Check if browser supports Speech Recognition
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (SpeechRecognition) {
       setMicSupported(true)
@@ -34,31 +37,23 @@ export default function PostForm({ userId }: { userId: string }) {
         if (finalTranscript) {
           setBody(prev => {
             let newText = prev + finalTranscript
-            // Basic punctuation: add period if it ends with a pause and no punctuation
             newText = newText.replace(/\s+question\s*$/i, '? ')
             newText = newText.replace(/\s+exclamation\s*$/i, '! ')
             newText = newText.replace(/\s+comma\s*$/i, ', ')
             newText = newText.replace(/\s+period\s*$/i, '. ')
-            // Auto-capitalize after.?!
             newText = newText.replace(/([.!?]\s+)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase())
             return newText.trimStart()
           })
         }
       }
 
-      recognitionRef.current.onerror = () => {
-        setIsListening(false)
-      }
-
-      recognitionRef.current.onend = () => {
-        setIsListening(false)
-      }
+      recognitionRef.current.onerror = () => setIsListening(false)
+      recognitionRef.current.onend = () => setIsListening(false)
     }
   }, [])
 
   const toggleMic = () => {
     if (!recognitionRef.current) return
-    
     if (isListening) {
       recognitionRef.current.stop()
       setIsListening(false)
@@ -72,7 +67,6 @@ export default function PostForm({ userId }: { userId: string }) {
     e.preventDefault()
     if (!body.trim()) return
     
-    // Kill mic when posting
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop()
       setIsListening(false)
@@ -90,7 +84,6 @@ export default function PostForm({ userId }: { userId: string }) {
     })
 
     setIsPosting(false)
-
     if (error) {
       alert('Error posting: ' + error.message)
       return
@@ -119,7 +112,7 @@ export default function PostForm({ userId }: { userId: string }) {
               disabled={isPosting}
               className={`absolute right-2 top-2 p-2 rounded-full ${
                 isListening 
-                 ? 'bg-red-500 text-white animate-pulse' 
+                ? 'bg-red-500 text-white animate-pulse' 
                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
               } disabled:bg-gray-100 disabled:cursor-not-allowed`}
               title={isListening? 'Stop recording' : 'Start voice typing'}
