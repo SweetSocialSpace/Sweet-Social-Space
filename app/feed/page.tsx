@@ -5,17 +5,6 @@ import PostForm from './PostForm'
 
 export const dynamic = 'force-dynamic'
 
-type Post = {
-  id: string
-  body: string
-  user_id: string
-  post_type: string
-  is_anonymous: boolean
-  city: string
-  zip_code: string
-  created_at: string
-}
-
 export default async function FeedPage() {
   const supabase = createServerComponentClient({ cookies })
   
@@ -38,7 +27,7 @@ export default async function FeedPage() {
       
       <div className="space-y-4 mt-8">
         {posts && posts.length > 0 ? (
-          posts.map((post: Post) => (
+          posts.map((post) => (
             <div key={post.id} className="border rounded-lg p-4 bg-white shadow">
               <p className="text-gray-800">{post.body}</p>
               <p className="text-xs text-gray-500 mt-2">
