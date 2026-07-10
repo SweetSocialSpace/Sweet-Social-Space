@@ -2,9 +2,19 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import PostForm from './PostForm'
-import PostList from './PostList'
 
 export const dynamic = 'force-dynamic'
+
+type Post = {
+  id: string
+  body: string
+  user_id: string
+  post_type: string
+  is_anonymous: boolean
+  city: string
+  zip_code: string
+  created_at: string
+}
 
 export default async function FeedPage() {
   const supabase = createServerComponentClient({ cookies })
@@ -26,7 +36,20 @@ export default async function FeedPage() {
       
       <PostForm userId={session.user.id} />
       
-      <PostList posts={posts || []} />
+      <div className="space-y-4 mt-8">
+        {posts && posts.length > 0 ? (
+          posts.map((post: Post) => (
+            <div key={post.id} className="border rounded-lg p-4 bg-white shadow">
+              <p className="text-gray-800">{post.body}</p>
+              <p className="text-xs text-gray-500 mt-2">
+                {new Date(post.created_at).toLocaleString()} • {post.city}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500 text-center">No posts yet. Be the first!</p>
+        )}
+      </div>
     </div>
   )
 }
