@@ -36,14 +36,14 @@ export default async function Feed() {
       {
         cookies: {
           get(name: string) {
-            return cookieStore.get(name)?.value,
+            return cookieStore.get(name)?.value
           },
         },
       }
     )
 
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user ||!body.trim()) return
+    if (!user || !body.trim()) return
 
     const { error } = await supabase.from('posts').insert({
       body: body.trim(),
@@ -67,7 +67,7 @@ export default async function Feed() {
       {
         cookies: {
           get(name: string) {
-            return cookieStore.get(name)?.value,
+            return cookieStore.get(name)?.value
           },
         },
       }
