@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: We'll port these files later from Lovable
 // import { useAuth } from '@/hooks/useAuth'
@@ -22,6 +22,7 @@ function useAuth() {
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
+    const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)
     })
@@ -57,11 +58,12 @@ export function PinnedAutomatedAlert() {
         return
       }
 
+      const supabase = createClient()
       const { data: prof } = await supabase
-       .from('profiles')
-       .select('zip_code')
-       .eq('user_id', user.id)
-       .maybeSingle()
+     .from('profiles')
+     .select('zip_code')
+     .eq('user_id', user.id)
+     .maybeSingle()
 
       const userZip = (prof as any)?.zip_code?? null
       if (!userZip || cancelled) {
@@ -76,18 +78,18 @@ export function PinnedAutomatedAlert() {
         // Count recent posts (any author) in this ZIP. We use the bot-post
         // detection by tag "Alert"/"General" filtering further below.
         const { data: recent } = await supabase
-         .from('posts')
-         .select('id, user_id, body, tag, created_at, hidden')
-         .eq('zip_code', userZip)
-         .gte('created_at', since24)
-         .order('created_at', { ascending: false })
-         .limit(50)
+       .from('posts')
+       .select('id, user_id, body, tag, created_at, hidden')
+       .eq('zip_code', userZip)
+       .gte('created_at', since24)
+       .order('created_at', { ascending: false })
+       .limit(50)
 
         const rows = (recent?? []).filter((r: any) =>!r.hidden)
         const { data: bots } = await supabase
-         .from('profiles')
-         .select('user_id')
-         .ilike('display_name', '%bot%')
+       .from('profiles')
+       .select('user_id')
+       .ilike('display_name', '%bot%')
         const botIds = new Set((bots?? []).map((b: any) => b.user_id))
 
         const humans = rows.filter((r: any) =>!botIds.has(r.user_id))
