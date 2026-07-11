@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: We'll port these files later from Lovable
 // import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -13,12 +13,13 @@ import { supabase } from '@/lib/supabase'
 // Stub hook - replace with real one when we port hooks/useAuth.ts
 function useAuth() {
   const [user, setUser] = useState<any>(null)
+  const supabase = createClient()
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user)
     })
-  }, [])
+  }, [supabase])
 
   return { user }
 }
@@ -74,6 +75,7 @@ const schema = z.object({
 
 export function AddressGate() {
   const { user } = useAuth()
+  const supabase = createClient()
   const [open, setOpen] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -102,7 +104,7 @@ export function AddressGate() {
     return () => {
       cancelled = true
     }
-  }, [user])
+  }, [user, supabase])
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -118,8 +120,8 @@ export function AddressGate() {
       const locationLabel = [parsed.data.city, parsed.data.state, parsed.data.country].filter(Boolean).join(', ')
       const zip = parsed.data.postal_code || null
       const { error: upErr } = await supabase
-    .from('profiles')
-    .update({
+   .from('profiles')
+   .update({
           street: parsed.data.street || null,
           city: parsed.data.city || null,
           state_code: parsed.data.state || null,
@@ -128,7 +130,7 @@ export function AddressGate() {
           country: parsed.data.country || null,
           location_label: locationLabel || null,
         } as any)
-    .eq('user_id', user.id)
+   .eq('user_id', user.id)
       if (upErr) {
         setError(upErr.message)
         return
