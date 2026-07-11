@@ -1,14 +1,8 @@
 'use client'
-import { createClient } from '@/lib/supabase/client'
-
-export default function BusinessDirectory() {
-  const supabase = createClient()
-  // ... rest of your code uses `supabase`
-}
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: We'll create these files later from Lovable
 // import { listUpcomingEvents, type UpcomingEventDTO } from '@/lib/events.functions'
@@ -35,7 +29,7 @@ function useLocationScope() {
 // Stub badge component
 function AutomatedBadge({ className = '' }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text- font-semibold text-muted-foreground ${className}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full bg-muted px-1.5 py-0.5 text-xs font-semibold text-muted-foreground ${className}`}>
       🤖 AUTO
     </span>
   )
@@ -50,7 +44,8 @@ function formatWhen(iso: string | null): { date: string; time: string } {
   }
 }
 
-export function UpcomingEvents({ compact = false }: { compact?: boolean }) {
+export default function UpcomingEvents({ compact = false }: { compact?: boolean }) {
+  const supabase = createClient()
   const { filter } = useLocationScope()
   const [events, setEvents] = useState<UpcomingEventDTO[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -63,17 +58,17 @@ export function UpcomingEvents({ compact = false }: { compact?: boolean }) {
       try {
         // TODO: Replace with listUpcomingEvents when we port it
         const { data, error } = await supabase
-         .from('events')
-         .select('*')
-         .gte('starts_at', new Date().toISOString())
-         .order('starts_at', { ascending: true })
-         .limit(6)
+          .from('events')
+          .select('*')
+          .gte('starts_at', new Date().toISOString())
+          .order('starts_at', { ascending: true })
+          .limit(6)
 
         if (error) throw error
         if (cancelled) return
         setEvents(data as UpcomingEventDTO[])
       } catch (e: any) {
-        if (!cancelled) setError(e?.message?? 'Failed to load events')
+        if (!cancelled) setError(e?.message ?? 'Failed to load events')
       }
     }
 
@@ -85,17 +80,17 @@ export function UpcomingEvents({ compact = false }: { compact?: boolean }) {
   if (events && events.length === 0) return null
 
   return (
-    <section aria-label="Upcoming events" className={compact? '' : 'mt-16'}>
-      <div className={compact? 'mb-3 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2' : 'mb-4 flex items-baseline justify-between'}>
-        <h2 className={compact? 'font-display text-sm font-semibold leading-tight' : 'font-display text-2xl font-semibold'}>
+    <section aria-label="Upcoming events" className={compact ? '' : 'mt-16'}>
+      <div className={compact ? 'mb-3 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2' : 'mb-4 flex items-baseline justify-between'}>
+        <h2 className={compact ? 'font-display text-sm font-semibold leading-tight' : 'font-display text-2xl font-semibold'}>
           Upcoming events
         </h2>
         <Link href="/news-events" className="text-xs text-muted-foreground hover:text-foreground">
           View all →
         </Link>
       </div>
-      <ul className={compact? 'grid gap-2' : 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'}>
-        {(events?? Array.from({ length: 6 })).map((row, i) => {
+      <ul className={compact ? 'grid gap-2' : 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'}>
+        {(events ?? Array.from({ length: 6 })).map((row, i) => {
           if (!row) {
             return (
               <li
