@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { VoiceInputButton } from '@/components/VoiceInputButton'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: Port lib/moderation.functions.ts from Lovable
 // import {
@@ -38,6 +38,7 @@ async function submitReport(data: {
   details?: string
   turnstile_token?: string
 }) {
+  const supabase = createClient()
   const { data: user } = await supabase.auth.getUser()
   if (!user.user) throw new Error('Not authenticated')
 
