@@ -1,63 +1,64 @@
 'use server'
 
 import { z } from 'zod'
-import { createServerClient } from '@/integrations/supabase/client.server'
+import { createClient } from '@/lib/supabase/server'
 import { bboxForRadius, milesBetween, SCOPE_RADIUS_MILES, type ScopeKind } from '@/lib/location-scope'
 
+// Phase 1: Neighbors/social graph system stubbed. Will wire up in Phase 2.
+
 const input = z.object({
-  scope: z.enum(["5mi", "20mi", "50mi", "state", "nationwide"]),
+  scope: z.enum(["5mi", "20mi", "50mi", "state", "nationwide"]).optional(),
   lat: z.number().nullable().optional(),
   lng: z.number().nullable().optional(),
   state_code: z.string().nullable().optional(),
-  exclude_user_id: z.string().uuid().nullable().optional(),
-})
+  limit: z.number().min(1).max(50).optional(),
+}).partial()
 
-async function getAuth() {
-  const supabase = createServerClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error ||!user) throw new Error('Unauthorized')
-  return { supabase, userId: user.id }
+export type NeighborDTO = {
+  id: string
+  username: string | null
+  display_name: string | null
+  avatar_url: string | null
+  bio: string | null
+  city: string | null
+  state_code: string | null
+  latitude: number | null
+  longitude: number | null
+  distance_miles: number | null
+  mutual_friends: number
+  created_at: string
 }
 
-export async function countNeighborsNearby(data: z.infer<typeof input>): Promise<{ count: number }> {
-  const parsed = input.parse(data)
-  await getAuth()
-  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-  const scope = parsed.scope as ScopeKind
-  const radius = SCOPE_RADIUS_MILES[scope]
+export async function listNearbyUsers(inputParams?: z.infer<typeof input>): Promise<NeighborDTO[]> {
+  // Phase 1 stub: return empty array
+  return []
+}
 
-  if (radius!= null) {
-    if (parsed.lat == null || parsed.lng == null) return { count: 0 }
-    const b = bboxForRadius(parsed.lat, parsed.lng, radius)
-    let q = supabaseAdmin
-   .from("profiles")
-   .select("user_id, latitude, longitude")
-   .gte("latitude", b.minLat).lte("latitude", b.maxLat)
-   .gte("longitude", b.minLng).lte("longitude", b.maxLng)
-    if (parsed.exclude_user_id) q = q.neq("user_id", parsed.exclude_user_id)
-    const { data: rows, error } = await q
-    if (error) throw new Error(error.message)
-    const count = (rows?? []).filter((r) =>
-      r.latitude!= null && r.longitude!= null &&
-      milesBetween(parsed.lat!, parsed.lng!, r.latitude as number, r.longitude as number) <= radius
-    ).length
-    return { count }
-  }
+export async function getNearbyUsersCount(inputParams?: z.infer<typeof input>): Promise<{ count: number }> {
+  // Phase 1 stub
+  return { count: 0 }
+}
 
-  if (scope === "state" && parsed.state_code) {
-    let q = supabaseAdmin
-   .from("profiles")
-   .select("user_id", { count: "exact", head: true })
-   .eq("state_code", parsed.state_code.toUpperCase())
-    if (parsed.exclude_user_id) q = q.neq("user_id", parsed.exclude_user_id)
-    const { count, error } = await q
-    if (error) throw new Error(error.message)
-    return { count: count?? 0 }
-  }
+export async function findUsersByLocation(input: {
+  city?: string | null
+  state_code?: string | null
+  limit?: number
+}): Promise<NeighborDTO[]> {
+  // Phase 1 stub
+  return []
+}
 
-  let q = supabaseAdmin.from("profiles").select("user_id", { count: "exact", head: true })
-  if (parsed.exclude_user_id) q = q.neq("user_id", parsed.exclude_user_id)
-  const { count, error } = await q
-  if (error) throw new Error(error.message)
-  return { count: count?? 0 }
+export async function getMutualConnections(input: {
+  user_id: string
+  limit?: number
+}): Promise<NeighborDTO[]> {
+  // Phase 1 stub
+  return []
+}
+
+export async function suggestConnections(input?: {
+  limit?: number
+}): Promise<NeighborDTO[]> {
+  // Phase 1 stub
+  return []
 }
