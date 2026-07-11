@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: We'll port these files later from Lovable
 // import { listLiveStreams, type LiveStreamCard } from '@/lib/livestream.functions'
@@ -21,12 +21,13 @@ export function LiveNowStrip() {
 
   const load = useCallback(async () => {
     try {
+      const supabase = createClient()
       // TODO: Replace with listLiveStreams server action when we port it
       const { data, error } = await supabase
-    .from('live_streams')
-    .select('id, title, user:users(display_name, avatar_url)')
-    .eq('status', 'live')
-    .limit(12)
+   .from('live_streams')
+   .select('id, title, user:users(display_name, avatar_url)')
+   .eq('status', 'live')
+   .limit(12)
 
       if (error) throw error
 
@@ -45,6 +46,7 @@ export function LiveNowStrip() {
 
   useEffect(() => {
     let cancelled = false
+    const supabase = createClient()
     supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return
       const signedIn =!!data.session
@@ -65,10 +67,11 @@ export function LiveNowStrip() {
 
   useEffect(() => {
     if (!authed) return
+    const supabase = createClient()
     const channel = supabase
-   .channel('live-now-strip')
-   .on('postgres_changes', { event: '*', schema: 'public', table: 'live_streams' }, () => load())
-   .subscribe()
+  .channel('live-now-strip')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'live_streams' }, () => load())
+  .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [authed, load])
 
@@ -91,7 +94,7 @@ export function LiveNowStrip() {
             <div className="relative aspect-video overflow-hidden rounded-lg bg-gradient-to-br from-red-500/20 via-secondary to-secondary">
               <div className="absolute inset-0 flex items-center justify-center">
                 {s.avatar_url
-              ? <img src={s.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-background" />
+             ? <img src={s.avatar_url} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-background" />
                   : <div className="h-12 w-12 rounded-full bg-secondary ring-2 ring-background" />}
               </div>
               <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-red-500 px-2 py-0.5 text- font-bold text-white">
