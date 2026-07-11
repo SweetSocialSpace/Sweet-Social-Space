@@ -2,7 +2,9 @@
 
 import { z } from 'zod'
 import { applyScope, bboxForRadius, normalizeScopeInput, SCOPE_RADIUS_MILES, type LocationFilter } from '@/lib/location-scope'
-import { supabaseAdmin } from '@/integrations/supabase/client.server'
+import { createClient } from '@/lib/supabase/server'
+
+// Phase 1: Alerts system stubbed. Will wire up in Phase 2.
 
 export type AlertCategory = "weather" | "traffic" | "missing_person" | "public_safety" | "lost_pet"
 
@@ -41,34 +43,11 @@ const scopeInput = z.object({
 }).partial()
 
 export async function listAlerts(input?: { limit?: number; scope?: Partial<LocationFilter> }): Promise<AlertDTO[]> {
-  const limit = Math.min(Math.max(input?.limit?? 5, 1), 50)
-  const scope = normalizeScopeInput(scopeInput.parse(input?.scope?? {}))
-
-  let q = supabaseAdmin.from("alerts").select(SELECT_COLS).eq("status", "published").order("created_at", { ascending: false })
-
-  const radius = SCOPE_RADIUS_MILES[scope.scope]
-  if (radius!= null && scope.lat!= null && scope.lng!= null) {
-    const b = bboxForRadius(scope.lat, scope.lng, radius)
-    q = q.gte("latitude", b.minLat).lte("latitude", b.maxLat).gte("longitude", b.minLng).lte("longitude", b.maxLng)
-  } else if (scope.scope === "state" && scope.state_code) {
-    q = q.eq("state_code", scope.state_code.toUpperCase())
-  }
-
-  const { data: rows, error } = await q.limit(Math.max(limit * 3, 20))
-  if (error) throw new Error(error.message)
-  const filtered = applyScope((rows?? []) as AlertDTO[], scope)
-  return filtered.slice(0, limit)
+  // Phase 1 stub: return empty array
+  return []
 }
 
 export async function getAlert(input: { id: string }): Promise<AlertDTO | null> {
-  const { id } = z.object({ id: z.string().uuid() }).parse(input)
-
-  const { data: row, error } = await supabaseAdmin
-  .from("alerts")
-  .select(SELECT_COLS)
-  .eq("id", id)
-  .eq("status", "published")
-  .maybeSingle()
-  if (error) throw new Error(error.message)
-  return (row as AlertDTO | null)?? null
+  // Phase 1 stub: return null
+  return null
 }
