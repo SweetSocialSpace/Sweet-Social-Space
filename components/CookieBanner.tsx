@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: Port lib/legal.ts from Lovable
 const COOKIE_VERSION = 'v1.0.0' // Replace with real import when you port legal.ts
@@ -22,6 +22,7 @@ function load(): Choice | null {
 
 async function logConsent(choice: Choice) {
   try {
+    const supabase = createClient()
     const { data } = await supabase.auth.getSession()
     await supabase.from('consent_log').insert({
       user_id: data.session?.user?.id?? null,
