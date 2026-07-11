@@ -120,8 +120,8 @@ export function AddressGate() {
       const locationLabel = [parsed.data.city, parsed.data.state, parsed.data.country].filter(Boolean).join(', ')
       const zip = parsed.data.postal_code || null
       const { error: upErr } = await supabase
-   .from('profiles')
-   .update({
+  .from('profiles')
+  .update({
           street: parsed.data.street || null,
           city: parsed.data.city || null,
           state_code: parsed.data.state || null,
@@ -130,7 +130,7 @@ export function AddressGate() {
           country: parsed.data.country || null,
           location_label: locationLabel || null,
         } as any)
-   .eq('user_id', user.id)
+  .eq('user_id', user.id)
       if (upErr) {
         setError(upErr.message)
         return
@@ -145,7 +145,7 @@ export function AddressGate() {
 
   return (
     <Dialog open={open} onOpenChange={() => { /* required, block close */ }}>
-      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()} onEscapeKeyDown={(e) => e.preventDefault()}>
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e: any) => e.preventDefault()} onEscapeKeyDown={(e: any) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Add your ZIP code</DialogTitle>
           <DialogDescription>
