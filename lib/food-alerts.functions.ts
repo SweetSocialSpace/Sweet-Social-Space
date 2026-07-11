@@ -1,9 +1,9 @@
 'use server'
 
 import { z } from 'zod'
-import { createServerClient } from '@/integrations/supabase/client.server'
+import { createClient } from '@/lib/supabase/server'
 
-// Admin-pasted food alerts (e.g. La Placita, taco trucks).
+// Phase 1: Admin-pasted food alerts stubbed. Will wire up in Phase 2.
 // Posts to the 95122 feed as the community bot under tag="Alert".
 
 const BOT_USER_ID = "b0700000-0000-0000-0000-000000095122"
@@ -12,7 +12,7 @@ const ZIP_LAT = 37.3382
 const ZIP_LNG = -121.8413
 
 async function getAuth() {
-  const supabase = createServerClient()
+  const supabase = createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) throw new Error('Unauthorized')
   return { supabase, userId: user.id }
@@ -30,28 +30,6 @@ const inputSchema = z.object({
 })
 
 export async function postFoodAlert(input: z.infer<typeof inputSchema>): Promise<{ ok: true; post_id: string }> {
-  const data = inputSchema.parse(input)
-  const { supabase, userId } = await getAuth()
-  await assertAdmin(supabase, userId)
-  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
-
-  const srcLine = data.source_url ? `\n\nSource: ${data.source_url}` : ""
-  const body = `🔴 95122 Food Alert — ${data.vendor}: ${data.caption}${srcLine}`.slice(0, 500)
-
-  const { data: row, error } = await supabaseAdmin
-  .from("posts")
-  .insert({
-    user_id: BOT_USER_ID,
-    body,
-    tag: "Alert",
-    latitude: ZIP_LAT,
-    longitude: ZIP_LNG,
-    state_code: "CA",
-    country_code: "US",
-    zip_code: ZIP,
-  } as any)
-  .select("id")
-  .single()
-  if (error) throw new Error(error.message)
-  return { ok: true, post_id: row!.id as string }
+  // Phase 1 stub: disabled
+  return { ok: true, post_id: "stubbed-for-phase-1" }
 }
