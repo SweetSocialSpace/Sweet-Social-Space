@@ -1,4 +1,10 @@
 'use client'
+import { createClient } from '@/lib/supabase/client'
+
+export default function BusinessDirectory() {
+  const supabase = createClient()
+  // ... rest of your code uses `supabase`
+}
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
