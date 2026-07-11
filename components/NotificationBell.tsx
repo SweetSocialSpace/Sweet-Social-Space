@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: Port lib/notifications.functions.ts from Lovable
 // Stub function - replace with real server action when we port it
 async function countMyUnreadNotifications(): Promise<{ count: number }> {
+  const supabase = createClient()
   const { data: user } = await supabase.auth.getUser()
   if (!user.user) return { count: 0 }
 
@@ -25,6 +26,7 @@ export function NotificationBell({ className = '' }: { className?: string }) {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
+    const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id?? null))
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setUserId(s?.user?.id?? null))
     return () => sub.subscription.unsubscribe()
@@ -35,17 +37,18 @@ export function NotificationBell({ className = '' }: { className?: string }) {
     let cancelled = false
     const refresh = () =>
       countMyUnreadNotifications()
-   .then((r) => { if (!cancelled) setCount(r.count) })
-   .catch(() => {})
+ .then((r) => { if (!cancelled) setCount(r.count) })
+ .catch(() => {})
     refresh()
+    const supabase = createClient()
     const channel = supabase
- .channel(`notif-bell-${userId}`)
- .on(
+.channel(`notif-bell-${userId}`)
+.on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
         () => refresh(),
       )
- .subscribe()
+.subscribe()
     return () => { cancelled = true; supabase.removeChannel(channel) }
   }, [userId])
 
