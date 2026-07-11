@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase' // We'll create this next
+import { supabase } from '@/lib/supabase/client' // We'll create this next
 import { VoiceInputButton } from '@/components/VoiceInputButton'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
