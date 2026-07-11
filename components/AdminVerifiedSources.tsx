@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: We'll port these files later from Lovable
 // import {
@@ -37,6 +37,7 @@ type VerifiedSourceAdminRow = {
 
 // Stub functions - replace with real server actions when we port lib/verified-admin.functions.ts
 async function listAllVerifiedSources({ data }: any): Promise<VerifiedSourceAdminRow[]> {
+  const supabase = createClient()
   const { data: rows, error } = await supabase
 .from('verified_sources')
 .select('*')
@@ -46,11 +47,13 @@ async function listAllVerifiedSources({ data }: any): Promise<VerifiedSourceAdmi
 }
 
 async function adminCreateVerifiedSource({ data }: any) {
+  const supabase = createClient()
   const { error } = await supabase.from('verified_sources').insert(data)
   if (error) throw error
 }
 
 async function adminReviewVerifiedSource({ data }: any) {
+  const supabase = createClient()
   const { error } = await supabase
 .from('verified_sources')
 .update({ status: data.status, review_notes: data.review_notes })
@@ -59,11 +62,13 @@ async function adminReviewVerifiedSource({ data }: any) {
 }
 
 async function adminDeleteVerifiedSource({ data }: any) {
+  const supabase = createClient()
   const { error } = await supabase.from('verified_sources').delete().eq('id', data.id)
   if (error) throw error
 }
 
 async function adminUpdateVerifiedSource({ data }: any) {
+  const supabase = createClient()
   const { id,...updates } = data
   const { error } = await supabase.from('verified_sources').update(updates).eq('id', id)
   if (error) throw error
@@ -131,8 +136,8 @@ export function AdminVerifiedSources() {
         q: debouncedSearch || undefined,
       } as any,
     })
-  .then((r) => { if (!cancelled) setRows(r) })
-  .catch((e) => { if (!cancelled) setErr(e?.message?? 'Failed to load') })
+ .then((r) => { if (!cancelled) setRows(r) })
+ .catch((e) => { if (!cancelled) setErr(e?.message?? 'Failed to load') })
     return () => { cancelled = true }
   }, [tab, kindFilter, cityFilter, stateFilter, debouncedSearch, reloadKey])
 
@@ -403,54 +408,3 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
       })
       onSaved()
     } catch (e: any) {
-      setErr(e?.message?? 'Failed to save')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  async function regeocode() {
-    const geo = await forwardGeocode(city, stateCode)
-    if (geo.lat!= null) setLatitude(String(geo.lat))
-    if (geo.lng!= null) setLongitude(String(geo.lng))
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/40 p-4">
-      <div className="w-full max-w-2xl rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
-        <div className="flex items-center justify-between">
-          <h3 className="font-display text-lg font-semibold">Edit verified source</h3>
-          <button onClick={onClose} className="text-sm text-muted-foreground hover:text-foreground">Close</button>
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className={cls} />
-          <select value={kind} onChange={(e) => setKind(e.target.value as Kind)} className={cls}>
-            {KIND_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={4} placeholder="Emoji" className={cls} />
-          <input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://website" className={cls} />
-          <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Contact name" className={cls} />
-          <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="Contact email" className={cls} />
-          <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="Contact phone" className={cls} />
-          <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className={cls} />
-          <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder="State (CA)" className={cls} />
-          <div className="flex gap-2 sm:col-span-2">
-            <input value={latitude} onChange={(e) => setLatitude(e.target.value)} placeholder="Latitude" className={cls} />
-            <input value={longitude} onChange={(e) => setLongitude(e.target.value)} placeholder="Longitude" className={cls} />
-            <button type="button" onClick={regeocode} className="whitespace-nowrap rounded-xl border border-border px-3 text-sm">Re-geocode</button>
-          </div>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Description" className={`${cls} sm:col-span-2`} />
-        </div>
-        {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
-        <div className="mt-5 flex justify-end gap-2">
-          <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm">Cancel</button>
-          <button onClick={save} disabled={saving} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">
-            {saving? 'Saving…' : 'Save changes'}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const cls = 'rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary'
