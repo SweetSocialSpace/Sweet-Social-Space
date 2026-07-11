@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 export function AccountSettingsDialog({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
   const [confirmDelete, setConfirmDelete] = useState('')
+  const supabase = createClient()
 
   const exportData = async () => {
     setBusy(true)
