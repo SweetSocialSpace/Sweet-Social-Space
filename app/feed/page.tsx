@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase/client'
-import { VoiceInputButton } from '@/components/VoiceInputButton'
+import { createClient } from '@/lib/supabase/client'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
@@ -47,6 +46,7 @@ function timeAgo(iso: string) {
 
 export default function FeedPage() {
   const router = useRouter()
+  const supabase = createClient()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [posts, setPosts] = useState<Post[]>([])
@@ -64,7 +64,7 @@ export default function FeedPage() {
       else setUser(data.user)
       setLoading(false)
     })
-  }, [router])
+  }, [router, supabase])
 
   useEffect(() => {
     if (!user) return
@@ -73,10 +73,10 @@ export default function FeedPage() {
 
   const load = async () => {
     const { data: postRows } = await supabase
-    .from('posts')
-    .select('id, user_id, body, tag, boosted_until, created_at, media_url, media_type, latitude, longitude, state_code, country_code, zip_code')
-    .order('created_at', { ascending: false })
-    .limit(200)
+   .from('posts')
+   .select('id, user_id, body, tag, boosted_until, created_at, media_url, media_type, latitude, longitude, state_code, country_code, zip_code')
+   .order('created_at', { ascending: false })
+   .limit(200)
     if (!postRows) return
 
     const userIds = [...new Set(postRows.map((p) => p.user_id))]
@@ -99,7 +99,7 @@ export default function FeedPage() {
 
     const now = Date.now()
     const merged: Post[] = postRows.map((p: any) => ({
-    ...p,
+   ...p,
       display_name: profMap.get(p.user_id)?.display_name?? 'Neighbor',
       is_pro: profMap.get(p.user_id)?.is_pro?? false,
       hearts: counts.get(p.id)?? 0,
@@ -124,7 +124,7 @@ export default function FeedPage() {
     const isImg = f.type.startsWith('image/')
     const isVid = f.type.startsWith('video/')
     if (!isImg &&!isVid) { setErr('Only image or video files are allowed.'); return }
-    const maxBytes = isVid? 50 * 1024 * 1024 : 10 * 1024 * 1024
+    const maxBytes = isVid? 50 * 1024 : 10 * 1024 * 1024
     if (f.size > maxBytes) { setErr(isVid? 'Video must be under 50 MB.' : 'Image must be under 10 MB.'); return }
     setMediaFile(f)
     setMediaPreview(URL.createObjectURL(f))
@@ -210,7 +210,6 @@ export default function FeedPage() {
         )}
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-1">
-            <VoiceInputButton size="sm" onTranscript={(t) => setDraft((prev) => (prev? prev.trimEnd() + ' ' + t : t))} />
             <label className="cursor-pointer rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground hover:bg-muted">
               📷 Photo / Video
               <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => pickMedia(e.target.files?.[0]?? null)} />
@@ -242,27 +241,27 @@ export default function FeedPage() {
           const mine = p.user_id === user?.id
           return (
             <li key={p.id} className={`rounded-3xl border bg-card p-5 shadow-[var(--shadow-soft)] ${boosted? 'border-primary ring-2 ring-primary/30' : 'border-border'}`}>
-              {boosted && <div className="mb-2 inline-flex rounded-full bg-primary/10 px-2 py-0.5 text- font-semibold text-primary">📌 Boosted</div>}
+              {boosted && <div className="mb-2 inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">📌 Boosted</div>}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full" style={{ background: 'var(--gradient-warm)' }} />
                   <div>
                     <div className="text-sm font-semibold flex items-center gap-1.5">
                       {p.display_name}
-                      {p.is_pro && <span className="rounded bg-foreground/90 px-1.5 py-0.5 text- font-bold text-background">PRO</span>}
+                      {p.is_pro && <span className="rounded bg-foreground/90 px-1.5 py-0.5 text-xs font-bold text-background">PRO</span>}
                     </div>
                     <div className="text-xs text-muted-foreground">{timeAgo(p.created_at)} ago</div>
                   </div>
                 </div>
-                <span className="rounded-full bg-secondary px-2.5 py-1 text- font-medium text-secondary-foreground">{p.tag}</span>
+                <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">{p.tag}</span>
               </div>
-              <p className="mt-3 whitespace-pre-wrap text- leading-relaxed text-foreground">{p.body}</p>
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">{p.body}</p>
               {p.media_url && (
                 <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-muted">
                   {p.media_type === 'video'? (
-                    <video src={p.media_url} controls playsInline className="max-h- w-full" />
+                    <video src={p.media_url} controls playsInline className="max-h-96 w-full" />
                   ) : (
-                    <img src={p.media_url} alt="Post" loading="lazy" className="max-h- w-full object-contain" />
+                    <img src={p.media_url} alt="Post" loading="lazy" className="max-h-96 w-full object-contain" />
                   )}
                 </div>
               )}
