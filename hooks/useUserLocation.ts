@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 export type UserLocation = {
   latitude: number | null
@@ -52,6 +52,7 @@ export function useUserLocation(userId: string | undefined) {
   // Load saved profile location
   useEffect(() => {
     if (!userId) return
+    const supabase = createClient()
     let cancelled = false
     ;(async () => {
       const { data } = await (supabase as any).rpc('get_my_private_profile')
@@ -75,16 +76,17 @@ export function useUserLocation(userId: string | undefined) {
     async (next: UserLocation) => {
       setLoc(next)
       if (!userId) return
+      const supabase = createClient()
       await supabase
-       .from('profiles')
-       .update({
+     .from('profiles')
+     .update({
           latitude: next.latitude,
           longitude: next.longitude,
           state_code: next.state_code,
           country_code: next.country_code,
           location_label: next.location_label,
         })
-       .eq('user_id', userId)
+     .eq('user_id', userId)
     },
     [userId],
   )
