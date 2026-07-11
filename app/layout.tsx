@@ -31,14 +31,14 @@ export const metadata = {
     title: 'Sweet Social Space',
     description: 'Sweet Social Space is a community platform for open, uncensored local communication and connection.',
     type: 'website',
-    images: ['https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9f2057e7-075f-4388-9d6f-3f413dae4b8c/id-preview-28209b7a--b94e3455-6a16-40de-8102-13b4b19ca474.lovable.app-1779936921942.png'],
+    images: ['/icon-192.png'],
   },
   twitter: {
     card: 'summary',
     site: '@SweetSocial',
     title: 'Sweet Social Space',
     description: 'Sweet Social Space is a community platform for open, uncensored local communication and connection.',
-    images: ['https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9f2057e7-075f-4388-9d6f-3f413dae4b8c/id-preview-28209b7a--b94e3455-6a16-40de-8102-13b4b19ca474.lovable.app-1779936921942.png'],
+    images: ['/icon-192.png'],
   },
 }
 
