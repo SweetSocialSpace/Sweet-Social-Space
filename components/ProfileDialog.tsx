@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 export function ProfileDialog({ onClose }: { onClose: () => void }) {
   const [displayName, setDisplayName] = useState('')
@@ -18,14 +18,15 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     ;(async () => {
+      const supabase = createClient()
       const { data: u } = await supabase.auth.getUser()
       if (!u.user) return
       setUserId(u.user.id)
       const { data } = await supabase
-  .from('profiles')
-  .select('display_name, bio, block, avatar_url')
-  .eq('user_id', u.user.id)
-  .maybeSingle()
+       .from('profiles')
+       .select('display_name, bio, block, avatar_url')
+       .eq('user_id', u.user.id)
+       .maybeSingle()
       if (data) {
         setDisplayName(data.display_name?? '')
         setBio(data.bio?? '')
@@ -41,6 +42,7 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
     if (avatarUrl.startsWith('http')) return
     let cancelled = false
     ;(async () => {
+      const supabase = createClient()
       const { data } = await supabase.storage.from('avatars').createSignedUrl(avatarUrl, 60 * 60)
       if (!cancelled && data?.signedUrl) setPreviewUrl(data.signedUrl)
     })()
@@ -65,19 +67,20 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
 
     setUploading(true)
     try {
+      const supabase = createClient()
       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg'
       const path = `${userId}/avatar-${Date.now()}.${ext}`
       const { error: upErr } = await supabase.storage
-  .from('avatars')
-  .upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type })
+       .from('avatars')
+       .upload(path, file, { cacheControl: '3600', upsert: true, contentType: file.type })
       if (upErr) {
         setErr(upErr.message)
         return
       }
       const { error: updErr } = await supabase
-  .from('profiles')
-  .update({ avatar_url: path })
-  .eq('user_id', userId)
+       .from('profiles')
+       .update({ avatar_url: path })
+       .eq('user_id', userId)
       if (updErr) {
         setErr(updErr.message)
         return
@@ -97,10 +100,11 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
     setMsg('')
     setUploading(true)
     try {
+      const supabase = createClient()
       const { error } = await supabase
-  .from('profiles')
-  .update({ avatar_url: null })
-  .eq('user_id', userId)
+       .from('profiles')
+       .update({ avatar_url: null })
+       .eq('user_id', userId)
       if (error) {
         setErr(error.message)
         return
@@ -123,12 +127,13 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
     }
     setBusy(true)
     try {
+      const supabase = createClient()
       const { data: u } = await supabase.auth.getUser()
       if (!u.user) return
       const { error } = await supabase
-  .from('profiles')
-  .update({ display_name: name, bio: bio.trim() || null, block: block.trim() || null })
-  .eq('user_id', u.user.id)
+       .from('profiles')
+       .update({ display_name: name, bio: bio.trim() || null, block: block.trim() || null })
+       .eq('user_id', u.user.id)
       if (error) {
         setErr(error.message)
         return
