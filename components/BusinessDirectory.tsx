@@ -1,14 +1,8 @@
 'use client'
-import { createClient } from '@/lib/supabase/client'
-
-export default function BusinessDirectory() {
-  const supabase = createClient()
-  // ... rest of your code uses `supabase`
-}
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: We'll port these files later from Lovable
 // import { listBusinesses, type BusinessDirectoryDTO } from '@/lib/businesses.functions'
@@ -30,7 +24,8 @@ function useLocationScope() {
   return { filter: { scope: 'nationwide' as const, lat: null, lng: null, state_code: null } }
 }
 
-export function BusinessDirectory({ compact = false }: { compact?: boolean }) {
+export default function BusinessDirectory({ compact = false }: { compact?: boolean }) {
+  const supabase = createClient()
   const { filter } = useLocationScope()
   const [items, setItems] = useState<BusinessDirectoryDTO[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -43,39 +38,39 @@ export function BusinessDirectory({ compact = false }: { compact?: boolean }) {
       try {
         // TODO: Replace with listBusinesses when we port it
         const { data, error } = await supabase
-        .from('businesses')
-        .select('*')
-        .order('verified', { ascending: false })
-        .order('name', { ascending: true })
-        .limit(6)
+          .from('businesses')
+          .select('*')
+          .order('verified', { ascending: false })
+          .order('name', { ascending: true })
+          .limit(6)
 
         if (error) throw error
         if (cancelled) return
         setItems(data as BusinessDirectoryDTO[])
       } catch (e: any) {
-        if (!cancelled) setError(e?.message?? 'Failed to load businesses')
+        if (!cancelled) setError(e?.message ?? 'Failed to load businesses')
       }
     }
 
     load()
     return () => { cancelled = true }
-  }, [filter.scope, filter.lat, filter.lng, filter.state_code])
+  }, [filter.scope, filter.lat, filter.lng, filter.state_code, supabase])
 
   if (error) return null
   if (items && items.length === 0) return null
 
   return (
-    <section aria-label="Business directory" className={compact? '' : 'mt-16'}>
-      <div className={compact? 'mb-3 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2' : 'mb-4 flex items-baseline justify-between'}>
-        <h2 className={compact? 'font-display text-sm font-semibold leading-tight' : 'font-display text-2xl font-semibold'}>
+    <section aria-label="Business directory" className={compact ? '' : 'mt-16'}>
+      <div className={compact ? 'mb-3 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-start gap-2' : 'mb-4 flex items-baseline justify-between'}>
+        <h2 className={compact ? 'font-display text-sm font-semibold leading-tight' : 'font-display text-2xl font-semibold'}>
           Local business directory
         </h2>
         <Link href="/businesses" className="text-xs text-muted-foreground hover:text-foreground">
           View all →
         </Link>
       </div>
-      <ul className={compact? 'grid gap-2' : 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'}>
-        {(items?? Array.from({ length: 6 })).map((row, i) => {
+      <ul className={compact ? 'grid gap-2' : 'grid gap-3 sm:grid-cols-2 lg:grid-cols-3'}>
+        {(items ?? Array.from({ length: 6 })).map((row, i) => {
           if (!row) {
             return (
               <li
@@ -92,7 +87,7 @@ export function BusinessDirectory({ compact = false }: { compact?: boolean }) {
                 href={`/business/${b.slug}`}
                 className="flex h-full gap-3 rounded-xl border border-border bg-card p-4 shadow-sm transition hover:bg-secondary"
               >
-                {b.logo_url? (
+                {b.logo_url ? (
                   <img
                     src={b.logo_url}
                     alt=""
