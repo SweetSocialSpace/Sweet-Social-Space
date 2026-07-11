@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import type { LocationFilter, ScopeKind } from '@/lib/location-scope'
 
@@ -74,6 +74,7 @@ export function useLocationScope() {
   // Hydrate from profile when signed in (profile wins if it has coords)
   useEffect(() => {
     if (!user) { setReady(true); return }
+    const supabase = createClient()
     let cancelled = false
     ;(async () => {
       const { data } = await (supabase as any).rpc('get_my_private_profile')
@@ -81,7 +82,7 @@ export function useLocationScope() {
       const row = (Array.isArray(data)? data[0] : data)?? {}
       setState((prev) => {
         const merged: Stored = {
-         ...prev,
+        ...prev,
           latitude: row.latitude?? prev.latitude,
           longitude: row.longitude?? prev.longitude,
           state_code: row.state_code?? prev.state_code,
@@ -112,16 +113,17 @@ export function useLocationScope() {
         return next
       })
       if (user) {
+        const supabase = createClient()
         await supabase
-         .from('profiles')
-         .update({
+        .from('profiles')
+        .update({
             latitude: loc.latitude,
             longitude: loc.longitude,
             state_code: loc.state_code,
             country_code: loc.country_code,
             location_label: loc.location_label,
           })
-         .eq('user_id', user.id)
+        .eq('user_id', user.id)
       }
     },
     [user],
