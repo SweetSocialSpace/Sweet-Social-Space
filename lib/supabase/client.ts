@@ -6,6 +6,3 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 }
-
-// For components that do `import { supabase } from '@/lib/supabase'`
-export const supabase = createClient()
