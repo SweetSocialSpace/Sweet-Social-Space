@@ -1,19 +1,22 @@
 'use server'
 
 import { z } from 'zod'
-import { createClient, requireAuth } from '@/integrations/supabase/client.server'
-import { supabaseAdmin } from '@/integrations/supabase/client.server' // if you need admin
+import { createClient } from '@/integrations/supabase/client.server'
+import { supabaseAdmin } from '@/integrations/supabase/client.server'
 import crypto from 'crypto'
+
+async function getAuth() {
+  const supabase = createClient()
+  const { data: { user }, error } = await supabase.auth.getUser()
+  if (error ||!user) throw new Error('Unauthorized')
+  return { supabase, userId: user.id }
+}
 
 type StripeEnv = 'sandbox' | 'live'
 
 const ALLOWED_RETURN_HOSTS = new Set<string>([
   'sweetsocialspace.com',
   'www.sweetsocialspace.com',
-  'sweetsocialspace.lovable.app',
-  'id-preview--b94e3455-6a16-40de-8102-13b4b19ca474.lovable.app',
-  'project--b94e3455-6a16-40de-8102-13b4b19ca474.lovable.app',
-  'project--b94e3455-6a16-40de-8102-13b4b19ca474-dev.lovable.app',
 ])
 
 function assertSafeReturnUrl(rawUrl: string): string {
@@ -53,7 +56,7 @@ const checkoutSchema = z.object({
 })
 
 export async function createCreatorCheckout(input: z.infer<typeof checkoutSchema>): Promise<{ url: string } | { error: string }> {
-  const { userId, supabase } = await requireAuth()
+  const { userId, supabase } = await getAuth()
   const { returnUrl, environment } = checkoutSchema.parse(input)
   const env = environment as StripeEnv
   const safeReturnUrl = assertSafeReturnUrl(returnUrl)
@@ -70,7 +73,6 @@ export async function createCreatorCheckout(input: z.infer<typeof checkoutSchema
     if (!price) return { error: 'Creator plan not configured' }
 
     const { data: { user } } = await supabase.auth.getUser()
-    // Resolve a customer with userId metadata
     let customerId: string | undefined
     const found = await stripe.customers.search({ query: `metadata['userId']:'${userId}'`, limit: 1 })
     if (found.data.length) customerId = found.data[0].id
@@ -103,7 +105,7 @@ export async function createCreatorCheckout(input: z.infer<typeof checkoutSchema
 
 // ----- Creator status (read for client) -----
 export async function getCreatorStatus(input: { environment: StripeEnv }): Promise<{ isCreator: boolean }> {
-  const { supabase, userId } = await requireAuth()
+  const { supabase, userId } = await getAuth()
   if (input.environment!== 'sandbox' && input.environment!== 'live') throw new Error('Invalid environment')
   return { isCreator: await userIsCreator(supabase, userId, input.environment) }
 }
@@ -145,7 +147,7 @@ async function mintLiveKitToken(opts: {
 }
 
 export async function startLiveStream(input: z.infer<typeof startSchema>): Promise<LiveTokenResponse> {
-  const { userId, supabase } = await requireAuth()
+  const { userId, supabase } = await getAuth()
   const { title } = startSchema.parse(input)
 
   // End any prior live stream by this user (only one at a time)
@@ -168,11 +170,10 @@ export async function startLiveStream(input: z.infer<typeof startSchema>): Promi
       identity: `pub-${userId}`,
       roomName: row.room_name,
       canPublish: true,
-      ttlSeconds: 60 * 60 * 8, // 8h so long broadcasts do not drop from token expiry.
+      ttlSeconds: 60 * 60 * 8,
     })
     return { streamId: row.id, roomName: row.room_name, wsUrl, token }
   } catch (e) {
-    // Cleanup row if token mint failed
     await supabase.from('live_streams').update({ status: 'ended', ended_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', row.id)
     return { error: e instanceof Error? e.message : 'Could not mint LiveKit token' }
   }
@@ -180,7 +181,7 @@ export async function startLiveStream(input: z.infer<typeof startSchema>): Promi
 
 // ----- End broadcast -----
 export async function endLiveStream(input: { streamId: string }): Promise<{ ok: true }> {
-  const { userId, supabase } = await requireAuth()
+  const { userId, supabase } = await getAuth()
   const { streamId } = z.object({ streamId: z.string().uuid() }).parse(input)
   const { error } = await supabase
    .from('live_streams')
@@ -192,7 +193,7 @@ export async function endLiveStream(input: { streamId: string }): Promise<{ ok: 
 }
 
 export async function heartbeatLiveStream(input: { streamId: string }): Promise<{ ok: true }> {
-  const { userId, supabase } = await requireAuth()
+  const { userId, supabase } = await getAuth()
   const { streamId } = z.object({ streamId: z.string().uuid() }).parse(input)
   const { error } = await supabase
    .from('live_streams')
@@ -206,7 +207,7 @@ export async function heartbeatLiveStream(input: { streamId: string }): Promise<
 
 // ----- Viewer token -----
 export async function getViewerToken(input: { streamId: string }): Promise<LiveTokenResponse> {
-  const { userId, supabase } = await requireAuth()
+  const { userId, supabase } = await getAuth()
   const { streamId } = z.object({ streamId: z.string().uuid() }).parse(input)
   const { data: stream } = await supabase
    .from('live_streams')
@@ -223,7 +224,7 @@ export async function getViewerToken(input: { streamId: string }): Promise<LiveT
       identity: `view-${userId}-${Math.random().toString(36).slice(2, 8)}`,
       roomName: stream.room_name,
       canPublish: false,
-      ttlSeconds: 60 * 60 * 8, // 8h
+      ttlSeconds: 60 * 60 * 8,
     })
     return { streamId: stream.id, roomName: stream.room_name, wsUrl, token }
   } catch (e) {
@@ -231,7 +232,7 @@ export async function getViewerToken(input: { streamId: string }): Promise<LiveT
   }
 }
 
-// ----- Public list of live streams (for feed strip / profile pill) -----
+// ----- Public list of live streams -----
 export type LiveStreamCard = {
   id: string
   user_id: string
@@ -242,7 +243,7 @@ export type LiveStreamCard = {
 }
 
 export async function listLiveStreams(input?: { followingOnly?: boolean; limit?: number }): Promise<LiveStreamCard[]> {
-  const { supabase, userId } = await requireAuth()
+  const { supabase, userId } = await getAuth()
   const followingOnly = input?.followingOnly?? false
   const limit = Math.min(Math.max(input?.limit?? 10, 1), 30)
 
