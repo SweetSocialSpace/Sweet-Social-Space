@@ -229,7 +229,7 @@ export function PostsCmsPanel({
         <Input
           placeholder="Search post body…"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
           maxLength={120}
         />
       )}
@@ -271,7 +271,7 @@ export function PostsCmsPanel({
                     <span className="text-muted-foreground">Tag</span>
                     <Input
                       value={editTag}
-                      onChange={(e) => setEditTag(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditTag(e.target.value)}
                       maxLength={40}
                     />
                   </label>
@@ -281,7 +281,7 @@ export function PostsCmsPanel({
                     </span>
                     <Textarea
                       value={editBody}
-                      onChange={(e) => setEditBody(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditBody(e.target.value)}
                       maxLength={2000}
                       rows={6}
                     />
