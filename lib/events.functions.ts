@@ -2,7 +2,9 @@
 
 import { z } from 'zod'
 import { applyScope, bboxForRadius, normalizeScopeInput, SCOPE_RADIUS_MILES, type LocationFilter } from '@/lib/location-scope'
-import { supabaseAdmin } from '@/integrations/supabase/client.server'
+import { createClient } from '@/lib/supabase/server'
+
+// Phase 1: Events system stubbed. Will wire up in Phase 2.
 
 export type UpcomingEventDTO = {
   id: string
@@ -31,26 +33,42 @@ const scopeInput = z.object({
 }).partial()
 
 export async function listUpcomingEvents(input?: { limit?: number; scope?: Partial<LocationFilter> }): Promise<UpcomingEventDTO[]> {
-  const limit = Math.min(Math.max(input?.limit?? 6, 1), 24)
-  const scope = normalizeScopeInput(scopeInput.parse(input?.scope?? {}))
+  // Phase 1 stub: return empty array
+  return []
+}
 
-  let q = supabaseAdmin
-  .from("events")
-  .select(SELECT_COLS)
-  .eq("hidden", false)
-  .gte("starts_at", new Date().toISOString())
-  .order("starts_at", { ascending: true })
+export async function getEvent(input: { id: string }): Promise<UpcomingEventDTO | null> {
+  // Phase 1 stub: return null
+  return null
+}
 
-  const radius = SCOPE_RADIUS_MILES[scope.scope]
-  if (radius!= null && scope.lat!= null && scope.lng!= null) {
-    const b = bboxForRadius(scope.lat, scope.lng, radius)
-    q = q.gte("latitude", b.minLat).lte("latitude", b.maxLat).gte("longitude", b.minLng).lte("longitude", b.maxLng)
-  } else if (scope.scope === "state" && scope.state_code) {
-    q = q.eq("state_code", scope.state_code.toUpperCase())
-  }
+export async function createEvent(input: {
+  title: string
+  description?: string | null
+  starts_at: string
+  ends_at?: string | null
+  venue_name?: string | null
+  address?: string | null
+  city?: string | null
+  state_code?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  organizer?: string | null
+}): Promise<{ id: string }> {
+  // Phase 1 stub
+  return { id: "stubbed-for-phase-1" }
+}
 
-  const { data: rows, error } = await q.limit(Math.max(limit * 3, 20))
-  if (error) throw new Error(error.message)
-  const filtered = applyScope((rows?? []) as UpcomingEventDTO[], scope)
-  return filtered.slice(0, limit)
+export async function updateEvent(input: {
+  id: string
+  title?: string
+  description?: string | null
+}): Promise<{ ok: true }> {
+  // Phase 1 stub
+  return { ok: true }
+}
+
+export async function deleteEvent(input: { id: string }): Promise<{ ok: true }> {
+  // Phase 1 stub
+  return { ok: true }
 }
