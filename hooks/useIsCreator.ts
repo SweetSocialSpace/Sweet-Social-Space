@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { getCreatorStatus } from '@/app/actions/livestream'
 
 /** Returns whether the signed-in user has an active Creator subscription. */
+/** Phase 1: Always returns false. Will wire up livestream actions in Phase 2. */
 export function useIsCreator() {
   const [isCreator, setIsCreator] = useState<boolean | null>(null)
 
@@ -14,15 +14,9 @@ export function useIsCreator() {
     
     async function load() {
       const { data } = await supabase.auth.getUser()
-      if (!data.user) { 
-        if (!cancelled) setIsCreator(false) 
-        return 
-      }
-      try {
-        const r = await getCreatorStatus()
-        if (!cancelled) setIsCreator(r.isCreator)
-      } catch {
-        if (!cancelled) setIsCreator(false)
+      if (!cancelled) {
+        // Phase 1 stub: no creator check yet
+        setIsCreator(false)
       }
     }
     
