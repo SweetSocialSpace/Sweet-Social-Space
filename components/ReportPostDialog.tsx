@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { VoiceInputButton } from '@/components/VoiceInputButton'
 
 const REASONS = [
@@ -27,6 +27,7 @@ export function ReportPostDialog({ postId, onClose }: { postId: string; onClose:
     setBusy(true)
     setError('')
     try {
+      const supabase = createClient()
       const { data: u } = await supabase.auth.getUser()
       if (!u.user) { setError('Please sign in to report.'); return }
       const { error: err } = await supabase.from('post_reports').insert({
