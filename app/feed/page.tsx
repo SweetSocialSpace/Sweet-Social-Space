@@ -3,10 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase' // You need to create this file next
+import { supabase } from '@/lib/supabase' // We'll create this next
 import { VoiceInputButton } from '@/components/VoiceInputButton'
-import { CommentComposerDialog } from '@/components/CommentComposerDialog'
-import { EmptyStateCard } from '@/components/EmptyStateCard'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
@@ -55,7 +53,6 @@ export default function FeedPage() {
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState<Tag>('General')
   const [filter, setFilter] = useState<Tag | 'All'>('All')
-  const [scope, setScope] = useState<Scope>('20 mi')
   const [err, setErr] = useState('')
   const [mediaFile, setMediaFile] = useState<File | null>(null)
   const [mediaPreview, setMediaPreview] = useState<string | null>(null)
@@ -76,10 +73,10 @@ export default function FeedPage() {
 
   const load = async () => {
     const { data: postRows } = await supabase
-     .from('posts')
-     .select('id, user_id, body, tag, boosted_until, created_at, media_url, media_type, latitude, longitude, state_code, country_code, zip_code')
-     .order('created_at', { ascending: false })
-     .limit(200)
+    .from('posts')
+    .select('id, user_id, body, tag, boosted_until, created_at, media_url, media_type, latitude, longitude, state_code, country_code, zip_code')
+    .order('created_at', { ascending: false })
+    .limit(200)
     if (!postRows) return
 
     const userIds = [...new Set(postRows.map((p) => p.user_id))]
@@ -102,7 +99,7 @@ export default function FeedPage() {
 
     const now = Date.now()
     const merged: Post[] = postRows.map((p: any) => ({
-     ...p,
+    ...p,
       display_name: profMap.get(p.user_id)?.display_name?? 'Neighbor',
       is_pro: profMap.get(p.user_id)?.is_pro?? false,
       hearts: counts.get(p.id)?? 0,
