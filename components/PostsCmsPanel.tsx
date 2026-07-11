@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 // TODO: Port lib/admin-posts.functions.ts and replace these stubs
 type AdminPostDTO = {
@@ -20,6 +20,7 @@ type PostVisibility = 'published' | 'draft' | 'unpublished'
 
 // Stub server functions - replace with real API routes when you port admin-posts.functions
 async function listAdminPosts(filter: any): Promise<AdminPostDTO[]> {
+  const supabase = createClient()
   let query = supabase.from('posts').select('*, profiles(full_name, is_bot)').order('created_at', { ascending: false })
 
   if (filter.user_id) query = query.eq('user_id', filter.user_id)
@@ -37,21 +38,25 @@ async function listAdminPosts(filter: any): Promise<AdminPostDTO[]> {
 }
 
 async function updateAdminPost({ id, body, tag }: any) {
+  const supabase = createClient()
   const { error } = await supabase.from('posts').update({ body, tag }).eq('id', id)
   if (error) throw error
 }
 
 async function deleteAdminPost({ id }: any) {
+  const supabase = createClient()
   const { error } = await supabase.from('posts').delete().eq('id', id)
   if (error) throw error
 }
 
 async function setAdminPostVisibility({ id, visibility }: any) {
+  const supabase = createClient()
   const { error } = await supabase.from('posts').update({ visibility }).eq('id', id)
   if (error) throw error
 }
 
 async function listPostAuditLog(filter: any): Promise<any[]> {
+  const supabase = createClient()
   const { data, error } = await supabase.from('post_audit_log').select('*').order('created_at', { ascending: false }).limit(filter.limit || 200)
   if (error) throw error
   return data || []
