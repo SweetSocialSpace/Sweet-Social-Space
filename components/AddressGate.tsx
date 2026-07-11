@@ -153,13 +153,13 @@ export function AddressGate() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={save} className="space-y-3">
-          <Input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="ZIP / Postal code (optional)" maxLength={20} />
-          <Input value={street} onChange={(e) => setStreet(e.target.value)} placeholder="Street address (optional)" maxLength={120} />
+          <Input value={postalCode} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPostalCode(e.target.value)} placeholder="ZIP / Postal code (optional)" maxLength={20} />
+          <Input value={street} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStreet(e.target.value)} placeholder="Street address (optional)" maxLength={120} />
           <div className="grid grid-cols-2 gap-2">
-            <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City (optional)" maxLength={80} />
-            <Input value={stateRegion} onChange={(e) => setStateRegion(e.target.value)} placeholder="State (optional)" maxLength={60} />
+            <Input value={city} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCity(e.target.value)} placeholder="City (optional)" maxLength={80} />
+            <Input value={stateRegion} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStateRegion(e.target.value)} placeholder="State (optional)" maxLength={60} />
           </div>
-          <Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Country (optional)" maxLength={60} />
+          <Input value={country} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCountry(e.target.value)} placeholder="Country (optional)" maxLength={60} />
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit" disabled={busy} className="w-full">
             {busy? 'Saving…' : 'Save and continue'}
