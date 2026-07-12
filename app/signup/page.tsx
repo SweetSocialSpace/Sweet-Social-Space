@@ -81,7 +81,20 @@ export default function SignUp() {
             </p>
           </div>
         </div>
-
+      </div>
+    </div>
+    
+    {/* Footer - add this whole block */}
+    <footer className="w-full py-6 text-center text-sm text-gray-500 border-t mt-12">
+      <div className="space-x-4">
+        <span>© 2006 Sweet Social Space</span>
+        <Link href="/terms" className="hover:underline">Terms</Link>
+        <Link href="/privacy" className="hover:underline">Privacy</Link>
+        <Link href="/about" className="hover:underline">About</Link>
+      </div>
+    </footer>
+  )
+}
       </div>
     </div>
   )
