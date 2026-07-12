@@ -37,10 +37,10 @@ export default function SignUp() {
             </p>
             <p>
               Share your thoughts, connect with others, and be part of a community 
-              built on respect and open dialogue.
+              built on respect and open dialogue. A place that allows you to have your First Amendment rights.
             </p>
             <p className="text-sm text-gray-500">
-              We never sell your data. No ads. No algorithms deciding what you see.
+              We never sell your data. No algorithms deciding what you see.
             </p>
           </div>
         </div>
