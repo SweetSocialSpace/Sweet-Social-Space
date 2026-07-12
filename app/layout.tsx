@@ -1,68 +1,33 @@
 import './globals.css'
-import '@fontsource/sora/400.css'
-import '@fontsource/sora/600.css'
-import '@fontsource/sora/700.css'
-import '@fontsource/manrope/400.css'
-import '@fontsource/manrope/500.css'
-import '@fontsource/manrope/600.css'
-import '@fontsource/manrope/700.css'
 import Link from 'next/link'
-import { Toaster } from 'sonner'
 
 export const metadata = {
   title: 'Sweet Social Space',
-  description: 'Sweet Social Space is a community platform for open, uncensored local communication and connection.',
-  manifest: '/manifest.json',
-  themeColor: '#3B82F6',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'SweetSocial',
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  icons: {
-    icon: '/icon-192.png',
-    apple: '/icon-192.png',
-  },
-  openGraph: {
-    title: 'Sweet Social Space',
-    description: 'Sweet Social Space is a community platform for open, uncensored local communication and connection.',
-    type: 'website',
-    images: ['/icon-192.png'],
-  },
-  twitter: {
-    card: 'summary',
-    site: '@SweetSocial',
-    title: 'Sweet Social Space',
-    description: 'Sweet Social Space is a community platform for open, uncensored local communication and connection.',
-    images: ['/icon-192.png'],
-  },
+  description: 'Speak Freely. Love your neighbor.',
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
     <html lang="en">
-      <body style={{ fontFamily: 'Manrope, sans-serif' }} className="font-sans antialiased">
-        <header className="border-b bg-white/80 backdrop-blur sticky top-0 z-40">
-          <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Link href="/" className="font-bold text-xl">Sweet Social Space</Link>
-            <nav className="flex gap-4 text-sm">
-              
-            </nav>
+      <body className="flex flex-col min-h-screen">
+        <main className="flex-grow">
+          {children}
+        </main>
+        
+        <footer className="w-full py-6 text-center text-xs text-gray-500 bg-gray-50 border-t border-gray-200">
+          <div className="max-w-4xl mx-auto px-4">
+            © 2026 Sweet Social Space — Speak Freely. Love your neighbor.
+            <br className="sm:hidden" />
+            <span className="hidden sm:inline"> | </span>
+            <Link href="/terms" className="hover:underline">Terms of Service</Link> |{' '}
+            <Link href="/privacy" className="hover:underline">Privacy Policy</Link> |{' '}
+            <a href="mailto:support@sweetsocialspace.com" className="hover:underline">Contact</a>
           </div>
-        </header>
-        <main className="max-w-3xl mx-auto px-4 py-6">{children}</main>
-        <footer className="max-w-3xl mx-auto px-4 py-10 text-xs text-zinc-500">
-          © {new Date().getFullYear()} Sweet Social Space — Speak Freely. Love your neighbor.
         </footer>
-        <Toaster richColors position="top-center" />
       </body>
     </html>
   )
