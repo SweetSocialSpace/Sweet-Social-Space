@@ -14,6 +14,13 @@ export default function SignUp() {
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
           providers={[]}
+          <Auth
+  supabaseClient={supabase}
+  appearance={{ theme: ThemeSupa }}
+  providers={[]}
+  redirectTo={`${process.env.NEXT_PUBLIC_SITE_URL}/feed`}  // <-- ADD THIS
+  view="sign_up"
+/>
           view="sign_up"
         />
         <p className="text-xs text-gray-500 mt-4">
