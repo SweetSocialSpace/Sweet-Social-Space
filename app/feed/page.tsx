@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import Header from '@/app/components/Header' // ← ADD THIS LINE
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
@@ -73,10 +74,10 @@ export default function FeedPage() {
 
   const load = async () => {
     const { data: postRows } = await supabase
-   .from('posts')
-   .select('id, user_id, body, tag, boosted_until, created_at, media_url, media_type, latitude, longitude, state_code, country_code, zip_code')
-   .order('created_at', { ascending: false })
-   .limit(200)
+  .from('posts')
+  .select('id, user_id, body, tag, boosted_until, created_at, media_url, media_type, latitude, longitude, state_code, country_code, zip_code')
+  .order('created_at', { ascending: false })
+  .limit(200)
     if (!postRows) return
 
     const userIds = [...new Set(postRows.map((p) => p.user_id))]
@@ -99,7 +100,7 @@ export default function FeedPage() {
 
     const now = Date.now()
     const merged: Post[] = postRows.map((p: any) => ({
-   ...p,
+  ...p,
       display_name: profMap.get(p.user_id)?.display_name?? 'Neighbor',
       is_pro: profMap.get(p.user_id)?.is_pro?? false,
       hearts: counts.get(p.id)?? 0,
@@ -182,118 +183,122 @@ export default function FeedPage() {
   const scoped = filter === 'All'? posts : posts.filter((p) => p.tag === filter)
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-3xl border border-border bg-card p-4 shadow-[var(--shadow-soft)]">
-        <textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder="What's happening on your block?"
-          rows={3}
-          maxLength={2000}
-          className="w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none focus:bg-muted"
-        />
-        {mediaPreview && (
-          <div className="mt-3 relative inline-block">
-            {mediaFile?.type.startsWith('video/')? (
-              <video src={mediaPreview} controls className="max-h-64 rounded-2xl" />
-            ) : (
-              <img src={mediaPreview} alt="Preview" className="max-h-64 rounded-2xl" />
-            )}
-            <button
-              type="button"
-              onClick={() => pickMedia(null)}
-              className="absolute -right-2 -top-2 rounded-full bg-foreground px-2 py-0.5 text-xs text-background"
-            >
-              ×
+    <div className="min-h-screen bg-gray-50"> {/* ← WRAPPED IN DIV */}
+      <Header /> {/* ← ADD THIS LINE */}
+      
+      <main className="max-w-4xl mx-auto p-4 space-y-4"> {/* ← ADDED main WRAPPER */}
+        <div className="rounded-3xl border border-border bg-card p-4 shadow-[var(--shadow-soft)]">
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="What's happening on your block?"
+            rows={3}
+            maxLength={2000}
+            className="w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none focus:bg-muted"
+          />
+          {mediaPreview && (
+            <div className="mt-3 relative inline-block">
+              {mediaFile?.type.startsWith('video/')? (
+                <video src={mediaPreview} controls className="max-h-64 rounded-2xl" />
+              ) : (
+                <img src={mediaPreview} alt="Preview" className="max-h-64 rounded-2xl" />
+              )}
+              <button
+                type="button"
+                onClick={() => pickMedia(null)}
+                className="absolute -right-2 -top-2 rounded-full bg-foreground px-2 py-0.5 text-xs text-background"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-1">
+              <label className="cursor-pointer rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground hover:bg-muted">
+                📷 Photo / Video
+                <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => pickMedia(e.target.files?.[0]?? null)} />
+              </label>
+              {TAGS.map((t) => (
+                <button key={t} onClick={() => setTag(t)} className={`rounded-full px-3 py-1 text-xs font-medium transition ${tag === t? 'bg-foreground text-background' : 'bg-secondary text-secondary-foreground hover:bg-muted'}`}>
+                  {t}
+                </button>
+              ))}
+            </div>
+            <button onClick={submit} disabled={uploading || (!draft.trim() &&!mediaFile)} className="rounded-full px-5 py-2 text-sm font-semibold text-primary-foreground transition disabled:opacity-50" style={{ background: 'var(--gradient-warm)', boxShadow: 'var(--shadow-sweet)' }}>
+              {uploading? 'Posting…' : 'Post'}
             </button>
           </div>
-        )}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-1">
-            <label className="cursor-pointer rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground hover:bg-muted">
-              📷 Photo / Video
-              <input type="file" accept="image/*,video/*" className="hidden" onChange={(e) => pickMedia(e.target.files?.[0]?? null)} />
-            </label>
-            {TAGS.map((t) => (
-              <button key={t} onClick={() => setTag(t)} className={`rounded-full px-3 py-1 text-xs font-medium transition ${tag === t? 'bg-foreground text-background' : 'bg-secondary text-secondary-foreground hover:bg-muted'}`}>
-                {t}
-              </button>
-            ))}
-          </div>
-          <button onClick={submit} disabled={uploading || (!draft.trim() &&!mediaFile)} className="rounded-full px-5 py-2 text-sm font-semibold text-primary-foreground transition disabled:opacity-50" style={{ background: 'var(--gradient-warm)', boxShadow: 'var(--shadow-sweet)' }}>
-            {uploading? 'Posting…' : 'Post'}
-          </button>
+          {err && <p className="mt-2 text-sm text-red-600">{err}</p>}
         </div>
-        {err && <p className="mt-2 text-sm text-red-600">{err}</p>}
-      </div>
 
-      <div className="flex flex-wrap gap-1">
-        {(['All',...TAGS] as const).map((t) => (
-          <button key={t} onClick={() => setFilter(t)} className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filter === t? 'border-transparent bg-primary text-primary-foreground' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}>
-            {t}
-          </button>
-        ))}
-      </div>
+        <div className="flex flex-wrap gap-1">
+          {(['All',...TAGS] as const).map((t) => (
+            <button key={t} onClick={() => setFilter(t)} className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filter === t? 'border-transparent bg-primary text-primary-foreground' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}>
+              {t}
+            </button>
+          ))}
+        </div>
 
-      <ul className="space-y-3">
-        {scoped.map((p) => {
-          const boosted = p.boosted_until && new Date(p.boosted_until).getTime() > Date.now()
-          const mine = p.user_id === user?.id
-          return (
-            <li key={p.id} className={`rounded-3xl border bg-card p-5 shadow-[var(--shadow-soft)] ${boosted? 'border-primary ring-2 ring-primary/30' : 'border-border'}`}>
-              {boosted && <div className="mb-2 inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">📌 Boosted</div>}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full" style={{ background: 'var(--gradient-warm)' }} />
-                  <div>
-                    <div className="text-sm font-semibold flex items-center gap-1.5">
-                      {p.display_name}
-                      {p.is_pro && <span className="rounded bg-foreground/90 px-1.5 py-0.5 text-xs font-bold text-background">PRO</span>}
+        <ul className="space-y-3">
+          {scoped.map((p) => {
+            const boosted = p.boosted_until && new Date(p.boosted_until).getTime() > Date.now()
+            const mine = p.user_id === user?.id
+            return (
+              <li key={p.id} className={`rounded-3xl border bg-card p-5 shadow-[var(--shadow-soft)] ${boosted? 'border-primary ring-2 ring-primary/30' : 'border-border'}`}>
+                {boosted && <div className="mb-2 inline-flex rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">📌 Boosted</div>}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full" style={{ background: 'var(--gradient-warm)' }} />
+                    <div>
+                      <div className="text-sm font-semibold flex items-center gap-1.5">
+                        {p.display_name}
+                        {p.is_pro && <span className="rounded bg-foreground/90 px-1.5 py-0.5 text-xs font-bold text-background">PRO</span>}
+                      </div>
+                      <div className="text-xs text-muted-foreground">{timeAgo(p.created_at)} ago</div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{timeAgo(p.created_at)} ago</div>
                   </div>
+                  <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">{p.tag}</span>
                 </div>
-                <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">{p.tag}</span>
-              </div>
-              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">{p.body}</p>
-              {p.media_url && (
-                <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-muted">
-                  {p.media_type === 'video'? (
-                    <video src={p.media_url} controls playsInline className="max-h-96 w-full" />
-                  ) : (
-                    <img src={p.media_url} alt="Post" loading="lazy" className="max-h-96 w-full object-contain" />
+                <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">{p.body}</p>
+                {p.media_url && (
+                  <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-muted">
+                    {p.media_type === 'video'? (
+                      <video src={p.media_url} controls playsInline className="max-h-96 w-full" />
+                    ) : (
+                      <img src={p.media_url} alt="Post" loading="lazy" className="max-h-96 w-full object-contain" />
+                    )}
+                  </div>
+                )}
+                <div className="mt-4 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+                  <button
+                    onClick={() => like(p.id, p.liked)}
+                    className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition active:scale-95 ${p.liked? 'bg-primary/10 text-primary' : 'bg-secondary hover:bg-muted'}`}
+                  >
+                    <span aria-hidden className="text-base leading-none">{p.liked? '❤' : '♥'}</span> {p.hearts}
+                  </button>
+                  {mine && (
+                    <button
+                      onClick={async () => {
+                        if (!window.confirm('Delete this post? This cannot be undone.')) return
+                        const { error } = await supabase.from('posts').delete().eq('id', p.id)
+                        if (!error) load()
+                      }}
+                      className="text-xs text-red-600 hover:text-red-700"
+                    >
+                      Delete
+                    </button>
                   )}
                 </div>
-              )}
-              <div className="mt-4 flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
-                <button
-                  onClick={() => like(p.id, p.liked)}
-                  className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm transition active:scale-95 ${p.liked? 'bg-primary/10 text-primary' : 'bg-secondary hover:bg-muted'}`}
-                >
-                  <span aria-hidden className="text-base leading-none">{p.liked? '❤' : '♥'}</span> {p.hearts}
-                </button>
-                {mine && (
-                  <button
-                    onClick={async () => {
-                      if (!window.confirm('Delete this post? This cannot be undone.')) return
-                      const { error } = await supabase.from('posts').delete().eq('id', p.id)
-                      if (!error) load()
-                    }}
-                    className="text-xs text-red-600 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
+              </li>
+            )
+          })}
+          {scoped.length === 0 && (
+            <li className="rounded-3xl border border-border bg-card p-8 text-center text-muted-foreground">
+              No posts yet. Be the first to share what's happening.
             </li>
-          )
-        })}
-        {scoped.length === 0 && (
-          <li className="rounded-3xl border border-border bg-card p-8 text-center text-muted-foreground">
-            No posts yet. Be the first to share what's happening.
-          </li>
-        )}
-      </ul>
+          )}
+        </ul>
+      </main>
     </div>
   )
 }
