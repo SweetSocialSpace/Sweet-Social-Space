@@ -2,7 +2,13 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import AuthForm from './auth-form' // we'll make this dumb simple
 
-export default async function AuthPage() {
+ {export default function AuthPage() {
+  return (
+    <div>
+      <AuthForm />
+    </div>
+  )
+}
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   
