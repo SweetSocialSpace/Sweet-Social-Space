@@ -40,14 +40,21 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // If no user and not on /auth, redirect to /auth
-  if (!user && !request.nextUrl.pathname.startsWith('/auth')) {
-    return NextResponse.redirect(new URL('/auth', request.url))
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
+                     request.nextUrl.pathname.startsWith('/signup') || 
+                     request.nextUrl.pathname.startsWith('/auth')
+
+  const isProtectedPage = request.nextUrl.pathname.startsWith('/feed') || 
+                          request.nextUrl.pathname.startsWith('/onboarding')
+
+  // 1. If no user and trying to access protected page, send to /login
+  if (!user && isProtectedPage) {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // If user exists and on /auth, redirect to home
-  if (user && request.nextUrl.pathname.startsWith('/auth')) {
-    return NextResponse.redirect(new URL('/', request.url))
+  // 2. If user exists and on login/signup/auth page, send to /feed
+  if (user && isAuthPage) {
+    return NextResponse.redirect(new URL('/feed', request.url))
   }
 
   return response
