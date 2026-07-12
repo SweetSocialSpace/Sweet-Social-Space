@@ -17,7 +17,7 @@ export default function AboutPage() {
 
           <div className="prose prose-lg mx-auto text-gray-700 space-y-6">
             <p>
-              Sweet Social Space was founded in 2006 with one belief: <strong>you should be able to speak your mind without fear of censorship, shadowbans, or corporate agendas.</strong>
+              Sweet Social Space was founded in 2026 with one belief: <strong>you should be able to speak your mind without fear of censorship, shadowbans, or corporate agendas.</strong>
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900">What we stand for</h2>
