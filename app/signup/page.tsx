@@ -43,9 +43,7 @@ export default function SignUp() {
           <Link href="/login" className="block text-blue-600 hover:underline">
             Already have an account? Sign in
           </Link>
-          <Link href="/forgot-password" className="block text-blue-600 hover:underline">
-            Forgot your password?
-          </Link>
+         
         </div>
 
         <p className="text-xs text-gray-500 mt-4">
