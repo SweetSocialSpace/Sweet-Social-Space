@@ -2,9 +2,22 @@
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
 import { createClient } from '@/utils/supabase/client'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function SignUp() {
   const supabase = createClient()
+  const router = useRouter()
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        router.push('/feed')
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [router, supabase])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
