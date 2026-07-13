@@ -5,8 +5,19 @@
 html, body {
   background: #1C1917 url('https://github.com/SweetSocialSpace/Sweet-Social-Space/blob/main/golden_droplet_heart_wallpaper.jpg?raw=true') center/cover fixed !important;
   min-height: 100vh;
-  color: #FFFFFF; /* pure white text */
-  font-weight: 600; /* bolder base font */
+  height: 100%; /* force full height */
+  margin: 0;
+  padding: 0;
+  color: #FFFFFF;
+  font-weight: 600;
+  overflow-x: hidden; /* no sideways scroll ever */
+}
+
+/* Make the app fill the screen and center content */
+#__next, #root, body > div {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Very light overlay - let those hearts glow */
@@ -14,7 +25,7 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(28,25,23,0.05), rgba(28,25,23,0.25)); /* was 0.15-0.35, now even lighter */
+  background: linear-gradient(to bottom, rgba(28,25,23,0.05), rgba(28,25,23,0.25));
   pointer-events: none;
   z-index: -1;
 }
@@ -24,28 +35,30 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(147,197,253,0.22) 0%, transparent 70%); /* brighter glow */
+  background: radial-gradient(circle at center, rgba(147,197,253,0.22) 0%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
 
-/* Light warm frosted glass - almost translucent */
+/* Main content - centers vertically, no forced scrolling */
 main {
-  background: rgba(85, 78, 70, 0.35); /* much lighter warm gray */
-  backdrop-filter: blur(3px); /* less blur = crisper */
-  border: 1px solid rgba(191,219,254,0.5); /* bright blue border */
+  background: rgba(85, 78, 70, 0.35);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(191,219,254,0.5);
   border-radius: 1rem;
   padding: 1.5rem;
   max-width: 768px;
-  margin: 2rem auto;
+  width: 90%; /* responsive width */
+  margin: auto; /* centers vertically + horizontally */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0; /* don't squish on short screens */
 }
 
 /* Feed cards + login box - light and airy */
 div[class*="bg-white"], 
 div[class*="bg-gray-50"],
 .bg-white {
-  background: rgba(85, 78, 70, 0.45) !important; /* lighter */
+  background: rgba(85, 78, 70, 0.45) !important;
   backdrop-filter: blur(3px) !important;
   border: 1px solid rgba(191,219,254,0.45) !important;
 }
@@ -55,38 +68,37 @@ input, textarea {
   background: rgba(255, 255, 255, 1) !important;
   border: 2px solid rgba(96,165,250,0.7) !important;
   color: #1C1917 !important;
-  font-weight: 600 !important; /* bold text in inputs */
+  font-weight: 600 !important;
 }
 
 /* Text - all bold + bright */
 a { 
   color: #DBEAFE; 
-  font-weight: 700; /* bold links */
+  font-weight: 700;
 }
 a:hover { color: #FFFFFF; }
 
 button {
-  background: #60A5FA; /* bright calm blue */
+  background: #60A5FA;
   color: #1C1917;
   padding: 0.6rem 1.2rem;
   border-radius: 0.5rem;
-  font-weight: 800; /* extra bold button text */
+  font-weight: 800;
 }
 button:hover { background: #93C5FD; }
 
 /* All headings/labels bright white + bold */
 h1, h2, h3, h4, label {
   color: #FFFFFF !important;
-  font-weight: 800 !important; /* extra bold */
+  font-weight: 800 !important;
 }
 
 /* Feed text - make it pop */
 main p, main span, main div {
   color: #F8FAFC !important;
-  font-weight: 600; /* bolder body text */
+  font-weight: 600;
 }
 
-/* "What's happening on your block?" placeholder */
 ::placeholder {
   color: #64748B !important;
   font-weight: 500 !important;
