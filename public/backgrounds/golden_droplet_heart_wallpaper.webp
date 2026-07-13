@@ -1,16 +1,1 @@
-body {
-  background-color: #1C1917;
-  background-image: url('/backgrounds/golden_droplet_heart_wallpaper.webp');
-  background-size: cover;
-  background-position: center;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-color: #1C1917;
-  opacity: 0.94; /* 6% of the golden tears/heart shows through */
-  pointer-events: none;
-  z-index: -1;
-}
+C:\Users\oldfa\Downloads\golden_droplet_heart_wallpaper.jpg
