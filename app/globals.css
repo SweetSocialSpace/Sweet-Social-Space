@@ -5,60 +5,15 @@
 html, body {
   background: #1C1917 url('https://github.com/SweetSocialSpace/Sweet-Social-Space/blob/main/golden_droplet_heart_wallpaper.jpg?raw=true') center/cover fixed !important;
   min-height: 100vh;
-  color: #F5E6C8; /* warm cream, not harsh white */
+  color: #F5E6C8; /* default text color for the whole site */
 }
 
-/* LIGHTER overlay - this is the key change */
+/* This controls how light/dark the image is SITE-WIDE */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(28, 25, 23, 0.55); /* was 0.85 - now 0.55 = 45% of image shows */
+  background: rgba(28, 25, 23, 0.55); /* 0.55 = 45% of your heart shows */
   pointer-events: none;
   z-index: -1;
 }
-
-/* Subtle warm glow instead of harsh dark */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at 50% 30%, rgba(252,211,77,0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* Cards: still dark for eye comfort, but more see-through */
-main {
-  background: rgba(30, 27, 25, 0.65); /* was 0.80 - now 0.65 */
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(252,211,77,0.15); 
-  border-radius: 1.5rem;
-  padding: 1.5rem;
-  max-width: 768px;
-  margin: 2rem auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-/* Warm, readable text */
-h1, h2, h3 { color: #FCD34D; } /* golden headers */
-p, span, div { color: #F5E6C8; } /* warm cream body text */
-a { color: #FCD34D; }
-a:hover { color: #FDE68A; }
-
-/* Textarea/input styling for comfort */
-textarea, input {
-  background: rgba(20, 18, 16, 0.8);
-  color: #F5E6C8;
-  border: 1px solid rgba(252,211,77,0.2);
-}
-textarea::placeholder { color: #D6C7A1; }
-
-button {
-  background: #FCD34D;
-  color: #1C1917;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-}
-button:hover { background: #FDE68A; }
