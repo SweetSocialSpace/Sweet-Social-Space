@@ -183,7 +183,7 @@ export default function FeedPage() {
   const scoped = filter === 'All'? posts : posts.filter((p) => p.tag === filter)
 
   return (
-    <div className="min-h-screen bg-gray-50"> {/* ← WRAPPED IN DIV */}
+    <div className="min-h-screen"> {/* ← WRAPPED IN DIV */}
       <Header /> {/* ← ADD THIS LINE */}
       
       <main className="max-w-4xl mx-auto p-4 space-y-4"> {/* ← ADDED main WRAPPER */}
