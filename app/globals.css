@@ -5,15 +5,16 @@
 html, body {
   background: #1C1917 url('https://github.com/SweetSocialSpace/Sweet-Social-Space/blob/main/golden_droplet_heart_wallpaper.jpg?raw=true') center/cover fixed !important;
   min-height: 100vh;
-  color: #F0F9FF; /* very light blue - reads easy */
+  color: #FFFFFF; /* pure white text - bolder */
+  font-weight: 500; /* slightly bolder base font */
 }
 
-/* Much lighter overlay - let those hearts shine */
+/* Lighter overlay - see even more hearts */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(28,25,23,0.25), rgba(28,25,23,0.45)); /* was way darker */
+  background: linear-gradient(to bottom, rgba(28,25,23,0.15), rgba(28,25,23,0.35)); /* much lighter */
   pointer-events: none;
   z-index: -1;
 }
@@ -23,53 +24,63 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(147,197,253,0.15) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(147,197,253,0.18) 0%, transparent 70%); /* a bit brighter */
   pointer-events: none;
   z-index: -1;
 }
 
-/* Light frosted glass - NO MORE BLACK BOX */
+/* Lighter frosted glass - no more cave */
 main {
-  background: rgba(60, 56, 52, 0.45); /* way lighter than before */
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(147,197,253,0.35); /* brighter blue border */
+  background: rgba(75, 70, 66, 0.40); /* lighter warm gray */
+  backdrop-filter: blur(4px); /* less blur = clearer */
+  border: 1px solid rgba(147,197,253,0.4); /* brighter blue border */
   border-radius: 1rem;
   padding: 1.5rem;
   max-width: 768px;
   margin: 2rem auto;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Login box - light frosted, not black */
+/* Login box - lighter glass */
 div[class*="bg-white"], 
 div[class*="bg-gray-50"],
 .bg-white {
-  background: rgba(60, 56, 52, 0.55) !important; /* lighter */
-  backdrop-filter: blur(6px) !important;
-  border: 1px solid rgba(147,197,253,0.3) !important;
+  background: rgba(75, 70, 66, 0.50) !important; /* lighter */
+  backdrop-filter: blur(4px) !important;
+  border: 1px solid rgba(147,197,253,0.35) !important;
 }
 
-/* Input fields - white so people can actually type */
+/* Input fields - white so they pop */
 input {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(147,197,253,0.5) !important;
+  background: rgba(255, 255, 255, 1) !important; /* solid white */
+  border: 2px solid rgba(147,197,253,0.6) !important; /* bolder border */
   color: #1C1917 !important;
-  font-weight: 500;
+  font-weight: 600; /* bolder text in inputs */
 }
 
-a { color: #93C5FD; } /* bright calm blue links */
-a:hover { color: #DBEAFE; }
+a { 
+  color: #DBEAFE; 
+  font-weight: 600; /* bolder links */
+}
+a:hover { color: #FFFFFF; }
 
 button {
   background: #60A5FA; /* bright calm blue */
   color: #1C1917;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem; /* slightly bigger */
   border-radius: 0.5rem;
-  font-weight: 600;
+  font-weight: 700; /* bolder button text */
 }
 button:hover { background: #93C5FD; }
 
-/* All headings/labels bright */
+/* All headings/labels bright white + bold */
 h1, h2, h3, label {
+  color: #FFFFFF !important;
+  font-weight: 700 !important; /* bold */
+}
+
+/* Make the description text pop more too */
+main p {
   color: #F0F9FF !important;
+  font-weight: 500;
 }
