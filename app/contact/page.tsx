@@ -1,17 +1,12 @@
-'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
 
 export default function ContactPage() {
-  const [copied, setCopied] = useState(false)
   const email = 'SweetSocialSpace@gmail.com'
-
-  const copyEmail = () => {
-    navigator.clipboard.writeText(email)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const subject = 'Sweet Social Space Support'
+  const body = 'Hi, I need help with...'
+  
+  // This builds a Gmail compose link
+  const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 
   return (
     <div className="flex items-center justify-center px-4 py-16">
@@ -26,23 +21,24 @@ export default function ContactPage() {
 
         <div className="bg-white p-8 rounded-lg shadow-md space-y-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Email Support</h2>
-            <p className="text-gray-700 mb-3">
-              For help with your account, technical issues, or general questions:
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Email Support</h2>
+            <p className="text-gray-700 mb-4">
+              Click below to email us directly through Gmail:
             </p>
-            <div className="bg-gray-50 p-4 rounded-md flex items-center justify-between gap-4">
-              <span className="text-lg font-medium text-gray-900 break-all">
-                {email}
-              </span>
-              <button
-                onClick={copyEmail}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm whitespace-nowrap"
-              >
-                {copied ? 'Copied!' : 'Copy Email'}
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">
-              Paste this address into your email app to contact us
+            
+            {/* This is the Gmail popup button */}
+            <a
+              href={gmailLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-center font-medium"
+            >
+              Email SweetSocialSpace@gmail.com
+            </a>
+            
+            <p className="text-xs text-gray-500 mt-3">
+              Opens Gmail in a new tab. Don’t use Gmail?{' '}
+              <span className="text-gray-700 font-medium">SweetSocialSpace@gmail.com</span>
             </p>
           </div>
 
