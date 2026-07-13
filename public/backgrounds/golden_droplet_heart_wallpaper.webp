@@ -1,0 +1,13 @@
+body {
+  background: #1C1917 url('/backgrounds/golden_droplet_heart_wallpaper.webp') center/cover fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: #1C1917;
+  opacity: 0.94; /* 6% glow through for night mode */
+  pointer-events: none;
+  z-index: -1;
+}
