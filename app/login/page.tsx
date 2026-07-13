@@ -115,15 +115,15 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      
       <footer className="w-full py-6 text-center text-sm text-gray-500 border-t">
-        <div className="space-x-4">
-          <span>© 2026 Sweet Social Space</span>
-          <Link href="/terms" className="hover:underline">Terms</Link>
-          <Link href="/privacy" className="hover:underline">Privacy</Link>
-          <Link href="/about" className="hover:underline">About</Link>
-        </div>
-      </footer>
+  <div className="space-x-4">
+    <span>© 2026 Sweet Social Space</span>
+    <Link href="/terms" className="hover:underline">Terms</Link>
+    <Link href="/privacy" className="hover:underline">Privacy</Link>
+    <Link href="/about" className="hover:underline">About</Link>
+  </div>
+</footer>
+     
     </div>
   )
 }
