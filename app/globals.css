@@ -13,12 +13,11 @@ body::before {
   position: fixed;
   inset: 0;
   background-color: #1C1917;
-  opacity: 0.94; /* 6% of the golden tears/heart shows through */
+  opacity: 0.94;
   pointer-events: none;
   z-index: -1;
 }
 
-/* Force Next.js wrappers transparent */
 main, #__next, [data-nextjs-scroll-focus-boundary] {
   background: transparent !important;
 }
