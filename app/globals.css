@@ -5,70 +5,71 @@
 html, body {
   background: #1C1917 url('https://github.com/SweetSocialSpace/Sweet-Social-Space/blob/main/golden_droplet_heart_wallpaper.jpg?raw=true') center/cover fixed !important;
   min-height: 100vh;
-  color: #E0F2FE; /* soft light blue text - easy to read */
+  color: #F0F9FF; /* very light blue - reads easy */
 }
 
-/* This fades the darkness so the heart shows */
+/* Much lighter overlay - let those hearts shine */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(28,25,23,0.65), rgba(28,25,23,0.85));
+  background: linear-gradient(to bottom, rgba(28,25,23,0.25), rgba(28,25,23,0.45)); /* was way darker */
   pointer-events: none;
   z-index: -1;
 }
 
-/* Peaceful blue glow instead of yellow */
+/* Gentle blue glow */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(96,165,250,0.10) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(147,197,253,0.15) 0%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
 
-/* Frosted glass card - DARK now, not white */
+/* Light frosted glass - NO MORE BLACK BOX */
 main {
-  background: rgba(28, 25, 23, 0.75); /* darker so blue pops */
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(96,165,250,0.25); /* calm blue border */
+  background: rgba(60, 56, 52, 0.45); /* way lighter than before */
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(147,197,253,0.35); /* brighter blue border */
   border-radius: 1rem;
   padding: 1.5rem;
   max-width: 768px;
   margin: 2rem auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
 }
 
-/* Makes the login box dark too */
+/* Login box - light frosted, not black */
 div[class*="bg-white"], 
 div[class*="bg-gray-50"],
 .bg-white {
-  background: rgba(28, 25, 23, 0.85) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(96,165,250,0.2) !important;
+  background: rgba(60, 56, 52, 0.55) !important; /* lighter */
+  backdrop-filter: blur(6px) !important;
+  border: 1px solid rgba(147,197,253,0.3) !important;
 }
 
-/* Input fields */
+/* Input fields - white so people can actually type */
 input {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(96,165,250,0.3) !important;
-  color: #E0F2FE !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(147,197,253,0.5) !important;
+  color: #1C1917 !important;
+  font-weight: 500;
 }
 
-a { color: #60A5FA; } /* calm blue links */
-a:hover { color: #93C5FD; } /* lighter blue hover */
+a { color: #93C5FD; } /* bright calm blue links */
+a:hover { color: #DBEAFE; }
 
 button {
-  background: #3B82F6; /* calm blue button */
-  color: #FFFFFF;
+  background: #60A5FA; /* bright calm blue */
+  color: #1C1917;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-weight: 600;
 }
-button:hover { background: #60A5FA; }
+button:hover { background: #93C5FD; }
 
-/* "Log in to your account" text */
-h1, h2, label {
-  color: #E0F2FE !important;
+/* All headings/labels bright */
+h1, h2, h3, label {
+  color: #F0F9FF !important;
 }
