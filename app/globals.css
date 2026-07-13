@@ -5,7 +5,7 @@
 html, body {
   background: #1C1917 url('https://github.com/SweetSocialSpace/Sweet-Social-Space/blob/main/golden_droplet_heart_wallpaper.jpg?raw=true') center/cover fixed !important;
   min-height: 100vh;
-  color: #FEF3C7; /* warm off-white, not harsh white */
+  color: #E0F2FE; /* soft light blue text - easy to read */
 }
 
 /* This fades the darkness so the heart shows */
@@ -18,36 +18,57 @@ body::before {
   z-index: -1;
 }
 
-/* This adds the peaceful golden glow */
+/* Peaceful blue glow instead of yellow */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(252,211,77,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(96,165,250,0.10) 0%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
 
-/* Frosted glass card so posts feel intentional */
+/* Frosted glass card - DARK now, not white */
 main {
-  background: rgba(28, 25, 23, 0.6);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(252,211,77,0.2); /* subtle gold border */
+  background: rgba(28, 25, 23, 0.75); /* darker so blue pops */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(96,165,250,0.25); /* calm blue border */
   border-radius: 1rem;
   padding: 1.5rem;
   max-width: 768px;
   margin: 2rem auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-a { color: #FCD34D; }
-a:hover { color: #FDE68A; }
+/* Makes the login box dark too */
+div[class*="bg-white"], 
+div[class*="bg-gray-50"],
+.bg-white {
+  background: rgba(28, 25, 23, 0.85) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(96,165,250,0.2) !important;
+}
+
+/* Input fields */
+input {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(96,165,250,0.3) !important;
+  color: #E0F2FE !important;
+}
+
+a { color: #60A5FA; } /* calm blue links */
+a:hover { color: #93C5FD; } /* lighter blue hover */
 
 button {
-  background: #FCD34D;
-  color: #1C1917;
+  background: #3B82F6; /* calm blue button */
+  color: #FFFFFF;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-weight: 600;
 }
-button:hover { background: #FDE68A; }
+button:hover { background: #60A5FA; }
+
+/* "Log in to your account" text */
+h1, h2, label {
+  color: #E0F2FE !important;
+}
