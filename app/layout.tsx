@@ -17,16 +17,15 @@ export default function RootLayout({
         <main className="flex-grow">
           {children}
         </main>
-        /* app/globals.css */
 
-        <footer className="w-full py-6 text-center text-xs text-gray-500 bg-gray-50 border-t border-gray-200">
+        <footer className="w-full py-6 text-center text-xs text-zinc-300 bg-black/30 backdrop-blur border-t border-white/10">
           <div className="max-w-4xl mx-auto px-4">
             © 2026 Sweet Social Space — Speak Freely. Love your neighbor.
             <br className="sm:hidden" />
             <span className="hidden sm:inline"> | </span>
             <Link href="/terms" className="hover:underline">Terms of Service</Link> |{' '}
             <Link href="/privacy" className="hover:underline">Privacy Policy</Link> |{' '}
-           <Link href="/contact" className="hover:underline">Contact</Link>
+            <Link href="/contact" className="hover:underline">Contact</Link>
           </div>
         </footer>
       </body>
