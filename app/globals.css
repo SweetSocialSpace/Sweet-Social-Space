@@ -7,3 +7,20 @@ body { @apply bg-[#faf7f2] text-zinc-900; }
 .btn-ghost { @apply px-3 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200; }
 .input { @apply w-full border border-zinc-300 rounded-xl px-3 py-2 bg-white; }
 .navlink { @apply px-3 py-1.5 rounded-full hover:bg-zinc-100; }
+body {
+  background-color: #1C1917;
+  background-image: url('/backgrounds/golden_droplet_heart_wallpaper.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-color: #1C1917;
+  opacity: 0.94; /* 6% of the background shows through */
+  pointer-events: none;
+  z-index: -1;
+}
