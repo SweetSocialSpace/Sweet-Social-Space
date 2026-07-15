@@ -11,13 +11,14 @@ export default function AboutPage() {
               About Sweet Social Space
             </h1>
             <p className="text-xl text-gray-600">
-              Speak Freely. Love your neighbor.
+              Speak Freely. Love your neighbor. Ask yourself, what would Jesus Christ do?
             </p>
           </div>
 
           <div className="prose prose-lg mx-auto text-gray-700 space-y-6">
             <p>
-              Sweet Social Space was founded in 2026 with one belief: <strong>you should be able to speak your mind without fear of censorship, shadowbans, or corporate agendas.</strong>
+              Sweet Sweet Social Space was founded in 2026 with one belief: <strong>/You should be able to speak your mind without fear of censorship, shadowbans, or corporate agendas.
+              We should always keep our Creator in our hearts and in our mind. So seek advice from God Or his son Jesus Christ. </strong>
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900">What we stand for</h2>
@@ -27,17 +28,18 @@ export default function AboutPage() {
               <li><strong>Your Data is Yours:</strong> We never sell it. We never will.</li>
               <li><strong>No Algorithms:</strong> You see posts from people you follow, in order. That’s it.</li>
               <li><strong>Respect:</strong> Disagree all you want. But keep it civil.</li>
+               <li><strong>Respect:</strong> Ask God For advice, remember we are only human And Jesus Christ died on that cross for a reason.</li>
             </ul>
 
             <h2 className="text-2xl font-bold text-gray-900">Why we exist</h2>
             <p>
               Big Tech platforms decide what you can say and who gets to see it. We don’t. 
               Sweet Social Space is built for people who are tired of being silenced, 
-              manipulated, or treated like a product.
+              manipulated, or treated like a product. We also believe in being a platform to where religion can't be held against you neither. I mean, Jesus Christ, he died for a reason.
             </p>
             
             <p>
-              This is your space. Post freely. Support your friends. Build something real.
+              This is your space. Post freely. Support your friends/Family. Build something real. Please keep God in mind.
             </p>
           </div>
 
