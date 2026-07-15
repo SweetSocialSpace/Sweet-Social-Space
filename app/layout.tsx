@@ -20,7 +20,7 @@ export default function RootLayout({
 
         <footer className="w-full py-6 text-center text-xs text-zinc-300 bg-black/30 backdrop-blur border-t border-white/10">
           <div className="max-w-4xl mx-auto px-4">
-            © 2026 Sweet Social Space — Speak Freely. Love your neighbor.
+            © 2026 Sweet Social Space — Speak Freely. Love your neighbor.Ask Yourself What would Jesus do?
             <br className="sm:hidden" />
             <span className="hidden sm:inline"> | </span>
             <Link href="/terms" className="hover:underline">Terms of Service</Link> |{' '}
