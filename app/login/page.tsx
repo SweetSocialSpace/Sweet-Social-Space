@@ -36,31 +36,31 @@ export default function LoginPage() {
     <div className="flex items-center justify-center bg-white px-4 py-16">
       <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-12">
         
-        {/* Left side: Description */}
+        {/* Left side: New Curiosity Wording */}
         <div className="lg:w-1/2 text-center lg:text-left space-y-4">
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
             Sweet Social Space
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl font-semibold text-gray-800">
             Speak Freely. Love your neighbor.
           </p>
           <div className="text-gray-700 space-y-3 max-w-md mx-auto lg:mx-0">
-            <p>
-              A place for real conversation without the censorship or hate. 
+            <p className="font-bold text-gray-900">
+              Tired of being shadowbanned for what you believe?
             </p>
             <p>
-              Share your thoughts, connect with others, and be part of a community 
-              built on respect and open dialogue. And a place that allows you to have your First Amendment rights.
+              No bots. No algorithms. No one selling your data.
+              Just real people having real conversations.
             </p>
-            <p className="text-sm text-gray-500">
-              We never sell your data. No algorithms deciding what you see.
+            <p className="font-medium text-gray-800">
+              Faith, family, and free speech are welcome here.
             </p>
           </div>
         </div>
 
-        {/* Right side: Login box */}
+        {/* Right side: Login box - untouched */}
         <div className="w-full lg:w-1/2 max-w-md">
-          <div className="p-8 space-y-6 bg-white rounded-lg shadow-md">
+          <div className="p-8 space-y-6 bg-white rounded-lg shadow-md border">
             <div className="text-center">
               <h2 className="text-2xl font-bold">Log in to your account</h2>
             </div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
                 Forgot password?
               </Link>
               <p className="text-gray-600">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/signup" className="text-blue-600 hover:underline">
                   Sign up
                 </Link>
