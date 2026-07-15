@@ -25,7 +25,7 @@ export default function RootLayout({
             <span className="hidden sm:inline"> | </span>
             <Link href="/terms" className="hover:underline">Terms of Service</Link> |{' '}
             <Link href="/privacy" className="hover:underline">Privacy Policy</Link> |{' '}
-            <Link href="/contact" className="hover:underline">Contact</Link>
+            <Link href="/contact" className="hover:underline">Contact</Link> |{' '}
             <Link href="/ About" className="hover:underline"> About </Link>
           </div>
         </footer>
