@@ -15,25 +15,25 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="prose prose-lg mx-auto text-gray-700 space-y-6">
+          <div className="mx-auto text-gray-700 space-y-6 text-lg">
             <p>
               <strong>Sweet Social Space was founded in 2026 with one belief: You should be able to speak your mind without fear of censorship, shadowbans, or corporate agendas. We should always keep our Creator in our hearts and in our mind. So seek advice from God or his son Jesus Christ.</strong>
             </p>
 
-            <h2 className="text-2xl font-bold text-gray-900">What we stand for</h2>
-            <ul className="space-y-2">
+            <h2 className="text-2xl font-bold text-gray-900 pt-4">What we stand for</h2>
+            <ul className="space-y-2 list-disc pl-6">
               <li><strong>Free Speech:</strong> Say what you think. The First Amendment matters here.</li>
               <li><strong>Real Community:</strong> No bots, no engagement farming. Just real people.</li>
               <li><strong>Your Data is Yours:</strong> We never sell it. We never will.</li>
-              <li><strong>No Algorithms:</strong> You see posts from people you follow, in order. That's it.</li>
+              <li><strong>No Algorithms:</strong> You see posts from people you follow, in order. That&apos;s it.</li>
               <li><strong>Faith:</strong> Ask God for advice, remember we are only human and Jesus Christ died on that cross for a reason.</li>
             </ul>
 
-            <h2 className="text-2xl font-bold text-gray-900">Why we exist</h2>
+            <h2 className="text-2xl font-bold text-gray-900 pt-4">Why we exist</h2>
             <p>
-              Big Tech platforms decide what you can say and who gets to see it. We don't. 
+              Big Tech platforms decide what you can say and who gets to see it. We don&apos;t. 
               Sweet Social Space is built for people who are tired of being silenced, 
-              manipulated, or treated like a product. We also believe religion can't be held against you here. Jesus Christ died for a reason.
+              manipulated, or treated like a product. We also believe religion can&apos;t be held against you here. Jesus Christ died for a reason.
             </p>
             
             <p>
@@ -44,7 +44,7 @@ export default function AboutPage() {
           <div className="text-center pt-8">
             <Link 
               href="/signup"
-              className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-md text-lg"
+              className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-medium rounded-md text-lg inline-block"
             >
               Join Sweet Social Space
             </Link>
