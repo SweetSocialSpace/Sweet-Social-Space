@@ -8,25 +8,6 @@ import Header from '@/app/components/Header'
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
 
-function autoFormatSentences(text: string) {
-  if (!text) return ''
-  let t = text.toLowerCase().replace(/\s+/g,' ').trim()
-
-  // Break before question starters
-  t = t.replace(/\s+(how many|do you|does|do you like|can we|what about|where|when|who|why)\s+/gi, ' | $1 ')
-
-  let parts = t.split('|').map(s=>s.trim()).filter(Boolean)
-  let out = parts.map(p=>{
-    p = p.trim()
-    if (!p) return ''
-    p = p.charAt(0).toUpperCase() + p.slice(1)
-    const isQ = /^(how many|how|what|when|where|who|why|do you|does|can we|do you like|are you|is there|would you|will you)/i.test(p)
-    if (!/[.!?]$/.test(p)) p += isQ ? '?' : '.'
-    return p
-  })
-  return out.join(' ').replace(/\s+([.?])/g,'$1').trim() + ' '
-}
-
 export default function FeedPage() {
   const router = useRouter()
   const supabase = createClient()
@@ -35,8 +16,9 @@ export default function FeedPage() {
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState<Tag>('General')
   const [isListening, setIsListening] = useState(false)
-  const finalRef = useRef('')
-  const baseRef = useRef('')
+
+  const savedTextRef = useRef('')
+  const sessionFinalRef = useRef('')
 
   useEffect(() => { supabase.auth.getUser().then(({ data }) => { if (!data.user) router.push('/auth'); else setUser(data.user); setLoading(false) }) }, [router, supabase])
 
@@ -48,16 +30,14 @@ export default function FeedPage() {
       ;(window as any)._keepListening = false
       ;(window as any)._recog?.stop()
       setIsListening(false)
-      // FORMAT WHEN YOU STOP — this is the new part
-      setDraft(prev => autoFormatSentences(prev))
-      finalRef.current = ''
-      baseRef.current = ''
+      savedTextRef.current = draft
+      sessionFinalRef.current = ''
       return
     }
 
+    savedTextRef.current = draft
+    sessionFinalRef.current = ''
     ;(window as any)._keepListening = true
-    baseRef.current = draft? draft + ' ' : ''
-    finalRef.current = ''
 
     const recog = new SR()
     ;(window as any)._recog = recog
@@ -70,18 +50,38 @@ export default function FeedPage() {
       let interim = ''
       for (let i=event.resultIndex; i<event.results.length; i++) {
         const txt = event.results[i][0].transcript
-        if (event.results[i].isFinal) finalRef.current += txt + ' '
+        if (event.results[i].isFinal) sessionFinalRef.current += txt + ' '
         else interim += txt + ' '
       }
-      setDraft(baseRef.current + finalRef.current + interim)
+      // NEVER DELETE — old + new
+      setDraft((savedTextRef.current? savedTextRef.current + ' ' : '') + sessionFinalRef.current + interim)
     }
     recog.start()
+  }
+
+  const formatNow = () => {
+    let t = draft.trim()
+    if (!t) return
+    t = t.replace(/\s+(how many|how do you|do you|can we|what about)\s+/gi, '. $1 ')
+    t = t.split('. ').map(s=>{
+      s=s.trim()
+      if(!s) return ''
+      s=s.charAt(0).toUpperCase()+s.slice(1)
+      if(!/[.!?]$/.test(s)){
+        const q = /^(how|what|when|where|who|why|do you|can we|does|are you)/i.test(s)
+        s+= q? '?' : '.'
+      }
+      return s
+    }).filter(Boolean).join(' ')
+    setDraft(t + ' ')
+    savedTextRef.current = t + ' '
+    sessionFinalRef.current = ''
   }
 
   const submit = async () => {
     if (!draft.trim() ||!user) return
     await supabase.from('posts').insert({ user_id: user.id, body: draft.trim(), tag })
-    setDraft('')
+    setDraft(''); savedTextRef.current=''; sessionFinalRef.current=''
   }
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-white">Loading…</div>
@@ -90,20 +90,34 @@ export default function FeedPage() {
     <div className="min-h-screen w-full">
       <Header />
       <main className="max-w-2xl mx-auto p-4">
-        <div className="bg-white rounded-2xl p-4 shadow-xl">
-          <div className="relative">
-            <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Tap mic, talk, then tap stop — I add . and ?" rows={6} className="w-full rounded-xl border-2 border-gray-300 p-4 pr-14 text-black text- outline-none" />
-            <button onClick={toggleMic} className={`absolute right-2 top-2 w-12 h-12 rounded-full text-xl font-black shadow ${isListening?'bg-red-600 animate-pulse text-white':'bg-black text-white'}`}>{isListening?'■':'🎤'}</button>
-          </div>
-          <p className={`mt-2 text-sm font-bold ${isListening?'text-red-600':'text-gray-600'}`}>{isListening?'🔴 Talking — words appear live. Tap ■ and I add . and ?':'🎤 Tap mic, talk, tap ■ stop — I auto-add periods and question marks'}</p>
-          <div className="flex gap-2 mt-2">
-            <button onClick={()=>setDraft(d=>autoFormatSentences(d))} className="text-xs bg-gray-100 border rounded-full px-3 py-1 font-bold">✨ Fix punctuation</button>
-            <span className="text-xs text-gray-500 self-center">Tap this if you want to re-format</span>
-          </div>
-          <select value={tag} onChange={e=>setTag(e.target.value as Tag)} className="mt-3 rounded-full border-2 px-3 py-1.5 font-bold">{TAGS.map(t=><option key={t} value={t}>{t}</option>)}</select>
-          <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
-        </div>
-      </main>
-    </div>
-  )
-}
+        {/* This restores your glass card look */}
+        <div className="bg-white/[0.08] backdrop-blur-md rounded-2xl border border-white/10 p-3 space-y-4">
+          <div className="bg-white rounded-2xl p-4 shadow-xl">
+
+            <div className="relative">
+              <textarea
+                value={draft}
+                onChange={e=>{setDraft(e.target.value); savedTextRef.current=e.target.value}}
+                placeholder="Tap mic, talk, pause, tap again to continue..."
+                rows={6}
+                className="w-full rounded-xl bg-white border-2 border-gray-300 focus:border-blue-500 p-4 pr-14 text-black placeholder:text-gray-500 text- font-medium outline-none"
+              />
+              <button onClick={toggleMic} className={`absolute right-2 top-2 w-12 h-12 rounded-full flex items-center justify-center text-xl font-black shadow-lg border-2 ${isListening?'bg-red-600 border-red-700 animate-pulse text-white':'bg-black border-black text-white'}`}>{isListening?'■':'🎤'}</button>
+            </div>
+
+            <p className={`mt-2 text- font-bold ${isListening?'text-red-600':'text-gray-700'}`}>{isListening?'🔴 LIVE — I keep everything, even when you pause':'🎤 Tap mic to talk — tap ■ to pause — tap mic again to add more. Nothing deleted.'}</p>
+
+            <div className="flex items-center gap-2 mt-3">
+              <button onClick={formatNow} className="bg-black text-white rounded-full px-4 py-2 text-sm font-black border-2 border-black shadow">✨ Fix punctuation</button>
+              <span className="text- font-bold text-gray-600">Adds. and? without deleting words</span>
+            </div>
+
+            {/* THIS WAS THE UNREADABLE ONE — NOW BLACK TEXT ON WHITE */}
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-xs font-black text-gray-800">POST AS:</span>
+              <select value={tag} onChange={e=>setTag(e.target.value as Tag)} className="rounded-full border-2 border-gray-400 bg-white px-4 py-2 text-sm font-black text-black shadow-sm outline-none focus:border-blue-500">
+                {TAGS.map(t=><option key={t} value={t} className="text-black bg-white">{t}</option>)}
+              </select>
+            </div>
+
+            <button onClick={submit} className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-full shadow-lg text- tracking-wide">POST AS {
