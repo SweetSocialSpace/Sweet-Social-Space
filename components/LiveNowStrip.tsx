@@ -21,7 +21,6 @@ export function LiveNowStrip(){
         setIsLive(true)
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
-        // create live row
         await supabase.from('live_streams').insert({ user_id: user?.id, status: 'live', is_active: true, zip: '95122' })
       }catch{ alert('Need camera/mic permission to go live') }
     }else{
@@ -40,7 +39,7 @@ export function LiveNowStrip(){
         <span className="font-bold">LIVE NOW:</span>
         <span className="text-white/70">{isLive ? 'You are live!' : count>0? `${count} live nearby` : `No one live — start one!`}</span>
       </div>
-      <button onClick={toggleLive} className={`ml-3 px-3 py-1 rounded-full font-black text- ${isLive?'bg-red-600 text-white':'bg-white text-black hover:bg-white/90'}`}>
+      <button onClick={toggleLive} className={`ml-3 px-3 py-1 rounded-full font-black text-xs ${isLive?'bg-red-600 text-white':'bg-white text-black hover:bg-white/90'}`}>
         {isLive? 'END' : 'GO LIVE'}
       </button>
     </div>
