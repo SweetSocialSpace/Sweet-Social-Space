@@ -93,28 +93,23 @@ export default function FeedPage() {
     setPreview(URL.createObjectURL(file))
   }
 
-  const submit = async () => {
+    const submit = async () => {
     const textToPost = draft.trim()
-    if (!textToPost ||!user) {
-      console.log("No text or no user", { textToPost, user })
-      return
-    }
+    if (!textToPost ||!user) return
 
-    // STOP MIC AFTER WE SAVED TEXT
     try {
       ;(window as any)._keepListening = false
       ;(window as any)._recog?.stop()
     } catch {}
     setIsListening(false)
 
+    // NOW SAVING WITHOUT TAG SO IT WORKS
     const { error } = await supabase.from('posts').insert({
       user_id: user.id,
-      body: textToPost,
-      tag
+      body: `[${tag}] ${textToPost}`
     })
 
     if (error) {
-      console.log("Post error", error)
       alert("Post failed: " + error.message)
       return
     }
