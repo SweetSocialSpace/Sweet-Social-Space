@@ -13,8 +13,8 @@ function timeAgo(iso:string){
 }
 
 export function LatestAlerts(){
-  const [alerts][setAlerts]=useState<Alert[]>([])
-  const [loading][setLoading]=useState(true)
+   const [alerts, setAlerts]=useState<Alert[]>([])
+  const [loading, setLoading]=useState(true)
 
   useEffect(()=>{
     const supabase = createClient()
