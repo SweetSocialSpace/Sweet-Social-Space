@@ -15,8 +15,7 @@ export function LocationScopeBar(){
     setLocating(true)
     if(!navigator.geolocation){ setLocating(false); return }
     navigator.geolocation.getCurrentPosition(
-      async (pos)=>{
-        // Simple — just keep 95122 for now, but you can add reverse geocode later
+      () => {
         setZip('95122')
         localStorage.setItem('sss_zip','95122')
         setLocating(false)
@@ -26,17 +25,17 @@ export function LocationScopeBar(){
   }
 
   return (
-    <div className="flex items-center justify-between text-white text-xs mb-4">
+    <div className="flex items-center justify-between text-white text-xs mb-4 gap-2">
       <div className="flex items-center gap-2">
-        <span className="bg-white/10 px-3 py-1.5 rounded-full font-bold">NEAR: {zip}</span>
-        <select value={scope} onChange={e=>setScope(e.target.value)} className="bg-white/10 px-3 py-1.5 rounded-full border-0 text-white outline-none">
+        <span className="bg-white/10 backdrop-blur px-3 py-1.5 rounded-full font-bold border border-white/10">NEAR: {zip}</span>
+        <select value={scope} onChange={e=>setScope(e.target.value)} className="bg-white/10 px-3 py-1.5 rounded-full border border-white/10 text-white outline-none">
           <option className="text-black">5 mi</option>
           <option className="text-black">10 mi</option>
           <option className="text-black">20 mi</option>
           <option className="text-black">50 mi</option>
         </select>
       </div>
-      <button onClick={useMyLocation} className="bg-white text-black px-3 py-1.5 rounded-full font-bold text-">
+      <button onClick={useMyLocation} className="bg-white text-black px-4 py-1.5 rounded-full font-bold text-xs hover:bg-white/90 transition whitespace-nowrap">
         {locating? 'Locating...' : 'Use my location'}
       </button>
     </div>
