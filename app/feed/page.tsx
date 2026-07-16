@@ -59,20 +59,20 @@ export default function FeedPage() {
     setDraft(''); setPreview(null); loadPosts()
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-white">Loading…</div>
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-white">Loading…</div>
+  }
 
   return (
     <div className="min-h-screen w-full bg-[#0f172a]">
       <Header />
 
-      {/* ZIP + RADIUS BAR - This is your 10-20 mile idea */}
       <div className="max-w- mx-auto px-4 pt-4">
         <LocationScopeBar />
       </div>
 
       <div className="max-w- mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-[320px_1fr_360px] gap-4">
 
-        {/* LEFT - Everything by zip */}
         <aside className="space-y-4 order-2 lg:order-1">
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
@@ -80,11 +80,9 @@ export default function FeedPage() {
           <WhatsHappeningNearYou />
         </aside>
 
-        {/* CENTER - Feed goes to folders for info */}
         <main className="space-y-4 order-1 lg:order-2">
           <LiveNowStrip />
 
-          {/* COMPOSER - Calls your mic folder */}
           <div className="bg-white rounded-2xl p-5 shadow-xl">
             <MicRecorder value={draft} onChange={setDraft} />
             <div className="mt-3 flex items-center gap-3">
@@ -92,17 +90,24 @@ export default function FeedPage() {
                 📷 Add Picture / Video
                 <input type="file" accept="image/*,video/*" onChange={onPickFile} className="hidden" />
               </label>
-              {preview && <div className="flex items-center gap-2"><img src={preview} alt="preview" className="w-16 h-16 rounded-xl object-cover border-2 border-black" /><button type="button" onClick={()=>setPreview(null)} className="text-sm font-black text-red-600">Remove</button></div>}
+              {preview && (
+                <div className="flex items-center gap-2">
+                  <img src={preview} alt="preview" className="w-16 h-16 rounded-xl object-cover border-2 border-black" />
+                  <button type="button" onClick={()=>setPreview(null)} className="text-sm font-black text-red-600">Remove</button>
+                </div>
+              )}
             </div>
             <div className="mt-4">
               <p className="text-xs font-black text-black mb-2">POST AS:</p>
               <div className="flex flex-wrap gap-2">
-                {TAGS.map(t => (<button type="button" key={t} onClick={()=>setTag(t)} className={`px-4 py-2 rounded-full text-sm font-black border-2 ${tag===t? 'bg-black text-white border-black' : 'bg-white text-black border-black hover:bg-gray-100'}`}>{t}</button>))}
+                {TAGS.map(t => (
+                  <button type="button" key={t} onClick={()=>setTag(t)} className={`px-4 py-2 rounded-full text-sm font-black border-2 ${tag===t? 'bg-black text-white border-black' : 'bg-white text-black border-black hover:bg-gray-100'}`}>{t}</button>
+                ))}
               </div>
+            </div>
             <button type="button" onClick={submit} className="mt-5 w-full bg-blue-600 text-white font-black py-3.5 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
 
-          {/* POSTS - Feed list */}
           <div className="space-y-3">
             {posts.map(p => (
               <div key={p.id} className="bg-white rounded-2xl p-4 shadow">
@@ -116,7 +121,6 @@ export default function FeedPage() {
           </div>
         </main>
 
-        {/* RIGHT - Marketplace, Business, etc */}
         <aside className="space-y-4 order-3">
           <MarketplacePreview />
           <BusinessDirectory />
