@@ -13,28 +13,41 @@ function smartPunctuate(text: string) {
   let t = text.replace(/\s+/g,' ').trim()
   if (!t) return ''
 
-  // Break before all these new thought starters
   const breaks = [
-    "how many","what time","how are","how is","what are","what is",
-    "where are","where is","when is","why is","who is","does anybody",
-    "does anyone","do you","are you","can anybody","can anyone","can you",
-    "will it","is it","what's going","what is going","are you able",
-    "hopefully","so i can","so we can","i can","we will","i will","i am",
-    "now we're","now we are","today","love is","in other words"
-  ]
+    "so can we see","what time","how many","does anybody","does anyone",
+    "can anybody","can anyone","are you able","what's going on","what is going",
+    "now we're","now we are","so i can","so we can","in other words",
+    "so then","after that","before that","love is","what time","how are",
+    "where are","hopefully","actually","anyway","meanwhile","finally",
+    "now","then","so"
+  ].sort((a,b)=>b.length - a.length) // longest first - this was the bug
 
   for (const b of breaks) {
-    const re = new RegExp(`\\s+${b}\\s+`, 'gi')
+    // don't put a period at the very start
+    const re = new RegExp(`(?<!^)\\s+${b}\\s+`, 'gi')
     t = t.replace(re, `. ${b} `)
   }
 
   let parts = t.split('.').map(s=>s.trim()).filter(Boolean)
+  
+  // Safety net: if still a monster sentence over 20 words, force break every 15
+  let finalParts: string[] = []
+  for (const part of parts) {
+    const w = part.split(' ')
+    if (w.length > 20) {
+      for (let i=0; i<w.length; i+=15) {
+        finalParts.push(w.slice(i, i+15).join(' '))
+      }
+    } else {
+      finalParts.push(part)
+    }
+  }
 
-  return parts.map(p=>{
+  return finalParts.map(p=>{
     if (!p) return ''
     p = p.charAt(0).toUpperCase() + p.slice(1)
     if (/[.!?]$/.test(p)) return p
-    const isQ = /^(how many|what time|how are|how is|what are|where|when|why|who|does anybody|does anyone|do you|are you|can anybody|can you|will it|is it|what's|what is|are you able)/i.test(p)
+    const isQ = /^(how many|what time|how are|where|when|why|who|does anybody|does anyone|do you|are you|can anybody|can you|will it|is it|what's|are you able|so can we)/i.test(p)
     return p + (isQ? '?' : '.')
   }).join(' ').trim()
 }
