@@ -224,7 +224,7 @@ export default function FeedPage() {
                 </button>
               ))}
             </div>
-            <button onClick={submit} disabled={uploading || (!draft.trim() &&!mediaFile)} className="rounded-full px-5 py-2 text-sm font-semibold text-primary-foreground transition disabled:opacity-50" style={{ background: 'var(--gradient-warm)', boxShadow: 'var(--shadow-sweet)' }}>
+            <button onClick={submit} disabled={uploading || (!draft.trim() && !mediaFile)} className="rounded-full px-6 py-2 text-sm font-bold text-white transition disabled:opacity-50 bg-blue-600 hover:bg-blue-700 shadow">
               {uploading? 'Posting…' : 'Post'}
             </button>
           </div>
