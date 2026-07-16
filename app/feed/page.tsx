@@ -94,7 +94,12 @@ export default function FeedPage() {
   }
 
   const submit = async () => {
-    if (!draft.trim() ||!user) return
+  // STOP MIC WHEN THEY HIT POST
+  ;(window as any)._keepListening = false
+  ;(window as any)._recog?.stop()
+  setIsListening(false)
+
+  if (!draft.trim() ||!user) return
     const { error } = await supabase.from('posts').insert({ user_id: user.id, body: draft.trim(), tag })
     if (!error) {
       setDraft(''); savedRef.current=''; finalRef.current=''; setPreview(null)
