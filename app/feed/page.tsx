@@ -32,19 +32,14 @@ export default function FeedPage() {
   return (
     <>
       <Header />
-      {/* NO BIG BOX HERE - JUST GRID */}
-      <div className="max-w- mx-auto px-6 py-6 grid grid-cols-1 xl:grid-cols-[360px_1fr_380px] gap-6 items-start">
-
-        {/* LEFT - OUTSIDE ON HEARTS - SAME COLOR YOU HAVE NOW */}
+      <div className="max-w-[1600px] mx-auto px-6 py-6 grid grid-cols-1 xl:grid-cols-[360px_1fr_380px] gap-6 items-start">
         <div className="space-y-4">
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">📌 PINNED ALERT</p><p className="text-sm mt-2 text-white/80">No emergencies in {zip}</p></div>
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">🚨 Emergency</p><p className="text-sm text-white/80">All clear</p></div>
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Latest Alerts</p><p className="text-sm mt-2 text-white/80">• Power check King Rd<br/>• Road work Tully</p></div>
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">What's Happening Near You</p><p className="text-xs mt-2 text-white/60">Within 10-20 miles of {zip}</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">📌 PINNED ALERT</p><p className="text-sm mt-2">No emergencies in {zip}</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">🚨 Emergency</p><p className="text-sm">All clear</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Latest Alerts</p><p className="text-sm mt-2">• Power check King Rd<br/>• Road work Tully</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">What's Happening Near You</p><p className="text-xs mt-2">Within 10-20 miles of {zip}</p></div>
         </div>
-
-        {/* CENTER - ONLY THIS IS TRANSPARENT BOX */}
-        <div className="bg-black/50 backdrop-blur-2xl rounded- border border-white/10 p-5">
+        <div className="bg-black/50 backdrop-blur-2xl rounded-3xl border border-white/10 p-5">
           <div className="bg-white rounded-full p-2 flex items-center gap-2 mb-4">
             <span className="font-black text-black text-sm pl-3">NEAR:</span>
             <input value={zip} onChange={e=>setZip(e.target.value)} className="border-2 border-black rounded-full px-3 py-1 font-black text-sm w-20 bg-white text-black" />
@@ -57,19 +52,14 @@ export default function FeedPage() {
             <div className="mt-3 flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
             <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
-          <div className="space-y-4">{posts.map(p=>(
-            <div key={p.id} className="bg-white rounded-2xl p-5"><p className="text-black whitespace-pre-wrap">{p.body}</p></div>
-          ))}</div>
+          <div className="space-y-4">{posts.map(p=>(<div key={p.id} className="bg-white rounded-2xl p-5"><p className="text-black whitespace-pre-wrap">{p.body}</p></div>))}</div>
         </div>
-
-        {/* RIGHT - OUTSIDE ON HEARTS - SAME AS LEFT */}
         <div className="space-y-4">
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Marketplace</p><p className="text-xs mt-1 text-white/60">Free stuff near {zip}</p></div>
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Business Directory</p><p className="text-xs mt-1 text-white/60">Shops within 20 miles</p></div>
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Upcoming Events</p><p className="text-xs mt-1 text-white/60">This weekend near you</p></div>
-          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Verified Sources</p><p className="text-xs mt-1 text-white/60">City of San Jose, SJPD</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Marketplace</p><p className="text-xs mt-1">Free stuff near {zip}</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Business Directory</p><p className="text-xs mt-1">Shops within 20 miles</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Upcoming Events</p><p className="text-xs mt-1">This weekend near you</p></div>
+          <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Verified Sources</p><p className="text-xs mt-1">City of San Jose, SJPD</p></div>
         </div>
-
       </div>
     </>
   )
