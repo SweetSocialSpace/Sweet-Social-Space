@@ -13,39 +13,29 @@ function smartPunctuate(text: string) {
   let t = text.replace(/\s+/g,' ').trim()
   if (!t) return ''
 
-  // Clean up the trigger phrases first
-  t = t.replace(/\s+(how many|do you like to|are you eating|do you like|how many questions|i'm going to|i have no idea|so everyone)\s+/gi, '. $1 ')
+  // Break before all these new thought starters
+  const breaks = [
+    "how many","what time","how are","how is","what are","what is",
+    "where are","where is","when is","why is","who is","does anybody",
+    "does anyone","do you","are you","can anybody","can anyone","can you",
+    "will it","is it","what's going","what is going","are you able",
+    "hopefully","so i can","so we can","i can","we will","i will","i am",
+    "now we're","now we are","today","love is","in other words"
+  ]
 
-  const starters = ["hopefully","so","then","now","actually","anyway","anyways","finally","honestly","basically","meanwhile","after that","before that","in other words","you know","i think","i mean","we will","we are","it is","it was","this is","that is","there is","i will","i am","i was","you are","you will","we are going","i'm hoping","i'm going"]
-
-  let words = t.split(' ')
-  let sentences: string[] = []
-  let current: string[] = []
-
-  for (let i=0; i<words.length; i++) {
-    const w = words[i]
-    const lower = w.toLowerCase()
-    const nextTwo = words.slice(i, i+2).join(' ').toLowerCase()
-    const nextThree = words.slice(i, i+3).join(' ').toLowerCase()
-    
-    const isStarter = starters.includes(lower) || starters.includes(nextTwo) || starters.includes(nextThree)
-    
-    // If we've got 12+ words and next word looks like a new thought, start a new sentence
-    if (current.length > 12 && isStarter && current.length > 0) {
-      sentences.push(current.join(' '))
-      current = []
-    }
-    current.push(w)
+  for (const b of breaks) {
+    const re = new RegExp(`\\s+${b}\\s+`, 'gi')
+    t = t.replace(re, `. ${b} `)
   }
-  if (current.length) sentences.push(current.join(' '))
 
-  return sentences.map(s=>{
-    s = s.trim()
-    if (!s) return ''
-    s = s.charAt(0).toUpperCase() + s.slice(1)
-    if (/[.!?]$/.test(s)) return s
-    const isQ = /^(how many|do you|are you|can i|will it|is it|what|when|where|who|why|how are|i'm hoping)/i.test(s)
-    return s + (isQ? '?':'.')
+  let parts = t.split('.').map(s=>s.trim()).filter(Boolean)
+
+  return parts.map(p=>{
+    if (!p) return ''
+    p = p.charAt(0).toUpperCase() + p.slice(1)
+    if (/[.!?]$/.test(p)) return p
+    const isQ = /^(how many|what time|how are|how is|what are|where|when|why|who|does anybody|does anyone|do you|are you|can anybody|can you|will it|is it|what's|what is|are you able)/i.test(p)
+    return p + (isQ? '?' : '.')
   }).join(' ').trim()
 }
 
@@ -120,7 +110,7 @@ export default function FeedPage() {
     setPreview(URL.createObjectURL(file))
   }
 
-    const submit = async () => {
+  const submit = async () => {
     const textToPost = draft.trim()
     if (!textToPost ||!user) return
 
@@ -130,11 +120,10 @@ export default function FeedPage() {
     } catch {}
     setIsListening(false)
 
-    // NOW SAVING WITHOUT TAG SO IT WORKS
     const { error } = await supabase.from('posts').insert({
       user_id: user.id,
-     body: textToPost,
-       tag: tag
+      body: textToPost,
+      tag: tag
     })
 
     if (error) {
@@ -193,7 +182,7 @@ export default function FeedPage() {
           {posts.map(p => (
             <div key={p.id} className="bg-white rounded-2xl p-4 shadow">
               <div className="flex justify-between items-center mb-2">
-                <span className="bg-black text-white text-xs font-black px-3 py-1 rounded-full">{p.tag}</span>
+                <span className="bg-black text-white text-xs font-black px-3 py-1 rounded-full">{p.tag || 'General'}</span>
                 <span className="text-xs text-gray-500">{new Date(p.created_at).toLocaleString()}</span>
               </div>
               <p className="text-black text- whitespace-pre-wrap">{p.body}</p>
