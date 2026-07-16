@@ -32,9 +32,10 @@ export default function FeedPage() {
   return (
     <>
       <Header />
+      {/* NO BIG BOX HERE - JUST GRID */}
       <div className="max-w- mx-auto px-6 py-6 grid grid-cols-1 xl:grid-cols-[360px_1fr_380px] gap-6 items-start">
 
-        {/* LEFT - OUTSIDE */}
+        {/* LEFT - OUTSIDE ON HEARTS - SAME COLOR YOU HAVE NOW */}
         <div className="space-y-4">
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">📌 PINNED ALERT</p><p className="text-sm mt-2 text-white/80">No emergencies in {zip}</p></div>
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">🚨 Emergency</p><p className="text-sm text-white/80">All clear</p></div>
@@ -42,7 +43,7 @@ export default function FeedPage() {
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">What's Happening Near You</p><p className="text-xs mt-2 text-white/60">Within 10-20 miles of {zip}</p></div>
         </div>
 
-        {/* CENTER - ONLY TRANSPARENT BOX */}
+        {/* CENTER - ONLY THIS IS TRANSPARENT BOX */}
         <div className="bg-black/50 backdrop-blur-2xl rounded- border border-white/10 p-5">
           <div className="bg-white rounded-full p-2 flex items-center gap-2 mb-4">
             <span className="font-black text-black text-sm pl-3">NEAR:</span>
@@ -61,7 +62,7 @@ export default function FeedPage() {
           ))}</div>
         </div>
 
-        {/* RIGHT - OUTSIDE */}
+        {/* RIGHT - OUTSIDE ON HEARTS - SAME AS LEFT */}
         <div className="space-y-4">
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Marketplace</p><p className="text-xs mt-1 text-white/60">Free stuff near {zip}</p></div>
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Business Directory</p><p className="text-xs mt-1 text-white/60">Shops within 20 miles</p></div>
