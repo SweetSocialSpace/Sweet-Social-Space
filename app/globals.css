@@ -5,22 +5,20 @@
 html, body {
   background: #1C1917 url('https://github.com/SweetSocialSpace/Sweet-Social-Space/blob/main/golden_droplet_heart_wallpaper.jpg?raw=true') center/cover fixed !important;
   min-height: 100vh;
-  height: 100%; /* force full height */
+  height: 100%;
   margin: 0;
   padding: 0;
   color: #FFFFFF;
   font-weight: 600;
-  overflow-x: hidden; /* no sideways scroll ever */
+  overflow-x: hidden;
 }
 
-/* Make the app fill the screen and center content */
 #__next, #root, body > div {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* Very light overlay - let those hearts glow */
 body::before {
   content: '';
   position: fixed;
@@ -30,7 +28,6 @@ body::before {
   z-index: -1;
 }
 
-/* Brighter blue glow */
 body::after {
   content: '';
   position: fixed;
@@ -40,30 +37,17 @@ body::after {
   z-index: -1;
 }
 
-/* Main content - centers vertically, no forced scrolling */
 main {
-  background: rgba(85, 78, 70, 0.35);
-  backdrop-filter: blur(3px);
-  border: 1px solid rgba(191,219,254,0.5);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  max-width: 768px;
-  width: 90%; /* responsive width */
-  margin: auto; /* centers vertically + horizontally */
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  flex-shrink: 0; /* don't squish on short screens */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* Feed cards + login box - light and airy */
-div[class*="bg-white"], 
-div[class*="bg-gray-50"],
-.bg-white {
-  background: rgba(85, 78, 70, 0.45) !important;
-  backdrop-filter: blur(3px) !important;
-  border: 1px solid rgba(191,219,254,0.45) !important;
-}
-
-/* Input fields - bright white stays */
 input, textarea {
   background: rgba(255, 255, 255, 1) !important;
   border: 2px solid rgba(96,165,250,0.7) !important;
@@ -71,32 +55,12 @@ input, textarea {
   font-weight: 600 !important;
 }
 
-/* Text - all bold + bright */
-a { 
-  color: #DBEAFE; 
-  font-weight: 700;
-}
+a { color: #DBEAFE; font-weight: 700; }
 a:hover { color: #FFFFFF; }
 
-button {
-  background: #60A5FA;
-  color: #1C1917;
-  padding: 0.6rem 1.2rem;
-  border-radius: 0.5rem;
-  font-weight: 800;
-}
-button:hover { background: #93C5FD; }
-
-/* All headings/labels bright white + bold */
 h1, h2, h3, h4, label {
   color: #FFFFFF !important;
   font-weight: 800 !important;
-}
-
-/* Feed text - make it pop */
-main p, main span, main div {
-  color: #F8FAFC !important;
-  font-weight: 600;
 }
 
 ::placeholder {
