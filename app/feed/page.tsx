@@ -45,21 +45,17 @@ export default function FeedPage() {
 
           <div className="bg-white rounded-2xl p-4 shadow-xl">
             <textarea value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="What's happening on your block?" rows={3} className="w-full rounded-xl bg-white border-2 border-gray-200 focus:border-blue-500 p-4 text-black placeholder:text-gray-500 outline-none" />
-
-            {/* NOW WITH LABEL - so you know this is for YOUR post */}
-            <p className="mt-3 mb-1 text-xs font-black text-gray-600 tracking-wide">POSTING AS:</p>
+            <p className="mt-3 mb-1 text-xs font-black text-gray-600">POSTING AS:</p>
             <div className="flex flex-wrap gap-2">
               {TAGS.map((t) => (
                 <button key={t} onClick={() => setTag(t)} className={`px-3 py-1 rounded-full text-xs font-bold border ${tag===t?'bg-black text-white border-black':'bg-white text-black border-gray-300 hover:bg-gray-100'}`}>{t}</button>
               ))}
             </div>
-
             <button onClick={submit} disabled={uploading ||!draft.trim()} className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-full shadow">POST AS {tag.toUpperCase()}</button>
           </div>
 
-          {/* NOW WITH LABEL - so you know this is for FILTERING */}
           <div>
-            <p className="mb-1 text-xs font-black text-white/70 tracking-wide">FILTER FEED:</p>
+            <p className="mb-2 text-xs font-black text-white/70">SEE POSTS AS:</p>
             <div className="flex flex-wrap gap-2">
               {(['All',...TAGS] as const).map((t) => (
                 <button key={t} onClick={() => setFilter(t)} className={`px-3 py-1 rounded-full text-xs font-bold border ${filter===t?'bg-white text-black border-white':'bg-black/30 text-white border-white/20'}`}>{t}</button>
@@ -68,7 +64,9 @@ export default function FeedPage() {
           </div>
 
           <div className="bg-black/30 backdrop-blur rounded-2xl border border-white/10 p-6 text-center text-white font-bold">
-            {filter === 'All'? 'No posts yet. Be the first to share.' : `No ${filter} posts yet.`}
+            {scoped.length === 0? (filter === 'All'? 'No posts yet. Be the first to share.' : `No ${filter} posts yet.`) : scoped.map((p:any) => (
+              <div key={p.id} className="text-left bg-white rounded-xl p-3 mb-2 last:mb-0"><div className="flex justify-between text-xs"><span className="font-bold bg-gray-100 px-2 py-1 rounded-full text-black">{p.tag}</span></div><p className="mt-2 text-black whitespace-pre-wrap text-left">{p.body}</p></div>
+            ))}
           </div>
 
         </div>
