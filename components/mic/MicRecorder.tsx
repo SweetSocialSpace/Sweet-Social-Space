@@ -9,7 +9,7 @@ export default function MicRecorder({ value, onChange }: { value: string, onChan
 
   const toggleMic = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) { alert("Use Chrome"); return }
+    if (!SR) { alert("Use Chrome on desktop — mic needs it"); return }
     if (isListening) {
       ;(window as any)._keepListening = false
       ;(window as any)._recog?.stop()
@@ -43,18 +43,35 @@ export default function MicRecorder({ value, onChange }: { value: string, onChan
   }
 
   return (
-    <div className="relative">
-      <textarea
-        value={value}
-        onChange={e=>{ onChange(e.target.value); savedRef.current=e.target.value }}
-        placeholder="Tap mic and talk — I keep everything..."
-        rows={5}
-        className="w-full rounded-xl border-2 border-gray-300 p-4 pr-14 text-black text- outline-none"
-      />
-      <button type="button" onClick={toggleMic} className={`absolute right-2 top-2 w-12 h-12 rounded-full text-xl font-black shadow border-2 ${isListening?'bg-red-600 border-red-700 animate-pulse text-white':'bg-black border-black text-white'}`}>{isListening?'■':'🎤'}</button>
-      <div className="flex items-center gap-2 mt-2">
-        <p className={`text-sm font-bold ${isListening?'text-red-600':'text-gray-700'}`}>{isListening?'🔴 Listening — tap ■ to stop':'🎤 Mic keeps your words'}</p>
-        <button type="button" onClick={()=>onChange(smartPunctuate(value)+' ')} className="ml-auto text-xs bg-black text-white rounded-full px-3 py-1 font-black">✨ Fix. and?</button>
+    <div className="w-full">
+      <div className="relative">
+        <textarea
+          value={value}
+          onChange={e=>{ onChange(e.target.value); savedRef.current=e.target.value }}
+          placeholder="Tap mic and talk — I keep everything, even when you pause..."
+          rows={6}
+          className="w-full rounded- border-2 border-black/10 bg-[#fefefe] p-5 pr-16 text- leading-6 text-black placeholder:text-black/40 outline-none focus:border-black/20 focus:ring-0 resize-none shadow-inner"
+        />
+        <button
+          type="button"
+          onClick={toggleMic}
+          className={`absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full text- font-black shadow-lg border transition-all ${isListening?'bg-red-600 border-red-700 animate-pulse text-white scale-105':'bg-black border-black text-white hover:scale-105 active:scale-95'}`}
+          aria-label={isListening? 'Stop listening' : 'Start mic'}
+        >
+          {isListening?'■':'🎤'}
+        </button>
+      </div>
+      <div className="mt-3 flex items-center justify-between">
+        <p className={`text- font-semibold ${isListening?'text-red-600 animate-pulse':'text-black/60'}`}>
+          {isListening?'🔴 Listening — tap ■ to stop & save':'🎤 Mic keeps your words when you pause'}
+        </p>
+        <button
+          type="button"
+          onClick={()=>onChange(smartPunctuate(value)+' ')}
+          className="text-xs bg-black text-white rounded-full px-4 py-1.5 font-bold hover:bg-black/80 transition"
+        >
+          ✨ Fix punctuation
+        </button>
       </div>
     </div>
   )
