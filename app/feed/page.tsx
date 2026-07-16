@@ -14,32 +14,35 @@ function smartPunctuate(text: string) {
   if (!t) return ''
 
   const breaks = [
-    "so can we see","what time","how many","does anybody","does anyone",
-    "can anybody","can anyone","are you able","what's going on","what is going",
-    "now we're","now we are","so i can","so we can","in other words",
-    "so then","after that","before that","love is","what time","how are",
-    "where are","hopefully","actually","anyway","meanwhile","finally",
-    "now","then","so"
-  ].sort((a,b)=>b.length - a.length) // longest first - this was the bug
+    "so can we see if this is","i wish you all","from the get-go","like it should be done",
+    "so can we see","i'm hoping that","i'm hoping","i wish you","from the","like it should",
+    "what's going on","what is going on","what time","how many","does anybody","does anyone",
+    "can anybody","can anyone","are you able","now we're","now we are","so i can","so we can",
+    "in other words","so then","after that","before that","and everything","hopefully",
+    "actually","anyway","meanwhile","finally","now","then","so","and"
+  ].sort((a,b)=>b.length - a.length)
 
   for (const b of breaks) {
-    // don't put a period at the very start
-    const re = new RegExp(`(?<!^)\\s+${b}\\s+`, 'gi')
-    t = t.replace(re, `. ${b} `)
+    const escaped = b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const re = new RegExp(`\\s+${escaped}\\s+`, 'gi')
+    t = t.replace(re, (match) => {
+      // don't put period at very start
+      if (t.toLowerCase().indexOf(match.toLowerCase()) < 3) return match
+      return `. ${b} `
+    })
   }
 
   let parts = t.split('.').map(s=>s.trim()).filter(Boolean)
-  
-  // Safety net: if still a monster sentence over 20 words, force break every 15
-  let finalParts: string[] = []
-  for (const part of parts) {
-    const w = part.split(' ')
-    if (w.length > 20) {
-      for (let i=0; i<w.length; i+=15) {
-        finalParts.push(w.slice(i, i+15).join(' '))
+
+  const finalParts: string[] = []
+  for (const p of parts) {
+    const w = p.split(' ')
+    if (w.length > 22) {
+      for (let i=0; i<w.length; i+=14) {
+        finalParts.push(w.slice(i, i+14).join(' '))
       }
     } else {
-      finalParts.push(part)
+      finalParts.push(p)
     }
   }
 
@@ -76,8 +79,8 @@ export default function FeedPage() {
   }, [])
 
   const loadPosts = async () => {
-    const { data, error } = await supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(50)
-    if (!error && data) setPosts(data)
+    const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(50)
+    if (data) setPosts(data)
   }
 
   const toggleMic = () => {
@@ -88,9 +91,9 @@ export default function FeedPage() {
       ;(window as any)._recog?.stop()
       setIsListening(false)
       setDraft(prev => {
-        const formatted = smartPunctuate(prev)
-        savedRef.current = formatted
-        return formatted + ' '
+        const f = smartPunctuate(prev)
+        savedRef.current = f
+        return f + ' '
       })
       finalRef.current = ''
       return
@@ -126,24 +129,10 @@ export default function FeedPage() {
   const submit = async () => {
     const textToPost = draft.trim()
     if (!textToPost ||!user) return
-
-    try {
-      ;(window as any)._keepListening = false
-      ;(window as any)._recog?.stop()
-    } catch {}
+    try { (window as any)._keepListening = false; (window as any)._recog?.stop() } catch {}
     setIsListening(false)
-
-    const { error } = await supabase.from('posts').insert({
-      user_id: user.id,
-      body: textToPost,
-      tag: tag
-    })
-
-    if (error) {
-      alert("Post failed: " + error.message)
-      return
-    }
-
+    const { error } = await supabase.from('posts').insert({ user_id: user.id, body: textToPost, tag: tag })
+    if (error) { alert("Post failed: " + error.message); return }
     setDraft('')
     savedRef.current = ''
     finalRef.current = ''
@@ -198,7 +187,7 @@ export default function FeedPage() {
                 <span className="bg-black text-white text-xs font-black px-3 py-1 rounded-full">{p.tag || 'General'}</span>
                 <span className="text-xs text-gray-500">{new Date(p.created_at).toLocaleString()}</span>
               </div>
-              <p className="text-black text- whitespace-pre-wrap">{p.body}</p>
+              <p className="text-black text- whitespace-pre-wrap leading-relaxed">{p.body}</p>
             </div>
           ))}
         </div>
