@@ -12,13 +12,40 @@ function smartPunctuate(text: string) {
   if (!text) return ''
   let t = text.replace(/\s+/g,' ').trim()
   if (!t) return ''
+
+  // Clean up the trigger phrases first
   t = t.replace(/\s+(how many|do you like to|are you eating|do you like|how many questions|i'm going to|i have no idea|so everyone)\s+/gi, '. $1 ')
-  let parts = t.split('.').map(s=>s.trim()).filter(Boolean)
-  return parts.map(p=>{
-    p = p.charAt(0).toUpperCase() + p.slice(1)
-    if (/[.!?]$/.test(p)) return p
-    const isQ = /^(how many|do you|are you|can i|will it|is it|what|when|where|who|why|how are|i'm hoping)/i.test(p)
-    return p + (isQ? '?':'.')
+
+  const starters = ["hopefully","so","then","now","actually","anyway","anyways","finally","honestly","basically","meanwhile","after that","before that","in other words","you know","i think","i mean","we will","we are","it is","it was","this is","that is","there is","i will","i am","i was","you are","you will","we are going","i'm hoping","i'm going"]
+
+  let words = t.split(' ')
+  let sentences: string[] = []
+  let current: string[] = []
+
+  for (let i=0; i<words.length; i++) {
+    const w = words[i]
+    const lower = w.toLowerCase()
+    const nextTwo = words.slice(i, i+2).join(' ').toLowerCase()
+    const nextThree = words.slice(i, i+3).join(' ').toLowerCase()
+    
+    const isStarter = starters.includes(lower) || starters.includes(nextTwo) || starters.includes(nextThree)
+    
+    // If we've got 12+ words and next word looks like a new thought, start a new sentence
+    if (current.length > 12 && isStarter && current.length > 0) {
+      sentences.push(current.join(' '))
+      current = []
+    }
+    current.push(w)
+  }
+  if (current.length) sentences.push(current.join(' '))
+
+  return sentences.map(s=>{
+    s = s.trim()
+    if (!s) return ''
+    s = s.charAt(0).toUpperCase() + s.slice(1)
+    if (/[.!?]$/.test(s)) return s
+    const isQ = /^(how many|do you|are you|can i|will it|is it|what|when|where|who|why|how are|i'm hoping)/i.test(s)
+    return s + (isQ? '?':'.')
   }).join(' ').trim()
 }
 
