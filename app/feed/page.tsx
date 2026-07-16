@@ -24,7 +24,7 @@ export default function FeedPage() {
     const { data:{ user } } = await supabase.auth.getUser()
     if(!user) return
     await supabase.from('posts').insert({ user_id:user.id, body:draft, tag })
-    setDraft('');
+    setDraft('')
     const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
     if(data) setPosts(data)
   }
@@ -34,7 +34,6 @@ export default function FeedPage() {
       <Header />
       <div className="max-w- mx-auto px-4 xl:px-6 py-6 grid grid-cols-1 xl:grid-cols-[360px_1fr_380px] gap-6 items-start">
 
-        {/* LEFT - OUTSIDE */}
         <div className="order-2 xl:order-1 space-y-4">
           <div className="bg-white rounded-2xl p-5 shadow-2xl border- border-black"><p className="font-black text-black">📌 PINNED ALERT</p><p className="text-sm text-black mt-2">No emergencies in {zip}</p></div>
           <div className="bg-white rounded-2xl p-5 shadow-2xl border- border-black"><p className="font-black text-black">🚨 Emergency</p><p className="text-sm text-black">All clear</p></div>
@@ -42,7 +41,6 @@ export default function FeedPage() {
           <div className="bg-white rounded-2xl p-5 shadow-2xl border- border-black"><p className="font-black text-black">What's Happening Near You</p><p className="text-xs text-black mt-2">Within 10-20 miles of {zip}</p></div>
         </div>
 
-        {/* CENTER - ONLY TRANSPARENT BOX */}
         <div className="order-1 xl:order-2 bg-black/60 backdrop-blur-2xl rounded- border border-white/20 p-5 shadow-2xl">
           <div className="bg-white rounded-full p-2 flex items-center gap-2 border- border-black mb-4">
             <span className="font-black text-black text-sm pl-3">NEAR:</span>
@@ -66,7 +64,6 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* RIGHT - OUTSIDE */}
         <div className="order-3 space-y-4">
           <div className="bg-white rounded-2xl p-5 shadow-2xl border- border-black"><p className="font-black text-black">Marketplace</p><p className="text-xs text-black mt-1">Free stuff near {zip}</p></div>
           <div className="bg-white rounded-2xl p-5 shadow-2xl border- border-black"><p className="font-black text-black">Business Directory</p><p className="text-xs text-black mt-1">Shops within 20 miles</p></div>
