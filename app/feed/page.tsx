@@ -1,17 +1,17 @@
 'use client'
 import { useState } from 'react'
 import Header from '@/app/components/Header'
-import { MicRecorder } from '@/components/mic/MicRecorder'
-import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
+import MicRecorder from '@/components/mic/MicRecorder'
+import PinnedAutomatedAlert from '@/components/PinnedAutomatedAlert'
 import { EmergencyAlerts } from '@/components/EmergencyAlerts'
-import { LatestAlerts } from '@/components/LatestAlerts'
-import { WhatsHappeningNearYou } from '@/components/WhatsHappeningNearYou'
-import { LiveNowStrip } from '@/components/LiveNowStrip'
-import { LocationScopeBar } from '@/components/LocationScopeBar'
-import { MarketplacePreview } from '@/components/MarketplacePreview'
-import { BusinessDirectory } from '@/components/BusinessDirectory'
-import { UpcomingEvents } from '@/components/UpcomingEvents'
-import { VerifiedSources } from '@/components/VerifiedSources'
+import LatestAlerts from '@/components/LatestAlerts'
+import WhatsHappeningNearYou from '@/components/WhatsHappeningNearYou'
+import LiveNowStrip from '@/components/LiveNowStrip'
+import LocationScopeBar from '@/components/LocationScopeBar'
+import MarketplacePreview from '@/components/MarketplacePreview'
+import BusinessDirectory from '@/components/BusinessDirectory'
+import UpcomingEvents from '@/components/UpcomingEvents'
+import VerifiedSources from '@/components/VerifiedSources'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
@@ -30,7 +30,6 @@ export default function FeedPage() {
           <LatestAlerts />
           <WhatsHappeningNearYou />
         </div>
-
         <div className="bg-black/50 backdrop-blur-2xl rounded- border border-white/10 p-5">
           <LocationScopeBar />
           <LiveNowStrip />
@@ -45,7 +44,6 @@ export default function FeedPage() {
             </div>
           </div>
         </div>
-
         <div className="space-y-4">
           <MarketplacePreview />
           <BusinessDirectory />
