@@ -24,20 +24,20 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <header className="bg-black/60 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
       <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-        <Link href="/feed" className="text-xl font-bold text-gray-900">
+        <Link href="/feed" className="text-xl font-bold text-white tracking-tight drop-shadow">
           Sweet Social Space
         </Link>
-        
+
         {user && (
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600 hidden sm:block">
+            <span className="text-sm text-white/80 hidden sm:block font-medium">
               {user.email}
             </span>
             <button
               onClick={handleSignOut}
-              className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-md font-medium"
+              className="text-sm bg-white/10 hover:bg-white/20 border border-white/10 text-white px-3 py-1.5 rounded-md font-medium backdrop-blur"
             >
               Sign out
             </button>
