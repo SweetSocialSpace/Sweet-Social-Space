@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Header from '@/app/components/Header'
@@ -16,8 +16,9 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<any[]>([])
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState<Tag>('General')
-  const [filter, setFilter] = useState<Tag | 'All'>('All')
   const [uploading, setUploading] = useState(false)
+  const [isListening, setIsListening] = useState(false)
+  const recognitionRef = useRef<any>(null)
 
   useEffect(() => { supabase.auth.getUser().then(({ data }) => { if (!data.user) router.push('/auth'); else setUser(data.user); setLoading(false) }) }, [router, supabase])
   useEffect(() => { if (user) load() }, [user])
@@ -25,6 +26,52 @@ export default function FeedPage() {
   const load = async () => {
     const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(100)
     if (data) setPosts(data)
+  }
+
+  // --- TALK TO TEXT ---
+  const toggleMic = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert("Your browser doesn't support voice typing. Try Chrome on your phone or computer.")
+      return
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+      return
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.continuous = true
+    recognition.interimResults = true
+    recognition.lang = 'en-US'
+
+    recognition.onstart = () => setIsListening(true)
+    recognition.onend = () => setIsListening(false)
+
+    recognition.onresult = (event: any) => {
+      let transcript = ''
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript + ' '
+      }
+
+      // Smart punctuation - when you SAY the word, it types the symbol
+      transcript = transcript
+       .replace(/\s*period\s*/gi, '. ')
+       .replace(/\s*question mark\s*/gi, '? ')
+       .replace(/\s*exclamation point\s*/gi, '! ')
+       .replace(/\s*comma\s*/gi, ', ')
+       .replace(/\s*new line\s*/gi, '\n')
+
+      setDraft(prev => {
+        // If it's still listening (interim), replace last part, otherwise append
+        return prev + ' ' + transcript
+      })
+    }
+
+    recognitionRef.current = recognition
+    recognition.start()
   }
 
   const submit = async () => {
@@ -35,7 +82,6 @@ export default function FeedPage() {
   }
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-white">Loading…</div>
-  const scoped = filter === 'All'? posts : posts.filter((p:any) => p.tag === filter)
 
   return (
     <div className="min-h-screen w-full">
@@ -44,29 +90,30 @@ export default function FeedPage() {
         <div className="bg-white/[0.08] backdrop-blur-md rounded-2xl border border-white/10 p-3 space-y-4">
 
           <div className="bg-white rounded-2xl p-4 shadow-xl">
-            <textarea value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="What's happening on your block?" rows={3} className="w-full rounded-xl bg-white border-2 border-gray-200 focus:border-blue-500 p-4 text-black placeholder:text-gray-500 outline-none" />
-            <p className="mt-3 mb-1 text-xs font-black text-gray-600">POSTING AS:</p>
-            <div className="flex flex-wrap gap-2">
-              {TAGS.map((t) => (
-                <button key={t} onClick={() => setTag(t)} className={`px-3 py-1 rounded-full text-xs font-bold border ${tag===t?'bg-black text-white border-black':'bg-white text-black border-gray-300 hover:bg-gray-100'}`}>{t}</button>
-              ))}
-            </div>
-            <button onClick={submit} disabled={uploading ||!draft.trim()} className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-full shadow">POST AS {tag.toUpperCase()}</button>
-          </div>
+            <div className="relative">
+              <textarea value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="What's happening on your block? Tap the mic to talk..." rows={4} className="w-full rounded-xl bg-white border-2 border-gray-200 focus:border-blue-500 p-4 pr-14 text-black placeholder:text-gray-500 outline-none" />
 
-          <div>
-            <p className="mb-2 text-xs font-black text-white/70">SEE POSTS AS:</p>
-            <div className="flex flex-wrap gap-2">
-              {(['All',...TAGS] as const).map((t) => (
-                <button key={t} onClick={() => setFilter(t)} className={`px-3 py-1 rounded-full text-xs font-bold border ${filter===t?'bg-white text-black border-white':'bg-black/30 text-white border-white/20'}`}>{t}</button>
-              ))}
+              {/* MICROPHONE BUTTON - text to talk */}
+              <button type="button" onClick={toggleMic} title="Click to speak" className={`absolute right-2 top-2 rounded-full w-10 h-10 flex items-center justify-center text-lg shadow font-bold ${isListening? 'bg-red-600 text-white animate-pulse' : 'bg-gray-100 hover:bg-gray-200 text-black'}`}>
+                {isListening? '■' : '🎤'}
+              </button>
             </div>
+
+            <p className="mt-2 text- text-gray-500 font-medium">
+              {isListening? '🔴 Listening... say "period" for. "question mark" for?' : '🎤 Tap mic for text-to-talk — say "comma", "period", "question mark" out loud'}
+            </p>
+
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-600">POST AS:</span>
+              <select value={tag} onChange={(e) => setTag(e.target.value as Tag)} className="rounded-full border-2 border-gray-300 bg-white px-3 py-1.5 text-sm font-bold text-black">
+                {TAGS.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <button onClick={submit} disabled={uploading ||!draft.trim()} className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-full shadow">POST AS {tag.toUpperCase()}</button>
           </div>
 
           <div className="bg-black/30 backdrop-blur rounded-2xl border border-white/10 p-6 text-center text-white font-bold">
-            {scoped.length === 0? (filter === 'All'? 'No posts yet. Be the first to share.' : `No ${filter} posts yet.`) : scoped.map((p:any) => (
-              <div key={p.id} className="text-left bg-white rounded-xl p-3 mb-2 last:mb-0"><div className="flex justify-between text-xs"><span className="font-bold bg-gray-100 px-2 py-1 rounded-full text-black">{p.tag}</span></div><p className="mt-2 text-black whitespace-pre-wrap text-left">{p.body}</p></div>
-            ))}
+            No posts yet. Be the first to share what's happening.
           </div>
 
         </div>
