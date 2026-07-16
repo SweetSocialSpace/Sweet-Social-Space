@@ -93,19 +93,31 @@ export default function FeedPage() {
     setPreview(URL.createObjectURL(file))
   }
 
-  const submit = async () => {
-  // STOP MIC WHEN THEY HIT POST
-  ;(window as any)._keepListening = false
-  ;(window as any)._recog?.stop()
+ const submit = async () => {
+  const textToPost = draft.trim()
+  if (!textToPost || !user) return
+
+  // stop mic AFTER we saved what you said
+  try {
+    ;(window as any)._keepListening = false
+    ;(window as any)._recog?.stop()
+  } catch {}
   setIsListening(false)
 
-  if (!draft.trim() ||!user) return
-    const { error } = await supabase.from('posts').insert({ user_id: user.id, body: draft.trim(), tag })
-    if (!error) {
-      setDraft(''); savedRef.current=''; finalRef.current=''; setPreview(null)
-      loadPosts() // <-- reloads feed so you see it right away
-    }
+  const { error } = await supabase.from('posts').insert({ 
+    user_id: user.id, 
+    body: textToPost, 
+    tag 
+  })
+
+  if (!error) {
+    setDraft('')
+    savedRef.current = ''
+    finalRef.current = ''
+    setPreview(null)
+    loadPosts()
   }
+}
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-white">Loading…</div>
 
