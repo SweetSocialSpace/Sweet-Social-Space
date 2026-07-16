@@ -106,7 +106,8 @@ export default function FeedPage() {
     // NOW SAVING WITHOUT TAG SO IT WORKS
     const { error } = await supabase.from('posts').insert({
       user_id: user.id,
-      body: `[${tag}] ${textToPost}`
+     body: textToPost,
+       tag: tag
     })
 
     if (error) {
