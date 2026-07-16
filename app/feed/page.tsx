@@ -5,17 +5,17 @@ import { createClient } from '@/lib/supabase/client'
 
 import Header from '@/app/components/Header'
 import MicRecorder from '@/components/mic/MicRecorder'
-import LocationScopeBar from '@/components/LocationScopeBar'
-import EmergencyAlerts from '@/components/EmergencyAlerts'
-import LatestAlerts from '@/components/LatestAlerts'
-import WhatsHappeningNearYou from '@/components/WhatsHappeningNearYou'
-import LiveNowStrip from '@/components/LiveNowStrip'
-import PinnedAutomatedAlert from '@/components/PinnedAutomatedAlert'
-import MarketplacePreview from '@/components/MarketplacePreview'
-import BusinessDirectory from '@/components/BusinessDirectory'
-import UpcomingEvents from '@/components/UpcomingEvents'
-import VerifiedSources from '@/components/VerifiedSources'
-import MobileBottomNav from '@/components/MobileBottomNav'
+import { LocationScopeBar } from '@/components/LocationScopeBar'
+import { EmergencyAlerts } from '@/components/EmergencyAlerts'
+import { LatestAlerts } from '@/components/LatestAlerts'
+import { WhatsHappeningNearYou } from '@/components/WhatsHappeningNearYou'
+import { LiveNowStrip } from '@/components/LiveNowStrip'
+import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
+import { MarketplacePreview } from '@/components/MarketplacePreview'
+import { BusinessDirectory } from '@/components/BusinessDirectory'
+import { UpcomingEvents } from '@/components/UpcomingEvents'
+import { VerifiedSources } from '@/components/VerifiedSources'
+import { MobileBottomNav } from '@/components/MobileBottomNav'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
@@ -72,7 +72,6 @@ export default function FeedPage() {
       </div>
 
       <div className="max-w- mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-[320px_1fr_360px] gap-4">
-
         <aside className="space-y-4 order-2 lg:order-1">
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
@@ -82,7 +81,6 @@ export default function FeedPage() {
 
         <main className="space-y-4 order-1 lg:order-2">
           <LiveNowStrip />
-
           <div className="bg-white rounded-2xl p-5 shadow-xl">
             <MicRecorder value={draft} onChange={setDraft} />
             <div className="mt-3 flex items-center gap-3">
