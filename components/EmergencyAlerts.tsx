@@ -8,18 +8,19 @@ export function EmergencyAlerts() {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [status, setStatus] = useState<'checking'|'clear'|'alert'>('checking')
 
-  useEffect(()=>{
+    useEffect(()=>{
     const supabase = createClient()
-    // This pulls from your real table — when you have real emergencies, put them in 'emergency_alerts'
-    supabase.from('emergency_alerts').select('*').eq('active', true).limit(3).then(({data})=>{
-      if(data && data.length > 0){
-        setAlerts(data)
-        setStatus('alert')
-      } else {
+    const load = async()=>{
+      try{
+        const {count} = await supabase.from('alerts').select('id',{count:'exact',head:true}).eq('is_active', true)
+        setStatus(count&&count>0?'alert':'clear')
+      }catch{
         setStatus('clear')
       }
-    }).catch(()=> setStatus('clear'))
+    }
+    load()
   },[])
+    
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
