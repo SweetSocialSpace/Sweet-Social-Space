@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Header from '@/app/components/Header'
@@ -8,18 +8,29 @@ import Header from '@/app/components/Header'
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
 
-function autoPunctuate(text: string) {
-  let t = text.trim()
-  if (!t) return ''
-  // Capitalize first letter
-  t = t.charAt(0).toUpperCase() + t.slice(1)
-  // If already ends with.?! keep it
-  if (/[.!?]$/.test(t)) return t + ' '
+// This makes your talking turn into real sentences automatically
+function smartPunctuate(text: string) {
+  if (!text) return ''
+  let t = text.trim().toLowerCase()
 
-  // Is it a question? Check if it sounds like a question
-  const isQuestion = /^(who|what|when|where|why|how|is|are|can|do|does|did|will|would|could|should|have|has|am|are you|is there|can you|will you)/i.test(t) || t.toLowerCase().includes(' how are you')
+  // Fix common run-on breaks - put a period before these starters
+  t = t.replace(/\s+(i hope|i think|i want|have you|do you|what's|what is|where is|can you|we all|or what)\s+/g, (m, p1) => `. ${p1} `)
 
-  return t + (isQuestion? '? ' : '. ')
+  // Split into pieces
+  let sentences = t.split(/[.]\s*/).filter(Boolean)
+  let out = sentences.map(s => {
+    s = s.trim()
+    if (!s) return ''
+    // Capitalize first letter
+    s = s.charAt(0).toUpperCase() + s.slice(1)
+    // Is it a question?
+    if (/^(how are|how is|what|where|who|when|why|have you|do you|can you|what's|are you|is there)/i.test(s)) {
+      return s.endsWith('?')? s : s + '?'
+    }
+    return s.endsWith('.') || s.endsWith('?') || s.endsWith('!')? s : s + '.'
+  })
+
+  return out.join(' ').replace(/\s+/g, ' ').trim() + ' '
 }
 
 export default function FeedPage() {
@@ -43,26 +54,22 @@ export default function FeedPage() {
 
   const toggleMic = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) { alert("Use Chrome for voice."); return }
+    if (!SR) { alert("Use Chrome"); return }
     if (isListening) { (window as any)._recognition?.stop(); setIsListening(false); return }
 
-    const recognition = new SR()
-    ;(window as any)._recognition = recognition
-    recognition.continuous = false
-    recognition.interimResults = false
-    recognition.lang = 'en-US'
-
-    recognition.onstart = () => setIsListening(true)
-    recognition.onend = () => setIsListening(false)
-    recognition.onerror = () => setIsListening(false)
-
-    recognition.onresult = (event: any) => {
-      let spoken = event.results[0][0].transcript
-      let punctuated = autoPunctuate(spoken)
-      setDraft(prev => (prev? (prev.trimEnd() + ' ' + punctuated) : punctuated))
+    const rec = new SR()
+    ;(window as any)._recognition = rec
+    rec.continuous = false
+    rec.interimResults = false
+    rec.lang = 'en-US'
+    rec.onstart = () => setIsListening(true)
+    rec.onend = () => setIsListening(false)
+    rec.onresult = (e: any) => {
+      let spoken = e.results[0][0].transcript
+      let fixed = smartPunctuate(spoken)
+      setDraft(prev => prev? prev.trimEnd() + ' ' + fixed : fixed)
     }
-
-    recognition.start()
+    rec.start()
   }
 
   const submit = async () => {
@@ -81,15 +88,15 @@ export default function FeedPage() {
         <div className="bg-white/[0.08] backdrop-blur-md rounded-2xl border border-white/10 p-3 space-y-4">
           <div className="bg-white rounded-2xl p-4 shadow-xl">
             <div className="relative">
-              <textarea value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Tap mic and just talk normal..." rows={4} className="w-full rounded-xl bg-white border-2 border-gray-200 focus:border-blue-500 p-4 pr-14 text-black placeholder:text-gray-500 outline-none" />
-              <button type="button" onClick={toggleMic} className={`absolute right-2 top-2 rounded-full w-10 h-10 flex items-center justify-center shadow font-bold ${isListening? 'bg-red-600 text-white animate-pulse' : 'bg-black text-white'}`}>{isListening? '■' : '🎤'}</button>
+              <textarea value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Tap mic and just talk normal..." rows={5} className="w-full rounded-xl bg-white border-2 border-gray-200 focus:border-blue-500 p-4 pr-14 text-black placeholder:text-gray-500 outline-none" />
+              <button type="button" onClick={toggleMic} className={`absolute right-2 top-2 rounded-full w-11 h-11 flex items-center justify-center shadow text-xl ${isListening? 'bg-red-600 animate-pulse' : 'bg-black'} text-white`}>{isListening? '■' : '🎤'}</button>
             </div>
-            <p className="mt-2 text- font-bold text-gray-500">{isListening? '🔴 Listening... just talk normal, I add the. and?' : '🎤 Tap mic and talk normal — I auto-add periods and question marks'}</p>
+            <p className="mt-2 text-xs font-bold text-gray-600">{isListening? '🔴 Listening — just talk normal' : '🎤 Tap mic and talk normal — I add the . and ? for you'}</p>
             <div className="mt-3 flex items-center gap-2">
               <span className="text-xs font-bold text-gray-600">POST AS:</span>
               <select value={tag} onChange={(e) => setTag(e.target.value as Tag)} className="rounded-full border-2 border-gray-300 bg-white px-3 py-1.5 text-sm font-bold text-black">{TAGS.map(t => <option key={t} value={t}>{t}</option>)}</select>
             </div>
-            <button onClick={submit} disabled={uploading ||!draft.trim()} className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-full shadow">POST AS {tag.toUpperCase()}</button>
+            <button onClick={submit} disabled={uploading ||!draft.trim()} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
           <div className="bg-black/30 backdrop-blur rounded-2xl border border-white/10 p-6 text-center text-white font-bold">No posts yet. Be the first to share.</div>
         </div>
