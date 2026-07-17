@@ -12,11 +12,28 @@ export default function FeedPage() {
   const [tag, setTag] = useState<Tag>('General')
   const [posts, setPosts] = useState<any[]>([])
   const [zip, setZip] = useState('95122')
+  const [listening, setListening] = useState(false)
 
   useEffect(()=>{ (async()=>{
     const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
     if(data) setPosts(data)
   })() }, [])
+
+  const toggleMic = () => {
+    const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+    if (!SR) { alert('Mic not supported in this browser'); return }
+    const rec = new SR()
+    rec.continuous = false
+    rec.interimResults = false
+    rec.lang = 'en-US'
+    rec.onstart = () => setListening(true)
+    rec.onend = () => setListening(false)
+    rec.onresult = (e: any) => {
+      const text = e.results[0][0].transcript
+      setDraft(prev => prev? prev + ' ' + text : text)
+    }
+    rec.start()
+  }
 
   const submit = async ()=>{
     if(!draft.trim()) return
@@ -31,7 +48,8 @@ export default function FeedPage() {
   return (
     <>
       <Header />
-      <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_1fr_380px] gap-6 items-start">
+      {/* CHANGED LINE - opened from max-w-6xl to 1600px so center is not squeezed */}
+      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[340px_1fr_360px] gap-6 items-start">
         <div className="space-y-6">
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">📌 PINNED ALERT</p><p className="text-sm mt-2 text-white/80">No emergencies in {zip}</p></div>
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">🚨 Emergency</p><p className="text-sm text-white/80">All clear</p></div>
@@ -48,8 +66,11 @@ export default function FeedPage() {
           </div>
           <div className="bg-black text-white rounded-full py-2.5 text-center font-black text-xs mb-5">🔴 LIVE NOW: 3 people talking within 10 miles</div>
           <div className="bg-white rounded-2xl p-5 mb-6">
-            {/* ONE MIC ONLY - simple textarea */}
-            <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Tap mic and talk — I keep everything, even when you pause..." className="w-full min-h- text-black p-3 border rounded-xl" />
+            {/* ONE MIC ONLY - fixed */}
+            <div className="flex gap-2">
+              <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Tap mic and talk — I keep everything, even when you pause..." className="w-full min-h- text-black p-3 border rounded-xl flex-1" />
+              <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-black ${listening? 'bg-red-600 animate-pulse' : 'bg-black text-white'}`} title="Tap to speak">🎤</button>
+            </div>
             <div className="mt-3 flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
             <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
