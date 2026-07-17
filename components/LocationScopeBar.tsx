@@ -13,6 +13,7 @@ export function LocationScopeBar({ zip, radius, setRadius }: { zip: string, radi
         {timeout: 5000}
       )
     }
+    export default LocationScopeBar
   }
 
   return (
