@@ -31,7 +31,7 @@ export default function FeedPage() {
   return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 xl:grid-cols-[360px_1fr_380px] gap-6 items-start">
+      <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_1fr_380px] gap-6 items-start">
         <div className="space-y-4">
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">📌 PINNED ALERT</p><p className="text-sm mt-2 text-white/80">No emergencies in {zip}</p></div>
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">🚨 Emergency</p><p className="text-sm text-white/80">All clear</p></div>
