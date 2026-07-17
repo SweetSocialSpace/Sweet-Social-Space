@@ -48,7 +48,7 @@ export default function FeedPage() {
           </div>
           <div className="bg-black text-white rounded-full py-2.5 text-center font-black text-xs mb-5">🔴 LIVE NOW: 3 people talking within 10 miles</div>
           <div className="bg-white rounded-2xl p-5 mb-6">
-            <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Tap mic and talk — I keep everything, even when you pause..." className="w-full min-h- text-black p-3 border rounded-xl" />
+            <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="What's happening in your area?" className="w-full min-h- text-black p-3 border rounded-xl" />
             <div className="mt-3 flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
             <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
