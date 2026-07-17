@@ -25,7 +25,7 @@ export default function Header() {
 
   return (
     <header className="bg-black/60 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
-      <div className="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div className="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center">
         <Link href="/feed" className="text-xl font-bold text-white tracking-tight drop-shadow">
           Sweet Social Space
         </Link>
