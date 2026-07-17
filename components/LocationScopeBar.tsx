@@ -3,19 +3,12 @@ import { useState } from 'react'
 
 export function LocationScopeBar({ zip, radius, setRadius }: { zip: string, radius: number, setRadius: (n:number)=>void }){
   const [loc, setLoc] = useState('Use my location')
-  
   const handleLoc = ()=>{
     if(navigator.geolocation){
       setLoc('Locating...')
-      navigator.geolocation.getCurrentPosition(
-        ()=> setLoc('95122 • San Jose'),
-        ()=> setLoc('95122 (default)'),
-        {timeout: 5000}
-      )
+      navigator.geolocation.getCurrentPosition(()=> setLoc('95122 • San Jose'),()=> setLoc('95122 (default)'),{timeout:5000})
     }
-    export default LocationScopeBar
   }
-
   return (
     <div className="flex items-center justify-between w-full gap-2">
       <div className="flex items-center gap-2">
@@ -32,3 +25,4 @@ export function LocationScopeBar({ zip, radius, setRadius }: { zip: string, radi
     </div>
   )
 }
+export default LocationScopeBar
