@@ -33,9 +33,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center bg-white px-4 py-16">
+    
       <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-12">
-        
+        <div className="flex items-center justify-center bg-transparent px-4 py-16 min-h-">
         {/* Left side: New Curiosity Wording */}
         <div className="lg:w-1/2 text-center lg:text-left space-y-4">
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
