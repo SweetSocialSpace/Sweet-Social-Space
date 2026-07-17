@@ -46,7 +46,7 @@ export default function LoginPage() {
         </div>
 
         {/* RIGHT - login only, NO magic link */}
-        <div className="w-full bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-8">
+        className="w-full max-w-md bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-8"
           <h2 className="text-3xl font-black text-white text-center mb-2">Welcome Back</h2>
           <p className="text-white/60 text-center text-sm mb-6">Sweet Social Space - San Jose</p>
 
