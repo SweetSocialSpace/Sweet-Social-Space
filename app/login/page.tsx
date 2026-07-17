@@ -17,7 +17,7 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -33,38 +33,38 @@ export default function LoginPage() {
   }
 
   return (
-    
+    <div className="flex items-center justify-center bg-transparent px-4 py-16 min-h- w-full">
       <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-12">
-        <div className="flex items-center justify-center bg-transparent px-4 py-16 min-h-">
+
         {/* Left side: New Curiosity Wording */}
         <div className="lg:w-1/2 text-center lg:text-left space-y-4">
-          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
+          <h1 className="text-4xl lg:text-5xl font-bold text-white drop-shadow-lg">
             Sweet Social Space
           </h1>
-          <p className="text-xl font-semibold text-gray-800">
+          <p className="text-xl font-semibold text-white/90">
             Speak Freely. Love your neighbor.
           </p>
-          <div className="text-gray-700 space-y-3 max-w-md mx-auto lg:mx-0">
-            <p className="font-bold text-gray-900">
+          <div className="text-white/80 space-y-3 max-w-md mx-auto lg:mx-0">
+            <p className="font-bold text-white">
               Tired of being shadowbanned for what you believe?
             </p>
             <p>
               No bots. No algorithms. No one selling your data.
               Just real people having real conversations.
             </p>
-            <p className="font-medium text-gray-800">
+            <p className="font-medium text-white/90">
               Faith, family, and free speech are welcome here.
             </p>
           </div>
         </div>
 
-        {/* Right side: Login box - untouched */}
+        {/* Right side: Login box */}
         <div className="w-full lg:w-1/2 max-w-md">
           <div className="p-8 space-y-6 bg-white rounded-lg shadow-md border">
             <div className="text-center">
-              <h2 className="text-2xl font-bold">Log in to your account</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Log in to your account</h2>
             </div>
-            
+
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -73,10 +73,10 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-black"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">Password</label>
                 <input
@@ -84,18 +84,18 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-black"
                 />
               </div>
 
               {error && <p className="text-red-500 text-sm">{error}</p>}
-              
+
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50"
               >
-                {loading ? 'Logging in...' : 'Log in'}
+                {loading? 'Logging in...' : 'Log in'}
               </button>
             </form>
 
