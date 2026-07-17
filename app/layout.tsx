@@ -19,7 +19,7 @@ export default function RootLayout({
         </main>
 
         <footer className="w-full py-6 text-center text-xs text-zinc-300 bg-black/30 backdrop-blur border-t border-white/10">
-          <div className="max-w-4xl mx-auto px-4">
+          <div className="max-w-6xl mx-auto px-6">
             © 2026 Sweet Social Space — Speak Freely. Love your neighbor. Ask Yourself What would Jesus do?
             <br className="sm:hidden" />
             <span className="hidden sm:inline"> | </span>
