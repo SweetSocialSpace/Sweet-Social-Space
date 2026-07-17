@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Header from '@/app/components/Header'
-import MicRecorder from '@/components/mic/MicRecorder'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
@@ -47,12 +46,12 @@ export default function FeedPage() {
             <span className="ml-auto pr-3 text-xs font-black text-black">San Jose, CA • {zip}</span>
           </div>
           <div className="bg-black text-white rounded-full py-2.5 text-center font-black text-xs mb-5">🔴 LIVE NOW: 3 people talking within 10 miles</div>
-          <MicRecorder value={draft} onChange={setDraft} />
-          <div className="bg-white rounded-2xl p-5 mt-4">
-            <div className="flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
+          <div className="bg-white rounded-2xl p-5 mb-6">
+            <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="What's happening in your area?" className="w-full min-h- text-black p-3 border rounded-xl" />
+            <div className="mt-3 flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
             <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
-          <div className="space-y-4 mt-6">{posts.map(p=>(
+          <div className="space-y-4">{posts.map(p=>(
             <div key={p.id} className="bg-white rounded-2xl p-5"><p className="text-black whitespace-pre-wrap">{p.body}</p></div>
           ))}</div>
         </div>
