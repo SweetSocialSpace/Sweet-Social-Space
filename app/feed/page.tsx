@@ -3,17 +3,17 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 // --- HIVE IMPORTS - EVERY VERTEBRA ---
-import Header from '@/app/components/Header'
-import PinnedAutomatedAlert from '@/app/components/PinnedAutomatedAlert'
-import EmergencyAlerts from '@/app/components/EmergencyAlerts'
-import LatestAlerts from '@/app/components/LatestAlerts'
-import WhatsHappeningNearYou from '@/app/components/WhatsHappeningNearYou'
-import LiveNowStrip from '@/app/components/LiveNowStrip'
-import LocationScopeBar from '@/app/components/LocationScopeBar'
-import MarketplacePreview from '@/app/components/MarketplacePreview'
-import BusinessDirectory from '@/app/components/BusinessDirectory'
-import UpcomingEvents from '@/app/components/UpcomingEvents'
-import VerifiedSources from '@/app/components/VerifiedSources'
+import Header from '@/components/Header'
+import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
+import EmergencyAlerts from '@/components/EmergencyAlerts'
+import LatestAlerts from '@/components/LatestAlerts'
+import WhatsHappeningNearYou from '@/components/WhatsHappeningNearYou'
+import LiveNowStrip from '@/components/LiveNowStrip'
+import LocationScopeBar from '@/components/LocationScopeBar'
+import MarketplacePreview from '@/components/MarketplacePreview'
+import BusinessDirectory from '@/components/BusinessDirectory'
+import UpcomingEvents from '@/components/UpcomingEvents'
+import VerifiedSources from '@/components/VerifiedSources'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
