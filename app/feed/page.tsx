@@ -21,6 +21,7 @@ import LiveNowStrip from '@/components/LiveNowStrip'
 import LocationScopeBar from '@/components/LocationScopeBar'
 
 export default function FeedPage() {
+  const [radius, setRadius] = useState(10)
   const supabase = createClient()
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState('General')
@@ -58,7 +59,7 @@ export default function FeedPage() {
 
         {/* CENTER - only the map */}
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
-          <LocationScopeBar />
+                    <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
           <LiveNowStrip />
 
           <div className="bg-white rounded-2xl p-5 mt-4 mb-6">
