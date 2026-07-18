@@ -14,6 +14,7 @@ import MarketplacePreview from '@/components/MarketplacePreview'
 import BusinessDirectory from '@/components/BusinessDirectory'
 import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
+import WeatherBar from '@/components/WeatherBar'
 
 type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
 const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
@@ -65,6 +66,7 @@ export default function FeedPage() {
       <Header />
       <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[340px_1fr_360px] gap-6 items-start">
         <div className="space-y-6">
+          <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
           <LatestAlerts />
