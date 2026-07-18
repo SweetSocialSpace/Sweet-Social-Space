@@ -3,16 +3,12 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Header from '@/app/components/Header'
 
-// YOUR existing folders - left border
 import PinnedAutomatedAlert from '@/components/PinnedAutomatedAlert'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
 import LatestAlerts from '@/components/LatestAlerts'
 import WhatsHappeningNearYou from '@/components/WhatsHappeningNearYou'
-
-// YOUR existing folders - center mic that feeds off smartPunctuate
+import smartPunctuate from '@/components/mic/smartPunctuate'
 import MicRecorder from '@/components/mic/MicRecorder'
-
-// YOUR existing folders - right border
 import MarketplacePreview from '@/components/MarketplacePreview'
 import BusinessDirectory from '@/components/BusinessDirectory'
 import UpcomingEvents from '@/components/UpcomingEvents'
@@ -21,12 +17,12 @@ import LiveNowStrip from '@/components/LiveNowStrip'
 import LocationScopeBar from '@/components/LocationScopeBar'
 
 export default function FeedPage() {
-  const [radius, setRadius] = useState(10)
   const supabase = createClient()
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState('General')
   const [posts, setPosts] = useState<any[]>([])
   const [zip, setZip] = useState('95122')
+  const [radius, setRadius] = useState(10) // <-- FIX 1: added
 
   useEffect(()=>{
     (async()=>{
@@ -46,10 +42,8 @@ export default function FeedPage() {
   return (
     <>
       <Header />
-      {/* FIXED: max-w- was broken, now 1600px so center not squeezed */}
       <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[340px_1fr_360px] gap-6 items-start">
 
-        {/* LEFT BORDER - each one lives in its own folder and auto-updates itself */}
         <div className="space-y-6">
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
@@ -57,13 +51,11 @@ export default function FeedPage() {
           <WhatsHappeningNearYou />
         </div>
 
-        {/* CENTER - only the map */}
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
-                    <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
+          <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
           <LiveNowStrip />
 
           <div className="bg-white rounded-2xl p-5 mt-4 mb-6">
-            {/* MIC FOLDER: this goes to components/mic/MicRecorder.tsx which feeds off./smartPunctuate.ts */}
             <MicRecorder value={draft} onChange={setDraft} />
             <div className="mt-3 flex flex-wrap gap-2">
               {["General","Alert","Recommendation","Free stuff","Hot take","Lost & found"].map(t=>(
@@ -82,7 +74,6 @@ export default function FeedPage() {
           </div>
         </div>
 
-        {/* RIGHT BORDER - each one auto-updates */}
         <div className="space-y-4">
           <MarketplacePreview />
           <BusinessDirectory />
