@@ -57,7 +57,7 @@ export function UpcomingEvents(){
           {display.map(e=>(
             <div key={e.id} className="bg-white/5 rounded-xl p-2.5 text-xs">
               <p className="font-semibold truncate">{e.title}</p>
-              <p className="text-white/40 text- mt-1">{e.starts_at? new Date(e.starts_at).toLocaleDateString() : 'TBA'}</p>
+              <p className="text-white/40 text-[11px] mt-1">{e.starts_at? new Date(e.starts_at).toLocaleDateString() : 'TBA'}</p>
             </div>
           ))}
         </div>
