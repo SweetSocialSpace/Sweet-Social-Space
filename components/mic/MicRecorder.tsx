@@ -4,15 +4,14 @@ import { useRef, useState, useEffect } from 'react'
 export default function MicRecorder({ value, onChange }: { value: string, onChange: (v: string)=>void }) {
   const [isListening, setIsListening] = useState(false)
   const recognitionRef = useRef<any>(null)
-  const baseTextRef = useRef('')
+  const baseRef = useRef('')
+  const finalAccumRef = useRef('')
 
   const stopMic = () => {
     const rec = recognitionRef.current
     if (rec) { try { rec.stop() } catch {} }
-    setIsListening(false)
   }
 
-  // Let FeedCenter stop us when POST is clicked
   useEffect(()=>{
     ;(window as any).__stopMic = stopMic
     return ()=>{ delete (window as any).__stopMic }
@@ -20,32 +19,40 @@ export default function MicRecorder({ value, onChange }: { value: string, onChan
 
   const toggleMic = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) { alert("Use Chrome - mic needs it"); return }
+    if (!SR) { alert("Use Chrome"); return }
 
     if (isListening) {
       stopMic()
+      setIsListening(false)
       return
     }
 
-    baseTextRef.current = value
+    baseRef.current = value.trim()
+    finalAccumRef.current = ''
     const recog = new SR()
     recognitionRef.current = recog
     recog.continuous = true
     recog.interimResults = true
     recog.lang = 'en-US'
+
     recog.onstart = () => setIsListening(true)
     recog.onend = () => setIsListening(false)
+
     recog.onresult = (e: any) => {
-      let finalText = ''
-      let interimText = ''
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const t = e.results[i][0].transcript
-        if (e.results[i].isFinal) finalText += t + ' '
-        else interimText += t + ' '
+      let allFinal = ''
+      let interim = ''
+      // Loop through ALL results, not just from resultIndex - this prevents deletion on pause
+      for (let i = 0; i < e.results.length; i++) {
+        const transcript = e.results[i][0].transcript
+        if (e.results[i].isFinal) allFinal += transcript + ' '
+        else interim += transcript
       }
-      const combined = (baseTextRef.current + ' ' + finalText + interimText).trim()
+      finalAccumRef.current = allFinal.trim()
+      const base = baseRef.current
+      const combined = [base, finalAccumRef.current, interim].filter(Boolean).join(' ').replace(/\s+/g,' ').trim()
       onChange(combined)
     }
+
     recog.start()
   }
 
@@ -53,8 +60,7 @@ export default function MicRecorder({ value, onChange }: { value: string, onChan
     <button
       type="button"
       onClick={toggleMic}
-      className={`flex h-10 w-10 items-center justify-center rounded-full text-lg shadow border-2 ${isListening? 'bg-red-600 border-red-700 animate-pulse text-white' : 'bg-white border-black text-black hover:bg-gray-100'}`}
-      title={isListening? 'Stop' : 'Tap to talk'}
+      className={`h-10 w-10 rounded-full flex items-center justify-center text-lg border-2 shadow ${isListening? 'bg-red-600 border-red-700 animate-pulse text-white' : 'bg-white border-black text-black hover:bg-gray-100'}`}
     >
       {isListening? '■' : '🎤'}
     </button>
