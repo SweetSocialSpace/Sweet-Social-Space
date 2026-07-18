@@ -1,6 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
-import { smartPunctuate } from './smartPunctuate'
+import { useRef, useState, useEffect } from 'react'
 
 export default function MicRecorder({ value, onChange }: { value: string, onChange: (v: string)=>void }) {
   const [isListening, setIsListening] = useState(false)
@@ -9,11 +8,15 @@ export default function MicRecorder({ value, onChange }: { value: string, onChan
 
   const stopMic = () => {
     const rec = recognitionRef.current
-    if (rec) {
-      try { rec.stop() } catch {}
-    }
+    if (rec) { try { rec.stop() } catch {} }
     setIsListening(false)
   }
+
+  // Let FeedCenter stop us when POST is clicked
+  useEffect(()=>{
+    ;(window as any).__stopMic = stopMic
+    return ()=>{ delete (window as any).__stopMic }
+  }, [])
 
   const toggleMic = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
@@ -21,9 +24,6 @@ export default function MicRecorder({ value, onChange }: { value: string, onChan
 
     if (isListening) {
       stopMic()
-      // Apply SMART when you stop talking
-      const fixed = smartPunctuate(value)
-      onChange(fixed + ' ')
       return
     }
 
@@ -33,50 +33,30 @@ export default function MicRecorder({ value, onChange }: { value: string, onChan
     recog.continuous = true
     recog.interimResults = true
     recog.lang = 'en-US'
-
     recog.onstart = () => setIsListening(true)
     recog.onend = () => setIsListening(false)
-
     recog.onresult = (e: any) => {
       let finalText = ''
       let interimText = ''
       for (let i = e.resultIndex; i < e.results.length; i++) {
-        const transcript = e.results[i][0].transcript
-        if (e.results[i].isFinal) finalText += transcript + ' '
-        else interimText += transcript + ' '
+        const t = e.results[i][0].transcript
+        if (e.results[i].isFinal) finalText += t + ' '
+        else interimText += t + ' '
       }
       const combined = (baseTextRef.current + ' ' + finalText + interimText).trim()
       onChange(combined)
     }
-
     recog.start()
   }
 
   return (
-    <div className="w-full">
-      <textarea
-        value={value}
-        onFocus={stopMic}
-        onChange={e => onChange(e.target.value)}
-        placeholder="Tap mic and talk — I keep everything, even when you pause..."
-        className="w-full min-h- text-black p-3 border border-black/10 rounded-xl outline-none resize-none"
-      />
-      <div className="mt-3 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={toggleMic}
-          className={`flex h-10 w-10 items-center justify-center rounded-full text-xl shadow border ${isListening? 'bg-red-600 border-red-700 animate-pulse text-white' : 'bg-black border-black text-white'}`}
-        >
-          {isListening? '■' : '🎤'}
-        </button>
-        <button
-          type="button"
-          onClick={()=> onChange(smartPunctuate(value) + ' ')}
-          className="text-xs bg-black text-white rounded-full px-4 py-1.5 font-bold"
-        >
-          ✨ Fix punctuation
-        </button>
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={toggleMic}
+      className={`flex h-10 w-10 items-center justify-center rounded-full text-lg shadow border-2 ${isListening? 'bg-red-600 border-red-700 animate-pulse text-white' : 'bg-white border-black text-black hover:bg-gray-100'}`}
+      title={isListening? 'Stop' : 'Tap to talk'}
+    >
+      {isListening? '■' : '🎤'}
+    </button>
   )
 }
