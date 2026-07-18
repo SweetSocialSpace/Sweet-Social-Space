@@ -24,6 +24,7 @@ export default function FeedPage() {
   const [tag, setTag] = useState<Tag>('General')
   const [posts, setPosts] = useState<any[]>([])
   const [listening, setListening] = useState(false)
+  const [radius, setRadius] = useState(5)
 
   useEffect(()=>{
     (async()=>{
@@ -69,7 +70,7 @@ export default function FeedPage() {
           <WhatsHappeningNearYou />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
-          <LocationScopeBar />
+          <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
           <div className="bg-white rounded-2xl p-5 mb-6 mt-4">
             <div className="flex gap-2">
