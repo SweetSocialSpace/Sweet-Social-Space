@@ -6,18 +6,13 @@ export default function WeatherBar({ zip = '95122' }: { zip?: string }) {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    const lat = 37.311
-    const lon = -121.817
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America/Los_Angeles`
-
-    fetch(url)
+    fetch(`/api/weather?zip=${zip}`)
      .then(r => {
         if(!r.ok) throw new Error('fail')
         return r.json()
       })
      .then(data => setWeather(data))
      .catch(() => {
-        // FALLBACK - so you never see Loading forever - San Jose fake live data
         setError(true)
         setWeather({
           current: { temperature_2m: 78, weather_code: 1, wind_speed_10m: 5 },
