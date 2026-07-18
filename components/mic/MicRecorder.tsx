@@ -1,68 +1,72 @@
 'use client'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
+import { smartPunctuate } from './smartPunctuate'
 
 export default function MicRecorder({ value, onChange }: { value: string, onChange: (v: string)=>void }) {
   const [isListening, setIsListening] = useState(false)
-  const recognitionRef = useRef<any>(null)
-  const baseRef = useRef('')
-  const finalAccumRef = useRef('')
+  const savedRef = useRef('')
+  const finalRef = useRef('')
 
   const stopMic = () => {
-    const rec = recognitionRef.current
-    if (rec) { try { rec.stop() } catch {} }
+    ;(window as any)._keepListening = false
+    try{ ;(window as any)._recog?.stop() }catch{}
+    setIsListening(false)
   }
-
-  useEffect(()=>{
-    ;(window as any).__stopMic = stopMic
-    return ()=>{ delete (window as any).__stopMic }
-  }, [])
 
   const toggleMic = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) { alert("Use Chrome"); return }
-
+    if (!SR) { alert("Use Chrome — mic needs it"); return }
     if (isListening) {
       stopMic()
-      setIsListening(false)
+      const f = smartPunctuate(value)
+      savedRef.current = f
+      onChange(f + ' ')
+      finalRef.current = ''
       return
     }
-
-    baseRef.current = value.trim()
-    finalAccumRef.current = ''
+    savedRef.current = value
+    finalRef.current = ''
+    ;(window as any)._keepListening = true
     const recog = new SR()
-    recognitionRef.current = recog
+    ;(window as any)._recog = recog
     recog.continuous = true
     recog.interimResults = true
     recog.lang = 'en-US'
-
     recog.onstart = () => setIsListening(true)
-    recog.onend = () => setIsListening(false)
-
-    recog.onresult = (e: any) => {
-      let allFinal = ''
+    recog.onend = () => { if ((window as any)._keepListening) { try{recog.start()}catch{} } }
+    recog.onresult = (e:any) => {
       let interim = ''
-      // Loop through ALL results, not just from resultIndex - this prevents deletion on pause
-      for (let i = 0; i < e.results.length; i++) {
-        const transcript = e.results[i][0].transcript
-        if (e.results[i].isFinal) allFinal += transcript + ' '
-        else interim += transcript
+      for (let i=e.resultIndex; i<e.results.length; i++) {
+        const txt = e.results[i][0].transcript
+        if (e.results[i].isFinal) finalRef.current += txt + ' '
+        else interim += txt + ' '
       }
-      finalAccumRef.current = allFinal.trim()
-      const base = baseRef.current
-      const combined = [base, finalAccumRef.current, interim].filter(Boolean).join(' ').replace(/\s+/g,' ').trim()
-      onChange(combined)
+      onChange(savedRef.current + (savedRef.current?' ':'') + finalRef.current + interim)
     }
-
     recog.start()
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggleMic}
-      className={`h-10 w-10 rounded-full flex items-center justify-center text-lg border-2 shadow ${isListening? 'bg-red-600 border-red-700 animate-pulse text-white' : 'bg-white border-black text-black hover:bg-gray-100'}`}
-    >
-      {isListening? '■' : '🎤'}
-    </button>
+    <div className="w-full bg-white rounded-2xl p-5">
+      <textarea
+        value={value}
+        onFocus={stopMic}
+        onChange={e=>{ savedRef.current=e.target.value; onChange(e.target.value) }}
+        placeholder="Tap mic and talk — I keep everything, even when you pause..."
+        className="w-full min-h- text-black p-3 border border-black/10 rounded-xl outline-none resize-none"
+      />
+      <div className="mt-3 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={toggleMic}
+          className={`flex h-10 w-10 items-center justify-center rounded-full text-xl shadow border ${isListening?'bg-red-600 border-red-700 animate-pulse text-white':'bg-black border-black text-white'}`}
+        >
+          {isListening?'■':'🎤'}
+        </button>
+        <button type="button" onClick={()=>onChange(smartPunctuate(value)+' ')} className="text-xs bg-black text-white rounded-full px-4 py-1.5 font-bold">
+          ✨ Fix punctuation
+        </button>
+      </div>
+    </div>
   )
 }
