@@ -25,6 +25,7 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<any[]>([])
   const [listening, setListening] = useState(false)
   const [radius, setRadius] = useState(5)
+  const [zip, setZip] = useState('95122')
 
   useEffect(()=>{
     (async()=>{
