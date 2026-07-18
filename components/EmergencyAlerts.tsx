@@ -10,20 +10,41 @@ export function EmergencyAlerts() {
 
   useEffect(()=>{
     const supabase = createClient()
+    let mounted = true
+
     const load = async()=>{
       try{
         const {data, count} = await supabase.from('alerts').select('id,message,event,title,body', {count:'exact'}).eq('is_active', true).limit(3)
-        if(count && count>0){
+        if(mounted && count && count>0){
           setAlerts((data as any) || [])
           setStatus('alert')
-        }else{
-          setStatus('clear')
+          return
+        }
+
+        // No Supabase alerts - auto-grab from internet for 95122
+        const res = await fetch(`https://api.weather.gov/alerts/active?point=37.3361,-121.8111`, {
+          headers: { 'Accept': 'application/geo+json' }
+        })
+        const json = await res.json()
+        if(mounted && json.features && json.features.length > 0){
+          const live = json.features.slice(0,3).map((f:any, i:number)=>({
+            id: f.id || `nws-${i}`,
+            event: f.properties?.event,
+            title: f.properties?.headline,
+            message: f.properties?.description?.slice(0,120) || f.properties?.headline
+          }))
+          setAlerts(live)
+          setStatus('alert')
+        } else {
+          if(mounted) setStatus('clear')
         }
       }catch{
-        setStatus('clear')
+        if(mounted) setStatus('clear')
       }
     }
     load()
+    const id = setInterval(load, 10*60*1000) // auto-refresh every 10 min
+    return ()=>{ mounted = false; clearInterval(id) }
   },[])
 
   return (
