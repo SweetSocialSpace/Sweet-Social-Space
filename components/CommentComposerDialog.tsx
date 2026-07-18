@@ -1,16 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { VoiceInputButton } from '@/components/VoiceInputButton'
+import MicRecorder from '@/components/mic/MicRecorder'
 
 // TODO: Replace with shadcn/ui when installed
-// import {
-// Dialog,
-// DialogContent,
-// DialogHeader,
-// DialogTitle,
-// DialogDescription,
-// } from '@/components/ui/dialog'
 
 // Stub Dialog components - replace with shadcn/ui when installed
 function Dialog({ open, onOpenChange, children }: any) {
@@ -76,48 +69,6 @@ export function CommentComposerDialog({
     setOpen(false)
   }
 
-  // Keep latest value/maxLength/onChange in refs so the mic's onTranscript
-  // callback (captured by the Scribe hook) isn't stale across re-renders.
-  const valueRef = React.useRef(value)
-  const onChangeRef = React.useRef(onChange)
-  const maxLenRef = React.useRef(maxLength)
-  const voiceBaseRef = React.useRef<string | null>(null)
-  React.useEffect(() => {
-    valueRef.current = value
-  }, [value])
-  React.useEffect(() => {
-    onChangeRef.current = onChange
-  }, [onChange])
-  React.useEffect(() => {
-    maxLenRef.current = maxLength
-  }, [maxLength])
-
-  const appendVoiceText = React.useCallback((current: string, text: string) => {
-    const next = current? `${current.replace(/\s+$/, '')} ${text}` : text
-    return next.slice(0, maxLenRef.current)
-  }, [])
-
-  const handleVoice = React.useCallback(
-    (text: string) => {
-      const base = voiceBaseRef.current?? valueRef.current?? ''
-      const trimmed = appendVoiceText(base, text)
-      valueRef.current = trimmed
-      voiceBaseRef.current = trimmed
-      onChangeRef.current(trimmed)
-    },
-    [appendVoiceText],
-  )
-
-  const handleVoicePartial = React.useCallback(
-    (text: string) => {
-      if (voiceBaseRef.current === null) voiceBaseRef.current = valueRef.current?? ''
-      const trimmed = appendVoiceText(voiceBaseRef.current, text)
-      valueRef.current = trimmed
-      onChangeRef.current(trimmed)
-    },
-    [appendVoiceText],
-  )
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault()
@@ -152,10 +103,7 @@ export function CommentComposerDialog({
           </DialogHeader>
           <textarea
             value={value}
-            onChange={(e) => {
-              voiceBaseRef.current = e.target.value
-              onChange(e.target.value)
-            }}
+            onChange={(e) => onChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             maxLength={maxLength}
@@ -165,11 +113,7 @@ export function CommentComposerDialog({
           />
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <VoiceInputButton
-                size="sm"
-                onTranscript={handleVoice}
-                onPartialTranscript={handleVoicePartial}
-              />
+              <MicRecorder value={value} onChange={onChange} />
 
               <span className="text-xs text-muted-foreground">
                 {value.length}/{maxLength}
