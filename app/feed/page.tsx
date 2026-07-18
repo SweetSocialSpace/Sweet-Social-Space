@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-// --- HIVE IMPORTS - EVERY VERTEBRA - FIXED PATHS ---
+// --- HIVE IMPORTS - FIXED PATHS ---
 import Header from '@/app/components/Header'
 import { PinnedAutomatedAlert } from '@/app/components/PinnedAutomatedAlert'
 import EmergencyAlerts from '@/app/components/EmergencyAlerts'
@@ -60,8 +60,7 @@ export default function FeedPage() {
   return (
     <>
       <Header />
-      <div className="max-w- mx-auto px-4 py-6 grid...
-<textarea... className="w-full min-h- text-black...
+      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[340px_1fr_360px] gap-6 items-start">
         {/* LEFT VERTEBRAE */}
         <div className="space-y-6">
           <PinnedAutomatedAlert />
