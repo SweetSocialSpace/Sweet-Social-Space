@@ -2,17 +2,8 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { VoiceInputButton } from '@/components/VoiceInputButton'
+import MicRecorder from '@/components/mic/MicRecorder'
 import { createClient } from '@/lib/supabase/client'
-
-// TODO: Port lib/moderation.functions.ts from Lovable
-// import {
-// submitReport,
-// REPORT_CATEGORIES,
-// REPORT_CATEGORY_LABEL,
-// type ReportCategory,
-// type ReportTargetType,
-// } from '@/lib/moderation.functions'
 
 // Stub types and constants - replace with real imports when we port moderation.functions.ts
 type ReportTargetType = 'post' | 'comment' | 'user' | 'business' | 'message'
@@ -30,7 +21,6 @@ const REPORT_CATEGORY_LABEL: Record<ReportCategory, string> = {
   other: 'Other',
 }
 
-// Stub submitReport - replace with real server action
 async function submitReport(data: {
   target_type: ReportTargetType
   target_id: string
@@ -55,7 +45,6 @@ async function submitReport(data: {
 type Props = {
   targetType: ReportTargetType
   targetId: string
-  /** Human label for what's being reported, e.g. "post", "comment", "user". */
   label?: string
   onClose: () => void
 }
@@ -137,7 +126,7 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
               placeholder="Anything that will help us review."
             />
             <div className="mt-1 flex justify-end">
-              <VoiceInputButton size="sm" onTranscript={(t) => setDetails((p) => (p? p.trimEnd() + ' ' + t : t))} />
+              <MicRecorder value={details} onChange={setDetails} />
             </div>
 
             {TURNSTILE_SITE_KEY && (
@@ -165,7 +154,6 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
   )
 }
 
-// Minimal Cloudflare Turnstile widget loader. No-op when no site key.
 function TurnstileWidget({ siteKey, onToken }: { siteKey: string; onToken: (t: string) => void }) {
   const containerId = `ts-${siteKey.slice(0, 8)}`
   if (typeof window!== 'undefined') {
