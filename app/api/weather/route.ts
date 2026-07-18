@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     // Example for OpenWeatherMap — swap URL if you're using WeatherAPI.com or another
     const res = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?zip=${zip},us&appid=${process.env.OPENWEATHER_API_KEY}}&units=imperial`
+     `https://api.openweathermap.org/data/2.5/weather?zip=${zip},us&appid=${process.env.OPENWEATHER_API_KEY}&units=imperial` 
     )
 
     if (!res.ok) throw new Error('Weather fetch failed')
