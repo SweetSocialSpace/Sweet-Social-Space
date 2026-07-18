@@ -17,18 +17,13 @@ export default function FeedCenter() {
   const [radius, setRadius] = useState(10)
   const [isPosting, setIsPosting] = useState(false)
 
-  const draftRef = useRef(draft)
-  useEffect(()=>{ draftRef.current = draft }, [draft])
-
   const load = async () => {
     const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
     if(data) setPosts(data)
   }
-
   useEffect(()=>{ load() }, [])
 
   const submit = async ()=>{
-    // STOP MIC like you asked
     ;(window as any).__stopMic?.()
     if(!draft.trim() || isPosting) return
     setIsPosting(true)
@@ -45,22 +40,21 @@ export default function FeedCenter() {
 
   return (
     <div className="space-y-4">
-      {/* TOP - This gives you NEAR: 95122 / Use my location / GO LIVE like Picture 1 */}
       <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
       <LiveNowStrip />
 
-      {/* COMPOSER - This is EXACTLY Picture 1 white card */}
       <div className="bg-white rounded-2xl p-5 shadow">
         <textarea
           value={draft}
           onChange={e=>setDraft(e.target.value)}
+          onFocus={()=> (window as any).__stopMic?.()}
           placeholder=""
           className="w-full min-h- resize-none rounded-xl border border-gray-200 p-3 text-sm text-black outline-none focus:ring-2 focus:ring-black/10"
         />
         <div className="mt-3 flex items-center justify-between">
           <MicRecorder value={draft} onChange={setDraft} />
           <button
-            onClick={()=>setDraft(smartPunctuate(draft))}
+            onClick={()=> setDraft(smartPunctuate(draft) + ' ')}
             className="rounded-full bg-black px-4 py-1.5 text-xs font-bold text-white"
           >
             ✨ Fix punctuation
@@ -68,25 +62,14 @@ export default function FeedCenter() {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           {TAGS.map(t=>(
-            <button
-              key={t}
-              onClick={()=>setTag(t)}
-              className={`px-3 py-1.5 rounded-full text-xs font-black border-2 transition ${tag===t?'bg-black text-white border-black':'bg-white text-black border-black hover:bg-gray-100'}`}
-            >
-              {t}
-            </button>
+            <button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white border-black':'bg-white text-black border-black hover:bg-gray-100'}`}>{t}</button>
           ))}
         </div>
-        <button
-          onClick={submit}
-          disabled={!draft.trim() || isPosting}
-          className="mt-4 w-full bg-blue-600 text-white font-black py-3 rounded-full disabled:opacity-50"
-        >
+        <button onClick={submit} disabled={!draft.trim() || isPosting} className="mt-4 w-full bg-blue-600 text-white font-black py-3 rounded-full disabled:opacity-50">
           {isPosting? 'POSTING...' : `POST AS ${tag.toUpperCase()}`}
         </button>
       </div>
 
-      {/* FEED - posts below */}
       <div className="space-y-4">
         {posts.map(p=>(
           <div key={p.id} className="bg-white rounded-2xl p-5">
