@@ -1,72 +1,88 @@
 'use client'
 import { useRef, useState } from 'react'
-import { smartPunctuate } from './smartPunctuate'
 
-export default function MicRecorder({ value, onChange }: { value: string, onChange: (v: string)=>void }) {
-  const [isListening, setIsListening] = useState(false)
-  const savedRef = useRef('')
-  const finalRef = useRef('')
+type Props = {
+  onTranscript: (text: string) => void
+  onFinalTranscript?: (text: string) => void
+}
 
-  const stopMic = () => {
-    ;(window as any)._keepListening = false
-    try{ ;(window as any)._recog?.stop() }catch{}
-    setIsListening(false)
-  }
+export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) {
+  const [listening, setListening] = useState(false)
+  const recognitionRef = useRef<any>(null)
+  const finalTextRef = useRef('')
 
   const toggleMic = () => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SR) { alert("Use Chrome — mic needs it"); return }
-    if (isListening) {
-      stopMic()
-      const f = smartPunctuate(value)
-      savedRef.current = f
-      onChange(f + ' ')
-      finalRef.current = ''
+    const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+    if (!SR) {
+      alert('Mic not supported in this browser. Use Chrome on desktop / Android.')
       return
     }
-    savedRef.current = value
-    finalRef.current = ''
-    ;(window as any)._keepListening = true
-    const recog = new SR()
-    ;(window as any)._recog = recog
-    recog.continuous = true
-    recog.interimResults = true
-    recog.lang = 'en-US'
-    recog.onstart = () => setIsListening(true)
-    recog.onend = () => { if ((window as any)._keepListening) { try{recog.start()}catch{} } }
-    recog.onresult = (e:any) => {
-      let interim = ''
-      for (let i=e.resultIndex; i<e.results.length; i++) {
-        const txt = e.results[i][0].transcript
-        if (e.results[i].isFinal) finalRef.current += txt + ' '
-        else interim += txt + ' '
-      }
-      onChange(savedRef.current + (savedRef.current?' ':'') + finalRef.current + interim)
+
+    // If already listening, stop it
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop()
+      setListening(false)
+      return
     }
-    recog.start()
+
+    const rec = new SR()
+    recognitionRef.current = rec
+    rec.continuous = true // THIS is the fix - keeps listening through pauses
+    rec.interimResults = true
+    rec.lang = 'en-US'
+
+    rec.onstart = () => {
+      setListening(true)
+      finalTextRef.current = ''
+    }
+
+    rec.onend = () => {
+      setListening(false)
+      if (finalTextRef.current && onFinalTranscript) {
+        onFinalTranscript(finalTextRef.current)
+      }
+    }
+
+    rec.onresult = (e: any) => {
+      let interim = ''
+      let final = ''
+
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const transcript = e.results[i][0].transcript
+        if (e.results[i].isFinal) {
+          final += transcript + ' '
+        } else {
+          interim += transcript
+        }
+      }
+
+      if (final) {
+        finalTextRef.current += final
+      }
+
+      // Send the live combined text back to Create Post
+      const combined = (finalTextRef.current + interim).trim()
+      onTranscript(combined)
+    }
+
+    rec.onerror = (err: any) => {
+      console.error('Mic error', err)
+      setListening(false)
+    }
+
+    rec.start()
   }
 
   return (
-    <div className="w-full bg-white rounded-2xl p-5">
-      <textarea
-        value={value}
-        onFocus={stopMic}
-        onChange={e=>{ savedRef.current=e.target.value; onChange(e.target.value) }}
-        placeholder="Tap mic and talk — I keep everything, even when you pause..."
-        className="w-full min-h- text-black p-3 border border-black/10 rounded-xl outline-none resize-none"
-      />
-      <div className="mt-3 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={toggleMic}
-          className={`flex h-10 w-10 items-center justify-center rounded-full text-xl shadow border ${isListening?'bg-red-600 border-red-700 animate-pulse text-white':'bg-black border-black text-white'}`}
-        >
-          {isListening?'■':'🎤'}
-        </button>
-        <button type="button" onClick={()=>onChange(smartPunctuate(value)+' ')} className="text-xs bg-black text-white rounded-full px-4 py-1.5 font-bold">
-          ✨ Fix punctuation
-        </button>
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={toggleMic}
+      className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-black shrink-0 ${
+        listening? 'bg-red-600 text-white animate-pulse' : 'bg-black text-white'
+      }`}
+      title={listening? 'Tap to stop' : 'Tap to speak'}
+    >
+      🎤
+    </button>
   )
 }
