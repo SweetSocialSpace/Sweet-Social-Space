@@ -110,8 +110,7 @@ export function CommentComposerDialog({
           />
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <MicRecorder onChange={(t:string) => onChange(value ? value + ' ' + t : t)} />
-
+             <MicRecorder onTranscript={(t:string) => onChange(t)} />
               <span className="text-xs text-muted-foreground">
                 {value.length}/{maxLength}
               </span>
