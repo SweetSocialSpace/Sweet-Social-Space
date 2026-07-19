@@ -2,6 +2,27 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
+// At the top of feed page
+import { redirect } from 'next/navigation'
+import { createClient } from '@/utils/supabase/server' // or your server client
+
+// Inside your component, BEFORE fetching posts:
+const supabase = await createClient()
+const { data: { user } } = await supabase.auth.getUser()
+
+if (user) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('zip_code, display_name, bio')
+    .eq('id', user.id)
+    .single()
+
+  // If no profile, or missing required fields -> force to /profile
+  if (!profile || !profile.zip_code || !profile.display_name) {
+    redirect('/profile?required=1')
+  }
+}
+
 // HEADER is in app/components - everything else is in root components
 import Header from '@/app/components/Header'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
