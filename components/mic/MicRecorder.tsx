@@ -10,24 +10,17 @@ function makeLegible(text: string){
   if(!text) return text
   let t = text.trim().replace(/\s+/g,' ')
   if(!t) return t
-  const questionStarters = /^(who|what|where|when|why|how|is|are|can|could|would|should|do|does|did|will|have|has|are we|is this)/i
-  let sentences = t.split(/(?<=[.!?])\s+/)
-  sentences = sentences.map(s=>{
-    s = s.trim()
-    if(!s) return s
-    s = s.charAt(0).toUpperCase() + s.slice(1)
-    if(questionStarters.test(s) && !/[?.!]$/.test(s)) s += '?'
-    else if(!/[?.!]$/.test(s)) s += '.'
-    return s
-  })
-  return sentences.join(' ').replace(/\s+([?.!])/g,'$1')
+  t = t.charAt(0).toUpperCase() + t.slice(1)
+  if(/^(who|what|where|when|why|how|is|are|can|could|would|should|do|does|did|will|have|has|are we|is this)/i.test(t) &&!/[?.!]$/.test(t)) t += '?'
+  else if(!/[?.!]$/.test(t)) t += '.'
+  return t
 }
 
 export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) {
   const [listening, setListening] = useState(false)
   const recognitionRef = useRef<any>(null)
   const mediaRef = useRef<MediaRecorder | null>(null)
-  const finalTextRef = useRef('')
+  const lastFinalRef = useRef('')
 
   const toggleMic = async () => {
     if (listening) {
@@ -45,24 +38,40 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
         rec.continuous = true
         rec.interimResults = true
         rec.lang = 'en-US'
-        rec.onstart = () => { setListening(true); finalTextRef.current = '' }
+        lastFinalRef.current = ''
+
+        rec.onstart = () => setListening(true)
+
         rec.onend = () => {
           setListening(false)
-          if (finalTextRef.current && onFinalTranscript) onFinalTranscript(makeLegible(finalTextRef.current))
-        }
-        rec.onresult = (e: any) => {
-          let interim = ''
-          let final = ''
-          for (let i = e.resultIndex; i < e.results.length; i++) {
-            const transcript = e.results[i][0].transcript
-            if (e.results[i].isFinal) final += transcript + ' '
-            else interim += transcript
+          if (lastFinalRef.current && onFinalTranscript) {
+            onFinalTranscript(makeLegible(lastFinalRef.current))
           }
-          if (final) finalTextRef.current += final
-          const combined = (finalTextRef.current + interim).trim()
-          onTranscript(makeLegible(combined))
         }
-        rec.onerror = () => startRecordingFallback()
+
+        rec.onresult = (e: any) => {
+          let finalTranscript = ''
+          let interimTranscript = ''
+          // Rebuild from scratch every time - NO stacking
+          for (let i = 0; i < e.results.length; i++) {
+            const transcript = e.results[i][0].transcript
+            if (e.results[i].isFinal) {
+              finalTranscript += transcript + ' '
+            } else {
+              interimTranscript += transcript
+            }
+          }
+          finalTranscript = finalTranscript.trim()
+          lastFinalRef.current = finalTranscript
+          const combined = finalTranscript + (interimTranscript? ' ' + interimTranscript : '')
+          onTranscript(combined.trim())
+        }
+
+        rec.onerror = () => {
+          // fallback to recording
+          try{ rec.stop() }catch{}
+          startRecordingFallback()
+        }
         rec.start()
         return
       } catch {}
@@ -80,23 +89,22 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
       mr.onstop = async ()=>{
         const blob = new Blob(chunks, { type: 'audio/webm' })
         setListening(false)
+        stream.getTracks().forEach(t=>t.stop())
         try{
           const fd = new FormData()
           fd.append('audio', blob)
           const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd })
           const data = await res.json()
           if(data.text){
-            const legible = makeLegible(data.text)
-            onTranscript(legible)
-            onFinalTranscript?.(legible)
+            onTranscript(makeLegible(data.text))
+            onFinalTranscript?.(makeLegible(data.text))
           }
         }catch{}
       }
       mr.start()
       setListening(true)
-      finalTextRef.current = ''
     } catch {
-      alert('Mic blocked - check browser permissions')
+      alert('Mic blocked - check permissions')
     }
   }
 
@@ -107,7 +115,7 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
       className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-black shrink-0 ${
         listening? 'bg-red-600 text-white animate-pulse' : 'bg-black text-white'
       }`}
-      title={listening? 'Tap to stop' : 'Tap to speak - works on any device'}
+      title={listening? 'Tap to stop' : 'Tap to speak'}
     >
       🎤
     </button>
