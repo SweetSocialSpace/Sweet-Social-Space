@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
 const ZIP_MAP: Record<string,string> = {
-  "95122": "Alum Rock, East San Jose",
+  "95122": "Quimby/Tully, East San Jose",
   "95116": "Alum Rock / Little Portugal",
   "95127": "Berryessa / Alum Rock Foothills",
   "95118": "Cambrian Park",
