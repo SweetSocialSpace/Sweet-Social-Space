@@ -64,12 +64,9 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   mediaRef.current = null
   setListening(false)
 }
-  const toggleMic = async () => {
+    const toggleMic = async () => {
     if(listening){
-      recRef.current?.stop?.()
-      mediaRef.current?.stop?.()
-      setListening(false)
-      // When stopped, make it legible once
+      stopMic()
       if(finalRef.current){
         setBody(makeLegible(finalRef.current))
       }
