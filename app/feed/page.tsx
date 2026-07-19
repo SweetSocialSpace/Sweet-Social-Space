@@ -101,20 +101,26 @@ export default function FeedPage() {
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-xs font-black bg-black text-white px-2 py-0.5 rounded-full">{catBadge(p.category||'general')} {(p.category||p.tag||'general').toUpperCase()}</span>
-                      {p.price!=null && <span className="text-xs font-black bg-green-500 text-white px-2 py-0.5 rounded-full">${Number(p.price).toFixed(0)}</span>}
-                      {p.condition && <span className="text- bg-gray-100 px-2 py-0.5 rounded-full">{p.condition}</span>}
+                      <span className="text-xs font-black bg-black text-white px-2 py-1 rounded-full">{catBadge(p.category||'general')} {(p.category||p.tag||'general').toUpperCase()}</span>
+                      {p.price!=null && <span className="text-xs font-black bg-green-500 text-white px-2 py-1 rounded-full">${Number(p.price).toFixed(0)}</span>}
+                      {p.condition && <span className="text-xs font-bold bg-gray-200 text-black px-2 py-1 rounded-full border border-black/10">{p.condition}</span>}
                     </div>
-                    <p className="text-black whitespace-pre-wrap break-words text-">{p.body}</p>
+                    <p className="text-black whitespace-pre-wrap break-words text- leading-snug">{p.body}</p>
+
+                    {/* TRUE PRIVATE ADDRESS - NO TEXT SHOWN */}
                     {p.location_address && (
-                      <details className="mt-3">
-                        <summary className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-full cursor-pointer inline-block list-none">📍 Map & Directions (Private Address)</summary>
-                        <div className="mt-2 bg-gray-100 rounded-xl p-3 text-black text-sm">
-                          <div>📍 {p.location_address}</div>
-                          <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="mt-1 inline-block text-blue-600 underline text-xs">Open in Google Maps →</a>
-                        </div>
-                      </details>
+                      <div className="mt-3 flex gap-2 items-center flex-wrap">
+                        <span className="text- bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near 95122 • Private</span>
+                        <a
+                          href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`}
+                          target="_blank"
+                          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition"
+                        >
+                          🗺️ Get Directions
+                        </a>
+                      </div>
                     )}
+
                   </div>
                   {currentUserId && p.user_id === currentUserId && (
                     <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
