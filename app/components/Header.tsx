@@ -32,9 +32,12 @@ export default function Header() {
 
         {user && (
           <div className="flex items-center gap-4">
-            <span className="text-sm text-white/80 hidden sm:block font-medium">
+            <Link
+              href="/profile"
+              className="text-sm text-white/80 hidden sm:block font-medium hover:text-white hover:underline cursor-pointer"
+            >
               {user.email}
-            </span>
+            </Link>
             <button
               onClick={handleSignOut}
               className="text-sm bg-white/10 hover:bg-white/20 border border-white/10 text-white px-3 py-1.5 rounded-md font-medium backdrop-blur"
