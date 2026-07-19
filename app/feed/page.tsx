@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-
-// HEADER is in app/components - everything else is in root components
 import Header from '@/app/components/Header'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
@@ -31,7 +29,6 @@ export default function FeedPage() {
   const [zip, setZip] = useState('95122')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
-  // REQUIRE PROFILE GATE - no profile = no feed
   useEffect(()=>{
     (async()=>{
       const { data: { user } } = await supabase.auth.getUser()
@@ -55,7 +52,7 @@ export default function FeedPage() {
 
   const toggleMic = () => {
     const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-    if (!SR) { alert('Mic not supported in this browser'); return }
+    if (!SR) { alert('Mic not supported'); return }
     const rec = new SR()
     rec.continuous = false
     rec.interimResults = false
@@ -80,12 +77,12 @@ export default function FeedPage() {
   }
 
   const deletePost = async (postId: string) => {
-    if (!confirm('Delete this post? Neighbors won\'t see it anymore.')) return
+    if (!confirm('Delete this post?')) return
     const { error } = await supabase.from('posts').delete().eq('id', postId)
     if (error) {
       alert('Delete failed: ' + error.message)
     } else {
-      setPosts(prev => prev.filter(p => p.id!== postId))
+      setPosts(prev => prev.filter((p:any) => p.id!== postId))
     }
   }
 
@@ -105,31 +102,26 @@ export default function FeedPage() {
           <div className="mt-4"><LiveNowStrip /></div>
           <div className="bg-white rounded-2xl p-5 mb-6 mt-4">
             <div className="flex gap-2">
-              <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Tap mic and talk — I keep everything, even when you pause..." className="w-full min-h- text-black p-3 border rounded-xl flex-1" />
+              <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Tap mic and talk..." className="w-full text-black p-3 border rounded-xl flex-1" />
               <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-black ${listening? 'bg-red-600 animate-pulse' : 'bg-black text-white'}`}>🎤</button>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
             <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
           <div className="space-y-4">
-            {posts.map(p=>(
-              <div key={p.id} className="bg-white rounded-2xl p-5 overflow-hidden relative">
+            {posts.map((p:any)=>(
+              <div key={p.id} className="bg-white rounded-2xl p-5">
                 <div className="flex justify-between items-start gap-3">
-                  <p className="text-black whitespace-pre-wrap break-words [overflow-wrap:anywhere] flex-1">{p.body}</p>
+                  <p className="text-black whitespace-pre-wrap break-words flex-1">{p.body}</p>
                   {currentUserId && p.user_id === currentUserId && (
-                    <button
-                      onClick={()=>deletePost(p.id)}
-                      className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300 shrink-0"
-                      title="Delete your post"
-                    >
-                      🗑️ DELETE
-                    </button>
+                    <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">DELETE</button>
                   )}
                 </div>
-                <div className="mt-2 text- font-bold text-gray-400">{p.tag} • {new Date(p.created_at).toLocaleString()}</div>
+                <div className="mt-2 text- font-bold text-gray-400">{p.tag} - {new Date(p.created_at).toLocaleString()}</div>
               </div>
             ))}
-          </div>
+                   </div>
+        </div>
         <div className="space-y-4">
           <MarketplacePreview />
           <BusinessDirectory />
