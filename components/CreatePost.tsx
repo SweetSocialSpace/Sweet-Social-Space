@@ -58,16 +58,6 @@ recognition.onend = () => {
   setText(cleaned);
 }
 
-function toggleMic() {
-  if (!isRecording) {
-    isRecording = true;
-    recognition.start();
-  } else {
-    isRecording = false;
-    recognition.stop();
-  }
-}
-
   const toggleMic = () => {
     const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
     if (!SR) { alert('Mic not supported'); return }
