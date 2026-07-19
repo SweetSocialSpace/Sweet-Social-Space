@@ -25,17 +25,48 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
-    const smartPunctuate = (text: string) => {
-    if (!text) return text
-    let t = text
-    // Fix smart apostrophes
-    t = t.replace(/'/g, "'")
-    // Auto capitalize first letter of sentence
-    t = t.replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase())
-    // Trim double spaces
-    t = t.replace(/\s{2,}/g, ' ')
-    return t
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+
+recognition.continuous = true; // <- keeps it alive through pauses
+recognition.interimResults = true; // <- shows words while you speak
+recognition.lang = 'en-US';
+
+// Keep track if USER wants it on
+let isRecording = false;
+
+recognition.onend = () => {
+  if (isRecording) {
+    recognition.start(); // auto-restart if it died on a pause
   }
+};
+  recognition.onresult = (event) => {
+  let transcript = '';
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    transcript += event.results[i][0].transcript;
+  }
+  // smart punctuation basic version
+  let cleaned = transcript
+   .replace(/\s+period/gi, '.')
+   .replace(/\s+comma/gi, ',')
+   .replace(/\s+question mark/gi, '?')
+   .replace(/\s+exclamation point/gi, '!');
+
+  // capitalize first letter of sentences
+  cleaned = cleaned.replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase());
+
+  setText(cleaned);
+}
+
+function toggleMic() {
+  if (!isRecording) {
+    isRecording = true;
+    recognition.start();
+  } else {
+    isRecording = false;
+    recognition.stop();
+  }
+}
 
   const toggleMic = () => {
     const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
