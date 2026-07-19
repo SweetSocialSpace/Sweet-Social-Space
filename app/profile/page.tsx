@@ -1,9 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
-export default function ProfilePage(){
+function ProfileContent(){
   const [p, setP] = useState<any>({})
   const [saving, setSaving] = useState(false)
   const supabase = createClient()
@@ -24,7 +24,6 @@ export default function ProfilePage(){
     try {
       const {data:{user}} = await supabase.auth.getUser()
       if(!user) throw new Error('Not logged in')
-
       const {error} = await supabase.from('profiles').upsert({
         id: user.id,
         username: p.display_name || user.email?.split('@')[0] || 'user',
@@ -37,12 +36,10 @@ export default function ProfilePage(){
         email: user.email,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' })
-
       if(error) throw error
       window.location.href = '/feed'
     } catch(e:any){
       alert('Save failed: ' + e.message)
-      console.error(e)
     } finally {
       setSaving(false)
     }
@@ -58,21 +55,23 @@ export default function ProfilePage(){
           ⚠️ You must complete your profile (Name + Zip Code) to access the feed!
         </div>
       )}
-
       <h1 className="text-2xl font-black text-white">Your Subscriber Profile</h1>
       <p className="text-white font-semibold text-sm mt-1">This is what neighbors in {p.zip_code || '95122'} see about you</p>
-
       <div className="mt-6 space-y-4">
         <input value={p.display_name||''} onChange={e=>setP({...p, display_name:e.target.value})} placeholder="Display Name" className={inputStyle}/>
-        <textarea value={p.bio||''} onChange={e=>setP({...p, bio:e.target.value})} placeholder="About you - add as much as you want! Hobbies, family, what you're looking for..." rows={5} className={areaStyle}/>
+        <textarea value={p.bio||''} onChange={e=>setP({...p, bio:e.target.value})} placeholder="About you - add as much as you want!" rows={5} className={areaStyle}/>
         <div className="grid grid-cols-2 gap-3">
           <input value={p.zip_code||''} onChange={e=>setP({...p, zip_code:e.target.value})} placeholder="Zip - REQUIRED" className={inputStyle + " ring-2 ring-blue-500"}/>
-          <input value={p.neighborhood||''} onChange={e=>setP({...p, neighborhood:e.target.value})} placeholder="Neighborhood (Alum Rock, etc)" className={inputStyle}/>
+          <input value={p.neighborhood||''} onChange={e=>setP({...p, neighborhood:e.target.value})} placeholder="Neighborhood" className={inputStyle}/>
         </div>
-        <input value={p.address||''} onChange={e=>setP({...p, address:e.target.value})} placeholder="Street Address (optional, private)" className={inputStyle}/>
-        <textarea value={p.interests||''} onChange={e=>setP({...p, interests:e.target.value})} placeholder="Interests, skills you can share, things you need..." rows={3} className={areaStyle}/>
-        <button onClick={save} className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-black text-white text-lg tracking-wide">{saving?'Saving...':'SAVE PROFILE'}</button>
+        <input value={p.address||''} onChange={e=>setP({...p, address:e.target.value})} placeholder="Street Address" className={inputStyle}/>
+        <textarea value={p.interests||''} onChange={e=>setP({...p, interests:e.target.value})} placeholder="Interests, skills..." rows={3} className={areaStyle}/>
+        <button onClick={save} className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-black text-white text-lg">{saving?'Saving...':'SAVE PROFILE'}</button>
       </div>
     </div>
   )
+}
+
+export default function ProfilePage(){
+  return <Suspense fallback={<div className="text-white p-10">Loading profile...</div>}><ProfileContent /></Suspense>
 }
