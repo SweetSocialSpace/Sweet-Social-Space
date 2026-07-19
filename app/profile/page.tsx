@@ -3,6 +3,27 @@ import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
+const ZIP_MAP: Record<string,string> = {
+  "95122": "Alum Rock, East San Jose",
+  "95116": "Alum Rock / Little Portugal",
+  "95127": "Berryessa / Alum Rock Foothills",
+  "95118": "Cambrian Park",
+  "95123": "Blossom Valley",
+  "95125": "Willow Glen",
+  "95126": "West San Jose / Rose Garden",
+  "95128": "West San Jose",
+  "95112": "Downtown San Jose",
+  "95113": "Downtown San Jose",
+  "95110": "North San Jose / Japantown",
+  "95131": "Berryessa",
+  "95132": "Berryessa / Alum Rock",
+  "95133": "Berryessa / Mayfair",
+  "95148": "Evergreen / East San Jose",
+  "95121": "Evergreen",
+  "95120": "Almaden Valley",
+  "95002": "Alviso",
+}
+
 function ProfileContent(){
   const [p, setP] = useState<any>({})
   const [saving, setSaving] = useState(false)
@@ -10,37 +31,37 @@ function ProfileContent(){
   const searchParams = useSearchParams()
   const required = searchParams.get('required')
 
-  const zipToNeighborhood = async (zip: string, currentNeighborhood: string) => {
-    if (!zip || zip.length!== 5) return
-    if (currentNeighborhood && currentNeighborhood.trim()!== '') return // don't overwrite
-    try {
-      const res = await fetch(`https://api.zippopotam.us/us/${zip}`)
-      if (!res.ok) return
-      const data = await res.json()
-      const place = data.places?.[0]
-      if (place) {
-        const autoName = `${place['place name']}, ${place['state abbreviation']}`
-        setP((prev:any) => ({...prev, neighborhood: autoName }))
-      }
-    } catch (e) {
-      console.log('zip lookup failed')
-    }
-  }
-
   useEffect(()=>{
     (async()=>{
       const {data:{user}} = await supabase.auth.getUser()
       if(!user) return
       const {data} = await supabase.from('profiles').select('*').eq('id', user.id).single()
-      if(data) {
-        setP(data)
-        // AUTO FILL ON LOAD if zip exists but neighborhood is empty
-        if (data.zip_code && (!data.neighborhood || data.neighborhood.trim() === '')) {
-          zipToNeighborhood(data.zip_code, data.neighborhood)
-        }
-      }
+      if(data) setP(data)
     })()
   },[])
+
+  const zipToNeighborhood = (zip: string) => {
+    if (zip.length < 5) return
+    const clean = zip.trim()
+    if (ZIP_MAP[clean]) {
+      setP((prev:any) => {
+        if (!prev.neighborhood || prev.neighborhood === '') {
+          return {...prev, neighborhood: ZIP_MAP[clean]}
+        }
+        return prev
+      })
+    } else if (clean.length === 5) {
+      // if not in our map, just put San Jose, CA for any 951xx
+      if (clean.startsWith('951')) {
+        setP((prev:any) => {
+          if (!prev.neighborhood || prev.neighborhood === '') {
+            return {...prev, neighborhood: "San Jose, CA"}
+          }
+          return prev
+        })
+      }
+    }
+  }
 
   const save = async()=>{
     setSaving(true)
@@ -88,13 +109,13 @@ function ProfileContent(){
             value={p.zip_code||''}
             onChange={e=>{
               const z = e.target.value
-              setP((prev:any) => ({...prev, zip_code:z}))
-              zipToNeighborhood(z, p.neighborhood)
+              setP(prev=>({...prev, zip_code:z}))
+              zipToNeighborhood(z)
             }}
             placeholder="Zip - REQUIRED"
             className={inputStyle + " ring-2 ring-blue-500"}
           />
-          <input value={p.neighborhood||''} onChange={e=>setP({...p, neighborhood:e.target.value})} placeholder="Neighborhood" className={inputStyle}/>
+          <input value={p.neighborhood||''} onChange={e=>setP({...p, neighborhood:e.target.value})} placeholder="Neighborhood - auto-fills!" className={inputStyle}/>
         </div>
         <input value={p.address||''} onChange={e=>setP({...p, address:e.target.value})} placeholder="Street Address" className={inputStyle}/>
         <textarea value={p.interests||''} onChange={e=>setP({...p, interests:e.target.value})} placeholder="Interests, skills..." rows={3} className={areaStyle}/>
