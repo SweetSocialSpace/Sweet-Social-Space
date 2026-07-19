@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
+export default function ProfilePage({ searchParams }: { searchParams: { required?: string } }){
 export default function ProfilePage(){
   const [p, setP] = useState<any>({})
   const [saving, setSaving] = useState(false)
