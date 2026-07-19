@@ -47,7 +47,6 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const mediaRef = useRef<MediaRecorder | null>(null)
   const finalRef = useRef('')
   const killedRef = useRef(false)
-
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
   const stopMic = () => {
@@ -85,7 +84,22 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       return
     }
     killedRef.current = false
+
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+
+    // NEW - Check if on-device is actually available, safe fallback
+    if(SR && SR.available){
+      try{
+        const status = await SR.available({ langs: ["en-US"], processLocally: true })
+        if(status === "unavailable"){
+          startRecordingFallback()
+          return
+        }
+      }catch{
+        // If check fails, just continue to normal mic
+      }
+    }
+
     if(SR){
       try{
         const rec = new SR()
