@@ -29,15 +29,19 @@ export default function FeedPage() {
   const [listening, setListening] = useState(false)
   const [radius, setRadius] = useState(5)
   const [zip, setZip] = useState('95122')
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   // REQUIRE PROFILE GATE - no profile = no feed
   useEffect(()=>{
     (async()=>{
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      setCurrentUserId(user.id)
       const { data: profile } = await supabase.from('profiles').select('zip_code, display_name').eq('id', user.id).single()
       if (!profile ||!profile.zip_code ||!profile.display_name) {
         router.push('/profile?required=1')
+      } else if (profile.zip_code) {
+        setZip(profile.zip_code)
       }
     })()
   }, [])
@@ -75,6 +79,16 @@ export default function FeedPage() {
     if(data) setPosts(data)
   }
 
+  const deletePost = async (postId: string) => {
+    if (!confirm('Delete this post? Neighbors won\'t see it anymore.')) return
+    const { error } = await supabase.from('posts').delete().eq('id', postId)
+    if (error) {
+      alert('Delete failed: ' + error.message)
+    } else {
+      setPosts(prev => prev.filter(p => p.id!== postId))
+    }
+  }
+
   return (
     <>
       <Header />
@@ -97,8 +111,25 @@ export default function FeedPage() {
             <div className="mt-3 flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
             <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
           </div>
-          <div className="space-y-4">{posts.map(p=>(<div key={p.id} className="bg-white rounded-2xl p-5 overflow-hidden"><p className="text-black whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{p.body}</p></div>))}</div>
-        </div>
+          <div className="space-y-4">
+            {posts.map(p=>(
+              <div key={p.id} className="bg-white rounded-2xl p-5 overflow-hidden relative">
+                <div className="flex justify-between items-start gap-3">
+                  <p className="text-black whitespace-pre-wrap break-words [overflow-wrap:anywhere] flex-1">{p.body}</p>
+                  {currentUserId && p.user_id === currentUserId && (
+                    <button
+                      onClick={()=>deletePost(p.id)}
+                      className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300 shrink-0"
+                      title="Delete your post"
+                    >
+                      🗑️ DELETE
+                    </button>
+                  )}
+                </div>
+                <div className="mt-2 text- font-bold text-gray-400">{p.tag} • {new Date(p.created_at).toLocaleString()}</div>
+              </div>
+            ))}
+          </div>
         <div className="space-y-4">
           <MarketplacePreview />
           <BusinessDirectory />
