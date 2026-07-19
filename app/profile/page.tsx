@@ -109,7 +109,7 @@ function ProfileContent(){
             value={p.zip_code||''}
             onChange={e=>{
               const z = e.target.value
-              setP(prev=>({...prev, zip_code:z}))
+              setP((prev:any)=>({...prev, zip_code:z}))
               zipToNeighborhood(z)
             }}
             placeholder="Zip - REQUIRED"
