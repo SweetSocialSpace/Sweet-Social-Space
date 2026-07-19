@@ -52,7 +52,7 @@ export default function FeedCenter() {
           className="w-full min-h-40 resize-none rounded-xl border border-gray-200 p-4 text-sm text-black outline-none focus:ring-2 focus:ring-black/10"
         />
         <div className="mt-4 flex items-center justify-between">
-          <MicRecorder value={draft} onChange={setDraft} />
+          <MicRecorder onTranscript={setDraft} />
           <button onClick={()=> setDraft(smartPunctuate(draft) + ' ')} className="rounded-full bg-black px-4 py-2 text-xs font-bold text-white">
             Fix punctuation
           </button>
