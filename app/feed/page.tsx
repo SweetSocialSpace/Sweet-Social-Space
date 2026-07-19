@@ -130,7 +130,7 @@ export default function FeedPage() {
             ))}
           </div>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-6">
           <MarketplacePreview />
           <BusinessDirectory />
           <UpcomingEvents />
