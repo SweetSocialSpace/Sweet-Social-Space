@@ -17,29 +17,30 @@ const CATEGORIES = [
 function makeLegible(text: string){
   if(!text) return text
   let t = text.trim().replace(/\s+/g,' ')
-  if(!t) return t
+  // Don't run until we have at least a few words
+  if(t.split(' ').length < 2) return t
 
-  // Don't punctuate while user is still talking (interim) - only if text is longer than 3 words
-  const questionStarters = /^(who|what|where|when|why|how|is|are|can|could|would|should|do|does|did|will|have|has|are we|is this|well let)/i
-
-  // Split by natural pauses: "but", "and then", long runs
-  // We keep it simple: capitalize first letter, add? or. at END only
-  t = t.charAt(0).toUpperCase() + t.slice(1)
-
-  // Auto sentences: if we see " but " or " and " after 10 words, put period
-  t = t.replace(/\s+but then again\s+/gi, '. But then again ')
-  t = t.replace(/\s+but\s+(?=[a-z])/gi, '. But ')
-  t = t.replace(/\s+and then\s+/gi, '. And then ')
-
-  // Ending punctuation
-  if(!/[?.!]$/.test(t.trim())){
-    if(questionStarters.test(t.trim())) t = t.trim() + '?'
-    else t = t.trim() + '.'
+  const isQuestion = (s:string)=>{
+    return /^(who|what|where|when|why|how|is|are|can|could|would|should|do|does|did|will|have|has|are we|is this|how many)/i.test(s.trim())
   }
 
-  // Fix double punctuation
-  t = t.replace(/\s+([?.!])/g,'$1').replace(/([?.!])\1+/g,'$1')
-  return t
+  // Split by " and then " or long pause markers, keep as sentences
+  let parts = t.split(/(?<=[.!?])\s+/)
+  if(parts.length === 1){
+    // If no punctuation, split by question words
+    parts = t.split(/(?=\bhow many\b|\bhow\b|\bwhat\b|\bwhere\b|\bwhen\b|\bwhy\b)/i)
+  }
+
+  parts = parts.map(s=>{
+    s = s.trim()
+    if(!s) return s
+    s = s.charAt(0).toUpperCase() + s.slice(1)
+    if(!/[?.!]$/.test(s)){
+      s += isQuestion(s)? '?' : '.'
+    }
+    return s
+  })
+  return parts.join(' ').replace(/\s+([?.!])/g,'$1').replace(/\s{2,}/g,' ')
 }
 
 export default function CreatePost({ onPosted }: { onPosted?: () => void }){
@@ -61,8 +62,13 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       recRef.current?.stop?.()
       mediaRef.current?.stop?.()
       setListening(false)
+      // When stopped, make it legible once
+      if(finalRef.current){
+        setBody(makeLegible(finalRef.current))
+      }
       return
     }
+
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if(SR){
       try{
@@ -72,29 +78,27 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
         rec.lang = 'en-US'
         recRef.current = rec
         finalRef.current = body? body + ' ' : ''
+
         rec.onstart = () => setListening(true)
         rec.onend = () => {
           setListening(false)
-          if(finalRef.current){
-            setBody(makeLegible(finalRef.current))
-          }
+          if(finalRef.current) setBody(makeLegible(finalRef.current))
         }
         rec.onresult = (e:any)=>{
           let interim = ''
           for(let i=e.resultIndex; i<e.results.length; i++){
-            const txt = e.results[i][0].transcript
+            const t = e.results[i][0].transcript
             if(e.results[i].isFinal){
-              const clean = txt.trim()
-              if(clean &&!finalRef.current.toLowerCase().includes(clean.toLowerCase().slice(0, Math.min(10, clean.length)))){
+              const clean = t.trim()
+              if(clean &&!finalRef.current.toLowerCase().endsWith(clean.toLowerCase())){
                 finalRef.current = (finalRef.current + ' ' + clean).trim() + ' '
               }
             } else {
-              interim = txt
+              interim = t
             }
           }
-          // While listening, show raw + legible at end
-          const rawCombined = (finalRef.current + ' ' + interim).trim()
-          setBody(rawCombined)
+          // Show raw while speaking, legible on final
+          setBody((finalRef.current + ' ' + interim).trim())
         }
         rec.onerror = () => { try{ rec.stop() }catch{}; startRecordingFallback() }
         rec.start()
@@ -119,7 +123,11 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
         fd.append('audio', blob)
         const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd })
         const data = await res.json()
-        if(data.text) setBody(prev=> makeLegible((prev? prev+' ':'') + data.text))
+        if(data.text){
+          const newText = (finalRef.current? finalRef.current + ' ' : '') + data.text
+          setBody(makeLegible(newText))
+          finalRef.current = makeLegible(newText) + ' '
+        }
       }
       mr.start()
       setListening(true)
@@ -130,12 +138,12 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   }
 
   const handlePost = async () => {
-    const finalBody = makeLegible(body)
-    if(!finalBody.trim()) return
+    if(!body.trim()) return
     setPosting(true)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    const payload: any = { body: finalBody.trim(), tag: category, category, zip_code: '95122', user_id: user?.id, location_address: address || null }
+    const finalBody = makeLegible(body.trim())
+    const payload: any = { body: finalBody, tag: category, category, zip_code: '95122', user_id: user?.id, location_address: address || null }
     if(price) payload.price = parseFloat(price)
     if(category==='for_sale') payload.condition = condition
     const { error } = await supabase.from('posts').insert(payload)
