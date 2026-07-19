@@ -25,6 +25,18 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
+    const smartPunctuate = (text: string) => {
+    if (!text) return text
+    let t = text
+    // Fix smart apostrophes
+    t = t.replace(/'/g, "'")
+    // Auto capitalize first letter of sentence
+    t = t.replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase())
+    // Trim double spaces
+    t = t.replace(/\s{2,}/g, ' ')
+    return t
+  }
+
   const toggleMic = () => {
     const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
     if (!SR) { alert('Mic not supported'); return }
