@@ -88,7 +88,7 @@ export default function FeedPage() {
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
           <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
-          <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
+          <div className="mt-4">{/* <CreatePost onPosted={fetchPosts} /> */}</div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>setFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 transition ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20 hover:bg-white/20'}`}>{f.label}</button>
