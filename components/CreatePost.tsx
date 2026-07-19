@@ -33,7 +33,12 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }) {
 
   return (
     <div className="w-full max-w-full min-w-0 overflow-hidden bg-white rounded-2xl p-4 border border-black/10">
-      <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder="What's happening in 95122?" className="w-full max-w-full min-w-0 bg-gray-100 text-black rounded-xl p-3 text- min-h- resize-none outline-none border border-black/10" />
+      <textarea
+        value={body}
+        onChange={e=>setBody(e.target.value)}
+        placeholder="What's happening in 95122?"
+         className="w-full max-w-full min-w-0 bg-gray-100 text-black rounded-xl p-3 text-[14px] min-h-[80px] resize-none outline-none border border-black/10"
+      />
       <div className="mt-3 flex gap-2 flex-wrap w-full max-w-full min-w-0">
         <select value={category} onChange={e=>setCategory(e.target.value)} className="bg-black text-white text-xs font-black px-3 py-2 rounded-full border">
           <option value="general">General</option>
