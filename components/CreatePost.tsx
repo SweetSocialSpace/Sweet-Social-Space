@@ -20,8 +20,8 @@ function makeLegible(text: string){
   // Don't run until we have at least a few words
   if(t.split(' ').length < 2) return t
 
-  const isQuestion = (s:string)=>{
-    return /^(who|what|where|when|why|how|is|are|can|could|would|should|do|does|did|will|have|has|are we|is this|how many)/i.test(s.trim())
+    const isQuestion = (s:string)=>{
+    return /^(who|what|where|when|why|how|how many|do you|does|did|are you|isn'?t|is this|are we|would you|should|can you)/i.test(s.trim())
   }
 
   // Split by " and then " or long pause markers, keep as sentences
