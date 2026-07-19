@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
 export default function ProfilePage(){
@@ -16,13 +17,35 @@ export default function ProfilePage(){
     })()
   },[])
 
-  const save = async()=>{
-    setSaving(true)
+ const save = async()=>{
+  setSaving(true)
+  try {
     const {data:{user}} = await supabase.auth.getUser()
-    await supabase.from('profiles').upsert({...p, id: user?.id, updated_at: new Date()})
+    if(!user) throw new Error('Not logged in')
+    
+    const {error} = await supabase.from('profiles').upsert({
+      id: user.id,
+      display_name: p.display_name,
+      bio: p.bio,
+      zip_code: p.zip_code || '95122',
+      neighborhood: p.neighborhood,
+      address: p.address,
+      interests: p.interests,
+      email: user.email,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' })
+    
+    if(error) throw error
+    
+    // Success - go back to feed
+    window.location.href = '/feed'
+  } catch(e:any){
+    alert('Save failed: ' + e.message)
+    console.error(e)
+  } finally {
     setSaving(false)
-    alert('Profile saved!')
   }
+}
 
  const inputStyle = "w-full p-3 rounded-xl bg-white/15 text-white font-black placeholder:text-white/60 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
 const areaStyle = "w-full p-3 rounded-xl bg-black/50 text-white font-bold placeholder:text-white/50 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none backdrop-blur-sm"
