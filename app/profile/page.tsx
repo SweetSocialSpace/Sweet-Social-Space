@@ -24,9 +24,8 @@ export default function ProfilePage(){
     alert('Profile saved!')
   }
 
-  const inputStyle = "w-full p-3 rounded-xl bg-white text-black font-bold placeholder:text-gray-500 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
-  const areaStyle = "w-full p-3 rounded-xl bg-white text-black font-bold placeholder:text-gray-500 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
-
+  const inputStyle = "w-full p-3 rounded-xl bg-black/50 text-white font-bold placeholder:text-white/50 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none backdrop-blur-sm"
+const areaStyle = "w-full p-3 rounded-xl bg-black/50 text-white font-bold placeholder:text-white/50 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none backdrop-blur-sm"
   return (
     <div className="max-w-2xl mx-auto p-6 bg-black/60 rounded-2xl border border-white/20 text-white mt-10 backdrop-blur-md">
       <h1 className="text-2xl font-black text-white">Your Subscriber Profile</h1>
