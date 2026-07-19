@@ -2,11 +2,12 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-type Alert = { id: string; message?: string; event?: string; title?: string; body?: string }
+type LiveAlert = { id: string; message?: string; event?: string; title?: string; body?: string; type?: string; icon?: string }
 
 export function EmergencyAlerts() {
-  const [alerts, setAlerts] = useState<Alert[]>([])
+  const [alerts, setAlerts] = useState<LiveAlert[]>([])
   const [status, setStatus] = useState<'checking'|'clear'|'alert'>('checking')
+  const [zip, setZip] = useState('95122')
 
   useEffect(()=>{
     const supabase = createClient()
@@ -14,6 +15,18 @@ export function EmergencyAlerts() {
 
     const load = async()=>{
       try{
+        // Get user's zip
+        const { data: { user } } = await supabase.auth.getUser()
+        let currentZip = '95122'
+        if (user) {
+          const { data: profile } = await supabase.from('profiles').select('zip_code').eq('id', user.id).single()
+          if (profile?.zip_code) {
+            currentZip = profile.zip_code
+            if(mounted) setZip(currentZip)
+          }
+        }
+
+        // 1. Check Supabase manual alerts first
         const {data, count} = await supabase.from('alerts').select('id,message,event,title,body', {count:'exact'}).eq('is_active', true).limit(3)
         if(mounted && count && count>0){
           setAlerts((data as any) || [])
@@ -21,44 +34,54 @@ export function EmergencyAlerts() {
           return
         }
 
-        // No Supabase alerts - auto-grab from internet for 95122
-        const res = await fetch(`https://api.weather.gov/alerts/active?point=37.3361,-121.8111`, {
-          headers: { 'Accept': 'application/geo+json' }
-        })
+        // 2. No manual alerts - hit OUR new auto-scanner that uses your OPENWEATHER key
+        const res = await fetch(`/api/emergency?zip=${currentZip}`)
         const json = await res.json()
-        if(mounted && json.features && json.features.length > 0){
-          const live = json.features.slice(0,3).map((f:any, i:number)=>({
-            id: f.id || `nws-${i}`,
-            event: f.properties?.event,
-            title: f.properties?.headline,
-            message: f.properties?.description?.slice(0,120) || f.properties?.headline
-          }))
-          setAlerts(live)
-          setStatus('alert')
+        if(mounted && json.alerts && json.alerts.length > 0){
+          // If it's just the "All clear" status, show as clear but with live timestamp
+          if(json.alerts.length === 1 && json.alerts[0].type === 'Status'){
+            setAlerts(json.alerts)
+            setStatus('clear')
+          } else {
+            setAlerts(json.alerts)
+            setStatus('alert')
+          }
         } else {
           if(mounted) setStatus('clear')
         }
-      }catch{
+      }catch(e){
+        console.log(e)
         if(mounted) setStatus('clear')
       }
     }
     load()
-    const id = setInterval(load, 10*60*1000) // auto-refresh every 10 min
+    const id = setInterval(load, 5*60*1000) // refresh every 5 min
     return ()=>{ mounted = false; clearInterval(id) }
   },[])
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold flex items-center gap-2">🚨 Emergency</p>
-      {status === 'checking' && <p className="text-sm mt-1 text-white/60">Checking...</p>}
-      {status === 'clear' && <p className="text-sm mt-1 text-white/80">All clear in 95122</p>}
-      {status === 'alert' && (
-        <div className="mt-2 space-y-2">
+      <p className="font-bold flex items-center gap-2">🚨 Emergency • Near {zip} • Live</p>
+      {status === 'checking' && <p className="text-sm mt-2 text-white/60 animate-pulse">Scanning NOAA, OpenWeather, USGS...</p>}
+      {status === 'clear' && (
+        <div className="mt-2">
           {alerts.map(a=> (
-            <p key={a.id} className="text-sm text-red-200 bg-red-500/10 rounded-lg p-2">
-              • {a.message || a.event || a.title || a.body || 'Active alert'}
+            <p key={a.id} className="text-sm text-white/80 bg-white/5 rounded-lg p-2.5">
+              {(a as any).icon} {a.title} - {a.message}
             </p>
           ))}
+          {alerts.length===0 && <p className="text-sm mt-1 text-white/80">All clear in {zip} • No active alerts</p>}
+        </div>
+      )}
+      {status === 'alert' && (
+        <div className="mt-3 space-y-2">
+          {alerts.map(a=> (
+            <div key={a.id} className="text-sm bg-red-500/15 border border-red-500/30 rounded-lg p-2.5">
+              <div className="font-black text-red-200 text-xs">{(a as any).icon || '🚨'} {a.title || a.event} {a.type? `• ${a.type}` : ''}</div>
+              <div className="text-white/80 mt-1 text-xs leading-snug">{a.message || a.body}</div>
+            </div>
+          ))}
+          <p className="text- text-white/30 mt-2">Live from OpenWeather, NOAA, USGS • auto-refresh 5m</p>
         </div>
       )}
     </div>
