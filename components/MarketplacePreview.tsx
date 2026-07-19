@@ -2,62 +2,65 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-type Item = { id: string; title: string; price_cents: number }
+type Item = {
+  id: string;
+  title: string;
+  price_cents?: number;
+  price?: number;
+  address?: string;
+  sale_date?: string;
+  sale_time?: string;
+}
 
 export function MarketplacePreview(){
   const [items, setItems] = useState<Item[]>([])
-  const [liveItems, setLiveItems] = useState<Item[]>([])
 
   useEffect(()=>{
     const supabase = createClient()
     let mounted = true
 
-    const fetchLiveMarket = async () => {
-      try {
-        // Free product API - real items from internet, no key needed
-        const res = await fetch('https://dummyjson.com/products?limit=3&select=title,price')
-        const json = await res.json()
-        if(mounted && json.products){
-          const live: Item[] = json.products.map((p:any)=>({
-            id: `live-${p.id}`,
-            title: p.title,
-            price_cents: Math.round(p.price * 100)
-          }))
-          setLiveItems(live)
-        }
-      } catch {}
+    const load = async()=>{
+      const {data} = await supabase
+       .from('marketplace')
+       .select('id,title,price_cents,price,address,sale_date,sale_time')
+       .order('created_at',{ascending:false})
+       .limit(5)
+      if(mounted && data) setItems(data as any)
     }
-
-    supabase.from('marketplace_listings').select('id,title,price_cents').eq('status','active').order('created_at',{ascending:false}).limit(3).then(({data})=>{
-      if(mounted && data && data.length > 0){
-        setItems(data as any)
-      } else {
-        // No listings - auto-grab from internet
-        fetchLiveMarket()
-      }
-    })
-
-    const id = setInterval(()=>{
-      supabase.from('marketplace_listings').select('id,title,price_cents').eq('status','active').order('created_at',{ascending:false}).limit(3).then(({data})=>{
-        if(mounted && data && data.length > 0) setItems(data as any)
-      })
-    }, 20*60*1000) // auto-refresh every 20 min
-
+    load()
+    const id = setInterval(load, 2*60*1000)
     return ()=>{ mounted = false; clearInterval(id) }
   },[])
 
-  const display = items.length > 0 ? items : liveItems
-
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">🛒 Marketplace</p>
-      <p className="text-xs text-white/50 mt-1">Near 95122 • Live</p>
-      {display.length===0? <p className="text-sm mt-3 text-white/60">No listings yet</p> : (
-        <div className="mt-3 space-y-2">
-          {display.map(i=>(
-            <div key={i.id} className="flex justify-between bg-white/5 rounded-xl p-2.5 text-xs">
-              <span className="truncate">{i.title}</span>
-              <span className="text-white/60">${(i.price_cents/100).toFixed(0)}</span>
+      <p className="font-bold">🛒 Marketplace • Near 95122 • Live</p>
+      {items.length===0? <p className="text-sm mt-3 text-white/60">No listings yet - post a garage sale!</p> : (
+        <div className="mt-3 space-y-3">
+          {items.map(i=>(
+            <div key={i.id} className="bg-white/5 rounded-xl p-3 text-xs">
+              <div className="flex justify-between">
+                <span className="font-semibold truncate pr-2">{i.title}</span>
+                {(i.price_cents || i.price) && (
+                  <span className="text-white/60 shrink-0">
+                    ${i.price_cents? (i.price_cents/100).toFixed(0) : i.price}
+                  </span>
+                )}
+              </div>
+
+              {i.sale_date && (
+                <p className="text- text-white/50 mt-1">📅 {i.sale_date} {i.sale_time || ''}</p>
+              )}
+
+              {i.address && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(i.address + ' 95122 San Jose CA')}`}
+                  target="_blank"
+                  className="mt-2 inline-flex items-center gap-1 text- bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full"
+                >
+                  📍 Map to {i.address}
+                </a>
+              )}
             </div>
           ))}
         </div>
@@ -65,5 +68,4 @@ export function MarketplacePreview(){
     </div>
   )
 }
-
 export default MarketplacePreview
