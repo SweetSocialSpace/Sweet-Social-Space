@@ -16,27 +16,7 @@ const CATEGORIES = [
 
 function makeLegible(text: string){
   if(!text) return text
-  let t = text.trim()
-  // Fix spacing
-  t = t.replace(/\s+/g, ' ')
-  // Auto sentence split on long pauses = "and then"
-  // Detect questions
-  const questionStarters = /^(who|what|where|when|why|how|is|are|can|could|would|should|do|does|did|will|have|has|are we|is this)/i
-  // Split into sentences
-  let sentences = t.split(/(?<=[.!?])\s+|(?=\bwho\b|\bwhat\b|\bwhere\b)/i)
-  sentences = sentences.map(s=>{
-    s = s.trim()
-    if(!s) return s
-    // Capitalize first letter
-    s = s.charAt(0).toUpperCase() + s.slice(1)
-    // If looks like question but no?, add?
-    if(questionStarters.test(s) &&!/[?.!]$/.test(s)) s += '?'
-    // If no ending punctuation, add.
-    else if(!/[?.!]$/.test(s)) s += '.'
-    // Emphasis: if user said "really really" -> keep one, or if LOUD we can't detect loud, but we can detect "very" -> keep
-    return s
-  })
-  return sentences.join(' ').replace(/\s+([?.!])/g, '$1')
+  return text.trim().replace(/\s+/g,' ').replace(/\s+([?.!])/g,'$1')
 }
 
 export default function CreatePost({ onPosted }: { onPosted?: () => void }){
@@ -49,6 +29,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const [listening, setListening] = useState(false)
   const recRef = useRef<any>(null)
   const mediaRef = useRef<MediaRecorder | null>(null)
+  const finalRef = useRef('')
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
@@ -60,7 +41,6 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       return
     }
 
-    // 1. Try native Web Speech - works on Chrome/Edge/Safari
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if(SR){
       try{
@@ -69,24 +49,31 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
         rec.interimResults = true
         rec.lang = 'en-US'
         recRef.current = rec
+        finalRef.current = body? body + ' ' : '' // start from existing text
+
         rec.onstart = () => setListening(true)
         rec.onend = () => setListening(false)
         rec.onresult = (e:any)=>{
-          let transcript = ''
+          let interim = ''
           for(let i=e.resultIndex; i<e.results.length; i++){
-            transcript += e.results[i][0].transcript + ' '
+            const t = e.results[i][0].transcript
+            if(e.results[i].isFinal){
+              const clean = t.trim()
+              // de-dupe: don't add if already ends with same
+              if(clean &&!finalRef.current.trim().endsWith(clean)){
+                finalRef.current = (finalRef.current + ' ' + clean).trim() + ' '
+              }
+            } else {
+              interim = t
+            }
           }
-          setBody(prev=> makeLegible((prev? prev+' ':'') + transcript))
+          setBody((finalRef.current + ' ' + interim).trim())
         }
-        rec.onerror = async () => {
-          // If native fails, fall back to recording
-          startRecordingFallback()
-        }
+        rec.onerror = () => { try{ rec.stop() }catch{}; startRecordingFallback() }
         rec.start()
         return
       }catch{}
     }
-    // 2. Universal fallback - works on Firefox, iPhone, any computer
     startRecordingFallback()
   }
 
@@ -100,16 +87,17 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       mr.onstop = async ()=>{
         const blob = new Blob(chunks, { type: 'audio/webm' })
         setListening(false)
-        // Send to your ElevenLabs / Whisper API - works everywhere
+        stream.getTracks().forEach(t=>t.stop())
         const fd = new FormData()
         fd.append('audio', blob)
         const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd })
         const data = await res.json()
-        if(data.text) setBody(prev=> makeLegible((prev? prev+' ':'') + data.text))
+        if(data.text) setBody(prev=> (prev? prev+' ':'') + data.text.trim())
       }
       mr.start()
       setListening(true)
-    }catch(err){
+      finalRef.current = body? body + ' ' : ''
+    }catch{
       alert('Mic blocked - check browser permissions')
     }
   }
@@ -124,7 +112,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
     if(category==='for_sale') payload.condition = condition
     const { error } = await supabase.from('posts').insert(payload)
     setPosting(false)
-    if(!error){ setBody(''); setPrice(''); setAddress(''); setCategory('general'); onPosted?.() }
+    if(!error){ setBody(''); setPrice(''); setAddress(''); setCategory('general'); finalRef.current=''; onPosted?.() }
     else alert(error.message)
   }
 
@@ -137,7 +125,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
         ))}
       </div>
       <div className="flex gap-2 w-full max-w-full min-w-0">
-        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder="Tap mic - works on any phone or computer. Try: are we good or are we not" className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text- text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" />
+        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder="Tap mic - works on any phone or computer. Try: are we good or are we not" className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" />
         <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
       </div>
       {currentCat?.needsAddress && (
