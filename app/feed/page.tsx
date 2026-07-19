@@ -64,7 +64,7 @@ export default function FeedPage() {
     if (!error) setPosts(prev => prev.filter((p:any) => p.id!== postId))
   }
 
-  const filtered = filter==='all'? posts : posts.filter((p:any)=> (p.category||p.tag?.toLowerCase())===filter)
+  const filtered = filter==='all'? posts : posts.filter((p:any)=> (p.category||'').toLowerCase()===filter || (p.tag||'').toLowerCase()===filter)
 
   const catBadge = (cat: string) => {
     const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼' }
@@ -85,17 +85,12 @@ export default function FeedPage() {
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
           <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
-
-          {/* NEW ONE-STOP COMPOSER */}
           <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
-
-          {/* FILTER BAR - THIS IS THE ONE-STOP MAGIC */}
-          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1 scrollbar-hide">
+          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
-              <button key={f.id} onClick={()=>setFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 transition ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20 hover:bg-white/20'}`}>{f.label}</button>
+              <button key={f.id} onClick={()=>setFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
             ))}
           </div>
-
           <div className="space-y-3 mt-2">
             {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in 95122 - be first!</div>}
             {filtered.map((p:any)=>(
@@ -105,19 +100,27 @@ export default function FeedPage() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-black bg-black text-white px-2 py-0.5 rounded-full">{catBadge(p.category||'general')} {(p.category||p.tag||'general').toUpperCase()}</span>
                       {p.price!=null && <span className="text-xs font-black bg-green-500 text-white px-2 py-0.5 rounded-full">${Number(p.price).toFixed(0)}</span>}
-                      {p.condition && <span className="text- bg-gray-100 px-2 py-0.5 rounded-full">{p.condition}</span>}
                     </div>
                     <p className="text-black whitespace-pre-wrap break-words text-">{p.body}</p>
+                    {/* PRIVATE ADDRESS - HIDDEN UNTIL CLICK */}
+                    {p.location_address && (
+                      <details className="mt-3">
+                        <summary className="list-none bg-blue-600 text-white text-xs font-black px-3 py-1.5 rounded-full cursor-pointer inline-block">📍 Map & Directions (Tap to reveal private address)</summary>
+                        <div className="mt-2 bg-gray-100 rounded-xl p-3 text-black text-sm border">
+                          🔒 Private: {p.location_address}
+                          <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="ml-2 bg-black text-white px-2 py-1 rounded-full text-xs">Open Maps</a>
+                        </div>
+                      </details>
+                    )}
                   </div>
                   {currentUserId && p.user_id === currentUserId && (
-                    <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
+                    <button onClick={()=>deletePost(p.id)} className="bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-black border">X</button>
                   )}
                 </div>
                 <div className="mt-2 text- font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • 95122</div>
               </div>
             ))}
           </div>
-        </div>
         <div className="space-y-4">
           <MarketplacePreview />
           <BusinessDirectory />
