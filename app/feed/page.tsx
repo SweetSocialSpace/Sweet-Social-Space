@@ -107,7 +107,6 @@ export default function FeedPage() {
                     </div>
                     <p className="text-black whitespace-pre-wrap break-words text- leading-snug">{p.body}</p>
 
-                    {/* TRUE PRIVATE ADDRESS - NO TEXT SHOWN */}
                     {p.location_address && (
                       <div className="mt-3 flex gap-2 items-center flex-wrap">
                         <span className="text- bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near 95122 • Private</span>
@@ -116,7 +115,7 @@ export default function FeedPage() {
                           target="_blank"
                           className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition"
                         >
-                          🗺️ Get Directions
+                          🗺 Get Directions
                         </a>
                       </div>
                     )}
