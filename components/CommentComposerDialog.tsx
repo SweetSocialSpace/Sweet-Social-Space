@@ -3,9 +3,6 @@
 import * as React from 'react'
 import MicRecorder from '@/components/mic/MicRecorder'
 
-// TODO: Replace with shadcn/ui when installed
-
-// Stub Dialog components - replace with shadcn/ui when installed
 function Dialog({ open, onOpenChange, children }: any) {
   if (!open) return null
   return (
@@ -113,7 +110,7 @@ export function CommentComposerDialog({
           />
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <MicRecorder value={value} onChange={onChange} />
+              <MicRecorder onChange={(t:string) => onChange(value ? value + ' ' + t : t)} />
 
               <span className="text-xs text-muted-foreground">
                 {value.length}/{maxLength}
