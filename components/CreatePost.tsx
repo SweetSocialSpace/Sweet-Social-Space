@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 const CATEGORIES = [
@@ -22,6 +22,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const [address, setAddress] = useState('')
   const [posting, setPosting] = useState(false)
   const [listening, setListening] = useState(false)
+  const [activeField, setActiveField] = useState<'body'|'address'>('body')
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
@@ -29,9 +30,19 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
     const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
     if (!SR) { alert('Mic not supported'); return }
     const rec = new SR()
+    rec.continuous = false
+    rec.interimResults = false
+    rec.lang = 'en-US'
     rec.onstart = () => setListening(true)
     rec.onend = () => setListening(false)
-    rec.onresult = (e: any) => setBody(prev => prev? prev + ' ' + e.results[0][0].transcript : e.results[0][0].transcript)
+    rec.onresult = (e: any) => {
+      const text = e.results[0][0].transcript
+      if(activeField==='address'){
+        setAddress(prev => prev? prev + ' ' + text : text)
+      } else {
+        setBody(prev => prev? prev + ' ' + text : text)
+      }
+    }
     rec.start()
   }
 
@@ -55,7 +66,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
     if(!error){
       setBody(''); setPrice(''); setAddress(''); setCategory('general')
       onPosted?.()
-    } else alert(error.message)
+    } else alert('Error: ' + error.message)
   }
 
   return (
@@ -63,30 +74,46 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       <p className="font-bold mb-3">📝 Post to 95122 - One Stop</p>
       <div className="flex flex-wrap gap-2 mb-4">
         {CATEGORIES.map(c => (
-          <button key={c.id} onClick={()=>setCategory(c.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${category===c.id? 'bg-white text-black border-white' : 'bg-white/10 border-white/20 text-white/70'}`}>{c.icon} {c.label}</button>
+          <button key={c.id} onClick={()=>setCategory(c.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${category===c.id? 'bg-white text-black border-white' : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/20'}`}>{c.icon} {c.label}</button>
         ))}
       </div>
-
       <div className="flex gap-2">
-        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder={`Tap mic and talk...`} className="w-full bg-white rounded-xl p-3 text-sm text-black placeholder:text-black/40 min-h- flex-1" />
-        <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
+        <textarea
+          value={body}
+          onChange={e=>setBody(e.target.value)}
+          onFocus={()=>setActiveField('body')}
+          placeholder="Tap mic and talk... What's happening in 95122?"
+          className="w-full bg-white rounded-xl p-3 text-sm text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-blue-400 min-h- flex-1"
+        />
+        <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse text-white' : 'bg-black text-white'}`}>🎤</button>
       </div>
-
-      {/* AUTO-OPENS WHEN FOR SALE / FREE / EVENT / JOB */}
       {currentCat?.needsAddress && (
-        <div className="mt-3 bg-white/10 rounded-xl p-3 border border-white/10 animate-in">
-          <div className="flex gap-2">
-            <input value={price} onChange={e=>setPrice(e.target.value)} placeholder={category==='free'?'Free (0)': category==='for_sale'?'Price $':' '} className={`bg-white rounded-xl p-2.5 text-sm text-black ${category==='event' || category==='job'? 'hidden' : 'w-24'}`} />
-            {category==='for_sale' && <select value={condition} onChange={e=>setCondition(e.target.value)} className="bg-white rounded-xl p-2.5 text-sm text-black"><option value="new">New</option><option value="like_new">Like New</option><option value="good">Good</option><option value="fair">Fair</option></select>}
-            <input value={address} onChange={e=>setAddress(e.target.value)} placeholder="📍 Address - Private, hidden until Map clicked (e.g. 1845 King Rd)" className="flex-1 bg-white rounded-xl p-2.5 text-sm text-black placeholder:text-black/40" />
+        <div className="mt-3 bg-white/10 rounded-xl p-3 border border-white/10">
+          <div className="flex gap-2 flex-wrap">
+            {category!=='event' && category!=='job' && (
+              <input type="number" value={price} onChange={e=>setPrice(e.target.value)} onFocus={()=>setActiveField('body')} placeholder={category==='free'?'0': 'Price $'} className="w-24 bg-white rounded-xl p-2.5 text-sm text-black font-bold" />
+            )}
+            {category==='for_sale' && (
+              <select value={condition} onChange={e=>setCondition(e.target.value)} className="bg-white rounded-xl p-2.5 text-sm text-black font-bold border border-black/10">
+                <option value="new">New</option><option value="like_new">Like New</option><option value="good">Good</option><option value="fair">Fair</option>
+              </select>
+            )}
+            <input
+              value={address}
+              onChange={e=>setAddress(e.target.value)}
+              onFocus={()=>setActiveField('address')}
+              placeholder={activeField==='address'? "🔴 Listening for address..." : "📍 Tap here then mic for address - PRIVATE"}
+              className={`flex-1 min-w- bg-white rounded-xl p-2.5 text-sm text-black placeholder:text-black/40 font-bold border-2 ${activeField==='address'? 'border-blue-500 ring-2 ring-blue-300' : 'border-black/10'}`}
+            />
           </div>
-          <p className="text- text-white/50 mt-2">🔒 Address is PRIVATE - Only shown when neighbor clicks "Map & Directions" - not visible in feed</p>
+          <p className="text- text-white/60 mt-2">
+            {activeField==='address'? '🔴 Mic now types ADDRESS - tap body box to type post again' : '💡 Tap address box first, then 🎤 to speak address. 🔒 Private until Map clicked'}
+          </p>
         </div>
       )}
-
       <div className="flex justify-between items-center mt-3">
-        <p className="text- text-white/40">Posting as • 95122 • {currentCat?.icon} {category}</p>
-        <button onClick={handlePost} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40">Post to 95122 🚀</button>
+        <p className="text- text-white/40">Posting as • 95122 • {currentCat?.icon} {category} {listening && `• 🔴 Listening to ${activeField}...`}</p>
+        <button onClick={handlePost} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40 hover:bg-white/90">{posting? 'Posting...' : 'Post to 95122 🚀'}</button>
       </div>
     </div>
   )
