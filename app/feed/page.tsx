@@ -14,20 +14,33 @@ import BusinessDirectory from '@/components/BusinessDirectory'
 import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
 import WeatherBar from '@/components/WeatherBar'
-
-type Tag = "General" | "Alert" | "Recommendation" | "Free stuff" | "Hot take" | "Lost & found"
-const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot take", "Lost & found"]
+import CreatePost from '@/components/CreatePost'
 
 export default function FeedPage() {
+  const [filter, setFilter] = useState('all')
   const supabase = createClient()
   const router = useRouter()
-  const [draft, setDraft] = useState('')
-  const [tag, setTag] = useState<Tag>('General')
   const [posts, setPosts] = useState<any[]>([])
-  const [listening, setListening] = useState(false)
   const [radius, setRadius] = useState(5)
   const [zip, setZip] = useState('95122')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+
+  const FILTERS = [
+    { id: 'all', label: 'All 🌎' },
+    { id: 'general', label: 'General 😊' },
+    { id: 'safety', label: 'Safety 🚨' },
+    { id: 'for_sale', label: 'For Sale 💰' },
+    { id: 'free', label: 'Free 🎁' },
+    { id: 'lost_pet', label: 'Lost Pet 🐶' },
+    { id: 'event', label: 'Event 🎉' },
+    { id: 'help', label: 'Help 🤝' },
+    { id: 'recommend', label: 'Tacos 🌮' },
+  ]
+
+  const fetchPosts = async () => {
+    const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
+    if(data) setPosts(data)
+  }
 
   useEffect(()=>{
     (async()=>{
@@ -43,47 +56,19 @@ export default function FeedPage() {
     })()
   }, [])
 
-  useEffect(()=>{
-    (async()=>{
-      const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
-      if(data) setPosts(data)
-    })()
-  }, [])
-
-  const toggleMic = () => {
-    const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-    if (!SR) { alert('Mic not supported'); return }
-    const rec = new SR()
-    rec.continuous = false
-    rec.interimResults = false
-    rec.lang = 'en-US'
-    rec.onstart = () => setListening(true)
-    rec.onend = () => setListening(false)
-    rec.onresult = (e: any) => {
-      const text = e.results[0][0].transcript
-      setDraft(prev => prev? prev + ' ' + text : text)
-    }
-    rec.start()
-  }
-
-  const submit = async ()=>{
-    if(!draft.trim()) return
-    const { data:{ user } } = await supabase.auth.getUser()
-    if(!user) return
-    await supabase.from('posts').insert({ user_id:user.id, body:draft, tag })
-    setDraft('')
-    const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
-    if(data) setPosts(data)
-  }
+  useEffect(()=>{ fetchPosts() }, [])
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
     const { error } = await supabase.from('posts').delete().eq('id', postId)
-    if (error) {
-      alert('Delete failed: ' + error.message)
-    } else {
-      setPosts(prev => prev.filter((p:any) => p.id!== postId))
-    }
+    if (!error) setPosts(prev => prev.filter((p:any) => p.id!== postId))
+  }
+
+  const filtered = filter==='all'? posts : posts.filter((p:any)=> (p.category||p.tag?.toLowerCase())===filter)
+
+  const catBadge = (cat: string) => {
+    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼' }
+    return map[cat] || '📌'
   }
 
   return (
@@ -100,27 +85,38 @@ export default function FeedPage() {
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
           <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
-          <div className="bg-white rounded-2xl p-5 mb-6 mt-4">
-            <div className="flex gap-2">
-              <textarea value={draft} onChange={e=>setDraft(e.target.value)} placeholder="Tap mic and talk..." className="w-full text-black p-3 border rounded-xl flex-1" />
-              <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-black ${listening? 'bg-red-600 animate-pulse' : 'bg-black text-white'}`}>🎤</button>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">{TAGS.map(t=><button key={t} onClick={()=>setTag(t)} className={`px-3 py-1.5 rounded-full text-xs font-black border-2 ${tag===t?'bg-black text-white':'bg-white text-black border-black'}`}>{t}</button>)}</div>
-            <button onClick={submit} className="mt-3 w-full bg-blue-600 text-white font-black py-3 rounded-full">POST AS {tag.toUpperCase()}</button>
+
+          {/* NEW ONE-STOP COMPOSER */}
+          <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
+
+          {/* FILTER BAR - THIS IS THE ONE-STOP MAGIC */}
+          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1 scrollbar-hide">
+            {FILTERS.map(f=>(
+              <button key={f.id} onClick={()=>setFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 transition ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20 hover:bg-white/20'}`}>{f.label}</button>
+            ))}
           </div>
-          <div className="space-y-4">
-            {posts.map((p:any)=>(
-              <div key={p.id} className="bg-white rounded-2xl p-5">
+
+          <div className="space-y-3 mt-2">
+            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in 95122 - be first!</div>}
+            {filtered.map((p:any)=>(
+              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4" style={{borderLeftColor: p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b':'#000'}}>
                 <div className="flex justify-between items-start gap-3">
-                  <p className="text-black whitespace-pre-wrap break-words flex-1">{p.body}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-black bg-black text-white px-2 py-0.5 rounded-full">{catBadge(p.category||'general')} {(p.category||p.tag||'general').toUpperCase()}</span>
+                      {p.price!=null && <span className="text-xs font-black bg-green-500 text-white px-2 py-0.5 rounded-full">${Number(p.price).toFixed(0)}</span>}
+                      {p.condition && <span className="text- bg-gray-100 px-2 py-0.5 rounded-full">{p.condition}</span>}
+                    </div>
+                    <p className="text-black whitespace-pre-wrap break-words text-">{p.body}</p>
+                  </div>
                   {currentUserId && p.user_id === currentUserId && (
-                    <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">DELETE</button>
+                    <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
                   )}
                 </div>
-                <div className="mt-2 text- font-bold text-gray-400">{p.tag} - {new Date(p.created_at).toLocaleString()}</div>
+                <div className="mt-2 text- font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • 95122</div>
               </div>
             ))}
-                   </div>
+          </div>
         </div>
         <div className="space-y-4">
           <MarketplacePreview />
