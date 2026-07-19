@@ -77,7 +77,7 @@ export default function FeedPage() {
   return (
     <>
       <Header />
-     <div className="max-w-[1600px] mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)_360px] gap-6 items-start w-full">
+     <div className="max-w-[1600px] mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
           <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
