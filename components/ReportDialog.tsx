@@ -126,7 +126,7 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
               placeholder="Anything that will help us review."
             />
             <div className="mt-1 flex justify-end">
-              <MicRecorder value={details} onChange={setDetails} />
+              <MicRecorder onTranscript={setDetails} />
             </div>
 
             {TURNSTILE_SITE_KEY && (
