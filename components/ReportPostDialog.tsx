@@ -71,7 +71,7 @@ export function ReportPostDialog({ postId, onClose }: { postId: string; onClose:
             <label className="mt-3 block text-sm font-medium">Details (optional)</label>
             <textarea value={details} onChange={(e) => setDetails(e.target.value)} maxLength={500} rows={3} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm" placeholder="Add any context that will help us review." />
             <div className="mt-1 flex justify-end">
-              <MicRecorder value={details} onChange={setDetails} />
+             <MicRecorder onTranscript={setDetails} />
             </div>
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
             <div className="mt-4 flex justify-end gap-2">
