@@ -1,4 +1,4 @@
-'use client'
+
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -25,10 +25,14 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-
-recognition.continuous = true; // <- keeps it alive through pauses
+  const getRecognition = () => {
+  if (typeof window === 'undefined') return null;
+  const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  if (!SR) return null;
+  const rec = new SR();
+  rec.continuous = true;
+  return rec;
+};
 recognition.interimResults = true; // <- shows words while you speak
 recognition.lang = 'en-US';
 
