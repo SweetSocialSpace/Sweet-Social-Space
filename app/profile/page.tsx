@@ -10,17 +10,9 @@ function ProfileContent(){
   const searchParams = useSearchParams()
   const required = searchParams.get('required')
 
-  useEffect(()=>{
-    (async()=>{
-      const {data:{user}} = await supabase.auth.getUser()
-      if(!user) return
-      const {data} = await supabase.from('profiles').select('*').eq('id', user.id).single()
-      if(data) setP(data)
-    })()
-  },[])
-
-  const zipToNeighborhood = async (zip: string) => {
-    if (zip.length!== 5) return
+  const zipToNeighborhood = async (zip: string, currentNeighborhood: string) => {
+    if (!zip || zip.length!== 5) return
+    if (currentNeighborhood && currentNeighborhood.trim()!== '') return // don't overwrite
     try {
       const res = await fetch(`https://api.zippopotam.us/us/${zip}`)
       if (!res.ok) return
@@ -28,18 +20,27 @@ function ProfileContent(){
       const place = data.places?.[0]
       if (place) {
         const autoName = `${place['place name']}, ${place['state abbreviation']}`
-        // only auto-fill if neighborhood is empty
-        setP((prev:any) => {
-          if (!prev.neighborhood || prev.neighborhood.trim() === '') {
-            return {...prev, neighborhood: autoName }
-          }
-          return prev
-        })
+        setP((prev:any) => ({...prev, neighborhood: autoName }))
       }
     } catch (e) {
       console.log('zip lookup failed')
     }
   }
+
+  useEffect(()=>{
+    (async()=>{
+      const {data:{user}} = await supabase.auth.getUser()
+      if(!user) return
+      const {data} = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      if(data) {
+        setP(data)
+        // AUTO FILL ON LOAD if zip exists but neighborhood is empty
+        if (data.zip_code && (!data.neighborhood || data.neighborhood.trim() === '')) {
+          zipToNeighborhood(data.zip_code, data.neighborhood)
+        }
+      }
+    })()
+  },[])
 
   const save = async()=>{
     setSaving(true)
@@ -87,8 +88,8 @@ function ProfileContent(){
             value={p.zip_code||''}
             onChange={e=>{
               const z = e.target.value
-              setP({...p, zip_code:z})
-              zipToNeighborhood(z)
+              setP((prev:any) => ({...prev, zip_code:z}))
+              zipToNeighborhood(z, p.neighborhood)
             }}
             placeholder="Zip - REQUIRED"
             className={inputStyle + " ring-2 ring-blue-500"}
