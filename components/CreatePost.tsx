@@ -1,5 +1,5 @@
-
-import { useState } from 'react'
+'use client'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 const CATEGORIES = [
@@ -23,53 +23,77 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const [posting, setPosting] = useState(false)
   const [listening, setListening] = useState(false)
 
+  const recognitionRef = useRef<any>(null)
+  const isRecordingRef = useRef(false)
+
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
   const getRecognition = () => {
-  if (typeof window === 'undefined') return null;
-  const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-  if (!SR) return null;
-  const rec = new SR();
-  rec.continuous = true;
-  return rec;
-};
-recognition.interimResults = true; // <- shows words while you speak
-recognition.lang = 'en-US';
-
-// Keep track if USER wants it on
-let isRecording = false;
-
-recognition.onend = () => {
-  if (isRecording) {
-    recognition.start(); // auto-restart if it died on a pause
+    if (typeof window === 'undefined') return null
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) return null
+    const rec = new SR()
+    rec.continuous = true
+    rec.interimResults = true // <- shows words while you speak
+    rec.lang = 'en-US'
+    return rec
   }
-};
-  recognition.onresult = (event) => {
-  let transcript = '';
-  for (let i = event.resultIndex; i < event.results.length; i++) {
-    transcript += event.results[i][0].transcript;
-  }
-  // smart punctuation basic version
-  let cleaned = transcript
-   .replace(/\s+period/gi, '.')
-   .replace(/\s+comma/gi, ',')
-   .replace(/\s+question mark/gi, '?')
-   .replace(/\s+exclamation point/gi, '!');
-
-  // capitalize first letter of sentences
-  cleaned = cleaned.replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase());
-
-  setText(cleaned);
-}
 
   const toggleMic = () => {
-    const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
-    if (!SR) { alert('Mic not supported'); return }
-    const rec = new SR()
+    // stop if already listening
+    if (listening && recognitionRef.current) {
+      isRecordingRef.current = false
+      recognitionRef.current.stop()
+      setListening(false)
+      return
+    }
+
+    const rec = getRecognition()
+    if (!rec) { alert('Mic not supported in this browser'); return }
+
+    recognitionRef.current = rec
+    isRecordingRef.current = true
+
     rec.onstart = () => setListening(true)
-    rec.onend = () => setListening(false)
-    rec.onresult = (e: any) => setBody(prev => prev? prev + ' ' + e.results[0][0].transcript : e.results[0][0].transcript)
-    rec.start()
+
+    rec.onend = () => {
+      setListening(false)
+      // auto-restart if user still wants it on
+      if (isRecordingRef.current) {
+        try { rec.start() } catch {}
+      }
+    }
+
+    rec.onresult = (event: any) => {
+      let transcript = ''
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript + ' '
+      }
+
+      // smart punctuation basic version
+      let cleaned = transcript
+       .replace(/\s+period/gi, '.')
+       .replace(/\s+comma/gi, ',')
+       .replace(/\s+question mark/gi, '?')
+       .replace(/\s+exclamation point/gi, '!')
+
+      // capitalize first letter of sentences
+      cleaned = cleaned.replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase())
+
+      // If interim, replace last part - for now we just append final result
+      // To do true interim, we need to track final vs interim separately
+      // Simple approach: if it's final result, append
+      const isFinal = event.results[event.results.length - 1].isFinal
+      if (isFinal) {
+        setBody(prev => (prev? prev + ' ' + cleaned.trim() : cleaned.trim()))
+      }
+    }
+
+    try {
+      rec.start()
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const handlePost = async () => {
@@ -105,7 +129,7 @@ recognition.onend = () => {
       </div>
 
       <div className="flex gap-2 w-full max-w-full min-w-0">
-        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder="Tap mic and talk..." className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text- text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" />
+        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder="Tap mic and talk..." className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" />
         <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
       </div>
 
@@ -116,7 +140,7 @@ recognition.onend = () => {
             {category==='for_sale' && <select value={condition} onChange={e=>setCondition(e.target.value)} className="bg-white rounded-xl p-2.5 text-sm text-black"><option value="new">New</option><option value="like_new">Like New</option><option value="good">Good</option><option value="fair">Fair</option></select>}
             <input value={address} onChange={e=>setAddress(e.target.value)} placeholder="📍 Address - Private (e.g. 1845 King Rd)" className="flex-1 min-w-0 bg-white rounded-xl p-2.5 text-sm text-black placeholder:text-black/40" />
           </div>
-          <p className="text- text-white/50 mt-2">🔒 Address PRIVATE - Only shown when neighbor clicks Map & Directions</p>
+          <p className="text-xs text-white/50 mt-2">🔒 Address PRIVATE - Only shown when neighbor clicks Map & Directions</p>
         </div>
       )}
 
