@@ -19,6 +19,28 @@ function ProfileContent(){
     })()
   },[])
 
+  const zipToNeighborhood = async (zip: string) => {
+    if (zip.length!== 5) return
+    try {
+      const res = await fetch(`https://api.zippopotam.us/us/${zip}`)
+      if (!res.ok) return
+      const data = await res.json()
+      const place = data.places?.[0]
+      if (place) {
+        const autoName = `${place['place name']}, ${place['state abbreviation']}`
+        // only auto-fill if neighborhood is empty
+        setP((prev:any) => {
+          if (!prev.neighborhood || prev.neighborhood.trim() === '') {
+            return {...prev, neighborhood: autoName }
+          }
+          return prev
+        })
+      }
+    } catch (e) {
+      console.log('zip lookup failed')
+    }
+  }
+
   const save = async()=>{
     setSaving(true)
     try {
@@ -61,7 +83,16 @@ function ProfileContent(){
         <input value={p.display_name||''} onChange={e=>setP({...p, display_name:e.target.value})} placeholder="Display Name" className={inputStyle}/>
         <textarea value={p.bio||''} onChange={e=>setP({...p, bio:e.target.value})} placeholder="About you - add as much as you want!" rows={5} className={areaStyle}/>
         <div className="grid grid-cols-2 gap-3">
-          <input value={p.zip_code||''} onChange={e=>setP({...p, zip_code:e.target.value})} placeholder="Zip - REQUIRED" className={inputStyle + " ring-2 ring-blue-500"}/>
+          <input
+            value={p.zip_code||''}
+            onChange={e=>{
+              const z = e.target.value
+              setP({...p, zip_code:z})
+              zipToNeighborhood(z)
+            }}
+            placeholder="Zip - REQUIRED"
+            className={inputStyle + " ring-2 ring-blue-500"}
+          />
           <input value={p.neighborhood||''} onChange={e=>setP({...p, neighborhood:e.target.value})} placeholder="Neighborhood" className={inputStyle}/>
         </div>
         <input value={p.address||''} onChange={e=>setP({...p, address:e.target.value})} placeholder="Street Address" className={inputStyle}/>
