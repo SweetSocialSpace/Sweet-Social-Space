@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 const CATEGORIES = [
@@ -17,29 +17,11 @@ const CATEGORIES = [
 function makeLegible(text: string){
   if(!text) return text
   let t = text.trim().replace(/\s+/g,' ')
-  // Don't run until we have at least a few words
   if(t.split(' ').length < 2) return t
-
-    const isQuestion = (s:string)=>{
-    return /^(who|what|where|when|why|how|how many|do you|does|did|are you|isn'?t|is this|are we|would you|should|can you)/i.test(s.trim())
-  }
-
-  // Split by " and then " or long pause markers, keep as sentences
+  const isQuestion = (s:string)=> /^(who|what|where|when|why|how|how many|do you|does|did|are you|isn'?t|is this|are we|would you|should|can you|are you)/i.test(s.trim())
   let parts = t.split(/(?<=[.!?])\s+/)
-  if(parts.length === 1){
-    // If no punctuation, split by question words
-    parts = t.split(/(?=\bhow many\b|\bhow\b|\bwhat\b|\bwhere\b|\bwhen\b|\bwhy\b)/i)
-  }
-
-  parts = parts.map(s=>{
-    s = s.trim()
-    if(!s) return s
-    s = s.charAt(0).toUpperCase() + s.slice(1)
-    if(!/[?.!]$/.test(s)){
-      s += isQuestion(s)? '?' : '.'
-    }
-    return s
-  })
+  if(parts.length === 1) parts = t.split(/(?=\bhow many\b|\bhow\b|\bwhat\b|\bwhere\b|\bwhen\b|\bwhy\b|\bdo you\b|\bare you\b|\bisn'?t\b)/i)
+  parts = parts.map(s=>{ s=s.trim(); if(!s) return s; s=s.charAt(0).toUpperCase()+s.slice(1); if(!/[?.!]$/.test(s)) s+=isQuestion(s)?'?':'.'; return s })
   return parts.join(' ').replace(/\s+([?.!])/g,'$1').replace(/\s{2,}/g,' ')
 }
 
@@ -54,41 +36,46 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const recRef = useRef<any>(null)
   const mediaRef = useRef<MediaRecorder | null>(null)
   const finalRef = useRef('')
+  const killedRef = useRef(false) // <-- DEMON KILLER
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
   const stopMic = () => {
-  try{ recRef.current?.stop() }catch{}
-  try{ mediaRef.current?.stop() }catch{}
-  recRef.current = null
-  mediaRef.current = null
-  setListening(false)
-}
-    const toggleMic = async () => {
+    killedRef.current = true // tell onresult/onend to ignore
+    try{ recRef.current?.onresult = null; recRef.current?.onend = null; recRef.current?.onerror = null; recRef.current?.stop() }catch{}
+    try{ mediaRef.current?.ondataavailable = null; mediaRef.current?.onstop = null; mediaRef.current?.stop() }catch{}
+    try{ (mediaRef.current as any)?.stream?.getTracks()?.forEach((tr:any)=>tr.stop()) }catch{}
+    recRef.current = null
+    mediaRef.current = null
+    setListening(false)
+  }
+
+  useEffect(()=>{ return ()=> stopMic() },[])
+
+  const toggleMic = async () => {
     if(listening){
       stopMic()
-      if(finalRef.current){
-        setBody(makeLegible(finalRef.current))
-      }
+      if(finalRef.current) setBody(makeLegible(finalRef.current))
       return
     }
-
+    killedRef.current = false
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if(SR){
       try{
         const rec = new SR()
+        recRef.current = rec
         rec.continuous = true
         rec.interimResults = true
         rec.lang = 'en-US'
-        recRef.current = rec
         finalRef.current = body? body + ' ' : ''
-
-        rec.onstart = () => setListening(true)
+        rec.onstart = () => { if(!killedRef.current) setListening(true) }
         rec.onend = () => {
+          if(killedRef.current) return
           setListening(false)
           if(finalRef.current) setBody(makeLegible(finalRef.current))
         }
         rec.onresult = (e:any)=>{
+          if(killedRef.current) return
           let interim = ''
           for(let i=e.resultIndex; i<e.results.length; i++){
             const t = e.results[i][0].transcript
@@ -101,10 +88,9 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
               interim = t
             }
           }
-          // Show raw while speaking, legible on final
-          setBody((finalRef.current + ' ' + interim).trim())
+          if(!killedRef.current) setBody((finalRef.current + ' ' + interim).trim())
         }
-        rec.onerror = () => { try{ rec.stop() }catch{}; startRecordingFallback() }
+        rec.onerror = () => { if(killedRef.current) return; try{ rec.stop() }catch{}; startRecordingFallback() }
         rec.start()
         return
       }catch{}
@@ -114,24 +100,29 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   const startRecordingFallback = async () => {
     try{
+      killedRef.current = false
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const mr = new MediaRecorder(stream)
       mediaRef.current = mr
       const chunks: BlobPart[] = []
-      mr.ondataavailable = e=> chunks.push(e.data)
+      mr.ondataavailable = e=> { if(!killedRef.current) chunks.push(e.data) }
       mr.onstop = async ()=>{
-        const blob = new Blob(chunks, { type: 'audio/webm' })
+        if(killedRef.current) return
         setListening(false)
-        stream.getTracks().forEach(t=>t.stop())
-        const fd = new FormData()
-        fd.append('audio', blob)
-        const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd })
-        const data = await res.json()
-        if(data.text){
-          const newText = (finalRef.current? finalRef.current + ' ' : '') + data.text
-          setBody(makeLegible(newText))
-          finalRef.current = makeLegible(newText) + ' '
-        }
+        try{ stream.getTracks().forEach(t=>t.stop()) }catch{}
+        const blob = new Blob(chunks, { type: 'audio/webm' })
+        if(!blob.size) return
+        try{
+          const fd = new FormData()
+          fd.append('audio', blob)
+          const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd })
+          const data = await res.json()
+          if(data.text &&!killedRef.current){
+            const legible = makeLegible((finalRef.current? finalRef.current + ' ' : '') + data.text)
+            setBody(legible)
+            finalRef.current = legible + ' '
+          }
+        }catch{}
       }
       mr.start()
       setListening(true)
@@ -142,11 +133,12 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   }
 
   const handlePost = async () => {
-    if(!body.trim()) return
+    stopMic() // KILL FIRST - and killedRef blocks ghosts
+    const finalBody = makeLegible(body.trim())
+    if(!finalBody) return
     setPosting(true)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    const finalBody = makeLegible(body.trim())
     const payload: any = { body: finalBody, tag: category, category, zip_code: '95122', user_id: user?.id, location_address: address || null }
     if(price) payload.price = parseFloat(price)
     if(category==='for_sale') payload.condition = condition
