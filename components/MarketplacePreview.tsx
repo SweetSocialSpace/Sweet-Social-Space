@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase/client'
 type Item = {
   id: string;
   title: string;
-  price_cents?: number;
   price?: number;
   address?: string;
   sale_date?: string;
@@ -20,11 +19,12 @@ export function MarketplacePreview(){
     let mounted = true
 
     const load = async()=>{
-      const {data} = await supabase
-       .from('marketplace')
-       .select('id,title,price_cents,price,address,sale_date,sale_time')
-       .order('created_at',{ascending:false})
-       .limit(5)
+      const {data, error} = await supabase
+      .from('marketplace')
+      .select('id,title,price,address,sale_date,sale_time')
+      .order('created_at',{ascending:false})
+      .limit(10)
+      console.log('MARKETPLACE LOAD:', data, error)
       if(mounted && data) setItems(data as any)
     }
     load()
@@ -41,20 +41,16 @@ export function MarketplacePreview(){
             <div key={i.id} className="bg-white/5 rounded-xl p-3 text-xs">
               <div className="flex justify-between">
                 <span className="font-semibold truncate pr-2">{i.title}</span>
-                {(i.price_cents || i.price) && (
-                  <span className="text-white/60 shrink-0">
-                    ${i.price_cents? (i.price_cents/100).toFixed(0) : i.price}
-                  </span>
+                {i.price!== undefined && (
+                  <span className="text-white/60 shrink-0">${i.price}</span>
                 )}
               </div>
-
               {i.sale_date && (
                 <p className="text- text-white/50 mt-1">📅 {i.sale_date} {i.sale_time || ''}</p>
               )}
-
               {i.address && (
                 <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(i.address + ' 95122 San Jose CA')}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(i.address)}`}
                   target="_blank"
                   className="mt-2 inline-flex items-center gap-1 text- bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full"
                 >
