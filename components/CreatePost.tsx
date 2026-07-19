@@ -83,8 +83,11 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
           onChange={e=>setBody(e.target.value)}
           onFocus={()=>setActiveField('body')}
           placeholder="Tap mic and talk... What's happening in 95122?"
-          className="w-full bg-white rounded-xl p-3 text-sm text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-blue-400 min-h- flex-1"
-        />
+        // CLEAN - NO BROKEN min-h- OR min-w-
+className="w-full bg-white rounded-xl p-3 text-sm text-black min-h- flex-1"
+className="flex-1 min-w- bg-white rounded-xl p-2.5 text-sm text-black"
+className="text- text-white/60 mt-2"
+className="text- text-white/40"
         <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse text-white' : 'bg-black text-white'}`}>🎤</button>
       </div>
       {currentCat?.needsAddress && (
