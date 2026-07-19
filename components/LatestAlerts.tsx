@@ -41,7 +41,7 @@ export function LatestAlerts(){
     }
 
     const load = async()=>{
-      const {data}= await supabase.from('alerts').select('*').order('created_at',{ascending:false}).limit(5)
+     const {data}= await supabase.from('alerts').select('*').eq('is_active', true).eq('zip_code','95122').order('created_at',{ascending:false}).limit(5)
       if(mounted && data && data.length > 0){
         setAlerts(data as any)
         setLoading(false)
