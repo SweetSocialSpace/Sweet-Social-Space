@@ -17,13 +17,13 @@ const CATEGORIES = [
 function makeLegible(text: string){
   if(!text) return text
   let t = text.trim().replace(/\s+/g,' ')
-  if(t.split(' ').length < 2) return t
+  if(!t) return t
   const isQuestion = (s:string)=>{
-    return /^(who|what|where|when|why|how|how many|do you|does|did|are you|isn'?t|is this|are we)/i.test(s.trim())
+    return /^(who|what|where|when|why|how|how many|do you|does|did|are you|isn'?t|is this|are we|will|can you|is it|will it|would you|should|did you)/i.test(s.trim())
   }
   let parts = t.split(/(?<=[.!?])\s+/)
   if(parts.length === 1){
-    parts = t.split(/(?=\bhow many\b|\bhow\b|\bwhat\b|\bwhere\b|\bwhen\b|\bwhy\b|\bdo you\b|\bare you\b)/i)
+    parts = t.split(/(?=\bhow many\b|\bhow\b|\bwhat\b|\bwhere\b|\bwhen\b|\bwhy\b|\bdo you\b|\bare you\b|\bis it\b|\bwill it\b)/i)
   }
   parts = parts.map(s=>{
     s = s.trim()
@@ -84,10 +84,8 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       return
     }
     killedRef.current = false
-
     const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
 
-    // NEW - Check if on-device is actually available, safe fallback
     if(SR && SR.available){
       try{
         const status = await SR.available({ langs: ["en-US"], processLocally: true })
@@ -95,9 +93,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
           startRecordingFallback()
           return
         }
-      }catch{
-        // If check fails, just continue to normal mic
-      }
+      }catch{}
     }
 
     if(SR){
@@ -115,16 +111,18 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
           let interim = ''
           for(let i=e.resultIndex; i<e.results.length; i++){
             const t = e.results[i][0].transcript
+            if(!t) continue
             if(e.results[i].isFinal){
               const clean = t.trim()
               if(clean &&!finalRef.current.toLowerCase().endsWith(clean.toLowerCase())){
                 finalRef.current = (finalRef.current + ' ' + clean).trim() + ' '
               }
             } else {
-              interim = t
+              interim = t.trim()
             }
           }
-          if(!killedRef.current) setBody((finalRef.current + ' ' + interim).trim())
+          const display = (finalRef.current + ' ' + interim).trim()
+          if(display) setBody(display)
         }
         rec.onerror = () => { if(!killedRef.current){ try{ rec.stop() }catch{}; startRecordingFallback() } }
         rec.start()
