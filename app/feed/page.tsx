@@ -1,27 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-
-// At the top of feed page
-import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server' // or your server client
-
-// Inside your component, BEFORE fetching posts:
-const supabase = await createClient()
-const { data: { user } } = await supabase.auth.getUser()
-
-if (user) {
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('zip_code, display_name, bio')
-    .eq('id', user.id)
-    .single()
-
-  // If no profile, or missing required fields -> force to /profile
-  if (!profile || !profile.zip_code || !profile.display_name) {
-    redirect('/profile?required=1')
-  }
-}
+import { useRouter } from 'next/navigation'
 
 // HEADER is in app/components - everything else is in root components
 import Header from '@/app/components/Header'
@@ -42,12 +22,25 @@ const TAGS: Tag[] = ["General", "Alert", "Recommendation", "Free stuff", "Hot ta
 
 export default function FeedPage() {
   const supabase = createClient()
+  const router = useRouter()
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState<Tag>('General')
   const [posts, setPosts] = useState<any[]>([])
   const [listening, setListening] = useState(false)
   const [radius, setRadius] = useState(5)
   const [zip, setZip] = useState('95122')
+
+  // REQUIRE PROFILE GATE - no profile = no feed
+  useEffect(()=>{
+    (async()=>{
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: profile } = await supabase.from('profiles').select('zip_code, display_name').eq('id', user.id).single()
+      if (!profile ||!profile.zip_code ||!profile.display_name) {
+        router.push('/profile?required=1')
+      }
+    })()
+  }, [])
 
   useEffect(()=>{
     (async()=>{
