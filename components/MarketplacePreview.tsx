@@ -44,7 +44,9 @@ export function MarketplacePreview(){
               {i.sale_date && <p className="text- text-white/50 mt-1.5">📅 {i.sale_date} {i.sale_time || ''}</p>}
               {i.address && (
                 <div className="mt-2.5">
-                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(i.address)}`} target="_blank" className="inline-flex text- bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">
+                 <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(i.address)}`} target="_blank" className="inline-flex text- bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">
+  📍 Map & Directions
+</a>
                     📍 Map to {i.address}
                   </a>
                 </div>
