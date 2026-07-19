@@ -57,6 +57,13 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
+  const stopMic = () => {
+  try{ recRef.current?.stop() }catch{}
+  try{ mediaRef.current?.stop() }catch{}
+  recRef.current = null
+  mediaRef.current = null
+  setListening(false)
+}
   const toggleMic = async () => {
     if(listening){
       recRef.current?.stop?.()
