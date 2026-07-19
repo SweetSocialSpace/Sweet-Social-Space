@@ -2,63 +2,91 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-export default function CreatePost({ onPosted }: { onPosted?: () => void }) {
+const CATEGORIES = [
+  { id: 'general', label: 'General', icon: '😊', needsAddress: false },
+  { id: 'safety', label: 'Safety', icon: '🚨', needsAddress: true },
+  { id: 'for_sale', label: 'For Sale', icon: '💰', needsAddress: true },
+  { id: 'free', label: 'Free', icon: '🎁', needsAddress: true },
+  { id: 'lost_pet', label: 'Lost Pet', icon: '🐶', needsAddress: true },
+  { id: 'event', label: 'Event', icon: '🎉', needsAddress: true },
+  { id: 'help', label: 'Help', icon: '🤝', needsAddress: false },
+  { id: 'recommend', label: 'Recommend', icon: '🌮', needsAddress: false },
+  { id: 'job', label: 'Job', icon: '💼', needsAddress: true },
+]
+
+export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const [body, setBody] = useState('')
   const [category, setCategory] = useState('general')
   const [price, setPrice] = useState('')
   const [condition, setCondition] = useState('good')
-  const [loading, setLoading] = useState(false)
-  const supabase = createClient()
+  const [address, setAddress] = useState('')
+  const [posting, setPosting] = useState(false)
+  const [listening, setListening] = useState(false)
 
-  const post = async () => {
-    if (!body.trim()) return
-    setLoading(true)
+  const currentCat = CATEGORIES.find(c=>c.id===category)
+
+  const toggleMic = () => {
+    const SR: any = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+    if (!SR) { alert('Mic not supported'); return }
+    const rec = new SR()
+    rec.onstart = () => setListening(true)
+    rec.onend = () => setListening(false)
+    rec.onresult = (e: any) => setBody(prev => prev? prev + ' ' + e.results[0][0].transcript : e.results[0][0].transcript)
+    rec.start()
+  }
+
+  const handlePost = async () => {
+    if(!body.trim()) return
+    setPosting(true)
+    const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { setLoading(false); return }
-    const { data: profile } = await supabase.from('profiles').select('zip_code').eq('id', user.id).single()
-    const { error } = await supabase.from('posts').insert({
-      user_id: user.id,
+    const payload: any = {
       body: body.trim(),
+      tag: category,
       category,
-      price: price? Number(price) : null,
-      condition: condition || null,
-      zip_code: profile?.zip_code || '95122',
-    })
-    setLoading(false)
-    if (!error) {
-      setBody(''); setPrice('')
-      onPosted?.()
+      zip_code: '95122',
+      user_id: user?.id,
+      location_address: address || null
     }
+    if(price) payload.price = parseFloat(price)
+    if(category==='for_sale') payload.condition = condition
+    const { error } = await supabase.from('posts').insert(payload)
+    setPosting(false)
+    if(!error){
+      setBody(''); setPrice(''); setAddress(''); setCategory('general')
+      onPosted?.()
+    } else alert(error.message)
   }
 
   return (
-    <div className="w-full max-w-full min-w-0 overflow-hidden bg-white rounded-2xl p-4 border border-black/10">
-      <textarea
-        value={body}
-        onChange={e=>setBody(e.target.value)}
-        placeholder="What's happening in 95122?"
-         className="w-full max-w-full min-w-0 bg-gray-100 text-black rounded-xl p-3 text-[14px] min-h-[80px] resize-none outline-none border border-black/10"
-      />
-      <div className="mt-3 flex gap-2 flex-wrap w-full max-w-full min-w-0">
-        <select value={category} onChange={e=>setCategory(e.target.value)} className="bg-black text-white text-xs font-black px-3 py-2 rounded-full border">
-          <option value="general">General</option>
-          <option value="safety">Safety</option>
-          <option value="for_sale">For Sale</option>
-          <option value="free">Free</option>
-          <option value="lost_pet">Lost Pet</option>
-          <option value="event">Event</option>
-          <option value="help">Help</option>
-          <option value="recommend">Recommend</option>
-        </select>
-        {(category==='for_sale'||category==='free') && (
-          <>
-            <input value={price} onChange={e=>setPrice(e.target.value)} placeholder="$" className="w-20 bg-gray-100 text-black text-xs px-3 py-2 rounded-full border" />
-            <select value={condition} onChange={e=>setCondition(e.target.value)} className="bg-gray-100 text-black text-xs px-3 py-2 rounded-full border">
-              <option value="good">good</option><option value="new">new</option><option value="used">used</option>
-            </select>
-          </>
-        )}
-        <button onClick={post} disabled={loading ||!body.trim()} className="ml-auto bg-black text-white text-xs font-black px-6 py-2 rounded-full disabled:opacity-50">{loading?'Posting...':'Post'}</button>
+    <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white mb-4">
+      <p className="font-bold mb-3">📝 Post to 95122 - One Stop</p>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {CATEGORIES.map(c => (
+          <button key={c.id} onClick={()=>setCategory(c.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${category===c.id? 'bg-white text-black border-white' : 'bg-white/10 border-white/20 text-white/70'}`}>{c.icon} {c.label}</button>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder={`Tap mic and talk...`} className="w-full bg-white rounded-xl p-3 text-sm text-black placeholder:text-black/40 min-h- flex-1" />
+        <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
+      </div>
+
+      {/* AUTO-OPENS WHEN FOR SALE / FREE / EVENT / JOB */}
+      {currentCat?.needsAddress && (
+        <div className="mt-3 bg-white/10 rounded-xl p-3 border border-white/10 animate-in">
+          <div className="flex gap-2">
+            <input value={price} onChange={e=>setPrice(e.target.value)} placeholder={category==='free'?'Free (0)': category==='for_sale'?'Price $':' '} className={`bg-white rounded-xl p-2.5 text-sm text-black ${category==='event' || category==='job'? 'hidden' : 'w-24'}`} />
+            {category==='for_sale' && <select value={condition} onChange={e=>setCondition(e.target.value)} className="bg-white rounded-xl p-2.5 text-sm text-black"><option value="new">New</option><option value="like_new">Like New</option><option value="good">Good</option><option value="fair">Fair</option></select>}
+            <input value={address} onChange={e=>setAddress(e.target.value)} placeholder="📍 Address - Private, hidden until Map clicked (e.g. 1845 King Rd)" className="flex-1 bg-white rounded-xl p-2.5 text-sm text-black placeholder:text-black/40" />
+          </div>
+          <p className="text- text-white/50 mt-2">🔒 Address is PRIVATE - Only shown when neighbor clicks "Map & Directions" - not visible in feed</p>
+        </div>
+      )}
+
+      <div className="flex justify-between items-center mt-3">
+        <p className="text- text-white/40">Posting as • 95122 • {currentCat?.icon} {category}</p>
+        <button onClick={handlePost} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40">Post to 95122 🚀</button>
       </div>
     </div>
   )
