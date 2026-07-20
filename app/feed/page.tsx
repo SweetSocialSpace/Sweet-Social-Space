@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
+import TrustMeter from '@/components/trust-meter/TrustMeter'
 import StreetHeat from '@/components/street-heat/StreetHeat'
 import ProximityPing from '@/components/proximity-ping/ProximityPing'
 import LivePulse from '@/components/live-pulse/LivePulse'
@@ -86,6 +87,7 @@ export default function FeedPage() {
           <LivePulse />
           <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
+          <TrustMeter />
           <EmergencyAlerts />
           <LatestAlerts />
           <WhatsHappeningNearYou />
