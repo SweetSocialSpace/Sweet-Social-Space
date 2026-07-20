@@ -85,9 +85,9 @@ export default function FeedPage() {
      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
           <LivePulse />
+          <TrustMeter />
           <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
-          <TrustMeter />
           <EmergencyAlerts />
           <LatestAlerts />
           <WhatsHappeningNearYou />
