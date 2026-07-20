@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
 import { PulseErrorBoundary } from '@/components/live-pulse/PulseErrorBoundary'
-import LivePulseNerve from '@/components/live-pulse/LivePulseNerve'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
 import LatestAlerts from '@/components/LatestAlerts'
@@ -85,7 +84,6 @@ export default function FeedPage() {
           <PulseErrorBoundary>
         <LivePulseNerve />
     </PulseErrorBoundary>
-          <LivePulseAutomated />
           <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
