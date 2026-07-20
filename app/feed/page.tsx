@@ -15,6 +15,7 @@ import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
 import WeatherBar from '@/components/WeatherBar'
 import CreatePost from '@/components/CreatePost'
+import LivePulseAutomated from '@/components/pulse/LivePulseAutomated'
 
 export default function FeedPage() {
   const [filter, setFilter] = useState('all')
@@ -79,6 +80,7 @@ export default function FeedPage() {
       <Header />
      <div className="max-w-[1600px] mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
+          <LivePulseAutomated />
           <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
