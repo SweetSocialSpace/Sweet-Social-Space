@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
 import LivePulse from '@/components/live-pulse/LivePulse'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
+import TheDrop from '@/components/the-drop/TheDrop'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
 import LatestAlerts from '@/components/LatestAlerts'
 import WhatsHappeningNearYou from '@/components/WhatsHappeningNearYou'
@@ -125,6 +126,7 @@ export default function FeedPage() {
           </div>
         </div>
         <div className="space-y-6">
+          <TheDrop />
           <MarketplacePreview />
           <BusinessDirectory />
           <UpcomingEvents />
