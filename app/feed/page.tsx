@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
+import ProximityPing from '@/components/proximity-ping/ProximityPing'
 import LivePulse from '@/components/live-pulse/LivePulse'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import TheDrop from '@/components/the-drop/TheDrop'
@@ -127,6 +128,7 @@ export default function FeedPage() {
         </div>
         <div className="space-y-6">
           <TheDrop />
+          <ProximityPing />
           <MarketplacePreview />
           <BusinessDirectory />
           <UpcomingEvents />
