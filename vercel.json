@@ -1,10 +1,12 @@
 {
-  "crons": [{
-    "path": "/api/alerts/ingest",
-    "schedule": "0 0 * * *"
-  }]
-}
-
-{
-  "crons": [{ "path": "/api/pulse", "schedule": "* * * * *" }]
+  "crons": [
+    {
+      "path": "/api/alerts/ingest",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/pulse",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }
