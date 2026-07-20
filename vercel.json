@@ -1,12 +1,12 @@
+▶
 {
-  "crons": [
-    {
-      "path": "/api/alerts/ingest",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/pulse",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+▶
+"crons"
+:
+[
+▶
+{
+2 keys
+}
+]
 }
