@@ -6,26 +6,27 @@ export async function GET() {
     const { createClient } = await import('@/lib/supabase/server');
     const supabase = await createClient();
 
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    // AUTO-MIGRATE location_text
+    try {
+      // @ts-ignore
+      await supabase.rpc('exec_sql', {
+        sql_query: `alter table posts add column if not exists location_text text`
+      });
+    } catch {}
 
-    // REAL - counts actual posts in 95122 in last hour
+    const oneHourAgo = new Date(Date.now() - 3600000).toISOString();
     const { data, count } = await supabase
      .from('posts')
-     .select('id, created_at, location_text, zip_code', { count: 'exact' })
+     .select('id, location_text', { count: 'exact' })
      .eq('zip_code', '95122')
      .gte('created_at', oneHourAgo)
      .limit(5);
 
-    if (!count || count === 0) {
-      return NextResponse.json(null, { status: 204 });
-    }
-
-    // Get most common location text
-    const street = data?.[0]?.location_text || 'near 95122';
+    if (!count) return NextResponse.json(null, { status: 204 });
 
     return NextResponse.json({
       count,
-      street,
+      street: data?.[0]?.location_text || '95122',
       time: new Date().toISOString()
     });
   } catch {
