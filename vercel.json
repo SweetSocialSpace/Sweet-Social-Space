@@ -4,3 +4,7 @@
     "schedule": "0 0 * * *"
   }]
 }
+
+{
+  "crons": [{ "path": "/api/pulse", "schedule": "* * * * *" }]
+}
