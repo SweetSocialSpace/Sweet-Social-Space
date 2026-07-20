@@ -1,12 +1,8 @@
-▶
 {
-▶
-"crons"
-:
-[
-▶
-{
-2 keys
-}
-]
+  "crons": [
+    {
+      "path": "/api/alerts/ingest",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }
