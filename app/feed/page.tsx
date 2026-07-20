@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
-import { PulseErrorBoundary } from '@/components/live-pulse/PulseErrorBoundary'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
 import LatestAlerts from '@/components/LatestAlerts'
@@ -16,7 +15,6 @@ import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
 import WeatherBar from '@/components/WeatherBar'
 import CreatePost from '@/components/CreatePost'
-import LivePulseAutomated from '@/components/pulse/LivePulseAutomated'
 
 export default function FeedPage() {
   const [filter, setFilter] = useState('all')
@@ -79,11 +77,8 @@ export default function FeedPage() {
   return (
     <>
       <Header />
-     <div className="max-w-[1600px] mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
+     <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
-          <PulseErrorBoundary>
-        <LivePulseNerve />
-    </PulseErrorBoundary>
           <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
@@ -111,20 +106,12 @@ export default function FeedPage() {
                       {p.condition && <span className="text-xs font-bold bg-gray-200 text-black px-2 py-1 rounded-full border border-black/10">{p.condition}</span>}
                     </div>
                     <p className="text-black whitespace-pre-wrap break-words text- leading-snug">{p.body}</p>
-
                     {p.location_address && (
                       <div className="mt-3 flex gap-2 items-center flex-wrap">
                         <span className="text- bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near 95122 • Private</span>
-                        <a
-                          href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`}
-                          target="_blank"
-                          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition"
-                        >
-                          🗺 Get Directions
-                        </a>
+                        <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition">🗺 Get Directions</a>
                       </div>
                     )}
-
                   </div>
                   {currentUserId && p.user_id === currentUserId && (
                     <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
