@@ -2,6 +2,15 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // BYPASS all API routes + static files - let them run without auth checks
+  if (
+    request.nextUrl.pathname.startsWith('/api/') ||
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.includes('.')
+  ) {
+    return NextResponse.next()
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -47,12 +56,10 @@ export async function middleware(request: NextRequest) {
   const isProtectedPage = request.nextUrl.pathname.startsWith('/feed') || 
                           request.nextUrl.pathname.startsWith('/onboarding')
 
-  // 1. If no user and trying to access protected page, send to /login
   if (!user && isProtectedPage) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // 2. If user exists and on login/signup/auth page, send to /feed
   if (user && isAuthPage) {
     return NextResponse.redirect(new URL('/feed', request.url))
   }
