@@ -6,24 +6,23 @@ export async function GET() {
     const { createClient } = await import('@/lib/supabase/server');
     const supabase = await createClient();
     
-    // REAL - pulls one random business that has a deal in 95122
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('businesses')
-      .select('name, address, current_deal, category')
+      .select('name, address, current_deal, deal_address')
       .eq('zip_code', '95122')
       .not('current_deal', 'is', null)
+      .gt('deal_expires_at', new Date().toISOString())
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (!data) {
-      // If no real deal today, return NOTHING - don't fake it
+    if (error || !data || !data.current_deal) {
       return NextResponse.json(null, { status: 204 });
     }
 
     return NextResponse.json({
       business: data.name,
       deal: data.current_deal,
-      address: data.address,
+      address: data.deal_address || data.address,
       time: new Date().toISOString()
     });
   } catch {
