@@ -7,6 +7,10 @@ export async function GET() {
     const supabase = await createClient();
 
     const migrations = [
+      `alter table posts add column if not exists external_id text`,
+      `alter table posts add column if not exists source_url text`,
+      `alter table posts add column if not exists is_automated boolean default false`,
+       `create unique index if not exists posts_external_id_unique on posts (external_id) where external_id is not null`
       `alter table businesses add column if not exists current_deal text`,
       `alter table businesses add column if not exists deal_address text`,
       `alter table businesses add column if not exists deal_expires_at timestamptz`,
