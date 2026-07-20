@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
+import LivePulse from '@/components/live-pulse/LivePulse'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
 import LatestAlerts from '@/components/LatestAlerts'
@@ -79,6 +80,7 @@ export default function FeedPage() {
       <Header />
      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
+          <LivePulse />
           <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
