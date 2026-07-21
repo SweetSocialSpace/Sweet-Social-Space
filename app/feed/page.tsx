@@ -7,6 +7,7 @@ import { TrustMeter } from '@/components/trust-meter/TrustMeter'
 import StreetHeat from '@/components/street-heat/StreetHeat'
 import ProximityPing from '@/components/proximity-ping/ProximityPing'
 import LivePulse from '@/components/live-pulse/LivePulse'
+import AIMayor from '@/components/AIMayor'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import TheDrop from '@/components/the-drop/TheDrop'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
@@ -92,6 +93,7 @@ export default function FeedPage() {
      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
           <LivePulse />
+          <AIMayor />
           <TrustMeter />
           <WeatherBar zip={localZip} />
           <PinnedAutomatedAlert />
