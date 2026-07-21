@@ -9,6 +9,7 @@ import ProximityPing from '@/components/proximity-ping/ProximityPing'
 import LivePulse from '@/components/live-pulse/LivePulse'
 import AIMayor from '@/components/AIMayor'
 import BlockMap from '@/components/BlockMap'
+import KarmaLeaderboard from '@/components/KarmaLeaderboard'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import TheDrop from '@/components/the-drop/TheDrop'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
@@ -142,6 +143,7 @@ export default function FeedPage() {
         </div>
         <div className="space-y-6">
           <TheDrop />
+          <KarmaLeaderboard />
           <ProximityPing />
           <StreetHeat />
           <MarketplacePreview />
