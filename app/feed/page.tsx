@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
-import TrustMeter from '@/components/trust-meter/TrustMeter'
-import StreetHeat from '@/components/street-heat/StreetHeat'
-import ProximityPing from '@/components/proximity-ping/ProximityPing'
-import LivePulse from '@/components/live-pulse/LivePulse'
+import { TrustMeter } from '@/components/trust-meter/TrustMeter'
+import { StreetHeat } from '@/components/street-heat/StreetHeat'
+import { ProximityPing } from '@/components/proximity-ping/ProximityPing'
+import { LivePulse } from '@/components/live-pulse/LivePulse'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import TheDrop from '@/components/the-drop/TheDrop'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
@@ -20,6 +20,7 @@ import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
 import WeatherBar from '@/components/WeatherBar'
 import CreatePost from '@/components/CreatePost'
+import { useLocation } from '@/lib/location-context'
 
 export default function FeedPage() {
   const [filter, setFilter] = useState('all')
@@ -27,8 +28,14 @@ export default function FeedPage() {
   const router = useRouter()
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
-  const [zip, setZip] = useState('95122')
+  const { zip, city } = useLocation()
+  const [localZip, setLocalZip] = useState('95122')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+
+  // use nationwide zip from context
+  useEffect(() => {
+    if (zip) setLocalZip(zip)
+  }, [zip])
 
   const FILTERS = [
     { id: 'all', label: 'All 🌎' },
@@ -55,8 +62,8 @@ export default function FeedPage() {
       const { data: profile } = await supabase.from('profiles').select('zip_code, display_name').eq('id', user.id).single()
       if (!profile ||!profile.zip_code ||!profile.display_name) {
         router.push('/profile?required=1')
-      } else if (profile.zip_code) {
-        setZip(profile.zip_code)
+      } else if (profile.zip_code &&!zip) {
+        setLocalZip(profile.zip_code)
       }
     })()
   }, [])
@@ -86,14 +93,14 @@ export default function FeedPage() {
         <div className="space-y-6">
           <LivePulse />
           <TrustMeter />
-          <WeatherBar zip={zip} />
+          <WeatherBar zip={localZip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
           <LatestAlerts />
           <WhatsHappeningNearYou />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
-          <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
+          <LocationScopeBar zip={localZip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
          <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
@@ -102,7 +109,7 @@ export default function FeedPage() {
             ))}
           </div>
           <div className="space-y-3 mt-2">
-            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in 95122</div>}
+            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in {localZip}</div>}
             {filtered.map((p:any)=>(
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4" style={{borderLeftColor: p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b':'#000'}}>
                 <div className="flex justify-between items-start gap-3">
@@ -115,7 +122,7 @@ export default function FeedPage() {
                     <p className="text-black whitespace-pre-wrap break-words text- leading-snug">{p.body}</p>
                     {p.location_address && (
                       <div className="mt-3 flex gap-2 items-center flex-wrap">
-                        <span className="text- bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near 95122 • Private</span>
+                        <span className="text- bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip} • Private</span>
                         <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition">🗺 Get Directions</a>
                       </div>
                     )}
@@ -124,7 +131,7 @@ export default function FeedPage() {
                     <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
                   )}
                 </div>
-                <div className="mt-2 text- font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • 95122</div>
+                <div className="mt-2 text- font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip}</div>
               </div>
             ))}
           </div>
