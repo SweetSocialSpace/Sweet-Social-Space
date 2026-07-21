@@ -20,7 +20,7 @@ export default function AIMayor() {
       }
     }
     load()
-  }, [zip][city])
+    }, [zip, city])
 
   return (
     <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
