@@ -1,44 +1,65 @@
-'use client';
-import { useEffect, useState } from 'react';
-
-function ErrorCage({ children }: { children: React.ReactNode }) {
-  const [crashed, setCrashed] = useState(false);
-  useEffect(() => {
-    const handler = () => setCrashed(true);
-    window.addEventListener('error', handler);
-    return () => window.removeEventListener('error', handler);
-  }, []);
-  if (crashed) return null;
-  return <>{children}</>;
-}
+'use client'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LivePulse() {
-  const [pulse, setPulse] = useState<any>(null);
+  const supabase = createClient()
+  const [temp, setTemp] = useState<number | null>(null)
+  const [online, setOnline] = useState(0)
+  const [verified, setVerified] = useState({ percent: 100, count: '3/3' })
 
   useEffect(() => {
-    const load = async () => {
+    // ONE weather source for whole platform
+    const fetchWeather = async () => {
       try {
-        const r = await fetch('/api/pulse', { cache: 'no-store' });
-        if (r.ok) setPulse(await r.json());
-      } catch {}
-    };
-    load();
-    const id = setInterval(load, 300000); // 5 min auto
-    return () => clearInterval(id);
-  }, []);
+        const res = await fetch('/api/weather?zip=95122')
+        const data = await res.json()
+        if (data?.main?.temp) setTemp(Math.round(data.main.temp))
+      } catch {
+        // fallback to OpenWeather direct if your api route not ready
+        try {
+          const r = await fetch(`https://api.openweathermap.org/data/2.5/weather?zip=95122,us&units=imperial&appid=${process.env.NEXT_PUBLIC_OPENWEATHER_KEY}`)
+          const d = await r.json()
+          if (d?.main?.temp) setTemp(Math.round(d.main.temp))
+        } catch {}
+      }
+    }
+    
+    // Real online count from profiles active in last 5 min
+    const fetchOnline = async () => {
+      const { count } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('last_seen', new Date(Date.now() - 5*60*1000).toISOString())
+      setOnline(count || 0)
+    }
 
-  if (!pulse) return null;
+    fetchWeather()
+    fetchOnline()
+    
+    // Store temp globally so WeatherBar can use SAME temp
+    const interval = setInterval(() => {
+      fetchWeather()
+      fetchOnline()
+    }, 5*60*1000) // refresh every 5 min like you have in UI
+    
+    return () => clearInterval(interval)
+  }, [])
+
+  // Save temp for WeatherBar to read - single source of truth
+  useEffect(() => {
+    if (temp) localStorage.setItem('sss_live_temp_95122', String(temp))
+  }, [temp])
 
   return (
-    <ErrorCage>
-      <div className="w-full bg-zinc-900 border border-white/10 rounded-2xl p-3 flex items-center gap-3">
-        <span className="h-2 w-2 bg-red-500 rounded-full animate-pulse" />
-        <span className="text-white font-black text-">LIVE 95122</span>
-        <div className="flex gap-2 overflow-x-auto text-xs text-white/80">
-          <span className="bg-white/10 px-3 py-1 rounded-full">{pulse.temp}° {pulse.condition}</span>
-          <span className="bg-white/10 px-3 py-1 rounded-full">{pulse.online} online</span>
-        </div>
+    <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 space-y-3">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="bg-white text-black font-black px-3 py-1 rounded-full text-xs">LIVE 95122</span>
+        {temp && <span className="bg-white/20 text-white font-black px-3 py-1 rounded-full text-xs">{temp}° 95122 Live</span>}
+        <span className="bg-white/10 text-white font-bold px-3 py-1 rounded-full text-xs">{online} online</span>
       </div>
-    </ErrorCage>
-  );
+      <div className="flex items-center gap-2 text-white/80 text-xs">
+        <span className="w-3 h-3 rounded-full bg-blue-400"></span>
+        <span className="font-black">{verified.percent}% Verified • 95122</span>
+        <span className="ml-auto font-bold">{verified.count}</span>
+      </div>
+    </div>
+  )
 }
