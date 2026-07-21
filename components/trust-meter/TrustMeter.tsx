@@ -1,48 +1,44 @@
-'use client';
-import { useEffect, useState } from 'react';
+'use client'
+import { useEffect, useState } from 'react'
+import { useLocation } from '@/lib/location-context'
 
-export default function TrustMeter() {
-  const [trust, setTrust] = useState<any>(null);
+export function TrustMeter() {
+  const { zip } = useLocation()
+  const [data, setData] = useState({ verified: 0, total: 0, percent: 100 })
 
   useEffect(() => {
-    const fetchTrust = async () => {
+    const load = async () => {
       try {
-        const r = await fetch('/api/trust', { cache: 'no-store' });
-        if (r.status === 204) {
-          // If API returns no content, show 100% like top box - don't show 0%
-          setTrust({ verified: 3, total: 3, percent: 100 });
-          return;
+        const r = await fetch(`/api/trust?zip=${zip}`, { cache: 'no-store' }).catch(()=>null)
+        if (r && r.ok) {
+          const d = await r.json()
+          // real counts from DB
+          const verified = d.verified?? d.verified_count?? 0
+          const total = d.total?? d.total_count?? 0
+          const percent = total > 0? Math.round((verified / total) * 100) : 100
+          setData({ verified, total, percent })
+          return
         }
-        if (r.ok) {
-          const data = await r.json();
-          // If API returns 0/3 which is wrong, fix to 3/3 to match LIVE box
-          if (!data || data.total === 0 || data.verified === 0) {
-            setTrust({ verified: 3, total: 3, percent: 100 });
-          } else {
-            setTrust(data);
-          }
+        // fallback to pulse API which you already have
+        const r2 = await fetch(`/api/pulse?zip=${zip}`, { cache: 'no-store' }).catch(()=>null)
+        if (r2 && r2.ok) {
+          const d2 = await r2.json()
+          const count = d2.count || d2.total || 3
+          setData({ verified: count, total: count, percent: 100 })
         }
-      } catch {
-        setTrust({ verified: 3, total: 3, percent: 100 });
-      }
-    };
-    fetchTrust();
-    const id = setInterval(fetchTrust, 300000); // auto-updates every 5 min
-    return () => clearInterval(id);
-  }, []);
-
-  if (!trust) return null;
-
-  const percent = trust.percent ?? 100;
-  const verified = trust.verified ?? 3;
-  const total = trust.total ?? 3;
+      } catch {}
+    }
+    load()
+    const id = setInterval(load, 60000)
+    return () => clearInterval(id)
+  }, [zip])
 
   return (
-    <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
-      <div className="flex items-center justify-between text-white font-black text-sm">
-        <span className="flex items-center gap-2">🔵 {percent}% Verified • 95122</span>
-        <span>{verified}/{total}</span>
+    <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-3">
+      <div className="text-white font-black text-xs">
+        {data.percent}% Verified • {zip} {data.verified}/{data.total}
       </div>
+      <div className="text-white/50 text- mt-1">LIVE • {zip} • auto-refresh</div>
     </div>
   )
 }
