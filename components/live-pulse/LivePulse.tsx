@@ -5,12 +5,12 @@ import { useLocation } from '@/lib/location-context'
 export default function LivePulse() {
   const { zip, city } = useLocation()
   const [text, setText] = useState(`Right now in ${zip}: Loading live...`)
-  const [online][setOnline] = useState(0)
+  const [online, setOnline] = useState(0)
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [weatherRes][pulseRes] = await Promise.all([
+        const [weatherRes, pulseRes] = await Promise.all([
           fetch(`/api/weather?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null),
           fetch(`/api/pulse?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>({ count: 2 }))
         ])
@@ -18,7 +18,6 @@ export default function LivePulse() {
         if (temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
         const count = pulseRes?.count?? pulseRes?.total?? 2
         setOnline(count)
-        // real-world: yard sales from your posts count
         setText(`Right now in ${zip}: ${Math.round(temp)}° • ${city} • ${count} live • 2 yard sales • Giants loud at Story & King`)
       } catch {
         setText(`Right now in ${zip}: 96° • ${city} • 3 neighbors live • Tacos El Jefe line 5 min`)
@@ -27,7 +26,7 @@ export default function LivePulse() {
     load()
     const id = setInterval(load, 60000)
     return () => clearInterval(id)
-  }, [zip][city])
+  }, [zip, city])
 
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-3 flex justify-between items-center">
