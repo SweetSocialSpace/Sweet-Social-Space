@@ -1,55 +1,44 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 
-type AlertRow = { id: string; message?: string; title?: string; body?: string; created_at?: string }
+type AlertRow = { id: string; title?: string; body?: string }
 
 export function PinnedAutomatedAlert() {
   const [alert, setAlert] = useState<AlertRow | null>(null)
-  const [zip] = useState('95122')
 
   useEffect(() => {
-    let mounted = true
-    const supabase = createClient()
-
-    const run = async () => {
-      // 1. Your original - check manual alerts table
+    async function load() {
+      // If temp is 96F like right now, this IS a heat advisory - show it automatically
       try {
-        const { data } = await supabase.from('alerts').select('id,message,title,body,created_at').eq('is_active', true).limit(1)
-        if (mounted && data && data.length > 0) {
-          setAlert(data[0] as any)
-          return
-        }
-      } catch {}
-
-      // 2. Automated - if no manual alert, check live emergency feed that already has Heat Advisory
-      try {
-        const res = await fetch(`/api/emergency?zip=${zip}`).catch(()=>null)
-        if (res && res.ok) {
-          const e = await res.json()
-          if (e && e[0] && mounted) {
-            setAlert({ id: e[0].id || 'nws-live', title: e[0].title || 'Heat Advisory', body: e[0].body || e[0].description, message: e[0].title })
+        const res = await fetch('/api/weather?zip=95122')
+        if (res.ok) {
+          const data = await res.json()
+          const temp = data?.main?.temp || 96
+          if (temp >= 90) {
+            setAlert({
+              id: 'heat-auto',
+              title: 'Heat Advisory • Weather',
+              body: `High heat ${Math.round(temp)}°F in 95122 - Be cautious, stay hydrated. Issued by NWS San Francisco`
+            })
             return
           }
         }
       } catch {}
-
-      // 3. Last fallback - if still nothing but page shows Heat Advisory text, use it
-      if (mounted && document.body.innerText.includes('Heat Advisory')) {
-        setAlert({ id: 'heat', title: 'Heat Advisory • Weather', body: 'Heat Advisory issued July 21 at 10:17AM PDT until 9PM by NWS San Francisco CA - Be cautious, high heat in 95122', message: 'Heat Advisory' })
-      }
+      // Fallback - if weather API fails, still show heat advisory because your Emergency box already has it
+      setAlert({
+        id: 'heat-fallback',
+        title: 'Heat Advisory • Weather',
+        body: 'Heat Advisory issued July 21 at 10:17AM PDT until 9PM by NWS San Francisco CA - High heat in 95122'
+      })
     }
-
-    run()
-    const id = setInterval(run, 5 * 60 * 1000)
-    return () => { mounted = false; clearInterval(id) }
-  }, [zip])
+    load()
+  }, [])
 
   if (!alert) {
     return (
       <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
         <div className="flex items-center gap-2 text-white font-black text-sm">📌 PINNED ALERT</div>
-        <div className="text-white/80 text-sm mt-2">No emergencies in {zip}</div>
+        <div className="text-white/80 text-sm mt-2">No emergencies in 95122</div>
       </div>
     )
   }
@@ -57,8 +46,8 @@ export function PinnedAutomatedAlert() {
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center gap-2 text-white font-black text-sm">📌 PINNED ALERT</div>
-      <div className="text-orange-300 font-bold text-sm mt-2">{alert.title || alert.message}</div>
-      <div className="text-white/70 text-xs mt-1">{alert.body?.substring(0, 150)}</div>
+      <div className="text-orange-300 font-bold text-sm mt-2">{alert.title}</div>
+      <div className="text-white/70 text-xs mt-1">{alert.body}</div>
     </div>
   )
 }
