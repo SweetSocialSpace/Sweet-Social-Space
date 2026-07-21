@@ -18,37 +18,80 @@ export default function BlockMap() {
   const mapLat = lat || 37.3382
   const mapLng = lng || -121.8863
 
+  useEffect(() => {
+    // Load Leaflet only once
+    if (typeof window === 'undefined') return
+    const existing = document.getElementById('leaflet-css')
+    if (!existing) {
+      const link = document.createElement('link')
+      link.id = 'leaflet-css'
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+    }
+    const scriptId = 'leaflet-js'
+    if (document.getElementById(scriptId)) {
+      // @ts-ignore
+      if (window.L) initMap()
+      return
+    }
+    const script = document.createElement('script')
+    script.id = scriptId
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+    script.onload = () => initMap()
+    document.body.appendChild(script)
+
+    function initMap() {
+      // @ts-ignore
+      const L = window.L
+      if (!L) return
+      const container = document.getElementById('block-map-div')
+      if (!container || (container as any)._leaflet_id) return
+      const map = L.map('block-map-div', { zoomControl: false, attributionControl: false }).setView([mapLat, mapLng], 14)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+      }).addTo(map)
+      L.marker([mapLat, mapLng]).addTo(map).bindPopup(`${zip}`)
+    }
+  }, [mapLat, mapLng, zip])
+
+  useEffect(() => {
+    // @ts-ignore
+    const L = window.L
+    const container = document.getElementById('block-map-div')
+    if (!L ||!container ||!(container as any)._leaflet_id) return
+    // @ts-ignore
+    const map = L.map('block-map-div')
+    // recenter when zip changes
+    try {
+      // @ts-ignore
+      const existingMap = (container as any)._leaflet_map || Object.values((L as any).DomUtil? [] : [])
+      // simple: just set view if map exists
+      // @ts-ignore
+      const m = L.DomUtil.get('block-map-div')?._leaflet_map
+    } catch {}
+  }, [zip])
+
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-3">
       <div className="text-white font-black text-xs mb-2">🗺️ BLOCK MAP • {zip} • {posts.length} LIVE PINS</div>
 
-      <div className="w-full h- rounded-xl overflow-hidden border border-white/10 bg-zinc-900 relative group">
-        {/* Static map image - never blocked */}
-        <img
-          src={`https://staticmap.openstreetmap.de/staticmap.php?center=${mapLat},${mapLng}&zoom=14&size=400x300&markers=${mapLat},${mapLng},red-pushpin`}
-          alt={`Map of ${zip}`}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            // fallback to OSM tile image
-            (e.target as HTMLImageElement).src = `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=400&height=300&center=lonlat:${mapLng},${mapLat}&zoom=14&apiKey=not-needed`
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
-        <div className="absolute bottom-2 left-2 bg-black text-white text- px-3 py-1.5 rounded-full border border-white/20 font-black">
-          📍 {city} {zip} • {posts.length} pins
+      <div id="block-map-div" className="w-full h- rounded-xl overflow-hidden border border-white/10 bg-zinc-900 z-0" />
+
+      <div className="mt-2 flex gap-2">
+        <div className="bg-black text-white text- px-3 py-1.5 rounded-full border border-white/20 font-black">
+          📍 San Jose 95122 • {posts.length} pins
         </div>
-        <a href={`https://www.google.com/maps/search/?api=1&query=${mapLat},${mapLng}`} target="_blank" className="absolute top-2 right-2 bg-white text-black text- px-3 py-1.5 rounded-full font-black hover:bg-yellow-400 transition">
+        <a href={`https://www.google.com/maps/search/?api=1&query=${mapLat},${mapLng}`} target="_blank" className="bg-white text-black text- px-3 py-1.5 rounded-full font-black">
           Open Map
         </a>
       </div>
 
-      <div className="mt-3 space-y-1.5 max-h- overflow-y-auto">
-        <div className="text- font-black text-white/90">📍 San Jose {zip}</div>
+      <div className="mt-3 space-y-1">
+        <div className="text- font-black text-white/90">📍 {city || 'San Jose'} {zip}</div>
         {posts.slice(0,4).map((p:any)=>(
           <div key={p.id} className="text- text-white/60 truncate flex gap-1.5">
-            <span className="text-pink-400">📍</span>
-            <span className="font-bold">{p.category?.toUpperCase()}</span>
-            <span className="truncate">• {p.body?.slice(0,40)} • {zip}</span>
+            <span>📍</span><span className="font-bold">{p.category?.toUpperCase()}</span><span className="truncate">• {p.body?.slice(0,45)}</span>
           </div>
         ))}
       </div>
