@@ -8,6 +8,7 @@ import StreetHeat from '@/components/street-heat/StreetHeat'
 import ProximityPing from '@/components/proximity-ping/ProximityPing'
 import LivePulse from '@/components/live-pulse/LivePulse'
 import AIMayor from '@/components/AIMayor'
+import BlockMap from '@/components/BlockMap'
 import { PinnedAutomatedAlert } from '@/components/PinnedAutomatedAlert'
 import TheDrop from '@/components/the-drop/TheDrop'
 import EmergencyAlerts from '@/components/EmergencyAlerts'
@@ -94,6 +95,7 @@ export default function FeedPage() {
         <div className="space-y-6">
           <LivePulse />
           <AIMayor />
+          <BlockMap />
           <TrustMeter />
           <WeatherBar zip={localZip} />
           <PinnedAutomatedAlert />
