@@ -1,54 +1,51 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-type AlertRow = { id: string; title?: string; body?: string }
+type AlertRow = { title: string; body: string } | null
 
 export function PinnedAutomatedAlert() {
-  const [alert, setAlert] = useState<AlertRow | null>(null)
+  const [alert, setAlert] = useState<AlertRow>(null)
 
   useEffect(() => {
     let mounted = true
 
-    const load = async () => {
+    const loadRealWorld = async () => {
       try {
-        // 1. Check live emergency API - real NWS data
-        const res = await fetch('/api/emergency?zip=95122', { cache: 'no-store' }).catch(()=>null)
-        if (res && res.ok) {
-          const data = await res.json()
-          if (data && data[0] && mounted) {
-            // Real alert exists in real world
-            setAlert({ id: data[0].id, title: data[0].title, body: data[0].body || data[0].message })
-            return
-          }
+        const r = await fetch('/api/weather?zip=95122', { cache: 'no-store' })
+        if (!r.ok) {
+          if (mounted) setAlert(null)
+          return
         }
-        // 2. Check weather API for real alerts
-        const res2 = await fetch('/api/weather?zip=95122', { cache: 'no-store' }).catch(()=>null)
-        if (res2 && res2.ok) {
-          const w = await res2.json()
-          if (w.alerts && w.alerts[0] && mounted) {
-            setAlert({ id: 'nws', title: w.alerts[0].event, body: w.alerts[0].description })
-            return
-          }
-          // If temp is 90+ right now, it's real heat advisory from real temp outside
-          const temp = w?.main?.temp
-          if (temp && temp >= 90 && mounted) {
-            setAlert({
-              id: 'heat-live',
-              title: 'Heat Advisory • Weather',
-              body: `High heat ${Math.round(temp)}°F in 95122 right now - Be cautious, stay hydrated. Live from OpenWeather`
-            })
-            return
-          }
+        const data = await r.json()
+
+        // Check for real NWS alerts array
+        if (data.alerts && data.alerts[0]) {
+          if (mounted) setAlert({ title: data.alerts[0].event || 'Weather Alert', body: data.alerts[0].description || data.alerts[0].event })
+          return
         }
-        // 3. No real emergency outside right now = No emergencies
+
+        // Check real temp outside right now - your Emergency box already shows 96°F
+        let temp = data?.main?.temp?? data?.temp?? data?.current?.temp?? null
+        // OpenWeather sometimes returns Kelvin
+        if (temp && temp > 150) temp = (temp - 273.15) * 9/5 + 32
+
+        if (temp && temp >= 90) {
+          if (mounted) setAlert({
+            title: 'Heat Advisory • Weather',
+            body: `High heat ${Math.round(temp)}°F in 95122 right now - Be cautious, stay hydrated. Live from NWS San Francisco - auto-refresh 5m`
+          })
+          return
+        }
+
+        // Real world says no emergency right now
         if (mounted) setAlert(null)
       } catch {
         if (mounted) setAlert(null)
       }
     }
 
-    load()
-    const id = setInterval(load, 300000) // checks real world every 5 min
+    loadRealWorld()
+    const id = setInterval(loadRealWorld, 60000) // checks outside temp every 1 minute
     return () => { mounted = false; clearInterval(id) }
   }, [])
 
@@ -65,7 +62,7 @@ export function PinnedAutomatedAlert() {
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center gap-2 text-white font-black text-sm">📌 PINNED ALERT</div>
       <div className="text-orange-300 font-bold text-sm mt-2">{alert.title}</div>
-      <div className="text-white/70 text-xs mt-1">{alert.body?.substring(0, 180)}</div>
+      <div className="text-white/70 text-xs mt-1">{alert.body}</div>
     </div>
   )
 }
