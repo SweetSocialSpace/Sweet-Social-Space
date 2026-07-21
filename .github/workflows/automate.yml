@@ -2,18 +2,16 @@ name: Free Automation - No Vercel Cron
 
 on:
   schedule:
-    - cron: '0 * * * *'  # runs every hour, free
-  workflow_dispatch: # lets you run it manually with a button
+    - cron: '0 * * * *'  # every hour, free
+  workflow_dispatch:
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping your site to ingest 311 data
+      - name: Ingest San Jose 311 city data
         run: |
-          echo "Calling ingestion routes..."
-          curl -s -X POST https://sweet-social-space.vercel.app/api/city-ingest || true
-          curl -s -X POST https://sweet-social-space.vercel.app/api/city-data/ingest || true
-          curl -s -X POST https://sweet-social-space.vercel.app/api/ingest || true
-          curl -s -X POST https://sweet-social-space.vercel.app/api/cron || true
-          echo "Done - no Vercel cron used"
+          echo "Calling real ingest route..."
+          curl -s "https://sweet-social-space.vercel.app/api/ingest"
+          echo ""
+          echo "Done - city data should be ingesting now"
