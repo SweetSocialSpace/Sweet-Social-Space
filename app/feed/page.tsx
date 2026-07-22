@@ -135,12 +135,12 @@ export default function FeedPage() {
               const isLost = (p.category||'').toLowerCase().includes('lost_pet') || (p.category||'').toLowerCase().includes('lost pet')
               const isFreshLost = isLost && (Date.now() - new Date(p.created_at).getTime() < 48*60*60*1000)
               return (
-              <div key={p.id} className={`bg-white rounded-2xl p-5 border-l-4 shadow-xl ${isFreshLost? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`} style={{borderLeftColor: isFreshLost? '#f59e0b' : p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b': p.category==='faith'?'#7c3aed':'#000'}}>
+              <div key={p.id} className={`bg-white rounded-2xl p-5 border-l-4 shadow-xl ${isFreshLost? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`}style={{borderLeftColor: isFreshLost? '#f59e0b' : p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b': p.category==='faith'?'#7c3aed':'#000'}}>
                 {isFreshLost && <div className="text-xs font-black bg-yellow-400 text-black px-2 py-1 rounded-full inline-block mb-2">⭐ PINNED • LOST PET • 48HR GOLD</div>}
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="text-xs font-black bg-black text-white px-2 py-1 rounded-full">{catBadge(p.category||'general')} {(p.category||p.tag||'general').toUpperCase()}</span>
+                     <span className={`text-xs font-black px-2 py-1 rounded-full ${p.category==='faith'?'bg-purple-700 text-white':'bg-black text-white'}`}>{catBadge(p.category||'general')} {(p.category||p.tag||'general').toUpperCase()}</span>
                       <span className={`text- font-black px-2 py-1 rounded-full ${t.color}`}>{t.label} ✓</span>
                       {p.price!=null && <span className="text-xs font-black bg-green-500 text-white px-2 py-1 rounded-full">${Number(p.price).toFixed(0)}</span>}
                       {p.audio_url && <span className="text-xs font-black bg-purple-600 text-white px-2 py-1 rounded-full">🎙 VOICE</span>}
