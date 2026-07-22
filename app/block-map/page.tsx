@@ -19,7 +19,6 @@ export default function BlockMapPage(){
       const el=document.getElementById('block-map') as any
       if(!el || el._leaflet_id) return
       
-      // 100% container
       map=L.map(el,{
         center:[37.3396,-121.8611],
         zoom:15,
@@ -27,31 +26,26 @@ export default function BlockMapPage(){
         dragging:true,
         zoomControl:true
       })
-      
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
         attribution:'&copy; OpenStreetMap'
       }).addTo(map)
 
-      // REAL MARKER LAYER - not overlay divs
+      // REAL MARKERS - locked to map
       const pins=[
         {lat:37.3396,lng:-121.8611,label:'📍 Story & King',color:'#dc2626'},
         {lat:37.3415,lng:-121.8552,label:'🌮 Tacos',color:'#2563eb'},
         {lat:37.3389,lng:-121.8589,label:'🏷 Sale',color:'#16a34a'},
       ]
-      
       pins.forEach(p=>{
         const icon=L.divIcon({
           className:'real-pin',
           html:`<div style="background:${p.color};color:white;padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.5)">${p.label}</div>`,
-          iconSize:[100,30],
-          iconAnchor:[50,15]
+          iconSize:[100,30], iconAnchor:[50,15]
         })
         L.marker([p.lat,p.lng],{icon}).addTo(map)
       })
 
-      // Force full size
-      const fix=()=>{ try{ map.invalidateSize(true) }catch{} }
-      fix(); setTimeout(fix,150); setTimeout(fix,600)
+      setTimeout(()=>{ try{ map.invalidateSize(true) }catch{} },200)
       setReady(true)
     }
     init()
@@ -59,15 +53,15 @@ export default function BlockMapPage(){
   },[])
 
   return(
-    <div style={{display:'flex',flexDirection:'column',width:'100vw',height:'100vh',background:'#3d2800',overflow:'hidden'}}>
+    <div style={{display:'flex',flexDirection:'column',width:'100vw',height:'100vh',overflow:'hidden',background:'#3d2800'}}>
       <Header/>
-      <div style={{height:'100%',flexShrink:0,display:'flex',justifyContent:'space-between',alignItems:'center',background:'#a67c00',padding:'0 16px'}}>
+      <div style={{height:56,flexShrink:0,display:'flex',justifyContent:'space-between',alignItems:'center',background:'#a67c00',padding:'0 16px'}}>
         <h1 style={{color:'white',fontWeight:900,margin:0,fontSize:16}}>BLOCK MAP • 95122 • 3 PINS • LIVE {ready?'':'• Loading...'}</h1>
         <Link href="/feed" style={{background:'white',color:'black',padding:'6px 16px',borderRadius:999,textDecoration:'none',fontWeight:900}}>← Back</Link>
       </div>
-      {/* 100% WRAPPER */}
-      <div style={{flex:1,width:'100%',height:'100%',position:'relative',overflow:'hidden'}}>
-        <div id="block-map" style={{width:'100%',height:'100%',position:'absolute',top:0,left:0,right:0,bottom:0}}/>
+      {/* 100% CONTAINER THAT CAN'T COLLAPSE */}
+      <div style={{width:'100vw',height:'calc(100vh - 56px - 64px)',flex:'1 0 auto',position:'relative'}}>
+        <div id="block-map" style={{width:'100%',height:'100%',display:'block'}}/>
       </div>
     </div>
   )
