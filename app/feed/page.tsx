@@ -32,7 +32,6 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
   const { zip, city } = useLocation()
-  // FIX 1: GLOBAL READY - No more 95122 default. Uses user's zip.
   const [localZip, setLocalZip] = useState('')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
@@ -83,7 +82,6 @@ export default function FeedPage() {
     return cat===filter || cat.includes(filter)
   })
 
-  // FIX 2: LOST PETS STAY PINNED 48HRS + GOLD
   const filtered = [...filteredBase].sort((a:any, b:any) => {
     const now = Date.now()
     const isLostA = (a.category||'').toLowerCase().includes('lost_pet') || (a.category||'').toLowerCase().includes('lost pet')
@@ -96,13 +94,12 @@ export default function FeedPage() {
   })
 
   const catBadge = (cat: string) => {
-    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼' }
+    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼', faith:'✝️' }
     return map[cat] || '📌'
   }
 
   const trustLevel = (p:any) => {
     if(p.user_id === currentUserId) return { label:'YOU', color:'bg-black text-white' }
-    // FIX 3: No more 95122 hard-code here either
     return { label:`VERIFIED • ${localZip || zip || 'YOUR BLOCK'}`, color:'bg-blue-600 text-white' }
   }
 
@@ -137,7 +134,7 @@ export default function FeedPage() {
               const isLost = (p.category||'').toLowerCase().includes('lost_pet') || (p.category||'').toLowerCase().includes('lost pet')
               const isFreshLost = isLost && (Date.now() - new Date(p.created_at).getTime() < 48*60*60*1000)
               return (
-              <div key={p.id} className={`bg-white rounded-2xl p-5 border-l-4 shadow-xl ${isFreshLost? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`} style={{borderLeftColor: isFreshLost? '#f59e0b' : p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b':'#000'}}>
+              <div key={p.id} className={`bg-white rounded-2xl p-5 border-l-4 shadow-xl ${isFreshLost? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`} style={{borderLeftColor: isFreshLost? '#f59e0b' : p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b': p.category==='faith'?'#7c3aed':'#000'}}>
                 {isFreshLost && <div className="text-xs font-black bg-yellow-400 text-black px-2 py-1 rounded-full inline-block mb-2">⭐ PINNED • LOST PET • 48HR GOLD</div>}
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1">
@@ -168,7 +165,6 @@ export default function FeedPage() {
           </div>
         </div>
         <div className="space-y-6">
-          <faith:'✝️' />
           <TheDrop />
           <KarmaLeaderboard />
           <ProximityPing />
