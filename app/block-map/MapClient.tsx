@@ -35,19 +35,17 @@ export default function MapClient(){
   const [pins,setPins]=useState<any[]>([])
   const [lostPets,setLostPets]=useState<any[]>([])
   const supabase=createClient()
-  const { zip, coords: userCoords } = useLocation()
+  // FIXED: your hook is { zip, city, lat, lng } not coords
+  const { zip, lat, lng } = useLocation()
 
   // GLOBAL FIX: Center on USER, not 95122
-  // Old: [37.3369,-121.8563] = 95122 forever
-  // New: User's location or fallback
-  const mapCenter: [number, number] = userCoords? [userCoords.lat, userCoords.lng] : [37.3369,-121.8563]
+  const mapCenter: [number, number] = (lat && lng)? [lat, lng] : [37.3369,-121.8563]
 
   useEffect(()=>{
     (async()=>{
       const {data: biz}=await supabase.from('block_businesses').select('*')
       if(biz) setPins(biz)
 
-      // GOLD PINS: Lost pets last 48hrs
       const {data: pets}=await supabase.from('posts').select('*').ilike('category','%lost_pet%').order('created_at',{ascending:false}).limit(20)
       if(pets){
         const fresh = pets.filter((p:any) => Date.now() - new Date(p.created_at).getTime() < 48*60*60*1000)
