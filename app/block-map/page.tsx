@@ -47,15 +47,18 @@ export default function BlockMapPage() {
     }
   }, [])
 
-  return (
-    <div
-      ref={containerRef}
-      style={{
-        width: '100vw',
-        height: '100vh',
-        position: 'fixed',
-        inset: 0,
-      }}
-    />
-  )
+ return (
+  <div
+    ref={containerRef}
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      zIndex: 9999, // make sure it sits above your background
+    }}
+  />
+)
+
 }
