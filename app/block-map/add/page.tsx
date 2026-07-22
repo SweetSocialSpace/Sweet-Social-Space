@@ -9,34 +9,26 @@ export default function AddBusiness(){
 
   const geocodeAndSave = async () => {
     try{
-      if(!form.business_name || !form.address){ setMsg('Need name + address'); return }
-      setMsg('Finding address...')
-      
-      // Use a CORS-friendly geocoder
-      const url = `https://geocode.maps.co/search?q=${encodeURIComponent(form.address)}`
-      const res = await fetch(url)
+      if(!form.business_name ||!form.address){ setMsg('Need name + address'); return }
+      setMsg('Finding address via your server...')
+
+      const res = await fetch(`/api/geocode?q=${encodeURIComponent(form.address)}`)
       const data = await res.json()
-      
-      if(!data || !data[0]){ setMsg('Address not found - try "999 Story Rd, San Jose, CA, USA"'); return }
-      
+
+      if(!data[0]){ setMsg('Not found - add zip: 999 Story Rd, San Jose, CA 95122'); return }
+
       const lat = parseFloat(data[0].lat)
       const lng = parseFloat(data[0].lon)
       setMsg(`Found: ${lat}, ${lng} - Saving...`)
 
       const { error } = await supabase.from('block_businesses').insert([{...form, lat, lng}])
-      if(error){
-        // If table doesn't exist, show that
-        if(error.message.includes('does not exist')){
-          setMsg('Need to create table first - go to Supabase SQL and run the create table command I gave you')
-        } else {
-          setMsg('Save Error: '+error.message + ' - check RLS policies, allow insert')
-        }
-      } else {
-        setMsg(`✅ Pinned! ${form.business_name} now live on /block-map`)
+      if(error) setMsg('Save Error: '+error.message)
+      else {
+        setMsg(`✅ Pinned! Now live on /block-map`)
         setForm({business_name:'', address:'', type:'restaurant', description:''})
       }
     }catch(e:any){
-      setMsg('Geocode failed: '+ e.message + ' - try full address with zip')
+      setMsg('Error: '+ e.message)
     }
   }
 
@@ -53,7 +45,7 @@ export default function AddBusiness(){
       </select>
       <textarea placeholder="Description" value={form.description} onChange={e=>setForm({...form, description:e.target.value})} style={{width:'100%', padding:10, margin:'8px 0', border:'1px solid #ccc', borderRadius:6}}/>
       <button onClick={geocodeAndSave} style={{width:'100%', padding:12, background:'black', color:'white', borderRadius:8, marginTop:10}}>Pin to Block Map</button>
-      <p style={{marginTop:15, fontWeight:'bold', color: msg.includes('✅') ? 'green' : 'black'}}>{msg}</p>
+      <p style={{marginTop:15, fontWeight:'bold', color: msg.includes('✅')? 'green' : 'black'}}>{msg}</p>
       <a href="/block-map" style={{display:'block', marginTop:20, textAlign:'center'}}>← View Map</a>
     </div>
   )
