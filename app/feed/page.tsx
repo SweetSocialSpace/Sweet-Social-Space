@@ -40,6 +40,7 @@ export default function FeedPage() {
 
   const FILTERS = [
     { id: 'all', label: 'All 🌎' },
+    { id: 'faith', label: 'Faith ✝️' },
     { id: 'general', label: 'General 😊' },
     { id: 'safety', label: 'Safety 🚨' },
     { id: 'for_sale', label: 'For Sale 💰' },
@@ -167,6 +168,7 @@ export default function FeedPage() {
           </div>
         </div>
         <div className="space-y-6">
+          <faith:'✝️' />
           <TheDrop />
           <KarmaLeaderboard />
           <ProximityPing />
