@@ -22,11 +22,10 @@ export default function BlockMapPage(){
               style={{border:0}}
               loading="lazy"
               allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${z},San+Jose,CA&zoom=13`}
+              src={`https://maps.google.com/maps?q=${z},San+Jose,CA&z=13&output=embed`}
             />
           </div>
-          <div className="text-center text-white/50 text-xs mt-3">Full Bloom Map • Golden backdrop stays on /feed • 95122 live</div>
+          <div className="text-center text-white/50 text-xs mt-3">Full Bloom Map • Golden backdrop stays on /feed</div>
         </div>
       </div>
     </>
