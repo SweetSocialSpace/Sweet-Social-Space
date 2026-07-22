@@ -1,62 +1,51 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useState } from 'react'
 import Header from '@/app/components/Header'
 import Link from 'next/link'
 import { useLocation } from '@/lib/location-context'
 
+function latLonToTile(lat:number, lon:number, zoom:number){
+  const x = Math.floor((lon+180)/360 * Math.pow(2, zoom))
+  const y = Math.floor((1 - Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * Math.pow(2, zoom))
+  return {x,y}
+}
+
 export default function BlockMapPage(){
   const { zip } = useLocation()
-  const mapRef = useRef<any>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [zoom, setZoom] = useState(13)
+  const center = {lat:37.335, lon:-121.855}
+  const {x,y} = latLonToTile(center.lat, center.lon, zoom)
 
-  useEffect(()=>{
-    if(typeof window === 'undefined' || !containerRef.current) return
-
-    // Load Leaflet CSS + JS from CDN
-    const css = document.createElement('link')
-    css.rel = 'stylesheet'
-    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-    document.head.appendChild(css)
-
-    const script = document.createElement('script')
-    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-    script.onload = () => {
-      const L = (window as any).L
-      if(!L || mapRef.current) return
-
-      const map = L.map(containerRef.current!, {
-        center: [37.335, -121.855],
-        zoom: 13
-      })
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OSM'
-      }).addTo(map)
-
-      L.marker([37.336, -121.881]).addTo(map).bindPopup('📍 Story & King • 95122')
-      L.marker([37.332, -121.875]).addTo(map).bindPopup('🌮 Tacos El Jefe')
-      L.marker([37.339, -121.863]).addTo(map).bindPopup('🏷️ King Rd Sale')
-
-      const group = L.featureGroup([
-        L.marker([37.336, -121.881]),
-        L.marker([37.332, -121.875]),
-        L.marker([37.339, -121.863])
-      ])
-      map.fitBounds(group.getBounds().pad(0.3))
-
-      mapRef.current = map
+  const tiles = []
+  for(let dy=-1; dy<=1; dy++){
+    for(let dx=-1; dx<=1; dx++){
+      tiles.push({x:x+dx, y:y+dy})
     }
-    document.body.appendChild(script)
-  }, [])
+  }
 
   return (
     <div style={{display:'flex', flexDirection:'column', height:'100dvh', width:'100vw', background:'radial-gradient(circle at top, #a67c00, #3d2800)'}}>
       <Header />
       <div style={{flex:'0 0 auto', padding:'12px 16px', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-        <h1 style={{color:'white', fontWeight:900, fontSize:'clamp(16px, 2vw, 24px)'}}>BLOCK MAP • {zip || '95122'} • 3 PINS • LIVE</h1>
-        <Link href="/feed" style={{background:'white', color:'black', fontWeight:900, padding:'8px 20px', borderRadius:'999px', textDecoration:'none'}}>← Back to Feed</Link>
+        <h1 style={{color:'white', fontWeight:900}}>BLOCK MAP • {zip || '95122'} • 3 PINS • LIVE</h1>
+        <div style={{display:'flex', gap:'8px', alignItems:'center'}}>
+          <button onClick={()=>setZoom(z=>Math.max(11,z-1))} style={{background:'white', width:'36px', height:'36px', borderRadius:'50%', fontWeight:900, fontSize:'20px', border:'none'}}>−</button>
+          <span style={{color:'white', fontSize:'12px', fontWeight:700, width:'30px', textAlign:'center'}}>{zoom}x</span>
+          <button onClick={()=>setZoom(z=>Math.min(16,z+1))} style={{background:'white', width:'36px', height:'36px', borderRadius:'50%', fontWeight:900, fontSize:'20px', border:'none'}}>+</button>
+          <Link href="/feed" style={{background:'white', color:'black', fontWeight:900, padding:'8px 20px', borderRadius:'999px', textDecoration:'none', marginLeft:'12px'}}>← Back to Feed</Link>
+        </div>
       </div>
-      <div ref={containerRef} style={{flex:'1 1 auto', margin:'0 16px 16px 16px', borderRadius:'16px', overflow:'hidden', minHeight:0, background:'white'}} />
+
+      <div style={{flex:'1 1 auto', margin:'0 16px 16px 16px', borderRadius:'16px', overflow:'hidden', position:'relative', background:'white', minHeight:0}}>
+        <div style={{position:'absolute', inset:0, display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gridTemplateRows:'repeat(3, 1fr)'}}>
+          {tiles.map((t,i)=>(
+            <img key={i} src={`https://a.tile.openstreetmap.org/${zoom}/${t.x}/${t.y}.png`} style={{width:'100%', height:'100%', objectFit:'cover'}} alt="" />
+          ))}
+        </div>
+        <div style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', background:'#dc2626', color:'white', fontWeight:900, padding:'6px 14px', borderRadius:'999px', fontSize:'13px', boxShadow:'0 4px 12px rgba(0,0,0,0.5)'}}>📍 Story & King</div>
+        <div style={{position:'absolute', top:'58%', left:'42%', background:'#2563eb', color:'white', fontWeight:900, padding:'4px 10px', borderRadius:'999px', fontSize:'11px'}}>🌮 Tacos</div>
+        <div style={{position:'absolute', top:'38%', left:'62%', background:'#16a34a', color:'white', fontWeight:900, padding:'4px 10px', borderRadius:'999px', fontSize:'11px'}}>🏷️ Sale</div>
+      </div>
     </div>
   )
 }
