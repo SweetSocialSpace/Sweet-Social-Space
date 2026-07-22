@@ -1,44 +1,39 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useLocation } from '@/lib/location-context'
 
 type LiveAlert = { id: string; message?: string; event?: string; title?: string; body?: string; type?: string; icon?: string }
 
 export function EmergencyAlerts() {
+  const { zip: globalZip } = useLocation()
   const [alerts, setAlerts] = useState<LiveAlert[]>([])
   const [status, setStatus] = useState<'checking'|'clear'|'alert'>('checking')
-  const [zip, setZip] = useState('95122')
+  const [zip, setZip] = useState('')
 
   useEffect(()=>{
+    if (!globalZip) return // wait for real zip
+    setZip(globalZip)
     const supabase = createClient()
     let mounted = true
 
     const load = async()=>{
       try{
-        // Get user's zip
-        const { data: { user } } = await supabase.auth.getUser()
-        let currentZip = '95122'
-        if (user) {
-          const { data: profile } = await supabase.from('profiles').select('zip_code').eq('id', user.id).single()
-          if (profile?.zip_code) {
-            currentZip = profile.zip_code
-            if(mounted) setZip(currentZip)
-          }
-        }
+        // GLOBAL FIX: use globalZip, no fallback to 95122
+        const currentZip = globalZip
 
         // 1. Check Supabase manual alerts first
-        const {data, count} = await supabase.from('alerts').select('id,message,event,title,body', {count:'exact'}).eq('is_active', true).limit(3)
+        const {data, count} = await supabase.from('alerts').select('id,message,event,title,body', {count:'exact'}).eq('is_active', true).eq('zip_code', currentZip).limit(3)
         if(mounted && count && count>0){
           setAlerts((data as any) || [])
           setStatus('alert')
           return
         }
 
-        // 2. No manual alerts - hit OUR new auto-scanner that uses your OPENWEATHER key
+        // 2. No manual alerts - hit OUR new auto-scanner
         const res = await fetch(`/api/emergency?zip=${currentZip}`)
         const json = await res.json()
         if(mounted && json.alerts && json.alerts.length > 0){
-          // If it's just the "All clear" status, show as clear but with live timestamp
           if(json.alerts.length === 1 && json.alerts[0].type === 'Status'){
             setAlerts(json.alerts)
             setStatus('clear')
@@ -55,9 +50,15 @@ export function EmergencyAlerts() {
       }
     }
     load()
-    const id = setInterval(load, 5*60*1000) // refresh every 5 min
+    const id = setInterval(load, 5*60*1000)
     return ()=>{ mounted = false; clearInterval(id) }
-  },[])
+  },[globalZip])
+
+  if (!globalZip) return (
+    <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
+      <p className="font-bold">🚨 Emergency • Loading location...</p>
+    </div>
+  )
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
@@ -81,7 +82,7 @@ export function EmergencyAlerts() {
               <div className="text-white/80 mt-1 text-xs leading-snug">{a.message || a.body}</div>
             </div>
           ))}
-          <p className="text- text-white/30 mt-2">Live from OpenWeather, NOAA, USGS • auto-refresh 5m</p>
+          <p className="text-xs text-white/30 mt-2">Live from OpenWeather, NOAA, USGS • auto-refresh 5m</p>
         </div>
       )}
     </div>
