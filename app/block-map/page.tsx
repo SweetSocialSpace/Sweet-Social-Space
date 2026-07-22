@@ -4,42 +4,37 @@ import Header from '@/app/components/Header'
 import Link from 'next/link'
 import { useLocation } from '@/lib/location-context'
 
-function latLonToTile(lat:number, lon:number, zoom:number){
-  const x = Math.floor((lon+180)/360 * Math.pow(2, zoom))
-  const y = Math.floor((1 - Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * Math.pow(2, zoom))
+function latLonToTileFloat(lat:number, lon:number, zoom:number){
+  const x = (lon+180)/360 * Math.pow(2, zoom)
+  const y = (1 - Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * Math.pow(2, zoom)
   return {x,y}
 }
+
+const PINS = [
+  {id:'story', lat:37.336, lon:-121.881, label:'📍 Story & King', color:'#dc2626'},
+  {id:'tacos', lat:37.332, lon:-121.875, label:'🌮 Tacos', color:'#2563eb'},
+  {id:'sale', lat:37.339, lon:-121.863, label:'🏷️ Sale', color:'#16a34a'},
+]
 
 export default function BlockMapPage(){
   const { zip } = useLocation()
   const [zoom, setZoom] = useState(13)
   const [center, setCenter] = useState({lat:37.335, lon:-121.855})
-  const dragRef = useRef<{startX:number, startY:number, startLat:number, startLon:number}|null>(null)
-  const {x,y} = latLonToTile(center.lat, center.lon, zoom)
+  const dragRef = useRef<any>(null)
 
+  const centerTile = latLonToTileFloat(center.lat, center.lon, zoom)
   const tiles = []
-  for(let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) tiles.push({x:x+dx, y:y+dy})
+  const cx = Math.floor(centerTile.x), cy = Math.floor(centerTile.y)
+  for(let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) tiles.push({x:cx+dx, y:cy+dy})
 
-  const handleWheel = (e:React.WheelEvent) => {
-    e.preventDefault()
-    if(e.deltaY < 0) setZoom(z=>Math.min(16,z+1))
-    else setZoom(z=>Math.max(11,z-1))
-  }
-
-  const handleMouseDown = (e:React.MouseEvent) => {
-    dragRef.current = {startX:e.clientX, startY:e.clientY, startLat:center.lat, startLon:center.lon}
-  }
-  const handleMouseMove = (e:React.MouseEvent) => {
-    if(!dragRef.current) return
-    const dx = e.clientX - dragRef.current.startX
-    const dy = e.clientY - dragRef.current.startY
-    const scale = Math.pow(2, -zoom) * 2
-    setCenter({lat: dragRef.current.startLat + dy*scale*0.5, lon: dragRef.current.startLon - dx*scale*0.5})
-  }
-  const handleMouseUp = () => dragRef.current = null
-
-  const openMaps = (lat:number, lon:number, label:string) => {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`, '_blank')
+  const getPinPos = (lat:number, lon:number) => {
+    const p = latLonToTileFloat(lat, lon, zoom)
+    const dx = p.x - centerTile.x
+    const dy = p.y - centerTile.y
+    // 1 tile = 33.333% of container
+    const left = 50 + dx * 33.333
+    const top = 50 + dy * 33.333
+    return {left:`${left}%`, top:`${top}%`}
   }
 
   return (
@@ -56,23 +51,27 @@ export default function BlockMapPage(){
       </div>
 
       <div 
-        onWheel={handleWheel}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onWheel={(e)=>{e.preventDefault(); setZoom(z=> e.deltaY<0 ? Math.min(16,z+1) : Math.max(11,z-1))}}
+        onMouseDown={(e)=> dragRef.current={sx:e.clientX, sy:e.clientY, lat:center.lat, lon:center.lon}}
+        onMouseMove={(e)=>{ if(!dragRef.current) return; const dx=e.clientX-dragRef.current.sx, dy=e.clientY-dragRef.current.sy; const s=Math.pow(2,-zoom)*2; setCenter({lat:dragRef.current.lat+dy*s*0.5, lon:dragRef.current.lon-dx*s*0.5}) }}
+        onMouseUp={()=>dragRef.current=null}
+        onMouseLeave={()=>dragRef.current=null}
         style={{flex:'1 1 auto', margin:'0 16px 16px 16px', borderRadius:'16px', overflow:'hidden', position:'relative', background:'white', minHeight:0, cursor:'grab'}}
       >
         <div style={{position:'absolute', inset:0, display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gridTemplateRows:'repeat(3, 1fr)'}}>
           {tiles.map((t,i)=><img key={i} src={`https://a.tile.openstreetmap.org/${zoom}/${t.x}/${t.y}.png`} style={{width:'100%', height:'100%', objectFit:'cover'}} alt="" draggable={false} />)}
         </div>
-        
-        {/* CLICKABLE PINS - now open Google Maps */}
-        <button onClick={()=>openMaps(37.336,-121.881,'Story & King')} style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', background:'#dc2626', color:'white', fontWeight:900, padding:'6px 14px', borderRadius:'999px', fontSize:'13px', border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.5)'}}>📍 Story & King</button>
-        <button onClick={()=>openMaps(37.332,-121.875,'Tacos El Jefe')} style={{position:'absolute', top:'58%', left:'42%', background:'#2563eb', color:'white', fontWeight:900, padding:'4px 10px', borderRadius:'999px', fontSize:'11px', border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.5)'}}>🌮 Tacos</button>
-        <button onClick={()=>openMaps(37.339,-121.863,'King Rd Sale')} style={{position:'absolute', top:'38%', left:'62%', background:'#16a34a', color:'white', fontWeight:900, padding:'4px 10px', borderRadius:'999px', fontSize:'11px', border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.5)'}}>🏷️ Sale</button>
 
-        <div style={{position:'absolute', bottom:'10px', left:'10px', background:'rgba(0,0,0,0.7)', color:'white', fontSize:'10px', padding:'4px 8px', borderRadius:'8px', pointerEvents:'none'}}>Scroll wheel = zoom • Drag = pan • Click pin = directions</div>
+        {PINS.map(pin=>{
+          const pos = getPinPos(pin.lat, pin.lon)
+          return (
+            <button 
+              key={pin.id}
+              onClick={()=>window.open(`https://www.google.com/maps/search/?api=1&query=${pin.lat},${pin.lon}`,'_blank')}
+              style={{position:'absolute', left:pos.left, top:pos.top, transform:'translate(-50%,-50%)', background:pin.color, color:'white', fontWeight:900, padding:'6px 12px', borderRadius:'999px', fontSize:'12px', border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.5)', whiteSpace:'nowrap'}}
+            >{pin.label}</button>
+          )
+        })}
       </div>
     </div>
   )
