@@ -32,7 +32,8 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
   const { zip, city } = useLocation()
-  const [localZip, setLocalZip] = useState('95122')
+  // FIX 1: GLOBAL READY - No more 95122 default. Uses user's zip.
+  const [localZip, setLocalZip] = useState('')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   useEffect(() => { if (zip) setLocalZip(zip) }, [zip])
@@ -76,9 +77,21 @@ export default function FeedPage() {
     if (!error) setPosts(prev => prev.filter((p:any) => p.id!== postId))
   }
 
-  const filtered = filter==='all'? posts : posts.filter((p:any)=> {
+  const filteredBase = filter==='all'? posts : posts.filter((p:any)=> {
     const cat = (p.category||p.tag||'').toLowerCase().replace(/\s*&\s*/g,'_').replace(/\s+/g,'_')
     return cat===filter || cat.includes(filter)
+  })
+
+  // FIX 2: LOST PETS STAY PINNED 48HRS + GOLD
+  const filtered = [...filteredBase].sort((a:any, b:any) => {
+    const now = Date.now()
+    const isLostA = (a.category||'').toLowerCase().includes('lost_pet') || (a.category||'').toLowerCase().includes('lost pet')
+    const isLostB = (b.category||'').toLowerCase().includes('lost_pet') || (b.category||'').toLowerCase().includes('lost pet')
+    const isFreshA = isLostA && (now - new Date(a.created_at).getTime() < 48*60*60*1000)
+    const isFreshB = isLostB && (now - new Date(b.created_at).getTime() < 48*60*60*1000)
+    if (isFreshA &&!isFreshB) return -1
+    if (!isFreshA && isFreshB) return 1
+    return 0
   })
 
   const catBadge = (cat: string) => {
@@ -87,9 +100,9 @@ export default function FeedPage() {
   }
 
   const trustLevel = (p:any) => {
-    // Simple trust based on post having profile + karma - you can upgrade later
     if(p.user_id === currentUserId) return { label:'YOU', color:'bg-black text-white' }
-    return { label:'VERIFIED • 95122', color:'bg-blue-600 text-white' }
+    // FIX 3: No more 95122 hard-code here either
+    return { label:`VERIFIED • ${localZip || zip || 'YOUR BLOCK'}`, color:'bg-blue-600 text-white' }
   }
 
   return (
@@ -101,14 +114,14 @@ export default function FeedPage() {
           <AIMayor />
           <BlockMap />
           <TrustMeter />
-          <WeatherBar zip={localZip} />
+          <WeatherBar zip={localZip || zip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
           <LatestAlerts />
           <WhatsHappeningNearYou />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
-          <LocationScopeBar zip={localZip} radius={radius} setRadius={setRadius} />
+          <LocationScopeBar zip={localZip || zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
          <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
@@ -117,11 +130,14 @@ export default function FeedPage() {
             ))}
           </div>
           <div className="space-y-3 mt-2">
-            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in {localZip} - be first!</div>}
+            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in {localZip || zip} - be first!</div>}
             {filtered.map((p:any)=>{
               const t = trustLevel(p)
+              const isLost = (p.category||'').toLowerCase().includes('lost_pet') || (p.category||'').toLowerCase().includes('lost pet')
+              const isFreshLost = isLost && (Date.now() - new Date(p.created_at).getTime() < 48*60*60*1000)
               return (
-              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl" style={{borderLeftColor: p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b':'#000'}}>
+              <div key={p.id} className={`bg-white rounded-2xl p-5 border-l-4 shadow-xl ${isFreshLost? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`} style={{borderLeftColor: isFreshLost? '#f59e0b' : p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b':'#000'}}>
+                {isFreshLost && <div className="text-xs font-black bg-yellow-400 text-black px-2 py-1 rounded-full inline-block mb-2">⭐ PINNED • LOST PET • 48HR GOLD</div>}
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -136,7 +152,7 @@ export default function FeedPage() {
                     )}
                     {p.location_address && (
                       <div className="mt-3 flex gap-2 items-center flex-wrap">
-                        <span className="text-xs bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip} • Private</span>
+                        <span className="text-xs bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip || zip} • Private</span>
                         <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition">🗺 Get Directions</a>
                       </div>
                     )}
@@ -145,7 +161,7 @@ export default function FeedPage() {
                     <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
                   )}
                 </div>
-                <div className="mt-2 text-xs font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip} • {p.audio_url?'🎙 Voice Story':''}</div>
+                <div className="mt-2 text-xs font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip || zip} • {p.audio_url?'🎙 Voice Story':''}</div>
               </div>
             )})}
           </div>
@@ -159,8 +175,8 @@ export default function FeedPage() {
           <BusinessDirectory />
           <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-4 border-2 border-black">
             <div className="text-black font-black text-sm">OWN THIS BLOCK? 💰</div>
-            <div className="text-black/80 text-xs mt-1">Pin your business in {localZip} for $49/mo</div>
-            <a href="/business/claim" className="mt-3 block bg-black text-white text-xs font-black px-4 py-2 rounded-full text-center">CLAIM {localZip} →</a>
+            <div className="text-black/80 text-xs mt-1">Pin your business in {localZip || zip} for $49/mo</div>
+            <a href="/business/claim" className="mt-3 block bg-black text-white text-xs font-black px-4 py-2 rounded-full text-center">CLAIM {localZip || zip} →</a>
           </div>
           <UpcomingEvents />
           <VerifiedSources />
