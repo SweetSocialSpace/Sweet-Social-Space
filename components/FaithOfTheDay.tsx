@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
+import { useRouter } from 'next/navigation'
 
 const VERSES = [
   { verse: "Love your neighbor as yourself.", ref: "Mark 12:31", prompt: "Who on your block can you show love to today?" },
@@ -15,10 +16,10 @@ const VERSES = [
 
 export default function FaithOfTheDay() {
   const { zip } = useLocation()
+  const router = useRouter()
   const [today, setToday] = useState(VERSES[0])
 
   useEffect(() => {
-    // Same verse for everyone for the whole day - changes at midnight
     const dayIndex = new Date().getDate() % VERSES.length
     setToday(VERSES[dayIndex])
   }, [])
@@ -37,7 +38,7 @@ export default function FaithOfTheDay() {
         <div className="text-white text-sm font-bold leading-snug">{today.prompt}</div>
       </div>
       <div className="mt-4 flex gap-2">
-        <a href="/feed?filter=faith" className="flex-1 bg-white text-black text-xs font-black px-3 py-2 rounded-full text-center hover:bg-yellow-400 transition">See Faith Posts →</a>
+        <button onClick={()=>router.push('/feed?filter=faith')} className="flex-1 bg-white text-black text-xs font-black px-3 py-2 rounded-full text-center hover:bg-yellow-400 transition">See Faith Posts →</button>
         <button onClick={() => navigator.clipboard.writeText(`"${today.verse}" - ${today.ref} - from Sweet Social Space`)} className="bg-white/10 text-white text-xs font-black px-3 py-2 rounded-full border border-white/20">Share</button>
       </div>
     </div>
