@@ -61,7 +61,7 @@ export default function BlockMapPage(){
   return(
     <div style={{display:'flex',flexDirection:'column',width:'100vw',height:'100vh',background:'#3d2800',overflow:'hidden'}}>
       <Header/>
-      <div style={{height:100%,flexShrink:0,display:'flex',justifyContent:'space-between',alignItems:'center',background:'#a67c00',padding:'0 16px'}}>
+      <div style={{height:'100%',flexShrink:0,display:'flex',justifyContent:'space-between',alignItems:'center',background:'#a67c00',padding:'0 16px'}}>
         <h1 style={{color:'white',fontWeight:900,margin:0,fontSize:16}}>BLOCK MAP • 95122 • 3 PINS • LIVE {ready?'':'• Loading...'}</h1>
         <Link href="/feed" style={{background:'white',color:'black',padding:'6px 16px',borderRadius:999,textDecoration:'none',fontWeight:900}}>← Back</Link>
       </div>
