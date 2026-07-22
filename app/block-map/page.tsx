@@ -29,7 +29,6 @@ export default function BlockMapPage(){
 
       const el = document.getElementById('block-map')
       if(!el) return
-      // prevent double init
       if((el as any)._leaflet_id) return
 
       map = L.map(el, {
@@ -58,7 +57,6 @@ export default function BlockMapPage(){
         L.marker([p.lat, p.lng], {icon}).addTo(map)
       })
 
-      // FORCE FULL SIZE - keep calling until it fills
       const forceSize = () => { try{ map.invalidateSize(true) }catch(e){} }
       forceSize()
       setTimeout(forceSize, 100)
@@ -80,4 +78,9 @@ export default function BlockMapPage(){
         <h1 style={{color:'white', fontWeight:900, margin:0, fontSize:16}}>BLOCK MAP • 95122 • 3 PINS • LIVE {ready ? '' : '• Loading...'}</h1>
         <Link href="/feed" style={{background:'white', color:'black', padding:'6px 16px', borderRadius:999, textDecoration:'none', fontWeight:900}}>← Back</Link>
       </div>
-      {/* THIS WRAPPER FOR
+      <div style={{flex:1, position:'relative', width:'100%', overflow:'hidden', background:'#ddd'}}>
+        <div id="block-map" style={{position:'absolute', top:0, left:0, right:0, bottom:0, width:'100%', height:'100%'}} />
+      </div>
+    </div>
+  )
+}
