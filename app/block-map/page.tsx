@@ -4,45 +4,45 @@ import Header from '@/app/components/Header'
 import Link from 'next/link'
 
 export default function BlockMapPage(){
-  const mapRef = useRef<HTMLDivElement>(null)
-  const leafletRef = useRef<any>(null)
+  const mapDiv = useRef<HTMLDivElement>(null)
+  const mapInstance = useRef<any>(null)
 
   useEffect(()=>{
-    if(!mapRef.current || leafletRef.current) return
-    
-    // dynamic import so Vercel doesn't SSR it
-    import('leaflet').then(L=>{
-      if(!mapRef.current) return
-      
-      const map = L.map(mapRef.current, {
-        center: [37.3397, -121.8545], // REAL Story & King
-        zoom: 16,
-        zoomControl: true,
-      })
-      leafletRef.current = map
+    if(!mapDiv.current || mapInstance.current) return
+
+    // Load Leaflet CSS
+    if(!document.querySelector('link[href*="leaflet.css"]')){
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+      document.head.appendChild(link)
+    }
+
+    // Load Leaflet JS
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+    script.onload = () => {
+      const L = (window as any).L
+      if(!L || !mapDiv.current) return
+
+      const map = L.map(mapDiv.current).setView([37.3397, -121.8545], 16)
+      mapInstance.current = map
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
       }).addTo(map)
 
-      // REAL 95122 pins - these are locked by Leaflet, not by me
-      const pins = [
-        {lat:37.3397, lng:-121.8545, label:'📍 Story & King'},
-        {lat:37.3385, lng:-121.8535, label:'🌮 Tacos'},
-        {lat:37.3410, lng:-121.8555, label:'🏷️ Sale'},
-      ]
+      // Real pins - locked to ground, no lag
+      L.marker([37.3397, -121.8545]).addTo(map).bindPopup('📍 Story & King')
+      L.marker([37.3385, -121.8535]).addTo(map).bindPopup('🌮 Tacos')
+      L.marker([37.3410, -121.8555]).addTo(map).bindPopup('🏷️ Sale')
+    }
+    document.body.appendChild(script)
 
-      pins.forEach(p=>{
-        L.marker([p.lat, p.lng])
-          .addTo(map)
-          .bindPopup(`<a href="https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}" target="_blank">${p.label} - Get Directions</a>`)
-      })
-    })
-
-    return ()=> {
-      if(leafletRef.current){
-        leafletRef.current.remove()
-        leafletRef.current = null
+    return ()=>{
+      if(mapInstance.current){
+        mapInstance.current.remove()
+        mapInstance.current = null
       }
     }
   },[])
@@ -54,7 +54,7 @@ export default function BlockMapPage(){
         <h1 style={{color:'white', fontWeight:900, margin:0}}>BLOCK MAP • 95122 • 3 PINS • LIVE</h1>
         <Link href="/feed" style={{background:'white', color:'black', fontWeight:900, padding:'8px 20px', borderRadius:'999px', textDecoration:'none'}}>← Back to Feed</Link>
       </div>
-      <div ref={mapRef} style={{flex:1, width:'100%'}} />
+      <div ref={mapDiv} style={{flex:1, width:'100%', minHeight:'400px', background:'white'}} />
     </div>
   )
 }
