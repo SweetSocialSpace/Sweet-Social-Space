@@ -10,42 +10,43 @@ export default function BlockMapPage(){
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(()=>{
-    if(typeof window === 'undefined' || !containerRef.current || mapRef.current) return
-    
-    const loadLeaflet = async () => {
-      const L = await import('leaflet')
-      await import('leaflet/dist/leaflet.css')
-      
-      if(mapRef.current) return
-      
-      // Center on 95122 Story & King
+    if(typeof window === 'undefined' || !containerRef.current) return
+
+    // Load Leaflet CSS + JS from CDN
+    const css = document.createElement('link')
+    css.rel = 'stylesheet'
+    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+    document.head.appendChild(css)
+
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+    script.onload = () => {
+      const L = (window as any).L
+      if(!L || mapRef.current) return
+
       const map = L.map(containerRef.current!, {
         center: [37.335, -121.855],
-        zoom: 13,
-        zoomControl: true
+        zoom: 13
       })
-      
+
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
+        attribution: '© OSM'
       }).addTo(map)
-      
-      // 3 PINS - all around 95122
+
       L.marker([37.336, -121.881]).addTo(map).bindPopup('📍 Story & King • 95122')
       L.marker([37.332, -121.875]).addTo(map).bindPopup('🌮 Tacos El Jefe')
       L.marker([37.339, -121.863]).addTo(map).bindPopup('🏷️ King Rd Sale')
-      
-      // Auto-fit to show all 3 pins
+
       const group = L.featureGroup([
         L.marker([37.336, -121.881]),
         L.marker([37.332, -121.875]),
         L.marker([37.339, -121.863])
       ])
       map.fitBounds(group.getBounds().pad(0.3))
-      
+
       mapRef.current = map
     }
-    
-    loadLeaflet()
+    document.body.appendChild(script)
   }, [])
 
   return (
@@ -55,7 +56,7 @@ export default function BlockMapPage(){
         <h1 style={{color:'white', fontWeight:900, fontSize:'clamp(16px, 2vw, 24px)'}}>BLOCK MAP • {zip || '95122'} • 3 PINS • LIVE</h1>
         <Link href="/feed" style={{background:'white', color:'black', fontWeight:900, padding:'8px 20px', borderRadius:'999px', textDecoration:'none'}}>← Back to Feed</Link>
       </div>
-      <div ref={containerRef} style={{flex:'1 1 auto', margin:'0 16px 16px 16px', borderRadius:'16px', overflow:'hidden', minHeight:0, zIndex:0}} />
+      <div ref={containerRef} style={{flex:'1 1 auto', margin:'0 16px 16px 16px', borderRadius:'16px', overflow:'hidden', minHeight:0, background:'white'}} />
     </div>
   )
 }
