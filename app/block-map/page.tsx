@@ -9,18 +9,19 @@ function latLonToTileFloat(lat:number, lon:number, zoom:number){
   const y = (1 - Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * Math.pow(2, zoom)
   return {x,y}
 }
+
+// CORRECT 95122 COORDINATES - Story Rd & King Rd
 const PINS = [
-  {id:'story', lat:37.3422, lon:-121.8570, label:'📍 Story & King', color:'#dc2626'},
-  {id:'tacos', lat:37.3405, lon:-121.8562, label:'🌮 Tacos', color:'#2563eb'},
-  {id:'sale', lat:37.3445, lon:-121.8515, label:'🏷️ Sale', color:'#16a34a'},
+  {id:'story', lat:37.3448, lon:-121.8565, label:'📍 Story & King', color:'#dc2626'},
+  {id:'tacos', lat:37.3435, lon:-121.8575, label:'🌮 Tacos', color:'#2563eb'},
+  {id:'sale', lat:37.3465, lon:-121.8540, label:'🏷️ Sale', color:'#16a34a'},
 ]
 
 export default function BlockMapPage(){
   const { zip } = useLocation()
-  const [zoom, setZoom] = useState(13)
-  const [center, setCenter] = useState({lat:37.3422, lon:-121.8570})
+  const [zoom, setZoom] = useState(15)
+  const [center, setCenter] = useState({lat:37.3448, lon:-121.8565})
   const dragRef = useRef<any>(null)
-
   const centerTile = latLonToTileFloat(center.lat, center.lon, zoom)
   const tiles = []
   const cx = Math.floor(centerTile.x), cy = Math.floor(centerTile.y)
@@ -28,12 +29,7 @@ export default function BlockMapPage(){
 
   const getPinPos = (lat:number, lon:number) => {
     const p = latLonToTileFloat(lat, lon, zoom)
-    const dx = p.x - centerTile.x
-    const dy = p.y - centerTile.y
-    // 1 tile = 33.333% of container
-    const left = 50 + dx * 33.333
-    const top = 50 + dy * 33.333
-    return {left:`${left}%`, top:`${top}%`}
+    return {left:`${50 + (p.x-centerTile.x)*33.333}%`, top:`${50 + (p.y-centerTile.y)*33.333}%`}
   }
 
   return (
@@ -48,7 +44,6 @@ export default function BlockMapPage(){
           <Link href="/feed" style={{background:'white', color:'black', fontWeight:900, padding:'8px 20px', borderRadius:'999px', textDecoration:'none', marginLeft:'12px'}}>← Back to Feed</Link>
         </div>
       </div>
-
       <div 
         onWheel={(e)=>{e.preventDefault(); setZoom(z=> e.deltaY<0 ? Math.min(16,z+1) : Math.max(11,z-1))}}
         onMouseDown={(e)=> dragRef.current={sx:e.clientX, sy:e.clientY, lat:center.lat, lon:center.lon}}
@@ -60,16 +55,9 @@ export default function BlockMapPage(){
         <div style={{position:'absolute', inset:0, display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gridTemplateRows:'repeat(3, 1fr)'}}>
           {tiles.map((t,i)=><img key={i} src={`https://a.tile.openstreetmap.org/${zoom}/${t.x}/${t.y}.png`} style={{width:'100%', height:'100%', objectFit:'cover'}} alt="" draggable={false} />)}
         </div>
-
         {PINS.map(pin=>{
           const pos = getPinPos(pin.lat, pin.lon)
-          return (
-            <button 
-              key={pin.id}
-              onClick={()=>window.open(`https://www.google.com/maps/search/?api=1&query=${pin.lat},${pin.lon}`,'_blank')}
-              style={{position:'absolute', left:pos.left, top:pos.top, transform:'translate(-50%,-50%)', background:pin.color, color:'white', fontWeight:900, padding:'6px 12px', borderRadius:'999px', fontSize:'12px', border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.5)', whiteSpace:'nowrap'}}
-            >{pin.label}</button>
-          )
+          return <button key={pin.id} onClick={()=>window.open(`https://www.google.com/maps/search/?api=1&query=${pin.lat},${pin.lon}`,'_blank')} style={{position:'absolute', left:pos.left, top:pos.top, transform:'translate(-50%,-50%)', background:pin.color, color:'white', fontWeight:900, padding:'6px 12px', borderRadius:'999px', fontSize:'12px', border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.5)', whiteSpace:'nowrap'}}>{pin.label}</button>
         })}
       </div>
     </div>
