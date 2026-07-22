@@ -1,24 +1,28 @@
 'use client'
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
+import { useLocation } from '@/hooks/useLocation' // your spine hook
 
 export default function AddBusiness(){
-  const [form, setForm] = useState({business_name:'', address:'', type:'shop', description:'', lat:'37.3369', lng:'-121.8563'})
+  const { lat, lng, address } = useLocation() // global - uses USER location
+  const [form, setForm] = useState({business_name:'', address:'', type:'shop', description:''})
   const [msg, setMsg] = useState('')
   const supabase = createClient()
 
   const save = async () => {
-    const latNum = parseFloat(form.lat.replace(/[^0-9.\-]/g,''))
-    const lngNum = parseFloat(form.lng.replace(/[^0-9.\-]/g,''))
-    if(isNaN(latNum) || isNaN(lngNum)){ setMsg('Lat/Lng must be numbers - just 37.3369 and -121.8563'); return }
+    if(!form.business_name){ setMsg('Please enter a business name'); return }
+    
+    const finalLat = lat || 0
+    const finalLng = lng || 0
+    const finalAddress = form.address || address?.formatted || ''
 
     const { error } = await supabase.from('block_businesses').insert([{
-      business_name: form.business_name || 'Story & King',
-      address: form.address || '999 Story Rd, San Jose, CA 95122',
+      business_name: form.business_name,
+      address: finalAddress,
       type: form.type,
       description: form.description,
-      lat: latNum,
-      lng: lngNum
+      lat: finalLat,
+      lng: finalLng
     }])
     if(error) setMsg('Save Error: '+error.message)
     else setMsg(`✅ Pinned! ${form.business_name} live on /block-map`)
@@ -27,12 +31,9 @@ export default function AddBusiness(){
   return (
     <div style={{maxWidth:520, margin:'40px auto', padding:20, background:'white', borderRadius:12, color:'black'}}>
       <h1 style={{fontWeight:'bold', fontSize:22}}>Add Business to Block Map</h1>
+      <p style={{fontSize:12, color:'#666', marginBottom:10}}>📍 Pinning to your current location: {address?.formatted || 'Detecting...'}</p>
       <input placeholder="Business Name" value={form.business_name} onChange={e=>setForm({...form, business_name:e.target.value})} style={{width:'100%', padding:10, margin:'6px 0', border:'1px solid #ccc', borderRadius:6}}/>
-      <input placeholder="Address" value={form.address} onChange={e=>setForm({...form, address:e.target.value})} style={{width:'100%', padding:10, margin:'6px 0', border:'1px solid #ccc', borderRadius:6}}/>
-      <div style={{display:'flex', gap:8}}>
-        <input placeholder="37.3369" value={form.lat} onChange={e=>setForm({...form, lat:e.target.value})} style={{flex:1, padding:10, border:'1px solid #ccc', borderRadius:6}}/>
-        <input placeholder="-121.8563" value={form.lng} onChange={e=>setForm({...form, lng:e.target.value})} style={{flex:1, padding:10, border:'1px solid #ccc', borderRadius:6}}/>
-      </div>
+      <input placeholder="Street Address" value={form.address} onChange={e=>setForm({...form, address:e.target.value})} style={{width:'100%', padding:10, margin:'6px 0', border:'1px solid #ccc', borderRadius:6}}/>
       <button onClick={save} style={{width:'100%', padding:12, background:'black', color:'white', borderRadius:8, marginTop:10}}>Pin to Block Map</button>
       <p style={{marginTop:12, fontWeight:'bold', color: msg.includes('✅')?'green':'black'}}>{msg}</p>
       <a href="/block-map" style={{display:'block', marginTop:15, textAlign:'center'}}>← View Map</a>
