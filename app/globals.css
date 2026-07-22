@@ -73,9 +73,14 @@ textarea {
 /* --------------------------------------------- */
 
 .block-map-body {
-  background: none !important;
+  /* KEEP your golden wallpaper */
+  background: #1C1917 url('https://github.com/SweetSocialSpace/Sweet-Social-Space/blob/main/golden_droplet_heart_wallpaper.jpg?raw=true') center/cover no-repeat fixed !important;
+
+  /* REMOVE flexbox so the map can float freely */
   display: block !important;
   flex-direction: initial !important;
+
+  /* Full-screen body */
   margin: 0 !important;
   padding: 0 !important;
   height: 100vh !important;
