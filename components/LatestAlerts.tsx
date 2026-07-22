@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useLocation } from '@/lib/location-context'
 
 type Alert = { id: string; title?: string; body?: string; severity?: string; created_at: string }
 
@@ -13,16 +14,21 @@ function timeAgo(iso:string){
 }
 
 export function LatestAlerts(){
-   const [alerts, setAlerts]=useState<Alert[]>([])
+  const { zip, lat, lng } = useLocation()
+  const [alerts, setAlerts]=useState<Alert[]>([])
   const [loading, setLoading]=useState(true)
 
   useEffect(()=>{
+    if (!zip) return // wait for real location
     const supabase = createClient()
     let mounted = true
 
     const fetchLive = async () => {
       try {
-        const res = await fetch(`https://api.weather.gov/alerts/active?point=37.3361,-121.8111`, {
+        // GLOBAL FIX: use real coords, not hardcoded 95122 coords
+        const pointLat = lat || 37.7749
+        const pointLng = lng || -122.4194
+        const res = await fetch(`https://api.weather.gov/alerts/active?point=${pointLat},${pointLng}`, {
           headers: { 'Accept': 'application/geo+json' }
         })
         const json = await res.json()
@@ -41,26 +47,33 @@ export function LatestAlerts(){
     }
 
     const load = async()=>{
-     const {data}= await supabase.from('alerts').select('*').eq('is_active', true).eq('zip_code','95122').order('created_at',{ascending:false}).limit(5)
+     const {data}= await supabase.from('alerts').select('*').eq('is_active', true).eq('zip_code', zip).order('created_at',{ascending:false}).limit(5)
       if(mounted && data && data.length > 0){
         setAlerts(data as any)
         setLoading(false)
       } else {
-        // No local alerts - auto-grab from internet for 95122
+        // GLOBAL FIX: auto-grab for real zip, not 95122
         fetchLive()
       }
     }
     load()
 
-    const ch = supabase.channel('latest-alerts').on('postgres_changes',{event:'*',schema:'public',table:'alerts'}, load).subscribe()
-    const id = setInterval(load, 15*60*1000) // auto-refresh every 15 min
+    const ch = supabase.channel(`latest-alerts-${zip}`).on('postgres_changes',{event:'*',schema:'public',table:'alerts', filter:`zip_code=eq.${zip}`}, load).subscribe()
+    const id = setInterval(load, 15*60*1000)
 
     return ()=>{ mounted = false; supabase.removeChannel(ch); clearInterval(id) }
-  },[])
+  },[zip, lat, lng])
+
+  if (!zip) return (
+    <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
+      <p className="font-bold">⚠ Latest Alerts</p>
+      <p className="text-sm mt-2 text-white/60">Loading location...</p>
+    </div>
+  )
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">⚠ Latest Alerts</p>
+      <p className="font-bold">⚠ Latest Alerts • {zip}</p>
       {loading? <p className="text-sm mt-2 text-white/60">Loading...</p> : alerts.length===0? (
         <p className="text-sm mt-2 text-white/80">✅ All clear — no active alerts</p>
       ) : (
