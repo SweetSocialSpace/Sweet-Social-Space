@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/app/components/Header'
 import FaithOfTheDay from '@/components/FaithOfTheDay'
 import { TrustMeter } from '@/components/trust-meter/TrustMeter'
@@ -30,6 +30,7 @@ export default function FeedPage() {
   const [filter, setFilter] = useState('all')
   const supabase = createClient()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
   const { zip, city } = useLocation()
@@ -37,6 +38,18 @@ export default function FeedPage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
   useEffect(() => { if (zip) setLocalZip(zip) }, [zip])
+
+  // FIXED: Reads?filter=faith from URL so See Faith Posts button works
+  useEffect(() => {
+    const f = searchParams.get('filter')
+    if (f) setFilter(f)
+  }, [searchParams])
+
+  const handleFilter = (id: string) => {
+    setFilter(id)
+    if (id === 'all') router.push('/feed')
+    else router.push(`/feed?filter=${id}`)
+  }
 
   const FILTERS = [
     { id: 'all', label: 'All 🌎' },
@@ -123,9 +136,9 @@ export default function FeedPage() {
           <LocationScopeBar zip={localZip || zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
          <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
-          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
+          <div id="faith-posts" className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
-              <button key={f.id} onClick={()=>setFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 transition ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20 hover:bg-white/20'}`}>{f.label}</button>
+              <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 transition ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20 hover:bg-white/20'}`}>{f.label}</button>
             ))}
           </div>
           <div className="space-y-3 mt-2">
@@ -135,7 +148,7 @@ export default function FeedPage() {
               const isLost = (p.category||'').toLowerCase().includes('lost_pet') || (p.category||'').toLowerCase().includes('lost pet')
               const isFreshLost = isLost && (Date.now() - new Date(p.created_at).getTime() < 48*60*60*1000)
               return (
-              <div key={p.id} className={`bg-white rounded-2xl p-5 border-l-4 shadow-xl ${isFreshLost? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`}style={{borderLeftColor: isFreshLost? '#f59e0b' : p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b': p.category==='faith'?'#7c3aed':'#000'}}>
+              <div key={p.id} className={`bg-white rounded-2xl p-5 border-l-4 shadow-xl ${isFreshLost? 'ring-4 ring-yellow-400 bg-yellow-50' : ''}`} style={{borderLeftColor: isFreshLost? '#f59e0b' : p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b': p.category==='faith'?'#7c3aed':'#000'}}>
                 {isFreshLost && <div className="text-xs font-black bg-yellow-400 text-black px-2 py-1 rounded-full inline-block mb-2">⭐ PINNED • LOST PET • 48HR GOLD</div>}
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1">
