@@ -35,10 +35,7 @@ export default function FeedPage() {
   const [localZip, setLocalZip] = useState('95122')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
-  // use nationwide zip from context
-  useEffect(() => {
-    if (zip) setLocalZip(zip)
-  }, [zip])
+  useEffect(() => { if (zip) setLocalZip(zip) }, [zip])
 
   const FILTERS = [
     { id: 'all', label: 'All 🌎' },
@@ -89,6 +86,12 @@ export default function FeedPage() {
     return map[cat] || '📌'
   }
 
+  const trustLevel = (p:any) => {
+    // Simple trust based on post having profile + karma - you can upgrade later
+    if(p.user_id === currentUserId) return { label:'YOU', color:'bg-black text-white' }
+    return { label:'VERIFIED • 95122', color:'bg-blue-600 text-white' }
+  }
+
   return (
     <>
       <Header />
@@ -114,20 +117,26 @@ export default function FeedPage() {
             ))}
           </div>
           <div className="space-y-3 mt-2">
-            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in {localZip}</div>}
-            {filtered.map((p:any)=>(
-              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4" style={{borderLeftColor: p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b':'#000'}}>
+            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in {localZip} - be first!</div>}
+            {filtered.map((p:any)=>{
+              const t = trustLevel(p)
+              return (
+              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl" style={{borderLeftColor: p.category==='safety'?'#ef4444': p.category==='for_sale'?'#22c55e': p.category==='lost_pet'?'#f59e0b':'#000'}}>
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
                       <span className="text-xs font-black bg-black text-white px-2 py-1 rounded-full">{catBadge(p.category||'general')} {(p.category||p.tag||'general').toUpperCase()}</span>
+                      <span className={`text- font-black px-2 py-1 rounded-full ${t.color}`}>{t.label} ✓</span>
                       {p.price!=null && <span className="text-xs font-black bg-green-500 text-white px-2 py-1 rounded-full">${Number(p.price).toFixed(0)}</span>}
-                      {p.condition && <span className="text-xs font-bold bg-gray-200 text-black px-2 py-1 rounded-full border border-black/10">{p.condition}</span>}
+                      {p.audio_url && <span className="text-xs font-black bg-purple-600 text-white px-2 py-1 rounded-full">🎙 VOICE</span>}
                     </div>
                     <p className="text-black whitespace-pre-wrap break-words text- leading-snug">{p.body}</p>
+                    {p.audio_url && (
+                      <audio controls className="mt-3 w-full h-8"><source src={p.audio_url} /></audio>
+                    )}
                     {p.location_address && (
                       <div className="mt-3 flex gap-2 items-center flex-wrap">
-                        <span className="text- bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip} • Private</span>
+                        <span className="text-xs bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip} • Private</span>
                         <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition">🗺 Get Directions</a>
                       </div>
                     )}
@@ -136,9 +145,9 @@ export default function FeedPage() {
                     <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
                   )}
                 </div>
-                <div className="mt-2 text- font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip}</div>
+                <div className="mt-2 text-xs font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip} • {p.audio_url?'🎙 Voice Story':''}</div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
         <div className="space-y-6">
@@ -148,6 +157,11 @@ export default function FeedPage() {
           <StreetHeat />
           <MarketplacePreview />
           <BusinessDirectory />
+          <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-4 border-2 border-black">
+            <div className="text-black font-black text-sm">OWN THIS BLOCK? 💰</div>
+            <div className="text-black/80 text-xs mt-1">Pin your business in {localZip} for $49/mo</div>
+            <a href="/business/claim" className="mt-3 block bg-black text-white text-xs font-black px-4 py-2 rounded-full text-center">CLAIM {localZip} →</a>
+          </div>
           <UpcomingEvents />
           <VerifiedSources />
         </div>
