@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Header from '@/app/components/Header'
+import FaithOfTheDay from '@/components/FaithOfTheDay'
 import { TrustMeter } from '@/components/trust-meter/TrustMeter'
 import StreetHeat from '@/components/street-heat/StreetHeat'
 import ProximityPing from '@/components/proximity-ping/ProximityPing'
@@ -165,6 +166,7 @@ export default function FeedPage() {
           </div>
         </div>
         <div className="space-y-6">
+          <FaithOfTheDay />
           <TheDrop />
           <KarmaLeaderboard />
           <ProximityPing />
