@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Header from '@/app/components/Header'
@@ -26,7 +26,7 @@ import WeatherBar from '@/components/WeatherBar'
 import CreatePost from '@/components/CreatePost'
 import { useLocation } from '@/lib/location-context'
 
-export default function FeedPage() {
+function FeedContent() {
   const [filter, setFilter] = useState('all')
   const supabase = createClient()
   const router = useRouter()
@@ -39,7 +39,6 @@ export default function FeedPage() {
 
   useEffect(() => { if (zip) setLocalZip(zip) }, [zip])
 
-  // FIXED: Reads?filter=faith from URL so See Faith Posts button works
   useEffect(() => {
     const f = searchParams.get('filter')
     if (f) setFilter(f)
@@ -196,5 +195,13 @@ export default function FeedPage() {
         </div>
       </div>
     </>
+  )
+}
+
+export default function FeedPage() {
+  return (
+    <Suspense fallback={<div className="text-white p-10 text-center">Loading feed...</div>}>
+      <FeedContent />
+    </Suspense>
   )
 }
