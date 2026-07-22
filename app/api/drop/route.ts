@@ -1,8 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url)
+    const zip = searchParams.get('zip') || ''
+    
+    if (!zip) return NextResponse.json(null, { status: 204 })
+
     let supabase: any = null;
     try {
       const { createClient } = await import('@/lib/supabase/server');
@@ -23,7 +28,7 @@ export async function GET() {
       const { data: businesses } = await supabase
        .from('businesses')
        .select('name, address, category')
-       .eq('zip_code', '95122')
+       .eq('zip_code', zip) // GLOBAL FIX: was '95122'
        .limit(20);
 
       if (!businesses || businesses.length === 0) {
@@ -35,8 +40,9 @@ export async function GET() {
 
       return NextResponse.json({
         business: todays.name,
-        deal: `Open in 95122 • ${todays.category || 'Local Spot'}`,
-        address: todays.address || '95122',
+        deal: `Open in ${zip} • ${todays.category || 'Local Spot'}`, // GLOBAL FIX
+        address: todays.address || zip, // GLOBAL FIX
+        zip_code: zip,
         isSpotlight: true,
         time: new Date().toISOString()
       });
