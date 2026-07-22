@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server'
 
-export async function GET() {
-  const lat = 37.3361
-  const lon = -121.8111
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const lat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : 30.2672 // Austin default
+  const lon = searchParams.get('lon') ? parseFloat(searchParams.get('lon')!) : -97.7431
+  const city = searchParams.get('city') || 'Local'
+  const zip = searchParams.get('zip') || 'local'
   const events: any[] = []
 
-  // FREE: SeatGeek - no key needed for basic search, shows real concerts/sports near 95122
+  // FREE: SeatGeek - dynamic location
   try {
     const res = await fetch(`https://api.seatgeek.com/2/events?lat=${lat}&lon=${lon}&range=15mi&per_page=6&sort=score.desc`, { next: { revalidate: 1800 } })
     if (res.ok) {
@@ -24,15 +27,13 @@ export async function GET() {
     }
   } catch {}
 
-  // If SeatGeek fails or empty, add live San Jose fallbacks so it's never empty
   if (events.length === 0) {
     events.push(
-      { id: '1', title: 'Live Music at San Pedro Square', type: 'Concert', venue: 'San Pedro Square Market', time: new Date().toISOString(), icon: '🎸' },
-      { id: '2', title: 'San Jose Giants Game', type: 'Baseball', venue: 'Excite Ballpark', time: new Date().toISOString(), icon: '⚾' },
-      { id: '3', title: 'Great America Summer Nights', type: 'Theme Park', venue: 'California Great America', time: new Date().toISOString(), icon: '🎢' },
-      { id: '4', title: 'San Jose Flea Market', type: 'Market', venue: 'Flea Market - Berryessa', time: new Date().toISOString(), icon: '🛍️' }
+      { id: '1', title: `Live Music near ${zip}`, type: 'Concert', venue: `${city} Live`, time: new Date().toISOString(), icon: '🎸' },
+      { id: '2', title: `Local Market near ${zip}`, type: 'Market', venue: `${city} Market`, time: new Date().toISOString(), icon: '🛍' },
+      { id: '3', title: `Community Event`, type: 'Community', venue: city, time: new Date().toISOString(), icon: '🎉' },
     )
   }
 
-  return NextResponse.json({ events: events.slice(0,5) })
+  return NextResponse.json({ events: events.slice(0,5), zip, lat, lon })
 }
