@@ -22,7 +22,7 @@ export default function BlockMapPage(){
   for(let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) tiles.push({x:cx+dx, y:cy+dy})
 
   const pins = [
-    {lat:37.3397, lng:-121.8545, label:'📍 Story & King', color:'#dc2626'},
+    {lat:37.3402, lng:-121.8569, label:'📍 Story & King', color:'#dc2626'},
     {lat:37.3385, lng:-121.8535, label:'🌮 Tacos', color:'#2563eb'},
     {lat:37.3410, lng:-121.8555, label:'🏷️ Sale', color:'#16a34a'},
   ]
