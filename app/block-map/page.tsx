@@ -9,17 +9,16 @@ function latLonToTileFloat(lat:number, lon:number, zoom:number){
   const y = (1 - Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 * Math.pow(2, zoom)
   return {x,y}
 }
-
 const PINS = [
-  {id:'story', lat:37.336, lon:-121.881, label:'📍 Story & King', color:'#dc2626'},
-  {id:'tacos', lat:37.332, lon:-121.875, label:'🌮 Tacos', color:'#2563eb'},
-  {id:'sale', lat:37.339, lon:-121.863, label:'🏷️ Sale', color:'#16a34a'},
+  {id:'story', lat:37.3422, lon:-121.8570, label:'📍 Story & King', color:'#dc2626'},
+  {id:'tacos', lat:37.3405, lon:-121.8562, label:'🌮 Tacos', color:'#2563eb'},
+  {id:'sale', lat:37.3445, lon:-121.8515, label:'🏷️ Sale', color:'#16a34a'},
 ]
 
 export default function BlockMapPage(){
   const { zip } = useLocation()
   const [zoom, setZoom] = useState(13)
-  const [center, setCenter] = useState({lat:37.335, lon:-121.855})
+  const [center, setCenter] = useState({lat:37.3422, lon:-121.8570})
   const dragRef = useRef<any>(null)
 
   const centerTile = latLonToTileFloat(center.lat, center.lon, zoom)
