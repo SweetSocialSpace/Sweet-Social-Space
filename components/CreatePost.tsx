@@ -5,6 +5,7 @@ import { useLocation } from '@/lib/location-context'
 
 const CATEGORIES = [
   { id: 'general', label: 'General', icon: '😊', needsAddress: false },
+  { id: 'faith', label: 'Faith', icon: '✝️', needsAddress: false },
   { id: 'safety', label: 'Safety', icon: '🚨', needsAddress: true },
   { id: 'for_sale', label: 'For Sale', icon: '💰', needsAddress: true },
   { id: 'free', label: 'Free', icon: '🎁', needsAddress: true },
@@ -182,14 +183,14 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   return (
     <div className="w-full max-w-full min-w-0 overflow-hidden bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white mb-4">
-      <p className="font-bold mb-3">📝 Post to {zip} - One Stop</p>
+      <p className="font-bold mb-3">📝 Post to {zip || 'YOUR BLOCK'} - One Stop</p>
       <div className="flex flex-wrap gap-2 mb-4 w-full max-w-full min-w-0">
         {CATEGORIES.map(c => (
           <button key={c.id} onClick={()=>setCategory(c.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${category===c.id? 'bg-white text-black border-white' : 'bg-white/10 border-white/20 text-white/70'}`}>{c.icon} {c.label}</button>
         ))}
       </div>
       <div className="flex gap-2 w-full max-w-full min-w-0">
-        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder={`Tap mic - works in ${zip} - any phone or computer`} className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" />
+        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder={`Tap mic - works in ${zip || 'your block'} - any phone or computer`} className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" />
         <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
       </div>
       {currentCat?.needsAddress && (
@@ -202,8 +203,8 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
         </div>
       )}
       <div className="flex justify-between items-center mt-3 w-full max-w-full min-w-0">
-        <p className="text-xs text-white/40">Posting as • {zip} • {currentCat?.icon} {category} • Universal Mic</p>
-        <button onClick={handlePost} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40">Post to {zip} 🚀</button>
+        <p className="text-xs text-white/40">Posting as • {zip || 'YOUR BLOCK'} • {currentCat?.icon} {category} • Universal Mic</p>
+        <button onClick={handlePost} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40">Post to {zip || 'BLOCK'} 🚀</button>
       </div>
     </div>
   )
