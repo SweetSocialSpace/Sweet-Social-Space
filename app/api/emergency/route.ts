@@ -2,16 +2,26 @@ import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const zip = searchParams.get('zip') || '95122'
+  const zip = searchParams.get('zip')
+  if (!zip) return NextResponse.json({ error: 'ZIP required' }, { status: 400 })
   const alerts: any[] = []
-  const lat = 37.3361
-  const lon = -121.8111
 
-  // 1. YOUR OpenWeather API Key - gets real weather alerts for 95122
+  // GLOBAL FIX: Geocode ZIP to lat/lng dynamically, not hardcoded 95122
+  let lat = 37.3382
+  let lon = -121.8413
+  try {
+    const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/zip?zip=${zip},US&appid=${process.env.OPENWEATHER_API_KEY}`)
+    if (geoRes.ok) {
+      const g = await geoRes.json()
+      lat = g.lat
+      lon = g.lon
+    }
+  } catch {}
+
+  // 1. OpenWeather alerts
   try {
     const owKey = process.env.OPENWEATHER_API_KEY
     if (owKey) {
-      // Geocode zip to lat/lon is already known for 95122, but OneCall works
       const res = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily&appid=${owKey}`, { next: { revalidate: 300 } })
       if (res.ok) {
         const json = await res.json()
@@ -19,7 +29,7 @@ export async function GET(request: Request) {
           alerts.push({
             id: `ow-${a.start}-${a.event}`,
             type: 'Weather',
-            icon: '⛈️',
+            icon: '⛈',
             title: a.event,
             message: `${a.description?.slice(0, 180)}...`,
             time: new Date(a.start * 1000).toISOString()
@@ -29,7 +39,7 @@ export async function GET(request: Request) {
     }
   } catch (e) { console.log('OW fail', e) }
 
-  // 2. NOAA as backup (free, no key)
+  // 2. NOAA
   try {
     const res = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`, {
       headers: { 'Accept': 'application/geo+json', 'User-Agent': 'SweetSocialSpace' },
@@ -52,14 +62,14 @@ export async function GET(request: Request) {
     }
   } catch {}
 
-  // 3. USGS Earthquakes - always useful in San Jose
+  // 3. USGS Earthquakes - GLOBAL: works for any zip now
   try {
     const res = await fetch(`https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&latitude=${lat}&longitude=${lon}&maxradiuskm=50&minmagnitude=2.0&orderby=time&limit=2`, { next: { revalidate: 300 } })
     if (res.ok) {
       const json = await res.json()
       json.features?.forEach((f: any) => {
         const hoursAgo = (Date.now() - f.properties?.time) / 1000 / 3600
-        if (hoursAgo < 24) { // only last 24h
+        if (hoursAgo < 24) {
           alerts.push({
             id: f.id,
             type: 'Earthquake',
@@ -73,17 +83,16 @@ export async function GET(request: Request) {
     }
   } catch {}
 
-  // 4. If STILL nothing, show a live status so box is never empty
   if (alerts.length === 0) {
     alerts.push({
       id: 'status-ok',
       type: 'Status',
       icon: '✅',
       title: `All clear in ${zip}`,
-      message: `No NOAA alerts, no quakes >2.0 in last 24h, no OpenWeather alerts. Roads on 101 / 680 / Story / King reporting normal. Checked ${new Date().toLocaleTimeString()}`,
+      message: `No NOAA alerts, no quakes >2.0 in last 24h, no OpenWeather alerts. Checked ${new Date().toLocaleTimeString()}`,
       time: new Date().toISOString()
     })
   }
 
-  return NextResponse.json({ zip, alerts: alerts.slice(0, 4), count: alerts.length })
+  return NextResponse.json({ zip, alerts: alerts.slice(0, 4), count: alerts.length, lat, lon })
 }
