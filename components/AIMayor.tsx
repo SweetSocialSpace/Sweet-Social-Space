@@ -8,31 +8,32 @@ export default function AIMayor() {
 
   useEffect(() => {
     const load = async () => {
+      if (!zip) return
       try {
-        // Weather - global
         const w = await fetch(`/api/weather?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
         let temp = w?.main?.temp ?? w?.temp ?? null
-        if (temp !== null && temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
-        const tempStr = temp !== null ? `${Math.round(temp)}°` : ''
+        if (temp!== null && temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
+        const tempStr = temp!== null? `${Math.round(temp)}°` : ''
         const cond = w?.weather?.[0]?.main || ''
-
-        // Pulse - global post counts for this zip
         const p = await fetch(`/api/pulse?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
         const postCount = p?.count ?? p?.total ?? 0
-
         const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
-        const cityName = city || p?.city || w?.name || zip
+
+        // FIX: Trust weather name first - that's Fort Edward for 12828
+        const realCity = w?.name || p?.city || ''
+        // If realCity exists and is not the same as zip, use it. Otherwise don't duplicate.
+        const locationDisplay = realCity && realCity !== zip ? `${realCity} ${zip}` : zip
 
         if (postCount > 0) {
-          setBrief(`☀ Good morning ${cityName} ${zip} - ${date} - ${tempStr} ${cond} - ${postCount} new post${postCount>1?'s':''} on your block - No alerts - Have a good one, neighbor.`)
+          setBrief(`☀ Good morning ${locationDisplay} - ${date} - ${tempStr} ${cond} - ${postCount} new post${postCount>1?'s':''} on your block - No alerts - Have a good one, neighbor.`)
         } else {
-          setBrief(`☀ Good morning ${cityName} ${zip} - ${date} - ${tempStr} ${cond} - Your block is quiet - Be first to post! - Have a good day.`)
+          setBrief(`☀ Good morning ${locationDisplay} - ${date} - ${tempStr} ${cond} - Your block is quiet - Be first to post! - Have a good day.`)
         }
       } catch {
-        setBrief(`Good morning ${city || zip} - Your block is quiet - 2 posts - Have a good day.`)
+        setBrief(`Good morning ${city || zip} - Your block is quiet - Be first to post!`)
       }
     }
-    if (zip) load()
+    load()
   }, [zip, city])
 
   return (
