@@ -18,33 +18,33 @@ export default function SignUp() {
   }, [router, supabase])
 
   return (
-    <div className="min-h-screen relative bg-[#0d0a06] overflow-hidden">
-      {/* PERSISTENT GOLDEN TEARDROP BACKDROP - your asset */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[url('/sweet-bg.png')] bg-cover bg-center opacity-30"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black/90"></div>
+    <div className="min-h-screen relative overflow-hidden bg-[#1a1207]">
+      {/* SAME BACKDROP AS YOUR LOGIN - Picture 1 */}
+      <div className="absolute inset-0 z-0">
+        <img src="/sweet-bg.png" alt="" className="w-full h-full object-cover opacity-80" />
+        <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
-        <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-16">
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-8">
+        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center gap-16">
 
-          {/* LEFT: HOOK ONLY */}
-          <div className="lg:w-1/2 text-center lg:text-left space-y-6">
-            <h1 className="text-5xl lg:text-6xl font-black text-white leading-[0.9]">
-              Your Block Is<br />
-              <span className="text-amber-400">Talking Without You.</span>
+          {/* LEFT: HOOK - from picture 2, but on top of golden backdrop from picture 1 */}
+          <div className="lg:w-1/2 space-y-6">
+            <h1 className="text-5xl lg:text-7xl font-black text-white leading-[0.9] drop-shadow-2xl">
+              Your<br />Block Is<br />
+              <span className="text-amber-400">Talking<br />Without You.</span>
             </h1>
-            <p className="text-lg text-white/70 max-w-md mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-lg text-white/90 max-w-sm leading-relaxed drop-shadow-lg">
               Inside: What's actually happening within 5 miles of you. Live. Real. No algorithm.
             </p>
-            <p className="text-sm text-amber-400 font-bold">
+            <p className="text-sm font-black text-amber-400">
               See what you missed. Enter your block.
             </p>
           </div>
 
-          {/* RIGHT: SIGNUP - no lecture */}
+          {/* RIGHT: SAME CARD STYLE AS LOGIN */}
           <div className="w-full lg:w-">
-            <div className="bg-black/60 backdrop-blur-2xl rounded-3xl border border-white/10 p-8">
+            <div className="bg-black/50 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl">
               <h2 className="text-xl font-black text-white text-center mb-6">Create your account</h2>
               <Auth
                 supabaseClient={supabase}
@@ -63,7 +63,7 @@ export default function SignUp() {
                 showLinks={false}
               />
               <div className="text-center mt-6">
-                <Link href="/login" className="text-xs text-white/50 hover:text-amber-400">
+                <Link href="/login" className="text-xs text-white/60 hover:text-amber-400">
                   Already have an account? Sign in
                 </Link>
               </div>
