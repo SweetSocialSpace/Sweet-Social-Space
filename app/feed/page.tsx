@@ -20,6 +20,7 @@ import LiveNowStrip from '@/components/LiveNowStrip'
 import LocationScopeBar from '@/components/LocationScopeBar'
 import MarketplacePreview from '@/components/MarketplacePreview'
 import BusinessDirectory from '@/components/BusinessDirectory'
+import OwnThisBlock from '@/components/own-this-block/OwnThisBlock'
 import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
 import WeatherBar from '@/components/WeatherBar'
@@ -33,7 +34,7 @@ function FeedContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
-  const { zip, city } = useLocation()
+  const { zip } = useLocation()
   const [localZip, setLocalZip] = useState('')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
 
@@ -52,7 +53,7 @@ function FeedContent() {
 
   const FILTERS = [
     { id: 'all', label: 'All 🌎' },
-    { id: 'faith', label: 'Faith ✝️' },
+    { id: 'faith', label: 'Faith ✝' },
     { id: 'general', label: 'General 😊' },
     { id: 'safety', label: 'Safety 🚨' },
     { id: 'for_sale', label: 'For Sale 💰' },
@@ -107,7 +108,7 @@ function FeedContent() {
   })
 
   const catBadge = (cat: string) => {
-    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼', faith:'✝️' }
+    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼', faith:'✝' }
     return map[cat] || '📌'
   }
 
@@ -185,11 +186,7 @@ function FeedContent() {
           <StreetHeat />
           <MarketplacePreview />
           <BusinessDirectory />
-          <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-4 border-2 border-black">
-            <div className="text-black font-black text-sm">OWN THIS BLOCK? 💰</div>
-            <div className="text-black/80 text-xs mt-1">Pin your business in {localZip || zip} for $29/mo</div>
-            <a href="/business/claim" className="mt-3 block bg-black text-white text-xs font-black px-4 py-2 rounded-full text-center">CLAIM {localZip || zip} →</a>
-          </div>
+          <OwnThisBlock />
           <UpcomingEvents />
           <VerifiedSources />
         </div>
