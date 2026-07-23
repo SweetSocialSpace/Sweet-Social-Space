@@ -18,8 +18,11 @@ export default function AIMayor() {
         const cond = w?.weather?.[0]?.main || ''
         const count = p?.count?? p?.total?? 0
         const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+
+        // GLOBAL ONLY - Trust OpenWeather, not profile
         const cityName = w?.name || p?.city || ''
         const loc = cityName && cityName!== zip? `${cityName} ${zip}` : zip
+
         if (count > 0) {
           setBrief(`☀ Good morning ${loc} - ${date} - ${tempStr} ${cond} - ${count} new post${count>1?'s':''} on your block - No alerts - Have a good one, neighbor.`)
         } else {
