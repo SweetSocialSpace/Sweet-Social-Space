@@ -9,17 +9,22 @@ export default function ClaimBusinessPage() {
   const [loading, setLoading] = useState(false)
 
   const handleClaim = async () => {
+    if (!business || !email) return
     setLoading(true)
     try {
       const res = await fetch('/api/business/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessName: business, email, zip })
+        body: JSON.stringify({ businessName: business, email, zip }),
       })
       const data = await res.json()
-      if (data.url) window.location.href = data.url // Stripe checkout
-      else alert(data.error || 'Claim submitted - we will review')
+      if (data.url) {
+        window.location.href = data.url // Stripe checkout
+      } else {
+        alert(data.error || 'Claim submitted - we will review')
+      }
     } catch (e) {
+      console.error(e)
       alert('Error submitting claim')
     }
     setLoading(false)
@@ -34,26 +39,27 @@ export default function ClaimBusinessPage() {
         <input
           placeholder="Business Name (e.g. Story & King)"
           value={business}
-          onChange={e=>setBusiness(e.target.value)}
+          onChange={(e) => setBusiness(e.target.value)}
           className="w-full p-3 rounded-xl bg-black border border-white/20"
         />
         <input
           placeholder="Owner Email"
+          type="email"
           value={email}
-          onChange={e=>setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full p-3 rounded-xl bg-black border border-white/20"
         />
-        <div className="text-xs text-white/40">Zip: {zip} (auto-detected)</div>
+        <div className="text-xs text-white/40">Zip: {zip} auto-detected</div>
 
         <button
           onClick={handleClaim}
-          disabled={loading ||!business ||!email}
+          disabled={loading || !business || !email}
           className="w-full bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-xl font-black disabled:opacity-50"
         >
-          {loading? 'Creating Stripe Checkout...' : 'Claim for $29/mo →'}
+          {loading ? 'Creating Stripe Checkout...' : 'Claim for $29/mo →'}
         </button>
 
-        <p className="text- text-white/30 text-center">Powered by Stripe - Cancel anytime</p>
+        <p className="text-xs text-white/30 text-center">Powered by Stripe - Cancel anytime</p>
       </div>
     </div>
   )
