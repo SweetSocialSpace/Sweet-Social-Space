@@ -9,18 +9,29 @@ export default function LivePulse() {
 
   useEffect(() => {
     const load = async () => {
+      if (!zip) return
       try {
         const [weatherRes, pulseRes] = await Promise.all([
           fetch(`/api/weather?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null),
-          fetch(`/api/pulse?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>({ count: 2 }))
+          fetch(`/api/pulse?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
         ])
-        let temp = weatherRes?.main?.temp?? weatherRes?.temp?? 96
-        if (temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
-        const count = pulseRes?.count?? pulseRes?.total?? 2
-        setOnline(count)
-        setText(`Right now in ${zip}: ${Math.round(temp)}° • ${city} • ${count} live • 2 yard sales • Giants loud at Story & King`)
+        let temp: number | null = weatherRes?.main?.temp?? weatherRes?.temp?? null
+        if (temp!== null && temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
+        const tempStr = temp!== null? `${Math.round(temp)}°` : ''
+
+        const liveCount = pulseRes?.count?? pulseRes?.total?? pulseRes?.onlineCount?? 0
+        const yardSales = pulseRes?.yardSales?? pulseRes?.marketplaceCount?? 0
+        const cityName = city || weatherRes?.name || pulseRes?.city || zip
+
+        setOnline(liveCount)
+
+        if (liveCount > 0 || yardSales > 0) {
+          setText(`Right now in ${zip}: ${tempStr? `${tempStr} • ` : ''}${cityName} • ${liveCount} live • ${yardSales} listings nearby`)
+        } else {
+          setText(`Right now in ${zip}: ${tempStr? `${tempStr} • ` : ''}${cityName} • Your block is quiet - Be first to post!`)
+        }
       } catch {
-        setText(`Right now in ${zip}: 96° • ${city} • 3 neighbors live • Tacos El Jefe line 5 min`)
+        setText(`Right now in ${zip}: ${city || zip} • Be first to post!`)
       }
     }
     load()
