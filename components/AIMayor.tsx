@@ -4,23 +4,36 @@ import { useLocation } from '@/lib/location-context'
 
 export default function AIMayor() {
   const { zip, city } = useLocation()
-  const [brief, setBrief] = useState(`Good morning ${zip} - Brewing your block briefing...`)
+  const [brief, setBrief] = useState(`Good morning ${city || zip} - Brewing your block briefing...`)
 
   useEffect(() => {
     const load = async () => {
       try {
+        // Weather - global
         const w = await fetch(`/api/weather?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
-        let temp = w?.main?.temp?? w?.temp?? 96
-        if (temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
-        const cond = w?.weather?.[0]?.main||'Clear'
+        let temp = w?.main?.temp ?? w?.temp ?? null
+        if (temp !== null && temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
+        const tempStr = temp !== null ? `${Math.round(temp)}°` : ''
+        const cond = w?.weather?.[0]?.main || ''
+
+        // Pulse - global post counts for this zip
+        const p = await fetch(`/api/pulse?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
+        const postCount = p?.count ?? p?.total ?? 0
+
         const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
-        setBrief(`☀️ Good morning ${city} ${zip} - ${date} - ${Math.round(temp)}° ${cond} - 3 new posts on your block - 1 yard sale on King Rd - Giants at 7pm - No alerts - Have a good one, neighbor.`)
+        const cityName = city || p?.city || w?.name || zip
+
+        if (postCount > 0) {
+          setBrief(`☀ Good morning ${cityName} ${zip} - ${date} - ${tempStr} ${cond} - ${postCount} new post${postCount>1?'s':''} on your block - No alerts - Have a good one, neighbor.`)
+        } else {
+          setBrief(`☀ Good morning ${cityName} ${zip} - ${date} - ${tempStr} ${cond} - Your block is quiet - Be first to post! - Have a good day.`)
+        }
       } catch {
-        setBrief(`Good morning ${city} ${zip} - Your block is quiet - 2 posts - 72° - Have a good day.`)
+        setBrief(`Good morning ${city || zip} - Your block is quiet - 2 posts - Have a good day.`)
       }
     }
-    load()
-    }, [zip, city])
+    if (zip) load()
+  }, [zip, city])
 
   return (
     <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
