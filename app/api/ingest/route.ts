@@ -1,34 +1,34 @@
 import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const zip = searchParams.get('zip');
+    if (!zip) return NextResponse.json({ ok: true, seeded: false, reason: 'no zip' });
+
     const { createClient } = await import('@/lib/supabase/server');
     const supabase = await createClient();
 
-    // 1. Keep your existing alerts logic if you have it
-    // 2. ALSO seed city data so feed looks alive - outside world -> inside
-
-    const { data: biz } = await supabase.from('businesses').select('name').eq('zip_code','95122').limit(5);
+    const { data: biz } = await supabase.from('businesses').select('name').eq('zip_code', zip).limit(5); // GLOBAL FIX
     if (biz && biz.length > 0) {
       const pick = biz[Math.floor(Math.random()*biz.length)];
       
-      // Only insert if no auto post in last 2 hours
-      const { count } = await supabase.from('posts').select('id', { count: 'exact', head: true }).eq('is_automated', true).gte('created_at', new Date(Date.now() - 7200000).toISOString());
+      const { count } = await supabase.from('posts').select('id', { count: 'exact', head: true }).eq('zip_code', zip).eq('is_automated', true).gte('created_at', new Date(Date.now() - 7200000).toISOString());
       
       if (!count || count === 0) {
         await supabase.from('posts').insert({
-          content: `📍 95122 Live • ${pick.name} is open in 95122 • Support local • Real city data`,
-          zip_code: '95122',
+          content: `📍 ${zip} Live • ${pick.name} is open in ${zip} • Support local • Real city data`, // GLOBAL FIX
+          zip_code: zip, // GLOBAL FIX
           location_text: pick.name,
           category: 'general',
           is_automated: true,
-          external_id: `live-${Date.now()}`,
+          external_id: `live-${zip}-${Date.now()}`,
         });
       }
     }
 
-    return NextResponse.json({ ok: true, seeded: true, time: new Date().toISOString() });
+    return NextResponse.json({ ok: true, seeded: true, zip, time: new Date().toISOString() });
   } catch (e: any) {
     return NextResponse.json({ ok: true, error: e.message }, { status: 200 });
   }
