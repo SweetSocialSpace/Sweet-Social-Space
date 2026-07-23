@@ -187,7 +187,7 @@ function FeedContent() {
           <BusinessDirectory />
           <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-4 border-2 border-black">
             <div className="text-black font-black text-sm">OWN THIS BLOCK? 💰</div>
-            <div className="text-black/80 text-xs mt-1">Pin your business in {localZip || zip} for $49/mo</div>
+            <div className="text-black/80 text-xs mt-1">Pin your business in {localZip || zip} for $29/mo</div>
             <a href="/business/claim" className="mt-3 block bg-black text-white text-xs font-black px-4 py-2 rounded-full text-center">CLAIM {localZip || zip} →</a>
           </div>
           <UpcomingEvents />
