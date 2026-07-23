@@ -34,19 +34,19 @@ export default function LoginPage() {
           <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">
             Sweet Social Space is a neighborhood-first community platform.
             Own your code, own your speech. No algorithms, no shadowbans,
-            no Big Tech filters. Just real neighbors within 10-20 miles of 95122
+            no Big Tech filters. Just real neighbors within 10-20 miles of you
             sharing alerts, free stuff, faith, and what is actually happening near you.
           </p>
           <p className="mt-4 text-base text-white/70">
             Chronological feed. Speak Freely vent wall. Local alerts, marketplace,
-            business directory, and emergency updates. Built for San Jose, built for you.
+            business directory, and emergency updates. Built for your neighborhood, built for you.
             Speak Freely. Love your neighbor. Ask yourself What would Jesus do?
           </p>
         </div>
 
         <div className="w-full bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
           <h2 className="text-3xl font-black text-white text-center mb-2">Welcome Back</h2>
-          <p className="text-white/60 text-center text-sm mb-6">Sweet Social Space - San Jose</p>
+          <p className="text-white/60 text-center text-sm mb-6">Sweet Social Space - Your Neighborhood</p>
           <form onSubmit={handleLogin} className="space-y-4">
             <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
