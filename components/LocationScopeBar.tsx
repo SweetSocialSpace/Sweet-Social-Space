@@ -1,12 +1,19 @@
 'use client'
 import { useState } from 'react'
+import { useLocation } from '@/lib/location-context'
 
 export function LocationScopeBar({ zip, radius, setRadius }: { zip: string, radius: number, setRadius: (n:number)=>void }){
+  const { city } = useLocation()
   const [loc, setLoc] = useState('Use my location')
+  
   const handleLoc = ()=>{
     if(navigator.geolocation){
       setLoc('Locating...')
-      navigator.geolocation.getCurrentPosition(()=> setLoc('95122 • San Jose'),()=> setLoc('95122 (default)'),{timeout:5000})
+      navigator.geolocation.getCurrentPosition(
+        ()=> setLoc(`${zip} • ${city || 'Local'}`),
+        ()=> setLoc(`${zip} (default)`),
+        {timeout:5000}
+      )
     }
   }
   return (
