@@ -9,12 +9,12 @@ const BOT_CONFIGS = {
   emergency: {
     path: "/api/public/bots/emergency-alerts-daily",
     secretEnv: "BOT_SECRET_KEY",
-    fallbackEnv: "BOT_95122_CRON_SECRET",
+    fallbackEnv: "EMERGENCY_CRON_SECRET", // GLOBAL FIX: was BOT_95122_CRON_SECRET
   },
   food: {
     path: "/api/public/bots/food-alerts-daily",
     secretEnv: "FOOD_ALERTS_CRON_SECRET",
-    fallbackEnv: "BOT_95122_CRON_SECRET",
+    fallbackEnv: "BOT_GLOBAL_CRON_SECRET", // GLOBAL FIX: was BOT_95122_CRON_SECRET
   },
   money: {
     path: "/api/public/bots/money-tip-daily",
