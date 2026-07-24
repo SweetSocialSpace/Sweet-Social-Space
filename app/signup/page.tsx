@@ -49,7 +49,7 @@ export default function SignupPage() {
           <form onSubmit={handleSignup} className="space-y-4">
             <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Your email address" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Create a password" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
-            <button type="submit" className="w-full bg-emerald-500 text-white font-black py-3 rounded-full">Sign up</button>
+            <button type="submit" className="w-full bg-blue-600 text-white font-black py-3 rounded-full">Sign up</button>
           </form>
           {msg && <p className="mt-4 text-center text-sm text-white bg-white/10 p-2 rounded-lg">{msg}</p>}
           <p className="mt-6 text-center text-sm text-white/60">
