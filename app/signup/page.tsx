@@ -22,23 +22,26 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen w-full relative flex items-center justify-center px-6 py-10">
-      {/* SAME BACKDROP AS FEED AND LOGIN */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: "url('/golden_droplet_heart_wallpaper.jpg')" }}
-      />
-      <div className="absolute inset-0 bg-black/40" />
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 py-10">
+      <div className="max-w- w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
 
-      <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
         <div className="text-left">
           <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">
             Your Neighborhood.<br/>Your Voice.<br/>Your Space.
           </h1>
-          <p className="mt-6 text-lg text-white/90 font-semibold">
-            Sweet Social Space is a neighborhood-first community platform. Own your code, own your speech. No algorithms, no shadowbans, no Big Tech filters.
+          <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">
+            Sweet Social Space is a neighborhood-first community platform.
+            Own your code, own your speech. No algorithms, no shadowbans,
+            no Big Tech filters. Just real neighbors within 10-20 miles of you
+            sharing alerts, free stuff, faith, and what is actually happening near you.
+          </p>
+          <p className="mt-4 text-base text-white/70">
+            Chronological feed. Speak Freely vent wall. Local alerts, marketplace,
+            business directory, and emergency updates. Built for your neighborhood, built for you.
+            Speak Freely. Love your neighbor. Ask yourself What would Jesus do?
           </p>
         </div>
+   
 
         <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
           <h2 className="text-3xl font-black text-white text-center">Sweet Social Space</h2>
