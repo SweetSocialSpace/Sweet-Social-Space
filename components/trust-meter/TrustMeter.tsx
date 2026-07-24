@@ -37,7 +37,7 @@ export function TrustMeter() {
       <div className="relative">
         <div className="flex items-center justify-between">
           <div className="text-white font-black text-xs tracking-wider">
-            TRUST METER • {zip}
+            TRUST METER • {zip || 'YOUR BLOCK'}
           </div>
           <div className={`text-xs font-black px-2 py-0.5 rounded-full ${data.percent===100?'bg-green-500 text-black':'bg-yellow-500 text-black'}`}>
             {data.percent}% VERIFIED
@@ -52,7 +52,7 @@ export function TrustMeter() {
           </div>
         </div>
         <div className="text-white/40 text- mt-1 uppercase tracking-widest">
-          Live • Auto-refresh • {zip} block
+          Live • Auto-refresh • {zip || 'YOUR BLOCK'} block
         </div>
       </div>
     </div>
