@@ -25,6 +25,7 @@ import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
 import WeatherBar from '@/components/WeatherBar'
 import CreatePost from '@/components/CreatePost'
+import WelcomePost from '@/components/welcome-post/WelcomePost'
 import { useLocation } from '@/lib/location-context'
 
 function FeedContent() {
@@ -142,7 +143,7 @@ function FeedContent() {
             ))}
           </div>
           <div className="space-y-3 mt-2">
-            {filtered.length===0 && <div className="text-white/40 text-center py-8 text-sm">No {filter} posts yet in {localZip || zip} - be first!</div>}
+            {filtered.length===0 && <WelcomePost />}
             {filtered.map((p:any)=>{
               const t = trustLevel(p)
               const isLost = (p.category||'').toLowerCase().includes('lost_pet') || (p.category||'').toLowerCase().includes('lost pet')
