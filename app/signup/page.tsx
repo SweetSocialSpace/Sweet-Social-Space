@@ -12,66 +12,79 @@ export default function SignUp() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) router.push('/feed')
+      if (event === 'SIGNED_IN' && session) {
+        router.push('/feed')
+      }
     })
     return () => subscription.unsubscribe()
   }, [router, supabase])
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#1a1207]">
-      {/* SAME BACKDROP AS YOUR LOGIN - Picture 1 */}
-      <div className="absolute inset-0 z-0">
-        <img src="/sweet-bg.png" alt="" className="w-full h-full object-cover opacity-80" />
-        <div className="absolute inset-0 bg-black/40"></div>
-      </div>
-
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-8">
-        <div className="w-full max-w-6xl flex flex-col lg:flex-row items-center gap-16">
-
-          {/* LEFT: HOOK - from picture 2, but on top of golden backdrop from picture 1 */}
-          <div className="lg:w-1/2 space-y-6">
-            <h1 className="text-5xl lg:text-7xl font-black text-white leading-[0.9] drop-shadow-2xl">
-              Your<br />Block Is<br />
-              <span className="text-amber-400">Talking<br />Without You.</span>
+    <div className="min-h-screen flex flex-col bg-white">
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="w-full max-w-5xl flex flex-col lg:flex-row items-center gap-12">
+          
+          {/* Left side: Description */}
+          <div className="lg:w-1/2 text-center lg:text-left space-y-4">
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900">
+              Sweet Social Space
             </h1>
-            <p className="text-lg text-white/90 max-w-sm leading-relaxed drop-shadow-lg">
-              Inside: What's actually happening within 5 miles of you. Live. Real. No algorithm.
+            <p className="text-xl text-gray-600">
+              Speak Freely. Love your neighbor.
             </p>
-            <p className="text-sm font-black text-amber-400">
-              See what you missed. Enter your block.
-            </p>
+            <div className="text-gray-700 space-y-3 max-w-md mx-auto lg:mx-0">
+              <p>
+                A place for real conversation without the censorship or hate. 
+              </p>
+              <p>
+                Share your thoughts, connect with others, and be part of a community 
+                built on respect and open dialogue. And a place that allows you to have your First Amendment rights.
+              </p>
+              <p className="text-sm text-gray-500">
+                We never sell your data. No algorithms deciding what you see.
+              </p>
+            </div>
           </div>
 
-          {/* RIGHT: SAME CARD STYLE AS LOGIN */}
-          <div className="w-full lg:w-">
-            <div className="bg-black/50 backdrop-blur-xl rounded-3xl border border-white/10 p-8 shadow-2xl">
-              <h2 className="text-xl font-black text-white text-center mb-6">Create your account</h2>
+          {/* Right side: Signup box */}
+          <div className="w-full lg:w-1/2 max-w-md">
+            <div className="bg-white p-8 rounded-lg shadow-md w-full">
+              <h2 className="text-2xl font-bold mb-6 text-center">Create your account</h2>
+              
               <Auth
                 supabaseClient={supabase}
-                appearance={{
+                appearance={{ 
                   theme: ThemeSupa,
                   variables: {
                     default: {
-                      colors: { brand: '#f59e0b', brandAccent: '#d97706', inputBackground: 'white', inputText: 'black' },
-                      radii: { borderRadiusButton: '9999px', inputBorderRadius: '12px' }
+                      colors: {
+                        brand: '#10b981',
+                        brandAccent: '#059669'
+                      }
                     }
                   },
-                  style: { anchor: { display: 'none' }, button: { fontWeight: '900' } }
+                  style: { anchor: { display: 'none' } }
                 }}
                 providers={[]}
                 view="sign_up"
                 showLinks={false}
               />
-              <div className="text-center mt-6">
-                <Link href="/login" className="text-xs text-white/60 hover:text-amber-400">
+              
+              <div className="text-center text-sm mt-4">
+                <Link href="/login" className="text-blue-600 hover:underline">
                   Already have an account? Sign in
                 </Link>
               </div>
+
+              <p className="text-xs text-gray-500 mt-4 text-center">
+                By signing up, you agree to our Terms of Service and Privacy Policy. 
+                We never sell your data.
+              </p>
             </div>
           </div>
-
         </div>
       </div>
     </div>
+    
   )
 }
