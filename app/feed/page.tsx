@@ -25,7 +25,7 @@ import UpcomingEvents from '@/components/UpcomingEvents'
 import VerifiedSources from '@/components/VerifiedSources'
 import WeatherBar from '@/components/WeatherBar'
 import CreatePost from '@/components/CreatePost'
-import WelcomePost from '@/components/welcome-post/WelcomePost'
+import WelcomePost from '@/app/components/WelcomePost'
 import { useLocation } from '@/lib/location-context'
 
 function FeedContent() {
