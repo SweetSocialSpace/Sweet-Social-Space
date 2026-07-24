@@ -1,65 +1,64 @@
-// app/signup/page.tsx
-export default function SignupPage() {
+'use client'
+import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+
+export default function LoginPage() {
+  const supabase = createClient()
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [msg, setMsg] = useState('')
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setMsg('Signing in...')
+    const { error } = await supabase.auth.signUpWithPassword({ email, password })
+    if (error) {
+      setMsg(error.message)
+    } else {
+      router.push('/feed')
+      router.refresh()
+    }
+  }
+
   return (
-    <div className="min-h-screen w-full bg-[#1a1a1a] relative overflow-hidden flex items-center">
-      {/* Background Image Layer - use the same image as login */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-80"
-        style={{
-          backgroundImage: `url('/golden-drops-bg.jpg')`
-          // CHANGE THIS to whatever your login file uses.
-          // Look in app/login/page.tsx to find the exact file name
-        }}
-      />
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 py-10">
+      <div className="max-w- w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
 
-      {/* Dark overlay so text pops */}
-      <div className="absolute inset-0 bg-black/40" />
-
-      <div className="relative z-10 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 px-8 py-12">
-
-        {/* LEFT */}
-        <div className="text-white">
-          <h1 className="text-6xl font-black leading-[0.9] tracking-tight">
-            Your Neighborhood.<br/>
-            Your Voice.<br/>
-            Your Space.
+        <div className="text-left">
+          <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">
+            Your Neighborhood.<br/>Your Voice.<br/>Your Space.
           </h1>
-          <p className="mt-8 text-white/90 leading-relaxed max-w-xl">
-            Sweet Social Space is a neighborhood-first community platform. Own your code, own your speech. No algorithms, no shadowbans, no Big Tech filters. Just real neighbors within 10-20 miles of you sharing alerts, free stuff, faith, and what is actually happening near you.
+          <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">
+            Sweet Social Space is a neighborhood-first community platform.
+            Own your code, own your speech. No algorithms, no shadowbans,
+            no Big Tech filters. Just real neighbors within 10-20 miles of you
+            sharing alerts, free stuff, faith, and what is actually happening near you.
           </p>
-          <p className="mt-6 text-sm text-white/70 max-w-xl">
-            Chronological feed. Speak Freely vent wall. Local alerts, marketplace, business directory, and emergency updates. Built for your neighborhood, built for you. Speak Freely. Love your neighbor. Ask yourself What would Jesus do?
+          <p className="mt-4 text-base text-white/70">
+            Chronological feed. Speak Freely vent wall. Local alerts, marketplace,
+            business directory, and emergency updates. Built for your neighborhood, built for you.
+            Speak Freely. Love your neighbor. Ask yourself What would Jesus do?
           </p>
         </div>
 
-        {/* RIGHT CARD - This is the signup form with the teardrop bg behind it */}
-        <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
-          <h2 className="text-3xl font-bold text-white text-center">Sweet Social Space</h2>
-          <p className="text-center text-white/70 mt-2">Speak Freely. Love your neighbor.</p>
-
-          <div className="mt-8 space-y-4">
-            <div>
-              <label className="text-sm text-white/80">Email address</label>
-              <input placeholder="Your email address" className="mt-1 w-full rounded-lg px-4 py-3 bg-white text-black" />
-            </div>
-            <div>
-              <label className="text-sm text-white/80">Create a Password</label>
-              <input placeholder="Your password" type="password" className="mt-1 w-full rounded-lg px-4 py-3 bg-white text-black" />
-            </div>
-
-            <button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-lg mt-2">
-              Sign up
-            </button>
-
-            <p className="text-center text-sm text-white/70 mt-4">
-              Already have an account? <a href="/login" className="text-white underline font-bold">Sign in</a>
-            </p>
-            <p className="text-center text- text-white/50 mt-4">
-              By signing up, you agree to our Terms of Service and Privacy Policy.<br/>We never sell your data.
-            </p>
-          </div>
+        <div className="w-full bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+          <h2 className="text-3xl font-black text-white text-center mb-2">Sweet Social Space</h2>
+          <p className="text-white/60 text-center text-sm mb-6">Speak Freely. Love your neighbor.</p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input type="Email address" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
+            <input type="Create a password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
+            <button type="submit" className="w-full bg-emerald-500 text-white font-black py-3 rounded-full">SIGN UP</button>
+          </form>
+          {msg && <p className="mt-4 text-center text-sm text-white bg-white/10 p-2 rounded-lg">{msg}</p>}
+          <p className="mt-6 text-center text-sm text-white/60">
+           Already have an account? Sign in  <Link href="/login" className="text-white font-bold underline">Sign in</Link>
+          </p>
         </div>
+
       </div>
     </div>
-  );
+  )
 }
