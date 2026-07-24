@@ -14,7 +14,8 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setMsg('Signing in...')
-    const { error } = await supabase.auth.signUpWithPassword({ email, password })
+    // FIXED: was signUpWithPassword, should be signInWithPassword
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       setMsg(error.message)
     } else {
@@ -24,8 +25,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6 py-10">
-      <div className="max-w- w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
+    <div className="min-h-screen w-full relative flex items-center justify-center px-6 py-10 bg-[#0a0a0a]">
+      {/* TEARDROP BACKGROUND - GUARANTEED ON BOTH PAGES */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/teardrops-bg.jpg')" }}
+      />
+      <div className="absolute inset-0 bg-black/40" />
+
+      <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
 
         <div className="text-left">
           <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">
@@ -44,17 +52,45 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="w-full bg-black/20 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
-          <h2 className="text-3xl font-black text-white text-center mb-2">Sweet Social Space</h2>
-          <p className="text-white/60 text-center text-sm mb-6">Speak Freely. Love your neighbor.</p>
+        <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
+          <h2 className="text-3xl font-black text-white text-center mb-2">Welcome Back</h2>
+          <p className="text-white/60 text-center text-sm mb-6">Sweet Social Space - Your Neighborhood</p>
+
           <form onSubmit={handleLogin} className="space-y-4">
-            <input type="Email address" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
-            <input type="Create a password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
-            <button type="submit" className="w-full bg-emerald-500 text-white font-black py-3 rounded-full">SIGN UP</button>
+            <div>
+              <label className="text-sm text-white/80">Email address</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e=>setEmail(e.target.value)}
+                placeholder="Your email address"
+                className="mt-1 w-full p-3 rounded-xl bg-white text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm text-white/80">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e=>setPassword(e.target.value)}
+                placeholder="Your password"
+                className="mt-1 w-full p-3 rounded-xl bg-white text-black font-semibold outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-full transition">
+              SIGN IN
+            </button>
           </form>
+
           {msg && <p className="mt-4 text-center text-sm text-white bg-white/10 p-2 rounded-lg">{msg}</p>}
+
           <p className="mt-6 text-center text-sm text-white/60">
-           Already have an account? Sign in  <Link href="/login" className="text-white font-bold underline">Sign in</Link>
+            No account? <Link href="/signup" className="text-white font-bold underline">Sign up</Link>
+          </p>
+          <p className="text-center text- text-white/40 mt-4">
+            By signing in, you agree to our Terms of Service and Privacy Policy. We never sell your data.
           </p>
         </div>
 
