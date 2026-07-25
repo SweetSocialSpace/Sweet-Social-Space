@@ -1,59 +1,42 @@
 'use client'
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-type LocationState = {
-  zip: string
-  city: string
-  country: string
-  lat: number | null
-  lng: number | null
-  radius: number
-  loading: boolean
-  setRadius: (n: number) => void
-  setLocation: (zip: string, city: string, country: string) => void
-  useMyLocation: () => void
+type Loc = { zip: string; city: string; country: string; lat: number; lng: number }
+type CtxType = Loc & { 
+  setLoc: (l: Loc) => void; 
+  loading: boolean;
+  radius: number;
+  setRadius: (n:number)=>void;
+  useMyLocation: () => void;
 }
 
-const LocationContext = createContext<LocationState | null>(null)
+const LocationContext = createContext<CtxType>({
+  zip: '', city: '', country: '', lat: 0, lng: 0, 
+  setLoc: () => {}, loading: true,
+  radius: 5, setRadius: ()=>{},
+  useMyLocation: ()=>{}
+})
 
-export function LocationProvider({ children }: { children: ReactNode }) {
-  const supabase = createClient()
-  const [zip, setZip] = useState('')
-  const [city, setCity] = useState('')
-  const [country, setCountry] = useState('')
-  const [lat, setLat] = useState<number | null>(null)
-  const [lng, setLng] = useState<number | null>(null)
+export function LocationProvider({ children }: any) {
+  const [loc, setLoc] = useState<Loc>({ zip: '', city: '', country: '', lat: 0, lng: 0 })
   const [radius, setRadius] = useState(5)
   const [loading, setLoading] = useState(true)
+  const supabase = createClient()
 
-  // Load from profile + localStorage on boot
-  useEffect(() => {
-    const boot = async () => {
-      const saved = localStorage.getItem('sss_location')
-      if (saved) {
-        const p = JSON.parse(saved)
-        setZip(p.zip || ''); setCity(p.city || ''); setCountry(p.country || '')
-      }
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        const { data } = await supabase.from('profiles').select('zip_code,city,country').eq('id', user.id).single()
-        if (data?.zip_code) {
-          setZip(data.zip_code); setCity(data.city || ''); setCountry(data.country || '')
-          localStorage.setItem('sss_location', JSON.stringify(data))
-        }
-      }
-      setLoading(false)
+  const setLocState = (l: Loc) => {
+    setLoc(l)
+    if (typeof window !== 'undefined') {
+      if (l.zip) localStorage.setItem('user_zip', l.zip)
+      if (l.city) localStorage.setItem('user_city', l.city)
+      if (l.country) localStorage.setItem('user_country', l.country)
     }
-    boot()
-  }, [])
-
-  const setLocation = (newZip: string, newCity: string, newCountry: string) => {
-    setZip(newZip); setCity(newCity); setCountry(newCountry)
-    localStorage.setItem('sss_location', JSON.stringify({ zip: newZip, city: newCity, country: newCountry }))
-    // Also save to profile for automation
+    // Save to profile for ALL automated components
     supabase.auth.getUser().then(({ data }) => {
-      if (data.user) supabase.from('profiles').update({ zip_code: newZip, city: newCity, country: newCountry }).eq('id', data.user.id).then(()=>{})
+      if (!data.user) return
+      supabase.from('profiles').update({ 
+        zip_code: l.zip, city: l.city, country: l.country, zip: l.zip 
+      }).or(`id.eq.${data.user.id},user_id.eq.${data.user.id}`).then(()=>{})
     })
   }
 
@@ -62,29 +45,62 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords
-      setLat(latitude); setLng(longitude)
       try {
-        // GLOBAL reverse geocode - works for ANY country
+        // GLOBAL - works for any country, no backend needed
         const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
-        const data = await res.json()
-        const newZip = data.postcode || data.postalCode || ''
-        const newCity = data.city || data.locality || ''
-        const newCountry = data.countryName || ''
-        if (newZip || newCity) setLocation(newZip, newCity, newCountry)
+        const d = await res.json()
+        const newLoc = {
+          zip: d.postcode || d.postalCode || loc.zip,
+          city: d.city || d.locality || loc.city,
+          country: d.countryName || loc.country,
+          lat: latitude, lng: longitude
+        }
+        setLocState(newLoc)
       } catch {}
       setLoading(false)
     }, () => setLoading(false), { timeout: 8000 })
   }
 
-  return (
-    <LocationContext.Provider value={{ zip, city, country, lat, lng, radius, loading, setRadius, setLocation, useMyLocation }}>
-      {children}
-    </LocationContext.Provider>
-  )
-}
+  useEffect(() => {
+    let mounted = true
+    async function init() {
+      try {
+        // 1. Check localStorage first (fast)
+        const savedZip = localStorage.getItem('user_zip')
+        const savedCity = localStorage.getItem('user_city')
+        const savedCountry = localStorage.getItem('user_country')
+        if (savedZip && mounted) {
+          setLoc({ zip: savedZip, city: savedCity || '', country: savedCountry || '', lat: 0, lng: 0 })
+        }
 
-export const useLocation = () => {
-  const ctx = useContext(LocationContext)
-  if (!ctx) throw new Error('useLocation must be inside LocationProvider')
-  return ctx
+        // 2. Check profile (authoritative)
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user && mounted) {
+          const { data: profile } = await supabase.from('profiles')
+            .select('zip_code, zip, city, country')
+            .or(`id.eq.${user.id},user_id.eq.${user.id}`)
+            .maybeSingle()
+          
+          const finalZip = profile?.zip_code || profile?.zip || savedZip
+          if (finalZip) {
+            setLoc({ 
+              zip: finalZip, 
+              city: profile?.city || savedCity || '', 
+              country: profile?.country || savedCountry || '',
+              lat: 0, lng: 0 
+            })
+            if (mounted) { setLoading(false); return }
+          }
+        }
+
+        // 3. No backend /api/geocode needed - we removed that dependency
+      } catch {}
+      if (mounted) setLoading(false)
+    }
+    init()
+    return () => { mounted = false }
+  }, [])
+
+  return <LocationContext.Provider value={{ ...loc, setLoc: setLocState, loading, radius, setRadius, useMyLocation }}>{children}</LocationContext.Provider>
 }
+export const useLocation = () => useContext(LocationContext)
