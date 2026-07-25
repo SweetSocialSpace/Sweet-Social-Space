@@ -23,7 +23,6 @@ export default function ProfilePage(){
     const load = async()=>{
       const { data: { user } } = await supabase.auth.getUser()
       if(!user) return
-      // Try user_id then id — your table uses both
       let { data } = await supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle()
       if (!data) {
         const res = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
@@ -39,7 +38,6 @@ export default function ProfilePage(){
         interests: data.interests || ''
       })
       else {
-        // New user — use detected zip, NOT 95122 hardcoded
         const detected = typeof window!== 'undefined'? localStorage.getItem('user_zip') || '' : ''
         if (detected) setProfile(p => ({...p, zip: detected }))
       }
@@ -62,7 +60,7 @@ export default function ProfilePage(){
       display_name: cleanDisplayName,
       bio: profile.bio,
       zip: zipClean,
-      zip_code: zipClean, // save BOTH — global, not changeable
+      zip_code: zipClean,
       cross_street: profile.cross_street,
       private_address: profile.private_address,
       interests: profile.interests,
@@ -81,7 +79,6 @@ export default function ProfilePage(){
 
   return (
     <div className="w-full min-h-[calc(100vh-80px)] flex justify-center px-4 py-8 gap-6">
-      {/* LEFT - SMALL */}
       <div className="hidden xl:block w-72 shrink-0">
         <div className="sticky top-24 space-y-4">
           <div className="bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl p-6 h-32 flex flex-col items-center justify-center gap-2">
@@ -91,7 +88,6 @@ export default function ProfilePage(){
         </div>
       </div>
 
-      {/* CENTER - BIG NOW */}
       <div className="w-full max-w-2xl bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden">
         <div className="p-4 flex items-center justify-between border-b border-white/10 shrink-0">
           <button onClick={()=>router.push('/feed')} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
@@ -125,7 +121,11 @@ export default function ProfilePage(){
               <label className="text-xs text-white/40">Cross Street</label>
               <input value={profile.cross_street} onChange={e=>setProfile({...profile, cross_street:e.target.value})} className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white mt-1" placeholder="Near Main St" />
             </div>
-          <input value={profile.private_address} onChange={e=>setProfile({...profile, private_address:e.target.value})} placeholder="Private address — never public" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/50" />
+          </div>
+
+          <div>
+            <input value={profile.private_address} onChange={e=>setProfile({...profile, private_address:e.target.value})} placeholder="Private address — never public" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/50" />
+          </div>
 
           <DeleteAccount />
         </div>
@@ -139,7 +139,6 @@ export default function ProfilePage(){
         </div>
       </div>
 
-      {/* RIGHT - SMALL */}
       <div className="hidden xl:block w-72 shrink-0">
         <div className="sticky top-24 space-y-4">
           <div className="bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl p-6 h-32 flex flex-col items-center justify-center gap-2">
