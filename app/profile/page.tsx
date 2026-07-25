@@ -2,11 +2,13 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useLocation } from '@/lib/location-context'
 import DeleteAccount from '@/app/components/DeleteAccount'
 
 export default function ProfilePage(){
   const supabase = createClient()
   const router = useRouter()
+  const { setLoc } = useLocation()
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
   const [profile, setProfile] = useState({
@@ -32,49 +34,71 @@ export default function ProfilePage(){
         username: data.username || '',
         display_name: data.display_name || '',
         bio: data.bio || '',
-        zip: data.zip || data.zip_code || (typeof window!== 'undefined'? localStorage.getItem('user_zip') || '' : ''),
+        zip: data.zip || data.zip_code || '',
         cross_street: data.cross_street || '',
         private_address: data.private_address || '',
         interests: data.interests || ''
       })
-      else {
-        const detected = typeof window!== 'undefined'? localStorage.getItem('user_zip') || '' : ''
-        if (detected) setProfile(p => ({...p, zip: detected }))
-      }
     }
     load()
   },[])
 
   const handleSave = async() => {
     setSaving(true)
+    setMsg('')
     const { data: { user } } = await supabase.auth.getUser()
     if(!user){ setMsg('Not logged in'); setSaving(false); return }
     if(!profile.zip.trim()){ setMsg('Zip required — global'); setSaving(false); return }
-    const cleanUsername = profile.username.trim().toLowerCase()
-    const cleanDisplayName = profile.display_name.trim()
+
+    const cleanUsername = profile.username.trim().toLowerCase().replace(/\s+/g,'') || `user_${user.id.slice(0,8)}`
     const zipClean = profile.zip.trim()
-    const { error } = await supabase.from('profiles').upsert({
-      user_id: user.id,
-      id: user.id,
-      username: cleanUsername,
-      display_name: cleanDisplayName,
-      bio: profile.bio,
-      zip: zipClean,
-      zip_code: zipClean,
-      cross_street: profile.cross_street,
-      private_address: profile.private_address,
-      interests: profile.interests,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'user_id' })
-    if(error){ setMsg('Error: '+error.message) } else {
-      if (typeof window!== 'undefined') {
-        localStorage.setItem('user_zip', zipClean)
-        localStorage.setItem('user_id_for_zip', user.id)
+
+    try {
+      let { error } = await supabase.from('profiles').upsert({
+        user_id: user.id,
+        id: user.id,
+        username: cleanUsername,
+        display_name: profile.display_name.trim(),
+        bio: profile.bio,
+        zip: zipClean,
+        zip_code: zipClean,
+        cross_street: profile.cross_street,
+        private_address: profile.private_address,
+        interests: profile.interests,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' })
+
+      // If username taken, auto-make unique instead of failing
+      if (error && error.message.includes('username_key')) {
+        const retry = await supabase.from('profiles').upsert({
+          user_id: user.id,
+          id: user.id,
+          username: `${cleanUsername}_${user.id.slice(0,4)}`,
+          display_name: profile.display_name.trim(),
+          bio: profile.bio,
+          zip: zipClean,
+          zip_code: zipClean,
+          cross_street: profile.cross_street,
+          private_address: profile.private_address,
+          interests: profile.interests,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id' })
+        error = retry.error as any
       }
-      setMsg('Saved! Global block updated.')
-      setTimeout(()=> router.push('/feed'), 600)
+
+      if (error) throw error
+
+      // GLOBAL FIX: Update context immediately, then HARD reload to feed — no manual refresh
+      setLoc({ zip: zipClean, city: '', country: '', lat: 0, lng: 0 })
+      setMsg('Saved! Taking you to your block...')
+
+      // Force full reload so feed reads new zip instantly
+      window.location.href = '/feed'
+
+    } catch (e:any) {
+      setMsg('Error: ' + e.message)
+      setSaving(false)
     }
-    setSaving(false)
   }
 
   return (
@@ -90,7 +114,7 @@ export default function ProfilePage(){
 
       <div className="w-full max-w-2xl bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden">
         <div className="p-4 flex items-center justify-between border-b border-white/10 shrink-0">
-          <button onClick={()=>router.push('/feed')} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
+          <button onClick={()=> window.location.href='/feed'} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
           <h1 className="text-lg font-black text-white truncate">{profile.display_name || 'Profile • ' + (profile.zip || 'YOUR BLOCK')}</h1>
           <div className="w-16"></div>
         </div>
@@ -115,7 +139,7 @@ export default function ProfilePage(){
             <div>
               <label className="text-xs text-white/60 font-bold">Zip Code • Global</label>
               <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm text-black font-black mt-1" placeholder="95122 or 12828 or SW1A 0AA" />
-              <p className="text- text-white/30 mt-1">What goes on in {profile.zip || 'your block'} stays in {profile.zip || 'your block'}</p>
+              <p className="text-xs text-white/30 mt-1">What goes on in {profile.zip || 'your block'} stays in {profile.zip || 'your block'}</p>
             </div>
             <div>
               <label className="text-xs text-white/40">Cross Street</label>
@@ -133,7 +157,7 @@ export default function ProfilePage(){
         <div className="p-4 border-t border-white/10 shrink-0 bg-black/40">
           {msg && <p className="text-sm text-center mb-3 text-green-300">{msg}</p>}
           <div className="flex gap-3">
-            <button onClick={()=>router.push('/feed')} className="flex-1 bg-white/10 py-3 rounded-xl text-sm font-bold text-white/70 hover:bg-white/20">Cancel</button>
+            <button onClick={()=> window.location.href='/feed'} className="flex-1 bg-white/10 py-3 rounded-xl text-sm font-bold text-white/70 hover:bg-white/20">Cancel</button>
             <button onClick={handleSave} disabled={saving} className="flex-[2] bg-white text-black py-3 rounded-xl text-sm font-black hover:bg-white/90 disabled:opacity-50">{saving?'Saving...':'SAVE • Update Block'}</button>
           </div>
         </div>
