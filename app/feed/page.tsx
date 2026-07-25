@@ -36,11 +36,11 @@ function FeedContent() {
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
   const { zip } = useLocation()
-  const [localZip, setLocalZip] = useState('')
+  const [localZip, setLocalZip] = useState('95122') // FALLBACK - NEVER BLANK
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
 
-  useEffect(() => { if (zip) setLocalZip(zip) }, [zip])
+  useEffect(() => { if (zip && zip.trim()!== '') setLocalZip(zip) }, [zip])
 
   useEffect(() => {
     const f = searchParams.get('filter')
@@ -122,7 +122,7 @@ function FeedContent() {
     if(p.user_id === currentUserId){
       return { label: displayName || 'YOU', color:'bg-black text-white' }
     }
-    return { label:`VERIFIED • ${localZip || zip || 'YOUR BLOCK'}`, color:'bg-blue-600 text-white' }
+    return { label:`VERIFIED • ${localZip || zip || '95122'}`, color:'bg-blue-600 text-white' }
   }
 
   const authorName = currentProfile?.display_name || (currentProfile?.username? `@${currentProfile.username}` : 'YOUR BLOCK')
@@ -136,17 +136,17 @@ function FeedContent() {
           <AIMayor />
           <BlockMap />
           <TrustMeter />
-          <WeatherBar zip={localZip || zip} />
+          <WeatherBar zip={localZip || zip || '95122'} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
           <LatestAlerts />
           <WhatsHappeningNearYou />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
-          <LocationScopeBar zip={localZip || zip} radius={radius} setRadius={setRadius} />
+          <LocationScopeBar zip={localZip || zip || '95122'} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
          <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
-         <div className="mt-2 text- text-white/40 px-1">Posting as • {authorName}</div>
+         <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName}</div>
           <div id="faith-posts" className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 transition ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20 hover:bg-white/20'}`}>{f.label}</button>
@@ -175,7 +175,7 @@ function FeedContent() {
                     )}
                     {p.location_address && (
                       <div className="mt-3 flex gap-2 items-center flex-wrap">
-                        <span className="text-xs bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip || zip} • Private</span>
+                        <span className="text-xs bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip || zip || '95122'} • Private</span>
                         <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition">🗺 Get Directions</a>
                       </div>
                     )}
@@ -184,11 +184,10 @@ function FeedContent() {
                     <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
                   )}
                 </div>
-                <div className="mt-2 text-xs font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip || zip} • {p.audio_url?'🎙 Voice Story':''}</div>
+                <div className="mt-2 text-xs font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip || zip || '95122'} • {p.audio_url?'🎙 Voice Story':''}</div>
               </div>
             )})}
           </div>
-        </div>
         <div className="space-y-6">
           <FaithOfTheDay />
           <TheDrop />
