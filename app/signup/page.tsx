@@ -18,30 +18,18 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!displayName.trim() ||!zip.trim() ||!city.trim() ||!country.trim()) {
-      setMsg('Name, Zip/Postal, City, Country required so we show neighbors within 10 miles of YOU.')
+      setMsg('Name, Zip, City, Country required.')
       return
     }
     setMsg('Creating account...')
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { display_name: displayName, username: displayName, zip_code: zip, city, country } }
+      options: {
+        data: { display_name: displayName, username: displayName, zip_code: zip, city, country }
+      }
     })
     if (error) { setMsg(error.message); return }
-    if (data.user) {
-      const { error: pErr } = await supabase.from('profiles').upsert({
-        id: data.user.id,
-        user_id: data.user.id,
-        display_name: displayName,
-        username: displayName,
-        zip_code: zip,
-        city,
-        country,
-        email,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' })
-      if (pErr) { setMsg('Profile blocked: ' + pErr.message); return }
-    }
     setMsg('Account created! Check email to confirm, then sign in.')
     setTimeout(() => router.push('/login'), 1500)
   }
@@ -52,20 +40,13 @@ export default function SignupPage() {
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
         <div className="text-left">
-          <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">
-            Facebook shows you the world.<br />We show you your block.
-          </h1>
-          <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">
-            Your neighbor has a free couch. Another needs a job. Someone 3 houses down just posted an alert. You missed it scrolling people 3,000 miles away.
-          </p>
-          <p className="mt-4 text-base text-white/70 leading-relaxed">
-            Sweet Social Space is private to neighbors within 10 miles of YOU — wherever you are in the world.
-          </p>
+          <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">Facebook shows you the world.<br/>We show you your block.</h1>
+          <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">Your neighbor has a free couch. Another needs a job. Someone 3 houses down just posted an alert.</p>
+          <p className="mt-4 text-base text-white/70">Sweet Social Space is private to neighbors within 10 miles of YOU — wherever you are in the world.</p>
           <p className="mt-6 text-sm font-bold text-white/50 tracking-widest uppercase">Speak Freely. Love Your Neighbor.</p>
         </div>
         <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
           <h2 className="text-3xl font-black text-white text-center">Join Your Block</h2>
-          <p className="text-white/60 text-center text-sm mb-6 mt-2">Takes 10 seconds. Free forever.</p>
           <form onSubmit={handleSignup} className="space-y-3">
             <input type="text" value={displayName} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Your email address *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
