@@ -17,38 +17,31 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!displayName.trim() ||!zip.trim() ||!city.trim() ||!country.trim()) {
       setMsg('Name, Zip/Postal, City, Country required so we show neighbors within 10 miles of YOU.')
       return
     }
-
     setMsg('Creating account...')
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { display_name: displayName, username: displayName, zip_code: zip, city, country } }
     })
-
     if (error) { setMsg(error.message); return }
-
     if (data.user) {
-      const { error: profileError } = await supabase.from('profiles').upsert({
+      const { error: pErr } = await supabase.from('profiles').upsert({
         id: data.user.id,
         user_id: data.user.id,
         display_name: displayName,
         username: displayName,
-        zip_code: zip, // THEIR zip — auto calibrates around them, not you
-        city: city,
-        country: country,
-        email: email,
+        zip_code: zip,
+        city,
+        country,
+        email,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' })
-
-      if (profileError) { setMsg('Profile blocked by RLS: ' + profileError.message); return }
+      if (pErr) { setMsg('Profile blocked: ' + pErr.message); return }
     }
-
     setMsg('Account created! Check email to confirm, then sign in.')
     setTimeout(() => router.push('/login'), 1500)
   }
@@ -60,7 +53,7 @@ export default function SignupPage() {
       <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
         <div className="text-left">
           <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">
-            Facebook shows you the world.<br/>We show you your block.
+            Facebook shows you the world.<br />We show you your block.
           </h1>
           <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">
             Your neighbor has a free couch. Another needs a job. Someone 3 houses down just posted an alert. You missed it scrolling people 3,000 miles away.
@@ -84,6 +77,7 @@ export default function SignupPage() {
                 <input type="text" value={city} onChange={e=>setCity(e.target.value)} placeholder="City *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
                 <input type="text" value={country} onChange={e=>setCountry(e.target.value)} placeholder="Country *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
               </div>
+            </div>
             <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-full mt-2">Sign up — See Your Block</button>
           </form>
           {msg && <p className="mt-4 text-center text-sm text-white bg-white/10 p-2 rounded-lg">{msg}</p>}
