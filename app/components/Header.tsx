@@ -8,7 +8,7 @@ import { useLocation } from '@/lib/location-context'
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null)
-  const [displayName, setDisplayName] = useState<string>('')
+  const [username, setUsername] = useState<string>('')
   const supabase = createClient()
   const router = useRouter()
   const { zip } = useLocation()
@@ -16,14 +16,14 @@ export default function Header() {
   const loadProfile = async (u: User | null) => {
     setUser(u)
     if (u) {
-      const { data: profile } = await supabase.from('profiles').select('username, display_name').eq('user_id', u.id).maybeSingle()
-      if (profile) {
-        setDisplayName(profile.display_name || (profile.username? `@${profile.username}` : ''))
+      const { data: profile } = await supabase.from('profiles').select('username').eq('user_id', u.id).maybeSingle()
+      if (profile?.username) {
+        setUsername(`@${profile.username}`)
       } else {
-        setDisplayName(u.email || '')
+        setUsername(u.email?.split('@')[0]? `@${u.email.split('@')[0]}` : '')
       }
     } else {
-      setDisplayName('')
+      setUsername('')
     }
   }
 
@@ -43,13 +43,8 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    if (typeof window!== 'undefined') {
-      localStorage.clear() // FIX — clears 95122 so it doesn't bleed into 12828
-    }
     router.push('/login')
   }
-
-  const displayZip = zip || (typeof window!== 'undefined'? localStorage.getItem('user_zip') || '' : '')
 
   return (
     <header className="bg-black/60 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
@@ -58,9 +53,9 @@ export default function Header() {
           <Link href="/feed" className="text-xl font-bold text-white tracking-tight drop-shadow">
             Sweet Social Space
           </Link>
-          {displayZip && (
+          {zip && (
             <span className="text- font-black bg-white text-black px-2 py-1 rounded-full">
-              • {displayZip} • LIVE
+              • {zip} • LIVE
             </span>
           )}
         </div>
@@ -71,7 +66,7 @@ export default function Header() {
               href="/profile"
               className="text-sm text-white/80 hidden sm:block font-medium hover:text-white hover:underline cursor-pointer"
             >
-              {displayName || user.email}
+              {username || user.email}
             </Link>
             <Link
               href="/profile"
