@@ -33,8 +33,6 @@ export default function ProfilePage(){
 
   return (
     <div className="min-h-screen w-full relative flex justify-center pt-8 pb-20"
-         style={{
-           backgroundImage: `url(${wallpaper.src})`,
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed',
