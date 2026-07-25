@@ -27,6 +27,7 @@ import WeatherBar from '@/components/WeatherBar'
 import CreatePost from '@/components/CreatePost'
 import WelcomePost from '@/app/components/WelcomePost'
 import { useLocation } from '@/lib/location-context'
+import TheDrop from '@/app/components/TheDrop'
 
 function FeedContent() {
   const [filter, setFilter] = useState('all')
