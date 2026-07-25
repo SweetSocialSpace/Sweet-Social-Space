@@ -35,8 +35,7 @@ function FeedContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
-  const { zip, loading: locLoading } = useLocation()
-  const [localZip, setLocalZip] = useState('')
+  const { zip } = useLocation()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
 
@@ -164,7 +163,7 @@ function FeedContent() {
           <WhatsHappeningNearYou />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
-          <LocationScopeBar zip={localZip || zip} radius={radius} setRadius={setRadius} />
+          <LocationScopeBar radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
          <div className="mt-4"><CreatePost onPosted={() => fetchPosts()} /></div>
          <div className="mt-2 text- text-white/40 px-1">Posting as • {authorName}</div>
