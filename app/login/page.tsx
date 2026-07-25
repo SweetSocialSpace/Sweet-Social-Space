@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import wallpaper from '../../golden_droplet_heart_wallpaper.jpg'
+
 
 export default function LoginPage() {
   const supabase = createClient()
@@ -22,7 +22,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full relative flex items-center justify-center px-6 py-10">
-      <div className="absolute inset-0 bg-cover bg-center bg-fixed" style={{ backgroundImage: `url(${wallpaper.src})` }} />
+      <div className="absolute inset-0 bg-cover bg-center bg-fixed" 
       <div className="absolute inset-0 bg-black/50" />
 
       <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
