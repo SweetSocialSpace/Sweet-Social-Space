@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import wallpaper from '@/app/wallpaper.jpg' // <-- ADD THIS, or use '@/public/wallpaper.jpg' wherever your login page imports it from
 
 export default function ProfilePage(){
   const supabase = createClient()
@@ -33,14 +34,13 @@ export default function ProfilePage(){
   return (
     <div className="min-h-screen w-full relative flex justify-center pt-8 pb-20"
          style={{
-           backgroundImage: `url(${wallpaper.src})` }} />
+           backgroundImage: `url(${wallpaper.src})`,
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed',
            backgroundColor: '#000'
          }}>
 
-      {/* Main card - transparent so backdrop shows through */}
       <div className="relative z-10 w-full max-w-2xl bg-black/30 backdrop-blur-xl rounded- border border-white/10 p-6 mx-4">
         <h1 className="text-2xl font-black text-white">Your Subscriber Profile</h1>
         <p className="text-white/60 text-sm mb-6">This is what neighbors in {profile.zip} see about you • Your home base</p>
@@ -53,20 +53,14 @@ export default function ProfilePage(){
 
         {tab==='home' && (
           <div className="space-y-4">
-            {/* ALL BOXES NOW TRANSPARENT */}
             <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 font-bold text-white placeholder:text-white/40 focus:bg-white/10 focus:outline-none" placeholder="Sweet Social Space" />
-
             <textarea value={profile.bio} onChange={e=>setProfile({...profile, bio:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 h-32 text-white placeholder:text-white/40 focus:bg-white/10 focus:outline-none resize-none" placeholder="Owner and creator of this platform" />
-
             <div className="grid grid-cols-2 gap-3">
               <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white placeholder:text-white/40 focus:bg-white/10 focus:outline-none" placeholder="95122" />
               <input value={profile.cross_street} onChange={e=>setProfile({...profile, cross_street:e.target.value})} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white placeholder:text-white/40 focus:bg-white/10 focus:outline-none" placeholder="Quimby rd" />
             </div>
-
             <input value={profile.private_address} onChange={e=>setProfile({...profile, private_address:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white placeholder:text-white/40 focus:bg-white/10 focus:outline-none" placeholder="1722 Quimby Road/private" />
-
             <textarea value={profile.interests} onChange={e=>setProfile({...profile, interests:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 h-24 text-white placeholder:text-white/40 focus:bg-white/10 focus:outline-none resize-none" placeholder="Interests, skills... what can you share with the block?" />
-
             <button className="w-full bg-blue-600/80 backdrop-blur-md hover:bg-blue-600 border border-blue-500/30 py-4 rounded-xl font-black text-white">SAVE PROFILE</button>
           </div>
         )}
