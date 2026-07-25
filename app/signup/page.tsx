@@ -9,14 +9,68 @@ export default function SignupPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [zip, setZip] = useState('')
+  const [city, setCity] = useState('')
+  const [country, setCountry] = useState('')
   const [msg, setMsg] = useState('')
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // FORCED — global — no empty profiles
+    if (!displayName ||!zip ||!city ||!country) {
+      setMsg('We need your block — Name, Zip/Postal, City, Country required so we show neighbors within 10 miles of YOU, wherever in world you are.')
+      return
+    }
+
     setMsg('Creating account...')
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) setMsg(error.message)
-    else router.push('/login')
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: displayName,
+          zip_code: zip,
+          city: city,
+          country: country
+        }
+      }
+    })
+
+    if (error) {
+      setMsg(error.message)
+      return
+    }
+
+    // Create profile with THEIR zip — not 95122 — whatever they typed is truth global
+    if (data.user) {
+      const { error: profileError } = await supabase.from('profiles').insert({
+        user_id: data.user.id,
+        id: data.user.id,
+        display_name: displayName,
+        zip_code: zip, // GLOBAL — SW1A 0AA or 400001 or 95122 — their truth
+        city: city,
+        country: country,
+        email: email
+      })
+
+      if (profileError) {
+        // Try alternate schema if user_id fails
+        await supabase.from('profiles').insert({
+          id: data.user.id,
+          display_name: displayName,
+          zip_code: zip,
+          city: city,
+          country: country,
+          email: email
+        })
+      }
+    }
+
+    setMsg('Account created! Check email to confirm, then sign in.')
+    setTimeout(() => router.push('/login'), 1500)
   }
 
   return (
@@ -43,10 +97,21 @@ export default function SignupPage() {
         <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
           <h2 className="text-3xl font-black text-white text-center">Join Your Block</h2>
           <p className="text-white/60 text-center text-sm mb-6 mt-2">Takes 10 seconds. Free forever.</p>
-          <form onSubmit={handleSignup} className="space-y-4">
+          <form onSubmit={handleSignup} className="space-y-3">
+            <input type="text" value={displayName} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Your email address" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Create a password" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
-            <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-full">
+
+            <div className="pt-2 border-t border-white/10">
+              <p className="text- font-black tracking-widest text-white/50 mb-2 uppercase">Where is your block? (Required — Global)</p>
+              <div className="grid grid-cols-2 gap-3">
+                <input type="text" value={zip} onChange={e=>setZip(e.target.value)} placeholder="Zip / Postal — e.g. 95122 or SW1A 0AA or 400001" className="w-full p-3 rounded-xl bg-white text-black font-semibold col-span-2" required />
+                <input type="text" value={city} onChange={e=>setCity(e.target.value)} placeholder="City — e.g. San Jose" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
+                <input type="text" value={country} onChange={e=>setCountry(e.target.value)} placeholder="Country — e.g. USA or UK" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
+              </div>
+            </div>
+
+            <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-full mt-2">
               Sign up — See Your Block
             </button>
           </form>
