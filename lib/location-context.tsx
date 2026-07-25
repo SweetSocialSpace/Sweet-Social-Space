@@ -30,8 +30,9 @@ export function LocationProvider({ children }: any) {
       if (l.zip) localStorage.setItem('user_zip', l.zip)
       if (l.city) localStorage.setItem('user_city', l.city)
       if (l.country) localStorage.setItem('user_country', l.country)
+      if (l.lat) localStorage.setItem('user_lat', String(l.lat))
+      if (l.lng) localStorage.setItem('user_lng', String(l.lng))
     }
-    // Save to profile for ALL automated components
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) return
       supabase.from('profiles').update({ 
@@ -46,16 +47,14 @@ export function LocationProvider({ children }: any) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords
       try {
-        // GLOBAL - works for any country, no backend needed
         const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
         const d = await res.json()
-        const newLoc = {
-          zip: d.postcode || d.postalCode || loc.zip,
+        setLocState({
+          zip: d.postcode || loc.zip,
           city: d.city || d.locality || loc.city,
           country: d.countryName || loc.country,
           lat: latitude, lng: longitude
-        }
-        setLocState(newLoc)
+        })
       } catch {}
       setLoading(false)
     }, () => setLoading(false), { timeout: 8000 })
@@ -65,40 +64,52 @@ export function LocationProvider({ children }: any) {
     let mounted = true
     async function init() {
       try {
-        // 1. Check localStorage first (fast)
+        // 1. Fast: localStorage
         const savedZip = localStorage.getItem('user_zip')
         const savedCity = localStorage.getItem('user_city')
         const savedCountry = localStorage.getItem('user_country')
+        const savedLat = parseFloat(localStorage.getItem('user_lat')||'0')
+        const savedLng = parseFloat(localStorage.getItem('user_lng')||'0')
         if (savedZip && mounted) {
-          setLoc({ zip: savedZip, city: savedCity || '', country: savedCountry || '', lat: 0, lng: 0 })
+          setLoc({ zip: savedZip, city: savedCity || '', country: savedCountry || '', lat: savedLat, lng: savedLng })
+          setLoading(false)
+          return
         }
 
-        // 2. Check profile (authoritative)
+        // 2. Profile (authoritative)
         const { data: { user } } = await supabase.auth.getUser()
         if (user && mounted) {
           const { data: profile } = await supabase.from('profiles')
             .select('zip_code, zip, city, country')
             .or(`id.eq.${user.id},user_id.eq.${user.id}`)
             .maybeSingle()
-          
-          const finalZip = profile?.zip_code || profile?.zip || savedZip
+          const finalZip = profile?.zip_code || profile?.zip
           if (finalZip) {
-            setLoc({ 
-              zip: finalZip, 
-              city: profile?.city || savedCity || '', 
-              country: profile?.country || savedCountry || '',
-              lat: 0, lng: 0 
-            })
+            const newLoc = { zip: finalZip, city: profile?.city || '', country: profile?.country || '', lat: 0, lng: 0 }
+            setLoc(newLoc)
+            localStorage.setItem('user_zip', finalZip)
             if (mounted) { setLoading(false); return }
           }
         }
 
-        // 3. No backend /api/geocode needed - we removed that dependency
+        // 3. AUTO-DETECT by IP - THIS IS WHAT FIXES YOUR SCREENSHOT
+        if (mounted) {
+          const r = await fetch('https://ipapi.co/json/')
+          if (r.ok) {
+            const d = await r.json()
+            if (d.postal) {
+              const newLoc = { zip: d.postal, city: d.city || '', country: d.country_name || '', lat: d.latitude || 0, lng: d.longitude || 0 }
+              setLoc(newLoc)
+              localStorage.setItem('user_zip', d.postal)
+              if (d.city) localStorage.setItem('user_city', d.city)
+              if (d.country_name) localStorage.setItem('user_country', d.country_name)
+            }
+          }
+        }
       } catch {}
       if (mounted) setLoading(false)
     }
     init()
-    return () => { mounted = false }
   }, [])
 
   return <LocationContext.Provider value={{ ...loc, setLoc: setLocState, loading, radius, setRadius, useMyLocation }}>{children}</LocationContext.Provider>
