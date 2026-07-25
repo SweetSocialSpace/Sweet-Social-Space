@@ -1,90 +1,91 @@
 'use client'
-import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
-function ProfileContent(){
-  const [p, setP] = useState<any>({})
-  const [saving, setSaving] = useState(false)
+export default function ProfilePage(){
   const supabase = createClient()
-  const searchParams = useSearchParams()
-  const required = searchParams.get('required')
+  const [tab, setTab] = useState<'home'|'listings'|'posts'>('home')
+  const [profile, setProfile] = useState({ display_name: 'Sweet Social Space', bio: 'Owner and creator of this platform', zip: '95122', cross_street: 'Quimby rd', private_address: '1722 Quimby Road/private', interests: '' })
+  const [myListings, setMyListings] = useState<any[]>([])
+  const [myPosts, setMyPosts] = useState<any[]>([])
 
   useEffect(()=>{
-    (async()=>{
-      const {data:{user}} = await supabase.auth.getUser()
+    const load = async() => {
+      const { data: { user } } = await supabase.auth.getUser()
       if(!user) return
-      const {data} = await supabase.from('profiles').select('*').eq('id', user.id).single()
-      if(data) setP(data)
-    })()
+      const { data: listings } = await supabase.from('marketplace').select('*').eq('user_id', user.id).order('created_at', {ascending:false})
+      const { data: posts } = await supabase.from('posts').select('*').eq('user_id', user.id).order('created_at', {ascending:false})
+      if(listings) setMyListings(listings)
+      if(posts) setMyPosts(posts)
+    }
+    load()
   },[])
 
-  const save = async()=>{
-    setSaving(true)
-    try {
-      const {data:{user}} = await supabase.auth.getUser()
-      if(!user) throw new Error('Not logged in')
-      if(!p.zip_code || p.zip_code.length < 5) {
-        alert('Zip code is required')
-        setSaving(false)
-        return
-      }
-      const {error} = await supabase.from('profiles').upsert({
-        id: user.id,
-        username: p.display_name || user.email?.split('@')[0] || 'user',
-        display_name: p.display_name,
-        bio: p.bio,
-        zip_code: p.zip_code, // GLOBAL FIX: was || '95122' - now required
-        neighborhood: p.neighborhood,
-        address: p.address,
-        interests: p.interests,
-        email: user.email,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' })
-      if(error) throw error
-      window.location.href = '/feed'
-    } catch(e:any){
-      alert('Save failed: ' + e.message)
-    } finally {
-      setSaving(false)
-    }
+  const deleteListing = async(id: string) => {
+    await supabase.from('marketplace').update({ status: 'deleted' }).eq('id', id)
+    setMyListings(prev => prev.filter(i => i.id!== id))
+  }
+  const markSold = async(id: string) => {
+    await supabase.from('marketplace').update({ status: 'sold' }).eq('id', id)
+    setMyListings(prev => prev.filter(i => i.id!== id))
   }
 
-  const inputStyle = "w-full p-3 rounded-xl bg-white/15 text-white font-black placeholder:text-white/60 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none"
-  const areaStyle = "w-full p-3 rounded-xl bg-black/50 text-white font-bold placeholder:text-white/50 border border-white/20 focus:ring-2 focus:ring-blue-500 outline-none backdrop-blur-sm"
-
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-black/60 rounded-2xl border border-white/20 text-white mt-10 backdrop-blur-md">
-      {required && (
-        <div className="bg-red-600/90 text-white p-3 rounded-xl mb-4 font-bold text-center border-2 border-white">
-          ⚠ You must complete your profile (Name + Zip Code) to access the feed!
+    <div className="min-h-screen bg-black text-white p-4 flex justify-center" style={{backgroundImage: `url('/bg-drip.png')`, backgroundSize: 'cover'}}>
+      <div className="w-full max-w-2xl bg-black/60 backdrop-blur-xl rounded- border border-white/10 p-6">
+        <h1 className="text-2xl font-black">Your Subscriber Profile</h1>
+        <p className="text-white/60 text-sm mb-4">This is what neighbors in {profile.zip} see about you • Your home base</p>
+
+        <div className="flex gap-2 mb-6">
+          <button onClick={()=>setTab('home')} className={`px-4 py-2 rounded-full text-sm font-bold ${tab==='home'?'bg-white text-black':'bg-white/10'}`}>My Home</button>
+          <button onClick={()=>setTab('listings')} className={`px-4 py-2 rounded-full text-sm font-bold ${tab==='listings'?'bg-white text-black':'bg-white/10'}`}>My Listings ({myListings.length})</button>
+          <button onClick={()=>setTab('posts')} className={`px-4 py-2 rounded-full text-sm font-bold ${tab==='posts'?'bg-white text-black':'bg-white/10'}`}>My Posts ({myPosts.length})</button>
         </div>
-      )}
-      <h1 className="text-2xl font-black text-white">Your Subscriber Profile</h1>
-      <p className="text-white font-semibold text-sm mt-1">This is what neighbors in {p.zip_code || 'your area'} see about you</p>
-      <div className="mt-6 space-y-4">
-        <input value={p.display_name||''} onChange={e=>setP({...p, display_name:e.target.value})} placeholder="Display Name" className={inputStyle}/>
-        <textarea value={p.bio||''} onChange={e=>setP({...p, bio:e.target.value})} placeholder="About you - add as much as you want!" rows={5} className={areaStyle}/>
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            value={p.zip_code||''}
-            onChange={e=>{
-              const z = e.target.value
-              setP((prev:any)=>({...prev, zip_code:z}))
-            }}
-            placeholder="Zip - REQUIRED"
-            className={inputStyle + " ring-2 ring-blue-500"}
-          />
-          <input value={p.neighborhood||''} onChange={e=>setP({...p, neighborhood:e.target.value})} placeholder="Neighborhood" className={inputStyle}/>
-        </div>
-        <input value={p.address||''} onChange={e=>setP({...p, address:e.target.value})} placeholder="Street Address" className={inputStyle}/>
-        <textarea value={p.interests||''} onChange={e=>setP({...p, interests:e.target.value})} placeholder="Interests, skills..." rows={3} className={areaStyle}/>
-        <button onClick={save} className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-black text-white text-lg">{saving?'Saving...':'SAVE PROFILE'}</button>
+
+        {tab==='home' && (
+          <div className="space-y-4">
+            <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} className="w-full bg-white/10 rounded-xl p-4 font-bold" placeholder="Display Name" />
+            <textarea value={profile.bio} onChange={e=>setProfile({...profile, bio:e.target.value})} className="w-full bg-black rounded-xl p-4 h-32" placeholder="Owner and creator of this platform - Tell neighbors about you" />
+            <div className="grid grid-cols-2 gap-3">
+              <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="bg-white/10 rounded-xl p-4" placeholder="ZIP 95122" />
+              <input value={profile.cross_street} onChange={e=>setProfile({...profile, cross_street:e.target.value})} className="bg-white/10 rounded-xl p-4" placeholder="Cross Street Quimby rd" />
+            </div>
+            <input value={profile.private_address} onChange={e=>setProfile({...profile, private_address:e.target.value})} className="w-full bg-white/10 rounded-xl p-4" placeholder="Private - 1722 Quimby Road - never shown publicly" />
+            <textarea value={profile.interests} onChange={e=>setProfile({...profile, interests:e.target.value})} className="w-full bg-black rounded-xl p-4 h-24" placeholder="Interests, skills... what can you share with the block?" />
+            <button className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-black">SAVE PROFILE</button>
+          </div>
+        )}
+
+        {tab==='listings' && (
+          <div className="space-y-3">
+            {myListings.length===0? <p className="text-white/50 text-sm py-10 text-center">No listings yet. When you post a Free Couch or Garage Sale, it will show up here and you can delete it when sold.</p> :
+              myListings.map(item=>(
+                <div key={item.id} className="bg-white/5 rounded-xl p-4 flex justify-between items-center">
+                  <div>
+                    <p className="font-bold text-sm">{item.title}</p>
+                    <p className="text-xs text-white/50">${item.price} • {item.zip_code} • {item.status}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={()=>markSold(item.id)} className="text-xs bg-yellow-600 px-3 py-1 rounded-full">Sold</button>
+                    <button onClick={()=>deleteListing(item.id)} className="text-xs bg-red-600 px-3 py-1 rounded-full">Delete</button>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        )}
+
+        {tab==='posts' && (
+          <div className="space-y-3">
+            {myPosts.map(post=>(
+              <div key={post.id} className="bg-white/5 rounded-xl p-4">
+                <p className="text-sm">{post.body?.slice(0,120)}</p>
+                <button onClick={async()=>{await supabase.from('posts').update({status:'deleted'}).eq('id', post.id); setMyPosts(p=>p.filter(x=>x.id!==post.id))}} className="mt-2 text-xs bg-red-600 px-3 py-1 rounded-full">Delete from Feed</button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
-}
-
-export default function ProfilePage(){
-  return <Suspense fallback={<div className="text-white p-10">Loading profile...</div>}><ProfileContent /></Suspense>
 }
