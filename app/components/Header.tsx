@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null)
+  const [displayName, setDisplayName] = useState<string>('')
   const supabase = createClient()
   const router = useRouter()
 
@@ -14,6 +15,12 @@ export default function Header() {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+      if(user){
+        const { data: profile } = await supabase.from('profiles').select('username, display_name').eq('user_id', user.id).single()
+        if(profile){
+          setDisplayName(profile.display_name || (profile.username? `@${profile.username}` : ''))
+        }
+      }
     }
     getUser()
   }, [supabase])
@@ -36,7 +43,7 @@ export default function Header() {
               href="/profile"
               className="text-sm text-white/80 hidden sm:block font-medium hover:text-white hover:underline cursor-pointer"
             >
-              {user.email}
+              {displayName || user.email}
             </Link>
             <button
               onClick={handleSignOut}
