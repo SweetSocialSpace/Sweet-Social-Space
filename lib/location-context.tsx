@@ -19,6 +19,7 @@ export function LocationProvider({ children }: any) {
     setLoc(l)
     if (typeof window !== 'undefined') {
       if (l.zip) localStorage.setItem('user_zip', l.zip)
+      else localStorage.removeItem('user_zip')
       if (l.city) localStorage.setItem('user_city', l.city)
       if (l.country) localStorage.setItem('user_country', l.country)
       if (l.lat) localStorage.setItem('user_lat', String(l.lat))
@@ -26,8 +27,11 @@ export function LocationProvider({ children }: any) {
     }
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) return
-      supabase.from('profiles').update({ zip_code: l.zip, city: l.city, country: l.country, zip: l.zip })
-        .or(`id.eq.${data.user.id},user_id.eq.${data.user.id}`).then(()=>{})
+      // Only update if we actually have a zip - never overwrite with blank
+      if (l.zip) {
+        supabase.from('profiles').update({ zip_code: l.zip, zip: l.zip, city: l.city, country: l.country })
+          .or(`id.eq.${data.user.id},user_id.eq.${data.user.id}`).then(()=>{})
+      }
     })
   }
 
@@ -39,10 +43,10 @@ export function LocationProvider({ children }: any) {
       try {
         const r = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`)
         const d = await r.json()
-        setLocState({ zip: d.zip || d.postcode || '95122', city: d.city || '', country: d.country || '', lat: latitude, lng: longitude })
-      } catch {
-        setLocState({ zip: '95122', city: '', country: '', lat: latitude, lng: longitude })
-      }
+        if (d.zip || d.postcode) {
+          setLocState({ zip: d.zip || d.postcode, city: d.city || '', country: d.country || '', lat: latitude, lng: longitude })
+        }
+      } catch {}
       setLoading(false)
     }, () => setLoading(false))
   }
@@ -50,11 +54,7 @@ export function LocationProvider({ children }: any) {
   useEffect(() => {
     async function init() {
       try {
-        const savedZip = localStorage.getItem('user_zip')
-        if (savedZip) {
-          setLoc({ zip: savedZip, city: localStorage.getItem('user_city')||'', country: localStorage.getItem('user_country')||'', lat: parseFloat(localStorage.getItem('user_lat')||'0'), lng: parseFloat(localStorage.getItem('user_lng')||'0') })
-          setLoading(false); return
-        }
+        // GLOBAL RULE: Profile is the source of truth, no defaults
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
           const { data: profile } = await supabase.from('profiles').select('zip_code, zip, city, country').or(`id.eq.${user.id},user_id.eq.${user.id}`).maybeSingle()
@@ -62,19 +62,17 @@ export function LocationProvider({ children }: any) {
           if (finalZip) {
             setLoc({ zip: finalZip, city: profile?.city||'', country: profile?.country||'', lat: 0, lng: 0 })
             localStorage.setItem('user_zip', finalZip)
+            if (profile?.city) localStorage.setItem('user_city', profile.city)
             setLoading(false); return
           }
         }
-        // FIX: Call YOUR OWN API - server side, not blocked
-        const r = await fetch('/api/geocode', { cache: 'no-store' })
-        const d = await r.json()
-        if (d.zip) {
-          const nl = { zip: d.zip, city: d.city||'', country: d.country||'', lat: d.lat||0, lng: d.lng||0 }
-          setLoc(nl)
-          localStorage.setItem('user_zip', d.zip)
-          if (d.city) localStorage.setItem('user_city', d.city)
+        // If no profile, check localStorage (user previously set on this device)
+        const savedZip = localStorage.getItem('user_zip')
+        if (savedZip) {
+          setLoc({ zip: savedZip, city: localStorage.getItem('user_city')||'', country: localStorage.getItem('user_country')||'', lat: parseFloat(localStorage.getItem('user_lat')||'0'), lng: parseFloat(localStorage.getItem('user_lng')||'0') })
           setLoading(false); return
         }
+        // No zip anywhere = truly global blank state, user will set in /profile or click "Use my location"
       } catch {}
       setLoading(false)
     }
