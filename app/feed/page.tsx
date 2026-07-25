@@ -37,10 +37,7 @@ function FeedContent() {
   const [radius, setRadius] = useState(5)
   const { zip } = useLocation()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
-  const [currentProfile, setCurrentProfile] = useState<any>(null)
-
-  useEffect(() => { if (zip) setLocalZip(zip) }, [zip])
-
+ 
   useEffect(() => {
     const f = searchParams.get('filter')
     if (f) setFilter(f)
