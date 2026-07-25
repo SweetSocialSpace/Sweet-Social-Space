@@ -53,6 +53,23 @@ export default function ProfilePage(){
     const cleanUsername = profile.username.trim().toLowerCase().replace(/\s+/g,'') || `user_${user.id.slice(0,8)}`
     const zipClean = profile.zip.trim()
 
+    // GLOBAL — whole earth — turn any postal code in the world into lat/lng
+    let lat: number | null = null
+    let lng: number | null = null
+    let countryCode: string | null = null
+    let cityName = ''
+    try {
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${encodeURIComponent(zipClean)}&format=json&limit=1`, {
+        headers: { 'Accept': 'application/json' }
+      })
+      const geoData = await geoRes.json()
+      if (geoData && geoData[0]) {
+        lat = parseFloat(geoData[0].lat)
+        lng = parseFloat(geoData[0].lon)
+        cityName = geoData[0].display_name || ''
+      }
+    } catch {}
+
     try {
       let { error } = await supabase.from('profiles').upsert({
         user_id: user.id,
@@ -65,10 +82,13 @@ export default function ProfilePage(){
         cross_street: profile.cross_street,
         private_address: profile.private_address,
         interests: profile.interests,
+        latitude: lat,
+        longitude: lng,
+        country_code: countryCode,
+        city: cityName || profile.cross_street || '',
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
 
-      // If username taken, auto-make unique instead of failing
       if (error && error.message.includes('username_key')) {
         const retry = await supabase.from('profiles').upsert({
           user_id: user.id,
@@ -81,6 +101,9 @@ export default function ProfilePage(){
           cross_street: profile.cross_street,
           private_address: profile.private_address,
           interests: profile.interests,
+          latitude: lat,
+          longitude: lng,
+          city: cityName || profile.cross_street || '',
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' })
         error = retry.error as any
@@ -88,11 +111,8 @@ export default function ProfilePage(){
 
       if (error) throw error
 
-      // GLOBAL FIX: Update context immediately, then HARD reload to feed — no manual refresh
-      setLoc({ zip: zipClean, city: '', country: '', lat: 0, lng: 0 })
+      setLoc({ zip: zipClean, city: cityName || '', country: countryCode || '', lat: lat || 0, lng: lng || 0 })
       setMsg('Saved! Taking you to your block...')
-
-      // Force full reload so feed reads new zip instantly
       window.location.href = '/feed'
 
     } catch (e:any) {
