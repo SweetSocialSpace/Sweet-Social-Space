@@ -53,10 +53,9 @@ export default function ProfilePage(){
     const cleanUsername = profile.username.trim().toLowerCase().replace(/\s+/g,'') || `user_${user.id.slice(0,8)}`
     const zipClean = profile.zip.trim()
 
-    // GLOBAL — whole earth — turn any postal code in the world into lat/lng
+    // GLOBAL — whole earth — turn any postal code into lat/lng (best effort)
     let lat: number | null = null
     let lng: number | null = null
-    let countryCode: string | null = null
     let cityName = ''
     try {
       const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${encodeURIComponent(zipClean)}&format=json&limit=1`, {
@@ -71,6 +70,7 @@ export default function ProfilePage(){
     } catch {}
 
     try {
+      // 1. Core save — this will ALWAYS work even without new columns
       let { error } = await supabase.from('profiles').upsert({
         user_id: user.id,
         id: user.id,
@@ -82,10 +82,6 @@ export default function ProfilePage(){
         cross_street: profile.cross_street,
         private_address: profile.private_address,
         interests: profile.interests,
-        latitude: lat,
-        longitude: lng,
-        country_code: countryCode,
-        city: cityName || profile.cross_street || '',
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' })
 
@@ -101,17 +97,22 @@ export default function ProfilePage(){
           cross_street: profile.cross_street,
           private_address: profile.private_address,
           interests: profile.interests,
-          latitude: lat,
-          longitude: lng,
-          city: cityName || profile.cross_street || '',
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' })
         error = retry.error as any
       }
-
       if (error) throw error
 
-      setLoc({ zip: zipClean, city: cityName || '', country: countryCode || '', lat: lat || 0, lng: lng || 0 })
+      // 2. Try to save lat/lng if columns exist — if not, ignore, don't block user
+      if (lat!== null && lng!== null) {
+        await supabase.from('profiles').update({
+          latitude: lat,
+          longitude: lng,
+          city: cityName || profile.cross_street || ''
+        }).eq('user_id', user.id)
+      }
+
+      setLoc({ zip: zipClean, city: cityName || '', country: '', lat: lat || 0, lng: lng || 0 })
       setMsg('Saved! Taking you to your block...')
       window.location.href = '/feed'
 
@@ -135,19 +136,21 @@ export default function ProfilePage(){
       <div className="w-full max-w-2xl bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden">
         <div className="p-4 flex items-center justify-between border-b border-white/10 shrink-0">
           <button onClick={()=> window.location.href='/feed'} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
-          <h1 className="text-lg font-black text-white truncate">{profile.display_name || 'Profile • ' + (profile.zip || 'YOUR BLOCK')}</h1>
+          <h1 className="text-lg font-black text-white truncate">@{profile.username || 'yourname'} • {profile.zip || 'YOUR BLOCK'}</h1>
           <div className="w-16"></div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           <div>
-            <label className="text-xs text-white/60 font-bold uppercase tracking-wider">Your Name (public)</label>
-            <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} placeholder="Sweet Social Space" className="w-full bg-white/10 border border-white/15 rounded-xl p-3 text-sm font-bold text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 mt-1" />
+            <label className="text-xs text-white font-bold uppercase tracking-wider">Username • Public — What neighbors see on your posts</label>
+            <input value={profile.username} onChange={e=>setProfile({...profile, username:e.target.value})} placeholder="NeighborOnQuimby" className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm font-black text-black mt-1" />
+            <p className="text-xs text-white/40 mt-1">Shown on feed, comments, marketplace. Be anonymous if you want.</p>
           </div>
 
           <div>
-            <label className="text-xs text-white/40">Username (private)</label>
-            <input value={profile.username} onChange={e=>setProfile({...profile, username:e.target.value})} placeholder="sweetsocialspace" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/80 mt-1" />
+            <label className="text-xs text-white/40">Your Real Name • Private — Never public, for account only</label>
+            <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} placeholder="Harry Sweet" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/80 mt-1" />
+            <p className="text-xs text-white/20 mt-1">Only you see this. Use a fictitious public username above for privacy.</p>
           </div>
 
           <div>
