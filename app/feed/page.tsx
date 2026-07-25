@@ -35,7 +35,7 @@ function FeedContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
-  const { zip } = useLocation()
+  const { zip, loading: locLoading } = useLocation()
   const [localZip, setLocalZip] = useState('')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
@@ -55,7 +55,7 @@ function FeedContent() {
 
   const FILTERS = [
     { id: 'all', label: 'All 🌎' },
-    { id: 'faith', label: 'Faith ✝️' },
+    { id: 'faith', label: 'Faith ✝' },
     { id: 'general', label: 'General 😊' },
     { id: 'safety', label: 'Safety 🚨' },
     { id: 'for_sale', label: 'For Sale 💰' },
@@ -66,12 +66,14 @@ function FeedContent() {
     { id: 'recommend', label: 'Tacos 🌮' },
   ]
 
-  const fetchPosts = async () => {
-    const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
+  const fetchPosts = async (zipToUse?: string) => {
+    const z = zipToUse || localZip || zip
+    if (!z) return
+    const { data } = await supabase.from('posts').select('*').eq('zip_code', z).order('created_at',{ascending:false}).limit(100)
     if(data) setPosts(data)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     (async()=>{
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
@@ -80,15 +82,34 @@ function FeedContent() {
       if(profile){
         setCurrentProfile(profile)
         const zipVal = profile.zip || profile.zip_code
-        if(zipVal) setLocalZip(zipVal)
+        if(zipVal) {
+          setLocalZip(zipVal)
+          fetchPosts(zipVal)
+        }
         if(!profile.display_name &&!profile.username){
           router.push('/profile?required=1')
         }
       }
     })()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      (async()=>{
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+        const { data: profile } = await supabase.from('profiles').select('*').eq('user_id', user.id).single()
+        const zipVal = profile?.zip || profile?.zip_code
+        if (zipVal) {
+          setLocalZip(zipVal)
+          fetchPosts(zipVal)
+        }
+      })()
+    })
+    return () => subscription.unsubscribe()
   }, [])
 
-  useEffect(()=>{ fetchPosts() }, [])
+  useEffect(()=>{
+    if (localZip || zip) fetchPosts(localZip || zip)
+  }, [localZip, zip])
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
@@ -113,7 +134,7 @@ function FeedContent() {
   })
 
   const catBadge = (cat: string) => {
-    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼', faith:'✝️' }
+    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼', faith:'✝' }
     return map[cat] || '📌'
   }
 
@@ -145,7 +166,7 @@ function FeedContent() {
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
           <LocationScopeBar zip={localZip || zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
-         <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
+         <div className="mt-4"><CreatePost onPosted={() => fetchPosts()} /></div>
          <div className="mt-2 text- text-white/40 px-1">Posting as • {authorName}</div>
           <div id="faith-posts" className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
