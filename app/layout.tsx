@@ -1,4 +1,5 @@
 import './globals.css'
+import { LocationProvider } from '@/lib/location-context'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }}
       >
         <div className="fixed inset-0 bg-black/40 -z-10" />
-        {children}
+        <LocationProvider>
+          {children}
+        </LocationProvider>
       </body>
     </html>
   )
