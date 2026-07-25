@@ -3,19 +3,10 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 type Loc = { zip: string; city: string; country: string; lat: number; lng: number }
-type CtxType = Loc & { 
-  setLoc: (l: Loc) => void; 
-  loading: boolean;
-  radius: number;
-  setRadius: (n:number)=>void;
-  useMyLocation: () => void;
-}
+type CtxType = Loc & { setLoc: (l: Loc) => void; loading: boolean; radius: number; setRadius: (n:number)=>void; useMyLocation: () => void; }
 
 const LocationContext = createContext<CtxType>({
-  zip: '', city: '', country: '', lat: 0, lng: 0, 
-  setLoc: () => {}, loading: true,
-  radius: 5, setRadius: ()=>{},
-  useMyLocation: ()=>{}
+  zip: '', city: '', country: '', lat: 0, lng: 0, setLoc: () => {}, loading: true, radius: 5, setRadius: ()=>{}, useMyLocation: ()=>{}
 })
 
 export function LocationProvider({ children }: any) {
@@ -35,9 +26,8 @@ export function LocationProvider({ children }: any) {
     }
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) return
-      supabase.from('profiles').update({ 
-        zip_code: l.zip, city: l.city, country: l.country, zip: l.zip 
-      }).or(`id.eq.${data.user.id},user_id.eq.${data.user.id}`).then(()=>{})
+      supabase.from('profiles').update({ zip_code: l.zip, city: l.city, country: l.country, zip: l.zip })
+        .or(`id.eq.${data.user.id},user_id.eq.${data.user.id}`).then(()=>{})
     })
   }
 
@@ -49,65 +39,59 @@ export function LocationProvider({ children }: any) {
       try {
         const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
         const d = await res.json()
-        setLocState({
-          zip: d.postcode || loc.zip,
-          city: d.city || d.locality || loc.city,
-          country: d.countryName || loc.country,
-          lat: latitude, lng: longitude
-        })
-      } catch {}
+        setLocState({ zip: d.postcode || loc.zip || '95122', city: d.city || d.locality || loc.city, country: d.countryName || loc.country, lat: latitude, lng: longitude })
+      } catch { setLocState({ zip: loc.zip || '95122', city: loc.city, country: loc.country, lat: latitude, lng: longitude }) }
       setLoading(false)
     }, () => setLoading(false), { timeout: 8000 })
   }
 
   useEffect(() => {
-    let mounted = true
     async function init() {
       try {
-        // 1. Fast: localStorage
         const savedZip = localStorage.getItem('user_zip')
-        const savedCity = localStorage.getItem('user_city')
-        const savedCountry = localStorage.getItem('user_country')
-        const savedLat = parseFloat(localStorage.getItem('user_lat')||'0')
-        const savedLng = parseFloat(localStorage.getItem('user_lng')||'0')
-        if (savedZip && mounted) {
-          setLoc({ zip: savedZip, city: savedCity || '', country: savedCountry || '', lat: savedLat, lng: savedLng })
-          setLoading(false)
-          return
+        if (savedZip) {
+          setLoc({ zip: savedZip, city: localStorage.getItem('user_city')||'', country: localStorage.getItem('user_country')||'', lat: parseFloat(localStorage.getItem('user_lat')||'0'), lng: parseFloat(localStorage.getItem('user_lng')||'0') })
+          setLoading(false); return
         }
-
-        // 2. Profile (authoritative)
         const { data: { user } } = await supabase.auth.getUser()
-        if (user && mounted) {
-          const { data: profile } = await supabase.from('profiles')
-            .select('zip_code, zip, city, country')
-            .or(`id.eq.${user.id},user_id.eq.${user.id}`)
-            .maybeSingle()
+        if (user) {
+          const { data: profile } = await supabase.from('profiles').select('zip_code, zip, city, country').or(`id.eq.${user.id},user_id.eq.${user.id}`).maybeSingle()
           const finalZip = profile?.zip_code || profile?.zip
           if (finalZip) {
-            const newLoc = { zip: finalZip, city: profile?.city || '', country: profile?.country || '', lat: 0, lng: 0 }
-            setLoc(newLoc)
+            setLoc({ zip: finalZip, city: profile?.city||'', country: profile?.country||'', lat: 0, lng: 0 })
             localStorage.setItem('user_zip', finalZip)
-            if (mounted) { setLoading(false); return }
+            setLoading(false); return
           }
         }
-
-        // 3. AUTO-DETECT by IP - THIS IS WHAT FIXES YOUR SCREENSHOT
-        if (mounted) {
-          const r = await fetch('https://ipapi.co/json/')
+        // AUTO IP LOOKUP - tries 2 providers, no ad-block
+        try {
+          const r = await fetch('https://ipwho.is/')
           if (r.ok) {
             const d = await r.json()
             if (d.postal) {
-              const newLoc = { zip: d.postal, city: d.city || '', country: d.country_name || '', lat: d.latitude || 0, lng: d.longitude || 0 }
-              setLoc(newLoc)
-              localStorage.setItem('user_zip', d.postal)
+              const nl = { zip: d.postal, city: d.city||'', country: d.country||'', lat: d.latitude||0, lng: d.longitude||0 }
+              setLoc(nl); localStorage.setItem('user_zip', d.postal)
               if (d.city) localStorage.setItem('user_city', d.city)
-              if (d.country_name) localStorage.setItem('user_country', d.country_name)
+              setLoading(false); return
             }
           }
+        } catch {}
+        // Last resort - use browser location automatically
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(async (pos)=>{
+            const { latitude, longitude } = pos.coords
+            try {
+              const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
+              const d = await res.json()
+              const nl = { zip: d.postcode || '95122', city: d.city || d.locality || '', country: d.countryName || '', lat: latitude, lng: longitude }
+              setLoc(nl); localStorage.setItem('user_zip', nl.zip)
+            } catch { setLoc({ zip: '95122', city: '', country: '', lat: latitude, lng: longitude }) }
+            setLoading(false)
+          }, ()=>{ setLoading(false) }, { timeout: 5000 })
+          return
         }
       } catch {}
-      if (mounted) setLoading(false)
+      setLoading(false)
     }
     init()
   }, [])
