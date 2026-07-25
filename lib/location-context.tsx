@@ -31,18 +31,20 @@ export function LocationProvider({ children }: any) {
     })
   }
 
-  const useMyLocation = () => {
+  const useMyLocation = async () => {
     if (!navigator.geolocation) return
     setLoading(true)
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude } = pos.coords
       try {
-        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
-        const d = await res.json()
-        setLocState({ zip: d.postcode || loc.zip || '95122', city: d.city || d.locality || loc.city, country: d.countryName || loc.country, lat: latitude, lng: longitude })
-      } catch { setLocState({ zip: loc.zip || '95122', city: loc.city, country: loc.country, lat: latitude, lng: longitude }) }
+        const r = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`)
+        const d = await r.json()
+        setLocState({ zip: d.zip || d.postcode || '95122', city: d.city || '', country: d.country || '', lat: latitude, lng: longitude })
+      } catch {
+        setLocState({ zip: '95122', city: '', country: '', lat: latitude, lng: longitude })
+      }
       setLoading(false)
-    }, () => setLoading(false), { timeout: 8000 })
+    }, () => setLoading(false))
   }
 
   useEffect(() => {
@@ -63,32 +65,15 @@ export function LocationProvider({ children }: any) {
             setLoading(false); return
           }
         }
-        // AUTO IP LOOKUP - tries 2 providers, no ad-block
-        try {
-          const r = await fetch('https://ipwho.is/')
-          if (r.ok) {
-            const d = await r.json()
-            if (d.postal) {
-              const nl = { zip: d.postal, city: d.city||'', country: d.country||'', lat: d.latitude||0, lng: d.longitude||0 }
-              setLoc(nl); localStorage.setItem('user_zip', d.postal)
-              if (d.city) localStorage.setItem('user_city', d.city)
-              setLoading(false); return
-            }
-          }
-        } catch {}
-        // Last resort - use browser location automatically
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(async (pos)=>{
-            const { latitude, longitude } = pos.coords
-            try {
-              const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
-              const d = await res.json()
-              const nl = { zip: d.postcode || '95122', city: d.city || d.locality || '', country: d.countryName || '', lat: latitude, lng: longitude }
-              setLoc(nl); localStorage.setItem('user_zip', nl.zip)
-            } catch { setLoc({ zip: '95122', city: '', country: '', lat: latitude, lng: longitude }) }
-            setLoading(false)
-          }, ()=>{ setLoading(false) }, { timeout: 5000 })
-          return
+        // FIX: Call YOUR OWN API - server side, not blocked
+        const r = await fetch('/api/geocode', { cache: 'no-store' })
+        const d = await r.json()
+        if (d.zip) {
+          const nl = { zip: d.zip, city: d.city||'', country: d.country||'', lat: d.lat||0, lng: d.lng||0 }
+          setLoc(nl)
+          localStorage.setItem('user_zip', d.zip)
+          if (d.city) localStorage.setItem('user_city', d.city)
+          setLoading(false); return
         }
       } catch {}
       setLoading(false)
