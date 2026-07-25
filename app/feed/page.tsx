@@ -82,7 +82,7 @@ function FeedContent() {
         if(zipVal) {
           fetchPosts(zipVal)
         }
-        if(!profile.display_name &&!profile.username){
+        if(!profile.username){
           router.push('/profile?required=1')
         }
       }
@@ -134,14 +134,14 @@ function FeedContent() {
   }
 
   const trustLevel = (p:any) => {
-    const displayName = currentProfile?.display_name || (currentProfile?.username? `@${currentProfile.username}` : null)
+    const displayName = currentProfile?.username ? `@${currentProfile.username}` : null
     if(p.user_id === currentUserId){
       return { label: displayName || 'YOU', color:'bg-black text-white' }
     }
     return { label:`VERIFIED • ${zip || 'YOUR BLOCK'}`, color:'bg-blue-600 text-white' }
   }
 
-  const authorName = currentProfile?.display_name || (currentProfile?.username? `@${currentProfile.username}` : 'YOUR BLOCK')
+  const authorName = currentProfile?.username ? `@${currentProfile.username}` : 'YOUR BLOCK'
 
   return (
     <>
