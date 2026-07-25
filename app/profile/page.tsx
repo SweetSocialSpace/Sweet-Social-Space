@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import wallpaper from '../../golden_droplet_heart_wallpaper.jpg' // <-- ROOT file, this will build
+
 
 export default function ProfilePage(){
   const supabase = createClient()
