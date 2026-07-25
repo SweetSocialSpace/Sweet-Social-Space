@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import DeleteAccount from '@/app/components/DeleteAccount'
 
 export default function ProfilePage(){
   const supabase = createClient()
@@ -12,7 +13,7 @@ export default function ProfilePage(){
     username: '',
     display_name: '',
     bio: '',
-    zip: '95122',
+    zip: '',
     cross_street: '',
     private_address: '',
     interests: ''
@@ -22,16 +23,26 @@ export default function ProfilePage(){
     const load = async()=>{
       const { data: { user } } = await supabase.auth.getUser()
       if(!user) return
-      const { data } = await supabase.from('profiles').select('*').eq('user_id', user.id).single()
+      // Try user_id then id — your table uses both
+      let { data } = await supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle()
+      if (!data) {
+        const res = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+        data = res.data
+      }
       if(data) setProfile({
         username: data.username || '',
         display_name: data.display_name || '',
         bio: data.bio || '',
-        zip: data.zip || data.zip_code || '95122',
+        zip: data.zip || data.zip_code || (typeof window!== 'undefined'? localStorage.getItem('user_zip') || '' : ''),
         cross_street: data.cross_street || '',
         private_address: data.private_address || '',
         interests: data.interests || ''
       })
+      else {
+        // New user — use detected zip, NOT 95122 hardcoded
+        const detected = typeof window!== 'undefined'? localStorage.getItem('user_zip') || '' : ''
+        if (detected) setProfile(p => ({...p, zip: detected }))
+      }
     }
     load()
   },[])
@@ -40,90 +51,100 @@ export default function ProfilePage(){
     setSaving(true)
     const { data: { user } } = await supabase.auth.getUser()
     if(!user){ setMsg('Not logged in'); setSaving(false); return }
+    if(!profile.zip.trim()){ setMsg('Zip required — global'); setSaving(false); return }
     const cleanUsername = profile.username.trim().toLowerCase()
     const cleanDisplayName = profile.display_name.trim()
+    const zipClean = profile.zip.trim()
     const { error } = await supabase.from('profiles').upsert({
       user_id: user.id,
+      id: user.id,
       username: cleanUsername,
       display_name: cleanDisplayName,
       bio: profile.bio,
-      zip: profile.zip,
+      zip: zipClean,
+      zip_code: zipClean, // save BOTH — global, not changeable
       cross_street: profile.cross_street,
       private_address: profile.private_address,
       interests: profile.interests,
       updated_at: new Date().toISOString()
     }, { onConflict: 'user_id' })
     if(error){ setMsg('Error: '+error.message) } else {
-      setMsg('Saved!')
+      if (typeof window!== 'undefined') {
+        localStorage.setItem('user_zip', zipClean)
+        localStorage.setItem('user_id_for_zip', user.id)
+      }
+      setMsg('Saved! Global block updated.')
       setTimeout(()=> router.push('/feed'), 600)
     }
     setSaving(false)
   }
 
   return (
-    <div className="w-full min-h-[calc(100vh-80px)] flex justify-center px-16 py-16 gap-12">
-      {/* LEFT - MUCH BIGGER NOW */}
-      <div className="hidden xl:block w- shrink-0">
+    <div className="w-full min-h-[calc(100vh-80px)] flex justify-center px-4 py-8 gap-6">
+      {/* LEFT - SMALL */}
+      <div className="hidden xl:block w-72 shrink-0">
         <div className="sticky top-24 space-y-4">
-          <div className="bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl p-6 h- flex flex-col items-center justify-center gap-2">
+          <div className="bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl p-6 h-32 flex flex-col items-center justify-center gap-2">
             <span className="text-white/30 text-sm">Your Photos</span>
-            <span className="text-white/20 text-">Bigger photo area now</span>
-          </div>
-          <div className="bg-black/20 backdrop-blur-xl border border-white/5 rounded-2xl p-4 h- flex items-center justify-center">
-            <span className="text-white/20 text-xs">More content</span>
+            <span className="text-white/20 text-xs">Coming soon</span>
           </div>
         </div>
       </div>
 
-      {/* CENTER - TINY NOW */}
-      <div className="w-full max-w- bg-black/70 backdrop-blur-2xl rounded-xl border border-white/10 shadow-2xl flex flex-col max-h- overflow-hidden scale-90">
-        <div className="p-2.5 flex items-center justify-between border-b border-white/5 shrink-0">
-          <button onClick={()=>router.push('/feed')} className="text- font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/50">← Feed</button>
-          <h1 className="text- font-black text-white/90 truncate max-w-">{profile.display_name || 'Profile'}</h1>
-          <div className="w-"></div>
+      {/* CENTER - BIG NOW */}
+      <div className="w-full max-w-2xl bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden">
+        <div className="p-4 flex items-center justify-between border-b border-white/10 shrink-0">
+          <button onClick={()=>router.push('/feed')} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
+          <h1 className="text-lg font-black text-white truncate">{profile.display_name || 'Profile • ' + (profile.zip || 'YOUR BLOCK')}</h1>
+          <div className="w-16"></div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2.5 py-2 space-y-1.5">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
           <div>
-            <label className="text- text-white/60 font-bold uppercase tracking-wider px-0.5">Your Name (public)</label>
-            <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} placeholder="Sweet Social Space" className="w-full bg-white/10 border border-white/15 rounded-md p-1.5 text- font-bold text-white placeholder:text-white/20 focus:outline-none h-7" />
+            <label className="text-xs text-white/60 font-bold uppercase tracking-wider">Your Name (public)</label>
+            <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} placeholder="Sweet Social Space" className="w-full bg-white/10 border border-white/15 rounded-xl p-3 text-sm font-bold text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 mt-1" />
           </div>
 
           <div>
-            <label className="text- text-white/25 px-0.5">Username (private)</label>
-            <input value={profile.username} onChange={e=>setProfile({...profile, username:e.target.value})} placeholder="sweetsocialspace" className="w-full bg-white/[0.03] border border-white/5 rounded-md p-1 text- text-white/40 h-6" />
+            <label className="text-xs text-white/40">Username (private)</label>
+            <input value={profile.username} onChange={e=>setProfile({...profile, username:e.target.value})} placeholder="sweetsocialspace" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/80 mt-1" />
           </div>
 
           <div>
-            <label className="text- text-white/25 px-0.5">Bio</label>
-            <input value={profile.bio} onChange={e=>setProfile({...profile, bio:e.target.value})} className="w-full bg-white/[0.03] border border-white/5 rounded-md p-1 text- text-white h-6" placeholder="Owner and creator" />
+            <label className="text-xs text-white/40">Bio</label>
+            <textarea value={profile.bio} onChange={e=>setProfile({...profile, bio:e.target.value})} className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white mt-1 h-20 resize-none" placeholder="Owner and creator" />
           </div>
 
-          <div className="grid grid-cols-2 gap-1">
-            <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="bg-white/[0.03] border border-white/5 rounded-md p-1 text- text-white h-6" placeholder="Zip" />
-            <input value={profile.cross_street} onChange={e=>setProfile({...profile, cross_street:e.target.value})} className="bg-white/[0.03] border border-white/5 rounded-md p-1 text- text-white h-6" placeholder="Cross" />
-          </div>
-          <input value={profile.private_address} onChange={e=>setProfile({...profile, private_address:e.target.value})} placeholder="Private address" className="w-full bg-white/[0.03] border border-white/5 rounded-md p-1 text- text-white/30 h-6" />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-white/60 font-bold">Zip Code • Global</label>
+              <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm text-black font-black mt-1" placeholder="95122 or 12828 or SW1A 0AA" />
+              <p className="text- text-white/30 mt-1">What goes on in {profile.zip || 'your block'} stays in {profile.zip || 'your block'}</p>
+            </div>
+            <div>
+              <label className="text-xs text-white/40">Cross Street</label>
+              <input value={profile.cross_street} onChange={e=>setProfile({...profile, cross_street:e.target.value})} className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white mt-1" placeholder="Near Main St" />
+            </div>
+          <input value={profile.private_address} onChange={e=>setProfile({...profile, private_address:e.target.value})} placeholder="Private address — never public" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/50" />
+
+          <DeleteAccount />
         </div>
 
-        <div className="p-2 border-t border-white/5 shrink-0 bg-black/20">
-          {msg && <p className="text- text-center mb-1 text-white/50">{msg}</p>}
-          <div className="flex gap-1">
-            <button onClick={()=>router.push('/feed')} className="flex-1 bg-white/5 py-1 rounded-md text- font-bold text-white/60">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="flex-[2] bg-blue-600 py-1 rounded-md text- font-black text-white">{saving?'...':'SAVE'}</button>
+        <div className="p-4 border-t border-white/10 shrink-0 bg-black/40">
+          {msg && <p className="text-sm text-center mb-3 text-green-300">{msg}</p>}
+          <div className="flex gap-3">
+            <button onClick={()=>router.push('/feed')} className="flex-1 bg-white/10 py-3 rounded-xl text-sm font-bold text-white/70 hover:bg-white/20">Cancel</button>
+            <button onClick={handleSave} disabled={saving} className="flex-[2] bg-white text-black py-3 rounded-xl text-sm font-black hover:bg-white/90 disabled:opacity-50">{saving?'Saving...':'SAVE • Update Block'}</button>
           </div>
         </div>
       </div>
 
-      {/* RIGHT - MUCH BIGGER NOW */}
-      <div className="hidden xl:block w- shrink-0">
+      {/* RIGHT - SMALL */}
+      <div className="hidden xl:block w-72 shrink-0">
         <div className="sticky top-24 space-y-4">
-          <div className="bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl p-6 h- flex flex-col items-center justify-center gap-2">
+          <div className="bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl p-6 h-32 flex flex-col items-center justify-center gap-2">
             <span className="text-white/30 text-sm">Extra Content</span>
-            <span className="text-white/20 text-">Bigger content area now</span>
-          </div>
-          <div className="bg-black/20 backdrop-blur-xl border border-white/5 rounded-2xl p-4 h- flex items-center justify-center">
-            <span className="text-white/20 text-xs">More content</span>
+            <span className="text-white/20 text-xs">More soon</span>
           </div>
         </div>
       </div>
