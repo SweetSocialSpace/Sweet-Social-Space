@@ -6,58 +6,37 @@ export async function GET(req: Request) {
   const lng = searchParams.get('lng')
 
   try {
-    // 1. GPS MODE — lat/lng provided — precise block anywhere in world
+    // GPS MODE — with lat/lng
     if (lat && lng) {
       const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`, { cache: 'no-store' })
       const d = await r.json()
-      return NextResponse.json({ 
-        zip: d.postcode || '', 
-        city: d.city || d.locality || '', 
-        country: d.countryCode || '',
-        lat: Number(lat),
-        lng: Number(lng)
-      })
+      return NextResponse.json({ zip: d.postcode || '', city: d.city || d.locality || '', country: d.countryCode || '' })
     }
 
-    // 2. IP MODE — no lat/lng — first load — get location from IP — GLOBAL
-    // Works for London, Mumbai, Tokyo, San Jose — anywhere
+    // IP MODE — WITHOUT lat/lng — THIS IS WHAT YOU WERE MISSING — GLOBAL
+    // 1st provider
     try {
-      const r = await fetch('https://ipapi.co/json/', { 
-        headers: { 'User-Agent': 'SweetSocialSpace/1.0' },
-        cache: 'no-store' 
-      })
+      const r = await fetch('https://get.geojs.io/v1/ip/geo.json', { cache: 'no-store' })
       if (r.ok) {
         const d = await r.json()
-        if (d.postal || d.city) {
-          return NextResponse.json({
-            zip: d.postal || '',
-            city: d.city || '',
-            country: d.country_code || '',
-            lat: d.latitude || 0,
-            lng: d.longitude || 0
-          })
+        if (d.zip || d.city) {
+          return NextResponse.json({ zip: d.zip || '', city: d.city || '', country: d.country_code || '', lat: d.latitude, lng: d.longitude })
         }
       }
     } catch {}
 
-    // 3. Fallback IP provider if ipapi fails
+    // 2nd provider fallback
     try {
-      const r2 = await fetch('https://api.bigdatacloud.net/data/ip-geolocation?localityLanguage=en&key=', { cache: 'no-store' })
+      const r2 = await fetch('https://ipapi.co/json/', { cache: 'no-store' })
       if (r2.ok) {
         const d2 = await r2.json()
-        return NextResponse.json({
-          zip: d2.postcode || '',
-          city: d2.city || d2.locality || '',
-          country: d2.countryCode || '',
-          lat: d2.latitude || 0,
-          lng: d2.longitude || 0
-        })
+        if (d2.postal || d2.city) {
+          return NextResponse.json({ zip: d2.postal || '', city: d2.city || '', country: d2.country_code || '' })
+        }
       }
     } catch {}
 
-    // 4. No hardcode — empty so profile truth can take over
     return NextResponse.json({ zip: '', city: '' })
-
   } catch {
     return NextResponse.json({ zip: '', city: '' })
   }
