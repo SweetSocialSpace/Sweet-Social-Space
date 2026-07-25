@@ -33,7 +33,7 @@ export default function ProfilePage(){
   return (
     <div className="min-h-screen w-full relative flex justify-center pt-8 pb-20"
          style={{
-           backgroundImage: `url('/gold-hearts-drip-bg.jpg')`, // <- use your actual backdrop file from /public
+           backgroundImage:  `url(${wallpaper.src})` }} /> // <- use your actual backdrop file from /public
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed',
