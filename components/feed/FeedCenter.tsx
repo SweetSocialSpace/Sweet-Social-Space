@@ -27,11 +27,11 @@ export default function FeedCenter() {
   const load = async () => {
     if (!zip) return
     const { data } = await supabase
-     .from('posts')
-     .select('*')
-     .eq('zip_code', zip) // GLOBAL FIX: filter by real zip
-     .order('created_at',{ascending:false})
-     .limit(100)
+    .from('posts')
+    .select('*')
+    .eq('zip_code', zip) // GLOBAL FIX: filter by real zip
+    .order('created_at',{ascending:false})
+    .limit(100)
     if(data) setPosts(data)
   }
   useEffect(()=>{ if (zip) load() }, [zip])
@@ -58,7 +58,7 @@ export default function FeedCenter() {
 
   return (
     <div className="space-y-4">
-      <LocationScopeBar zip={zip} radius={radius} setRadius={setRadius} />
+      <LocationScopeBar radius={radius} setRadius={setRadius} />
       <LiveNowStrip />
 
       <div className="bg-white rounded-2xl p-6 shadow-xl">
