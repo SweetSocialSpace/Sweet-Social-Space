@@ -4,53 +4,91 @@ import { createClient } from '@/lib/supabase/client'
 
 type Loc = { zip: string; city: string; lat: number; lng: number }
 
-const LocationContext = createContext<Loc>({ zip: '', city: '', lat: 0, lng: 0 })
+type CtxType = Loc & { 
+  setLoc: (l: Loc) => void
+  loading: boolean 
+}
+
+const LocationContext = createContext<CtxType>({ 
+  zip: '', city: '', lat: 0, lng: 0, 
+  setLoc: () => {}, 
+  loading: true 
+})
 
 export function LocationProvider({ children }: any) {
   const [loc, setLoc] = useState<Loc>({ zip: '', city: '', lat: 0, lng: 0 })
+  const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
+  const setLocState = (l: Loc) => {
+    setLoc(l)
+    if (typeof window !== 'undefined') {
+      if (l.zip) localStorage.setItem('user_zip', l.zip)
+      if (l.city) localStorage.setItem('user_city', l.city)
+    }
+  }
+
   useEffect(() => {
+    let mounted = true
+
     async function init() {
       try {
-        const savedZip = typeof window!== 'undefined'? localStorage.getItem('user_zip') : null
-        const savedCity = typeof window!== 'undefined'? localStorage.getItem('user_city') : null
-        if (savedZip) setLoc({ zip: savedZip, city: savedCity || '', lat: 0, lng: 0 })
-
+        // 1. PROFILE IS TRUTH — GLOBAL — forced at signup
         const { data: { user } } = await supabase.auth.getUser()
-        if (user) {
-          const { data: profile } = await supabase.from('profiles').select('zip_code').eq('user_id', user.id).maybeSingle()
-          let prof = profile
-          if (!prof) {
-            const { data: p2 } = await supabase.from('profiles').select('zip_code').eq('id', user.id).maybeSingle()
-            prof = p2
+        if (user && mounted) {
+          // Try user_id (new schema)
+          const { data: p1 } = await supabase.from('profiles').select('zip_code, city').eq('user_id', user.id).maybeSingle()
+          let profile = p1
+          // Fallback to id (old schema — your bug)
+          if (!profile?.zip_code) {
+            const { data: p2 } = await supabase.from('profiles').select('zip_code, city').eq('id', user.id).maybeSingle()
+            profile = p2
           }
-          if (prof?.zip_code) {
-            setLoc({ zip: prof.zip_code, city: '', lat: 0, lng: 0 })
-            localStorage.setItem('user_zip', prof.zip_code)
+          if (profile?.zip_code && mounted) {
+            setLoc({ zip: profile.zip_code, city: profile.city || '', lat: 0, lng: 0 })
+            localStorage.setItem('user_zip', profile.zip_code)
+            if (profile.city) localStorage.setItem('user_city', profile.city)
+            setLoading(false)
+            return // legit — profile wins, global
+          }
+        }
+
+        // 2. SAVED — second truth
+        if (typeof window !== 'undefined') {
+          const savedZip = localStorage.getItem('user_zip')
+          const savedCity = localStorage.getItem('user_city')
+          if (savedZip && mounted) {
+            setLoc({ zip: savedZip, city: savedCity || '', lat: 0, lng: 0 })
+            setLoading(false)
             return
           }
         }
 
+        // 3. IP GEO — GLOBAL AUTOMATED — works UK, India, Japan, anywhere
         try {
           const r = await fetch('/api/geocode', { cache: 'no-store' })
-          if (r.ok) {
+          if (r.ok && mounted) {
             const d = await r.json()
-            const globalZip = d?.zip || d?.postal_code || d?.postcode
+            const globalZip = d?.zip || d?.postal_code || d?.postcode || d?.zip_code
             if (globalZip) {
-              setLoc({ zip: globalZip, city: d.city || '', lat: 0, lng: 0 })
-              localStorage.setItem('user_zip', globalZip)
-              if (d.city) localStorage.setItem('user_city', d.city)
+              setLoc({ zip: globalZip, city: d.city || d.locality || '', lat: d.lat || 0, lng: d.lng || 0 })
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('user_zip', globalZip)
+                if (d.city) localStorage.setItem('user_city', d.city)
+              }
+              setLoading(false)
+              return
             }
           }
         } catch {}
 
-        if (navigator.geolocation) {
+        // 4. BROWSER GEO — last resort global
+        if (typeof navigator !== 'undefined' && navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             async (pos) => {
               try {
                 const r = await fetch(`/api/geocode?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`, { cache: 'no-store' })
-                if (r.ok) {
+                if (r.ok && mounted) {
                   const d = await r.json()
                   const globalZip = d?.zip || d?.postal_code || d?.postcode
                   if (globalZip) {
@@ -59,17 +97,29 @@ export function LocationProvider({ children }: any) {
                   }
                 }
               } catch {}
+              if (mounted) setLoading(false)
             },
-            () => {},
-            { timeout: 5000, maximumAge: 600000, enableHighAccuracy: false }
+            () => { if (mounted) setLoading(false) },
+            { timeout: 8000, maximumAge: 600000, enableHighAccuracy: false }
           )
+          return
         }
-      } catch {}
+
+        if (mounted) setLoading(false)
+      } catch {
+        if (mounted) setLoading(false)
+      }
     }
+
     init()
+    return () => { mounted = false }
   }, [])
 
-  return <LocationContext.Provider value={loc}>{children}</LocationContext.Provider>
+  return (
+    <LocationContext.Provider value={{ ...loc, setLoc: setLocState, loading }}>
+      {children}
+    </LocationContext.Provider>
+  )
 }
 
 export const useLocation = () => useContext(LocationContext)
