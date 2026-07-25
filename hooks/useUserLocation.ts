@@ -32,7 +32,6 @@ async function reverseGeocode(lat: number, lng: number): Promise<{
     if (!r.ok) return { state_code: null, country_code: null, label: null }
     const j: any = await r.json()
     const country = (j.countryCode || '').toUpperCase() || null
-    // principalSubdivisionCode looks like "US-NY"
     const sub: string = j.principalSubdivisionCode || ''
     const state_code = sub.includes('-')? sub.split('-')[1] : (j.principalSubdivision || null)
     const city = j.city || j.locality || j.principalSubdivision || ''
@@ -51,7 +50,10 @@ export function useUserLocation(userId: string | undefined) {
 
   // Load saved profile location
   useEffect(() => {
-    if (!userId) return
+    if (!userId) {
+      setReady(true)
+      return
+    }
     const supabase = createClient()
     let cancelled = false
     ;(async () => {
@@ -78,15 +80,15 @@ export function useUserLocation(userId: string | undefined) {
       if (!userId) return
       const supabase = createClient()
       await supabase
-     .from('profiles')
-     .update({
+    .from('profiles')
+    .update({
           latitude: next.latitude,
           longitude: next.longitude,
           state_code: next.state_code,
           country_code: next.country_code,
           location_label: next.location_label,
         })
-     .eq('user_id', userId)
+    .eq('user_id', userId)
     },
     [userId],
   )
@@ -123,10 +125,21 @@ export function useUserLocation(userId: string | undefined) {
     }
   }, [saveLocation])
 
+  // AUTOMATIC FIX: if no saved location, auto-request it once — no manual click needed
+  useEffect(() => {
+    if (!ready) return
+    if (loc.latitude!== null && loc.longitude!== null) return
+    if (prompting) return
+    // Only auto-run once per session if we have no location
+    const hasTried = sessionStorage.getItem('auto-geo-tried')
+    if (hasTried) return
+    sessionStorage.setItem('auto-geo-tried', '1')
+    requestGeolocation()
+  }, [ready, loc.latitude, loc.longitude, prompting, requestGeolocation])
+
   return { loc, ready, prompting, error, requestGeolocation, saveLocation }
 }
 
-// Haversine distance in miles
 export function milesBetween(
   lat1: number,
   lng1: number,
@@ -134,7 +147,7 @@ export function milesBetween(
   lng2: number,
 ): number {
   const toRad = (d: number) => (d * Math.PI) / 180
-  const R = 3958.7613 // Earth radius in miles
+  const R = 3958.7613
   const dLat = toRad(lat2 - lat1)
   const dLng = toRad(lng2 - lng1)
   const a =
