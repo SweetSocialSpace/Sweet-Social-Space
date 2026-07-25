@@ -35,9 +35,10 @@ function FeedContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const [radius, setRadius] = useState(5)
-  const { zip } = useLocation()
+  const { zip, setLoc } = useLocation()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
- 
+  const [currentProfile, setCurrentProfile] = useState<any>(null)
+
   useEffect(() => {
     const f = searchParams.get('filter')
     if (f) setFilter(f)
@@ -63,7 +64,7 @@ function FeedContent() {
   ]
 
   const fetchPosts = async (zipToUse?: string) => {
-    const z = zipToUse || localZip || zip
+    const z = zipToUse || zip
     if (!z) return
     const { data } = await supabase.from('posts').select('*').eq('zip_code', z).order('created_at',{ascending:false}).limit(100)
     if(data) setPosts(data)
@@ -74,12 +75,11 @@ function FeedContent() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       setCurrentUserId(user.id)
-      const { data: profile } = await supabase.from('profiles').select('*').eq('user_id', user.id).single()
+      const { data: profile } = await supabase.from('profiles').select('*').or(`user_id.eq.${user.id},id.eq.${user.id}`).single()
       if(profile){
         setCurrentProfile(profile)
         const zipVal = profile.zip || profile.zip_code
         if(zipVal) {
-          setLocalZip(zipVal)
           fetchPosts(zipVal)
         }
         if(!profile.display_name &&!profile.username){
@@ -92,10 +92,9 @@ function FeedContent() {
       (async()=>{
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
-        const { data: profile } = await supabase.from('profiles').select('*').eq('user_id', user.id).single()
+        const { data: profile } = await supabase.from('profiles').select('*').or(`user_id.eq.${user.id},id.eq.${user.id}`).single()
         const zipVal = profile?.zip || profile?.zip_code
         if (zipVal) {
-          setLocalZip(zipVal)
           fetchPosts(zipVal)
         }
       })()
@@ -104,8 +103,8 @@ function FeedContent() {
   }, [])
 
   useEffect(()=>{
-    if (localZip || zip) fetchPosts(localZip || zip)
-  }, [localZip, zip])
+    if (zip) fetchPosts(zip)
+  }, [zip])
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
@@ -139,7 +138,7 @@ function FeedContent() {
     if(p.user_id === currentUserId){
       return { label: displayName || 'YOU', color:'bg-black text-white' }
     }
-    return { label:`VERIFIED • ${localZip || zip || 'YOUR BLOCK'}`, color:'bg-blue-600 text-white' }
+    return { label:`VERIFIED • ${zip || 'YOUR BLOCK'}`, color:'bg-blue-600 text-white' }
   }
 
   const authorName = currentProfile?.display_name || (currentProfile?.username? `@${currentProfile.username}` : 'YOUR BLOCK')
@@ -153,7 +152,7 @@ function FeedContent() {
           <AIMayor />
           <BlockMap />
           <TrustMeter />
-          <WeatherBar zip={localZip || zip} />
+          <WeatherBar zip={zip} />
           <PinnedAutomatedAlert />
           <EmergencyAlerts />
           <LatestAlerts />
@@ -192,7 +191,7 @@ function FeedContent() {
                     )}
                     {p.location_address && (
                       <div className="mt-3 flex gap-2 items-center flex-wrap">
-                        <span className="text-xs bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {localZip || zip} • Private</span>
+                        <span className="text-xs bg-gray-100 text-black px-2 py-1 rounded-full border">📍 Near {zip} • Private</span>
                         <a href={`https://maps.google.com/?q=${encodeURIComponent(p.location_address)}`} target="_blank" className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-full font-black transition">🗺 Get Directions</a>
                       </div>
                     )}
@@ -201,7 +200,7 @@ function FeedContent() {
                     <button onClick={()=>deletePost(p.id)} className="bg-red-100 hover:bg-red-600 hover:text-white text-red-600 rounded-full px-3 py-1 text-xs font-black border border-red-300">X</button>
                   )}
                 </div>
-                <div className="mt-2 text-xs font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {localZip || zip} • {p.audio_url?'🎙 Voice Story':''}</div>
+                <div className="mt-2 text-xs font-bold text-gray-400">{new Date(p.created_at).toLocaleString()} • {zip} • {p.audio_url?'🎙 Voice Story':''}</div>
               </div>
             )})}
           </div>
