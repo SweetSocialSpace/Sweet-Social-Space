@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import wallpaper from '../../golden_droplet_heart_wallpaper.jpg' // <-- ROOT file, this will build
 
 export default function ProfilePage(){
   const supabase = createClient()
@@ -31,12 +32,13 @@ export default function ProfilePage(){
   }
 
   return (
-    <div className="min-h-screen w-full relative flex justify-center pt-8 pb-20 bg-black"
+    <div className="min-h-screen w-full relative flex justify-center pt-8 pb-20"
          style={{
-           backgroundImage: `url('/wallpaper.jpg')`,
+           backgroundImage: `url(${wallpaper.src})`,
            backgroundSize: 'cover',
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed',
+           backgroundColor: '#000'
          }}>
 
       <div className="relative z-10 w-full max-w-2xl bg-black/30 backdrop-blur-xl rounded- border border-white/10 p-6 mx-4">
@@ -59,26 +61,25 @@ export default function ProfilePage(){
             </div>
             <input value={profile.private_address} onChange={e=>setProfile({...profile, private_address:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 text-white" placeholder="1722 Quimby Road/private" />
             <textarea value={profile.interests} onChange={e=>setProfile({...profile, interests:e.target.value})} className="w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 h-24 text-white placeholder:text-white/40 focus:bg-white/10 focus:outline-none resize-none" placeholder="Interests, skills... what can you share with the block?" />
-            <button className="w-full bg-blue-600/80 backdrop-blur-md hover:bg-blue-600 border border-blue-500/30 py-4 rounded-xl font-black text-white">SAVE PROFILE</button>
+            <button className="w-full bg-blue-600/80 backdrop-blur-md py-4 rounded-xl font-black text-white">SAVE PROFILE</button>
           </div>
         )}
 
         {tab==='listings' && (
           <div className="space-y-3">
-            {myListings.length===0? <p className="text-white/50 text-sm py-10 text-center bg-white/5 backdrop-blur-md border border-white/10 rounded-xl">No listings yet.</p> :
-              myListings.map(item=>(
-                <div key={item.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex justify-between items-center">
-                  <div><p className="font-bold text-sm text-white">{item.title}</p><p className="text-xs text-white/50">${item.price} • {item.status}</p></div>
-                  <div className="flex gap-2"><button onClick={()=>markSold(item.id)} className="text-xs bg-yellow-600/70 px-3 py-1.5 rounded-full text-white">Sold</button><button onClick={()=>deleteListing(item.id)} className="text-xs bg-red-600/70 px-3 py-1.5 rounded-full text-white">Delete</button></div>
-                </div>
-              ))}
+            {myListings.map(item=>(
+              <div key={item.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4 flex justify-between items-center">
+                <div><p className="font-bold text-sm text-white">{item.title}</p><p className="text-xs text-white/50">${item.price}</p></div>
+                <div className="flex gap-2"><button onClick={()=>markSold(item.id)} className="text-xs bg-yellow-600/70 px-3 py-1.5 rounded-full text-white">Sold</button><button onClick={()=>deleteListing(item.id)} className="text-xs bg-red-600/70 px-3 py-1.5 rounded-full text-white">Delete</button></div>
+              </div>
+            ))}
           </div>
         )}
 
         {tab==='posts' && (
           <div className="space-y-3">
             {myPosts.map(post=>(
-              <div key={post.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4"><p className="text-sm text-white/90">{post.body?.slice(0,120)}</p><button onClick={async()=>{await supabase.from('posts').update({status:'deleted'}).eq('id', post.id); setMyPosts(p=>p.filter(x=>x.id!==post.id))}} className="mt-3 text-xs bg-red-600/70 px-3 py-1.5 rounded-full text-white">Delete from Feed</button></div>
+              <div key={post.id} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-4"><p className="text-sm text-white/90">{post.body?.slice(0,120)}</p><button onClick={async()=>{await supabase.from('posts').update({status:'deleted'}).eq('id', post.id); setMyPosts(p=>p.filter(x=>x.id!==post.id))}} className="mt-3 text-xs bg-red-600/70 px-3 py-1.5 rounded-full text-white">Delete</button></div>
             ))}
           </div>
         )}
