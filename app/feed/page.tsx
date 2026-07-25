@@ -38,6 +38,7 @@ function FeedContent() {
   const { zip } = useLocation()
   const [localZip, setLocalZip] = useState('')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [currentProfile, setCurrentProfile] = useState<any>(null)
 
   useEffect(() => { if (zip) setLocalZip(zip) }, [zip])
 
@@ -75,11 +76,16 @@ function FeedContent() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       setCurrentUserId(user.id)
-      const { data: profile } = await supabase.from('profiles').select('zip_code, display_name').eq('id', user.id).single()
-      if (!profile ||!profile.zip_code ||!profile.display_name) {
-        router.push('/profile?required=1')
-      } else if (profile.zip_code &&!zip) {
-        setLocalZip(profile.zip_code)
+      // FIXED: uses user_id not id, and gets username + display_name + handles both zip columns
+      const { data: profile } = await supabase.from('profiles').select('*').eq('user_id', user.id).single()
+      if(profile){
+        setCurrentProfile(profile)
+        const zipVal = profile.zip || profile.zip_code
+        if(zipVal) setLocalZip(zipVal)
+        // Only force to profile if REALLY missing everything
+        if(!profile.display_name &&!profile.username){
+          router.push('/profile?required=1')
+        }
       }
     })()
   }, [])
@@ -113,14 +119,20 @@ function FeedContent() {
     return map[cat] || '📌'
   }
 
+  // FIXED: Shows username/display_name instead of YOU or email
   const trustLevel = (p:any) => {
-    if(p.user_id === currentUserId) return { label:'YOU', color:'bg-black text-white' }
+    const displayName = currentProfile?.display_name || (currentProfile?.username? `@${currentProfile.username}` : null)
+    if(p.user_id === currentUserId){
+      return { label: displayName || 'YOU', color:'bg-black text-white' }
+    }
     return { label:`VERIFIED • ${localZip || zip || 'YOUR BLOCK'}`, color:'bg-blue-600 text-white' }
   }
 
+  const authorName = currentProfile?.display_name || (currentProfile?.username? `@${currentProfile.username}` : 'YOUR BLOCK')
+
   return (
     <>
-      <Header />
+      <Header profileName={authorName} />
      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
           <LivePulse />
@@ -137,6 +149,7 @@ function FeedContent() {
           <LocationScopeBar zip={localZip || zip} radius={radius} setRadius={setRadius} />
           <div className="mt-4"><LiveNowStrip /></div>
          <div className="mt-4"><CreatePost onPosted={fetchPosts} /></div>
+         <div className="mt-2 text- text-white/40 px-1">Posting as • {authorName} • {authorName.startsWith('@')? 'Public username' : 'Display name'}</div>
           <div id="faith-posts" className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 transition ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20 hover:bg-white/20'}`}>{f.label}</button>
