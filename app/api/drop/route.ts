@@ -1,55 +1,66 @@
-import { NextRequest, NextResponse } from 'next/server';
-export const dynamic = 'force-dynamic';
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url)
-    const zip = searchParams.get('zip') || ''
-    
-    if (!zip) return NextResponse.json(null, { status: 204 })
+  const { searchParams } = new URL(req.url)
+  const zip = searchParams.get('zip')?.trim()
+  if (!zip) return NextResponse.json({ drop: null })
 
-    let supabase: any = null;
-    try {
-      const { createClient } = await import('@/lib/supabase/server');
-      supabase = await createClient();
-    } catch {
-      return NextResponse.json(null, { status: 204 });
-    }
+  const supabase = createClient()
+  
+  // Get today's drop for this zip - whole earth, any zip works
+  const todayStart = new Date()
+  todayStart.setHours(0,0,0,0)
 
-    // AUTO-MIGRATE - never crash
-    try {
-      // @ts-ignore
-      await supabase.rpc('exec_sql', {
-        sql_query: `alter table businesses add column if not exists current_deal text`
-      });
-    } catch {}
+  let { data: drop } = await supabase
+    .from('drops')
+    .select('*')
+    .eq('zip_code', zip)
+    .gte('starts_at', todayStart.toISOString())
+    .order('is_sponsored', { ascending: false }) // paid first
+    .order('starts_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-    try {
-      const { data: businesses } = await supabase
-       .from('businesses')
-       .select('name, address, category')
-       .eq('zip_code', zip) // GLOBAL FIX: was '95122'
-       .limit(20);
-
-      if (!businesses || businesses.length === 0) {
-        return NextResponse.json(null, { status: 204 });
-      }
-
-      const dayOfYear = Math.floor(Date.now() / 86400000);
-      const todays = businesses[dayOfYear % businesses.length];
-
-      return NextResponse.json({
-        business: todays.name,
-        deal: `Open in ${zip} • ${todays.category || 'Local Spot'}`, // GLOBAL FIX
-        address: todays.address || zip, // GLOBAL FIX
-        zip_code: zip,
-        isSpotlight: true,
-        time: new Date().toISOString()
-      });
-    } catch {
-      return NextResponse.json(null, { status: 204 });
-    }
-  } catch {
-    return NextResponse.json(null, { status: 204 });
+  // If no drop today, show most recent for that block
+  if (!drop) {
+    const res = await supabase
+      .from('drops')
+      .select('*')
+      .eq('zip_code', zip)
+      .order('starts_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    drop = res.data
   }
+
+  return NextResponse.json({ drop })
+}
+
+export async function POST(req: NextRequest) {
+  // Business pays to be tomorrow's drop - global
+  const body = await req.json()
+  const { zip_code, title, description, business_name, claim_url, price_paid } = body
+  if (!zip_code || !title) return NextResponse.json({ error: 'Missing' }, { status: 400 })
+
+  const supabase = createClient()
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  tomorrow.setHours(10,0,0,0) // 10AM local for that block
+
+  const { data, error } = await supabase.from('drops').insert({
+    zip_code: zip_code.trim(),
+    title,
+    description,
+    business_name,
+    claim_url,
+    price_paid: price_paid || 0,
+    is_sponsored: true,
+    type: 'deal',
+    starts_at: tomorrow.toISOString(),
+    ends_at: new Date(tomorrow.getTime() + 24*60*60*1000).toISOString()
+  }).select().single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ drop: data })
 }
