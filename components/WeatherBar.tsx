@@ -14,19 +14,32 @@ export default function WeatherBar({ zip }: { zip: string }) {
         const res = await fetch(`/api/weather?zip=${zip}`, { cache: 'no-store' })
         if (res.ok) {
           const data = await res.json()
-          let t = data?.main?.temp?? data?.temp?? null
+          // AUTOMATIC FIX: reads BOTH your API formats
+          let t = data?.temp ?? data?.main?.temp ?? null
           if (t!== null && t > 150) t = Math.round((t - 273.15) * 9/5 + 32) // Kelvin to F
           if (t!== null) setTemp(Math.round(t))
-          if (data?.weather?.[0]?.description) setDesc(data.weather[0].description)
+          
+          // description: your API returns {description}, OpenWeather returns {weather[0].description}
+          if (data?.description) setDesc(data.description)
+          else if (data?.weather?.[0]?.description) setDesc(data.weather[0].description)
           else if (data?.weather?.[0]?.main) setDesc(data.weather[0].main)
-          if (data?.name) setCity(data.name)
-          else if (data?.city) setCity(data.city)
+          else setDesc('')
+
+          // city: your API returns {city}, OpenWeather returns {name}
+          if (data?.city) setCity(data.city)
+          else if (data?.name) setCity(data.name)
+          else setCity(zip)
         }
       } catch {
         setDesc('')
       }
     }
-    if (zip) load()
+    if (zip) {
+      load()
+      // AUTOMATIC: auto-refresh every 5 minutes, no manual
+      const interval = setInterval(load, 300000)
+      return () => clearInterval(interval)
+    }
   }, [zip])
 
   return (
