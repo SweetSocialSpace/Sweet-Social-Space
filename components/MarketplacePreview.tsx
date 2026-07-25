@@ -10,17 +10,26 @@ type Item = {
   address?: string;
   sale_date?: string;
   sale_time?: string;
+  status?: string;
 }
 
 export function MarketplacePreview(){
   const { zip } = useLocation()
   const [items, setItems] = useState<Item[]>([])
+
   useEffect(()=>{
     if (!zip) return
     const supabase = createClient()
     let mounted = true
     const load = async()=>{
-      const {data} = await supabase.from('marketplace').select('id,title,price,address,sale_date,sale_time').eq('zip_code', zip).order('created_at',{ascending:false}).limit(10)
+      // ONLY show active listings - deleted/sold won't show
+      const {data} = await supabase
+       .from('marketplace')
+       .select('id,title,price,address,sale_date,sale_time,status')
+       .eq('zip_code', zip)
+       .eq('status', 'active')
+       .order('created_at',{ascending:false})
+       .limit(10)
       if(mounted && data) setItems(data as any)
     }
     load()
