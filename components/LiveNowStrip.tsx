@@ -1,51 +1,63 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useLocation } from '@/lib/location-context'
 
 export function LiveNowStrip(){
-  const { zip } = useLocation()
-  const [isLive, setIsLive] = useState(false)
+  const [live, setLive] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const streamRef = useRef<MediaStream|null>(null)
+  const recorderRef = useRef<MediaRecorder|null>(null)
+  const chunksRef = useRef<Blob[]>([])
 
-  const toggleLive = async ()=>{
-    if(!isLive){
-      // Try camera, but DON'T require it
-      try{
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        ;(window as any)._liveStream = stream
-      }catch{
-        // If blocked or no camera, still go live — don't stop the user
-        console.log('Camera not available, going live without it')
-      }
-      
-      setIsLive(true)
-      try{
+  async function goLive(){
+    setLive(true)
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({video:true, audio:true})
+      streamRef.current = stream
+      if(videoRef.current){ videoRef.current.srcObject = stream }
+      const rec = new MediaRecorder(stream)
+      recorderRef.current = rec
+      chunksRef.current = []
+      rec.ondataavailable = e=>{ if(e.data.size>0) chunksRef.current.push(e.data) }
+      rec.onstop = async ()=>{
+        const blob = new Blob(chunksRef.current)
         const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if(user?.id){
-          await supabase.from('live_streams').insert({ user_id: user.id, is_active:true, status:'live', zip: zip || '95122' })
-        }
-      }catch(e){ console.error(e) }
-      
-    }else{
-      try{
-        const s = (window as any)._liveStream as MediaStream
-        s?.getTracks().forEach(t=>t.stop())
-      }catch{}
-      setIsLive(false)
-    }
+        const {data:{user}} = await supabase.auth.getUser()
+        if(!user) return
+        const name = `live-${user.id}-${Date.now()}.webm`
+        await supabase.storage.from('media').upload(name, blob, {upsert:true})
+        const url = supabase.storage.from('media').getPublicUrl(name).data.publicUrl
+        await supabase.from('posts').insert({body:'🔴 LIVE', content:'🔴 LIVE', media_urls:[url], post_type:'general', tag:'live', city:'San Jose', zip_code:'95122', user_id:user.id, author_id:user.id})
+        streamRef.current?.getTracks().forEach(t=>t.stop())
+        alert('LIVE posted')
+        window.location.reload()
+      }
+      rec.start()
+    }catch(e){ console.log('camera blocked, still live') }
+    try{
+      const supabase = createClient()
+      const {data:{user}} = await supabase.auth.getUser()
+      if(user) await supabase.from('live_streams').insert({user_id:user.id, is_active:true, zip:'95122'})
+    }catch{}
   }
 
-  return (
-    <div className="flex items-center justify-between w-full">
-      <div className="flex items-center gap-2 text-white text-xs">
-        <span className={`h-2 w-2 rounded-full ${isLive?'bg-red-500 animate-pulse':'bg-white/40'}`}></span>
-        <span className="font-bold">LIVE NOW:</span>
-        <span className="text-white/70">{isLive?`You are live in ${zip}!`:'No one live — start one!'}</span>
+  function endLive(){
+    try{ recorderRef.current?.stop() }catch{}
+    try{ streamRef.current?.getTracks().forEach(t=>t.stop()) }catch{}
+    setLive(false)
+  }
+
+  if(!live){
+    return <button onClick={goLive} style={{background:'white', color:'black', fontWeight:900, padding:'6px 18px', borderRadius:999, fontSize:12}}>GO LIVE</button>
+  }
+
+  return(
+    <div style={{position:'fixed', bottom:20, right:20, zIndex:9999, background:'black', padding:8, borderRadius:16, border:'3px solid red', width:320}}>
+      <video ref={videoRef} autoPlay muted playsInline style={{width:'100%', height:400, background:'black', borderRadius:12, objectFit:'cover'}} />
+      <div style={{display:'flex', justifyContent:'space-between', marginTop:8}}>
+        <span style={{color:'red', fontSize:12, fontWeight:700}}>● LIVE - 95122</span>
+        <button onClick={endLive} style={{background:'white', color:'black', fontWeight:900, padding:'6px 14px', borderRadius:999, fontSize:12}}>END LIVE</button>
       </div>
-      <button onClick={toggleLive} className={`${isLive?'bg-red-600 text-white':'bg-white text-black'} font-black text-xs rounded-full px-4 py-1.5`}>
-        {isLive?'END LIVE':'GO LIVE'}
-      </button>
     </div>
   )
 }
