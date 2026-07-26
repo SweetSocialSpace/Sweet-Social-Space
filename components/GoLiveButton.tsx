@@ -4,68 +4,95 @@ import { createClient } from '@/lib/supabase/client'
 
 export default function GoLiveButton() {
   const [recording, setRecording] = useState(false)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
+  const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
-  const videoPreviewRef = useRef<HTMLVideoElement>(null)
+  const recorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
 
-  async function startGoLive() {
+  async function startLive() {
     try {
-      // GLOBAL: any camera, any phone, any computer
+      // GLOBAL - any camera, any device
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       streamRef.current = stream
-      if (videoPreviewRef.current) videoPreviewRef.current.srcObject = stream
+
+      // THIS IS THE BOX YOU WERE MISSING - show what camera sees
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        await videoRef.current.play()
+      }
+
       const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' })
-      mediaRecorderRef.current = recorder
+      recorderRef.current = recorder
       chunksRef.current = []
-      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
       recorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: 'video/webm' })
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
-        if (!user) { alert('Not logged in'); return }
-        const filename = `live-${user.id}-${Date.now()}.webm`
-        let publicUrl = ''
-        const { error } = await supabase.storage.from('media').upload(filename, blob, { contentType: 'video/webm', upsert: true })
+        if (!user) return
+        const name = `live-${user.id}-${Date.now()}.webm`
+        const { error } = await supabase.storage.from('media').upload(name, blob, { contentType: 'video/webm', upsert: true })
+        const url = error
+         ? supabase.storage.from('posts').getPublicUrl(name).data.publicUrl
+          : supabase.storage.from('media').getPublicUrl(name).data.publicUrl
+
+        // If media upload failed, try posts bucket
         if (error) {
-          await supabase.storage.from('posts').upload(filename, blob, { contentType: 'video/webm', upsert: true })
-          publicUrl = supabase.storage.from('posts').getPublicUrl(filename).data.publicUrl
-        } else {
-          publicUrl = supabase.storage.from('media').getPublicUrl(filename).data.publicUrl
+          await supabase.storage.from('posts').upload(name, blob, { contentType: 'video/webm', upsert: true })
         }
+
         await supabase.from('posts').insert({
-          body: '🔴 LIVE from the block', content: '🔴 LIVE from the block',
-          media_urls: [publicUrl], post_type: 'general', tag: 'live',
-          city: 'San Jose', zip_code: '95122', user_id: user.id, author_id: user.id
+          body: '🔴 LIVE from the block',
+          content: '🔴 LIVE from the block',
+          media_urls: [url],
+          post_type: 'general',
+          tag: 'live',
+          city: 'San Jose',
+          zip_code: '95122',
+          user_id: user.id,
+          author_id: user.id
         })
-        if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop())
-        alert('✅ LIVE posted!')
+        streamRef.current?.getTracks().forEach(t => t.stop())
+        setRecording(false)
+        alert('✅ LIVE posted to 95122!')
         window.location.reload()
       }
       recorder.start(100)
       setRecording(true)
     } catch (err: any) {
-      let msg = 'Camera blocked. Click lock icon in address bar -> Allow camera/mic -> Reload.'
-      if(err?.name === 'NotFoundError') msg = 'No camera on this device.'
-      alert(msg)
+      alert(`No camera: ${err?.message}. Click lock icon by URL -> Camera Allow -> Reload`)
     }
   }
 
-  function stopGoLive() { mediaRecorderRef.current?.stop(); setRecording(false) }
+  function stopLive() {
+    recorderRef.current?.stop()
+  }
 
+  // NOT RECORDING - just show button
+  if (!recording) {
+    return (
+      <button onClick={startLive} className="bg-red-600 text-white font-black px-5 py-2 rounded-full text-sm">
+        GO LIVE
+      </button>
+    )
+  }
+
+  // RECORDING - show the video box you asked for
   return (
-    <div className="flex flex-col items-center gap-1">
-      {!recording? (
-        <button onClick={startGoLive} className="bg-red-600 hover:bg-red-700 text-white font-black px-5 py-2 rounded-full flex items-center gap-2 text-sm shadow-lg">
-          <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>GO LIVE
+    <div className="fixed bottom-5 right-5 z-[9999] bg-black rounded-2xl p-2 shadow-2xl border-2 border-red-600 w-">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className="w-full h- rounded-xl object-cover bg-black"
+      />
+      <div className="flex justify-between items-center mt-2 px-2">
+        <span className="text-red-500 text-xs font-bold animate-pulse">● REC - You are LIVE</span>
+        <button onClick={stopLive} className="bg-white text-black font-black px-4 py-1.5 rounded-full text-xs">
+          STOP & POST
         </button>
-      ) : (
-        <>
-          <video ref={videoPreviewRef} autoPlay muted playsInline className="w-48 rounded-lg bg-black aspect-[9/16] object-cover" />
-          <button onClick={stopGoLive} className="bg-black text-white font-black px-4 py-2 rounded-full text-xs">■ STOP & POST</button>
-          <p className="text-red-500 animate-pulse text-xs">● RECORDING</p>
-        </>
-      )}
+      </div>
     </div>
   )
 }
