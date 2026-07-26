@@ -11,14 +11,10 @@ export default function GoLiveButton() {
 
   async function startGoLive() {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
-        audio: true
-      })
+      // GLOBAL: any camera, any phone, any computer
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       streamRef.current = stream
-      if (videoPreviewRef.current) {
-        videoPreviewRef.current.srcObject = stream
-      }
+      if (videoPreviewRef.current) videoPreviewRef.current.srcObject = stream
       const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' })
       mediaRecorderRef.current = recorder
       chunksRef.current = []
@@ -38,31 +34,24 @@ export default function GoLiveButton() {
           publicUrl = supabase.storage.from('media').getPublicUrl(filename).data.publicUrl
         }
         await supabase.from('posts').insert({
-          body: '🔴 LIVE from the block',
-          content: '🔴 LIVE from the block',
-          media_urls: [publicUrl],
-          post_type: 'general',
-          tag: 'live',
-          city: 'San Jose',
-          zip_code: '95122',
-          user_id: user.id,
-          author_id: user.id
+          body: '🔴 LIVE from the block', content: '🔴 LIVE from the block',
+          media_urls: [publicUrl], post_type: 'general', tag: 'live',
+          city: 'San Jose', zip_code: '95122', user_id: user.id, author_id: user.id
         })
         if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop())
-        alert('✅ LIVE posted to 95122!')
+        alert('✅ LIVE posted!')
         window.location.reload()
       }
       recorder.start(100)
       setRecording(true)
     } catch (err: any) {
-      alert(`Camera failed: ${err.message}. Allow camera/mic and try again.`)
+      let msg = 'Camera blocked. Click lock icon in address bar -> Allow camera/mic -> Reload.'
+      if(err?.name === 'NotFoundError') msg = 'No camera on this device.'
+      alert(msg)
     }
   }
 
-  function stopGoLive() {
-    mediaRecorderRef.current?.stop()
-    setRecording(false)
-  }
+  function stopGoLive() { mediaRecorderRef.current?.stop(); setRecording(false) }
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -74,7 +63,7 @@ export default function GoLiveButton() {
         <>
           <video ref={videoPreviewRef} autoPlay muted playsInline className="w-48 rounded-lg bg-black aspect-[9/16] object-cover" />
           <button onClick={stopGoLive} className="bg-black text-white font-black px-4 py-2 rounded-full text-xs">■ STOP & POST</button>
-          <p className="text- text-red-500 animate-pulse">● RECORDING</p>
+          <p className="text-red-500 animate-pulse text-xs">● RECORDING</p>
         </>
       )}
     </div>
