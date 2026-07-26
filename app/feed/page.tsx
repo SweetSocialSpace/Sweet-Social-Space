@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
+import PermissionsGate from '@/components/PermissionsGate'
 import Header from '@/app/components/Header'
 import FaithOfTheDay from '@/components/FaithOfTheDay'
 import { TrustMeter } from '@/components/trust-meter/TrustMeter'
@@ -146,6 +147,7 @@ function FeedContent() {
 
   return (
     <>
+      <PermissionsGate />
       <Header />
      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
