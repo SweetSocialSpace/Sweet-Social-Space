@@ -1,6 +1,8 @@
 'use client'
 import { useState, useRef } from 'react'
-import { createClient } from '@/lib/supabase/client'
+impimport LiveNowStrip from './LiveNowStrip'
+export default function GoLiveButton(){ return <LiveNowStrip /> }ort { createClient } from '@/lib/supabase/client'
+
 
 export default function GoLiveButton() {
   const [recording, setRecording] = useState(false)
