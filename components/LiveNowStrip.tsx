@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
 
@@ -10,23 +10,40 @@ export function LiveNowStrip(){
   const toggleLive = async ()=>{
     if(!isLive){
       try{
-        const s = await navigator.mediaDevices.getUserMedia({video:true,audio:true})
+        // Use back camera by default like GoLiveButton
+        const s = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: true
+        })
         ;(window as any)._liveStream = s
         setIsLive(true)
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
-        // GLOBAL FIX: use real user zip, not hardcoded 95122
-        const liveZip = zip || user?.user_metadata?.zip_code || ''
+        const liveZip = zip || user?.user_metadata?.zip_code || '95122'
         if (!liveZip) {
           alert('Please set your zip code in profile first')
           return
         }
-        await supabase.from('live_streams').insert({ user_id: user?.id, is_active:true, status:'live', zip: liveZip })
-      }catch{ alert('Need camera/mic permission') }
+        await supabase.from('live_streams').insert({ 
+          user_id: user?.id, 
+          is_active: true, 
+          status: 'live', 
+          zip: liveZip 
+        })
+      }catch(err: any){
+        // Show REAL error, not fake permission error
+        alert(`Camera failed: ${err?.message || err}. Check Settings -> Safari -> Camera = Allow`)
+        console.error(err)
+      }
     }else{
       const s = (window as any)._liveStream as MediaStream
       s?.getTracks().forEach(t=>t.stop())
       setIsLive(false)
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if(user?.id){
+        await supabase.from('live_streams').update({ is_active: false }).eq('user_id', user.id)
+      }
     }
   }
 
