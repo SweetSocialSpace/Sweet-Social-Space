@@ -5,12 +5,11 @@ import { createClient } from '@/lib/supabase/client'
 export function LiveNowStrip(){
   const [live, setLive] = useState(false)
   const [stream, setStream] = useState<MediaStream|null>(null)
-  const [status, setStatus] = useState<string>('')
+  const [status, setStatus] = useState('')
   const videoRef = useRef<HTMLVideoElement>(null)
   const recorderRef = useRef<MediaRecorder|null>(null)
   const chunksRef = useRef<Blob[]>([])
 
-  // attach camera to video AFTER box is rendered
   useEffect(()=>{
     if(live && stream && videoRef.current){
       videoRef.current.srcObject = stream
@@ -18,69 +17,112 @@ export function LiveNowStrip(){
     }
   },[live, stream])
 
-  // cleanup on unmount
   useEffect(()=>{
-    return ()=>{
-      stream?.getTracks().forEach(t=>t.stop())
-    }
+    return ()=>{ try{ stream?.getTracks().forEach(t=>t.stop()) }catch{} }
   },[stream])
 
   async function goLive(){
-    setStatus('Asking for camera...')
+    setStatus('Starting...')
+    const supabase = createClient()
+
+    // GLOBAL: Get user's actual location, not 95122
+    let zip = '95122'
+    let city = 'San Jose'
     try{
-      // Check if browser even supports it
-      if(!navigator.mediaDevices ||!navigator.mediaDevices.getUserMedia){
-        alert('This browser does not support live camera. Please use Chrome, Safari, or Edge on HTTPS.')
+      const pos = await new Promise<GeolocationPosition>((res, rej)=>
+        navigator.geolocation.getCurrentPosition(res, rej, {timeout: 5000})
+      )
+      // You can reverse geocode pos.coords here later for true global zip
+      zip = 'live'
+      city = 'Live'
+    }catch{}
+
+    try{
+      // GLOBAL FIX 1: Check secure context without shaming browser name
+      if(typeof window!== 'undefined' &&!window.isSecureContext){
+        setStatus('')
+        alert('Go Live needs a secure connection. Please open https://sweetsocialspace.com')
         return
       }
 
-      // 1. THIS is what triggers the real browser popup globally
-      // We ask for video + audio directly in the click handler
-      const s = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: true
-      })
+      // GLOBAL FIX 2: Try best quality, but allow ANY camera - old phones, low-end devices
+      let s: MediaStream
+      try{
+        s = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: true
+        })
+      } catch {
+        // If 720p fails (old phone), try anything
+        try{
+          s = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        } catch {
+          // If video fails, go audio-only so they can still be LIVE
+          s = await navigator.mediaDevices.getUserMedia({ audio: true })
+        }
+      }
 
       setStream(s)
       setLive(true)
-      setStatus('')
+      setStatus('● LIVE')
 
-      const rec = new MediaRecorder(s)
-      recorderRef.current = rec
-      chunksRef.current = []
-      rec.ondataavailable = e=>{ if(e.data.size>0) chunksRef.current.push(e.data) }
-      rec.onstop = async ()=>{
-        const blob = new Blob(chunksRef.current, { type: 'video/webm' })
-        const supabase = createClient()
-        const {data:{user}} = await supabase.auth.getUser()
-        if(user){
-          const name = `live-${user.id}-${Date.now()}.webm`
-          await supabase.storage.from('media').upload(name, blob, {upsert:true})
-          const url = supabase.storage.from('media').getPublicUrl(name).data.publicUrl
-          await supabase.from('posts').insert({body:'🔴 LIVE', content:'🔴 LIVE', media_urls:[url], post_type:'general', tag:'live', city:'San Jose', zip_code:'95122', user_id:user.id, author_id:user.id})
+      // GLOBAL FIX 3: Pick recorder format that device actually supports
+      // iPhone Safari = mp4, Android/Chrome = webm, Firefox = ogg
+      let mimeType = 'video/webm'
+      if(MediaRecorder.isTypeSupported('video/mp4')) mimeType = 'video/mp4'
+      else if(MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) mimeType = 'video/webm;codecs=vp9'
+      else if(MediaRecorder.isTypeSupported('video/webm')) mimeType = 'video/webm'
+
+      try{
+        const rec = new MediaRecorder(s, { mimeType } as any)
+        recorderRef.current = rec
+        chunksRef.current = []
+        rec.ondataavailable = e=>{ if(e.data.size>0) chunksRef.current.push(e.data) }
+        rec.onstop = async ()=>{
+          if(chunksRef.current.length === 0) return
+          const blob = new Blob(chunksRef.current, { type: mimeType })
+          const {data:{user}} = await supabase.auth.getUser()
+          if(user){
+            const ext = mimeType.includes('mp4')? 'mp4' : 'webm'
+            const name = `live-${user.id}-${Date.now()}.${ext}`
+            await supabase.storage.from('media').upload(name, blob, {upsert:true})
+            const url = supabase.storage.from('media').getPublicUrl(name).data.publicUrl
+            await supabase.from('posts').insert({
+              body:'🔴 LIVE', content:'🔴 LIVE',
+              media_urls:[url], post_type:'general', tag:'live',
+              city, zip_code: zip,
+              user_id:user.id, author_id:user.id
+            })
+          }
+          s.getTracks().forEach(t=>t.stop())
         }
-        s.getTracks().forEach(t=>t.stop())
-        window.location.reload()
+        rec.start(1000)
+      }catch{
+        // If recorder fails, still show them LIVE without recording - don't crash
+        console.log('Recorder not supported, live preview only')
       }
-      rec.start()
 
-      const supabase = createClient()
-      const {data:{user}} = await supabase.auth.getUser()
-      if(user) await supabase.from('live_streams').insert({user_id:user.id, is_active:true, zip:'95122'})
+      try{
+        const {data:{user}} = await supabase.auth.getUser()
+        if(user) await supabase.from('live_streams').insert({user_id:user.id, is_active:true, zip_code: zip, zip: zip})
+      }catch{}
 
     }catch(err:any){
       console.error("GO LIVE ERROR:", err)
       const name = err?.name || ''
 
-      if(name === 'NotAllowedError' || name === 'PermissionDeniedError'){
-        // User REALLY blocked it
-        alert('Camera permission was denied.\n\nClick the 🔒 lock icon left of the URL -> Camera -> Allow -> then reload page and click GO LIVE again.\n\nIf you have multiple tabs of Sweet Social Space open, close them first.')
-      } else if(name === 'NotFoundError' || name === 'DevicesNotFoundError'){
-        alert('No camera or microphone found. Please plug in a camera or use a phone/computer with a camera.')
-      } else if(name === 'NotReadableError' || name === 'TrackStartError'){
-        alert('Camera is in use by another app or another tab. Please close other tabs that use the camera (Zoom, Teams, etc.) and try again.')
+      // GLOBAL MESSAGES - No browser names, no "plug in a camera"
+      if(name === 'NotAllowedError'){
+        alert('Live was blocked.\n\nTap the 🔒 lock icon near the address bar -> Allow Camera & Microphone -> Reload -> Tap GO LIVE again.\n\nClose other apps using camera like Zoom or WhatsApp Video.')
+      } else if(name === 'NotFoundError'){
+        // GLOBAL: Don't block them, let them post audio or text
+        alert('We could not find your camera. You can still post to your block - try again and we will connect your microphone.')
+      } else if(name === 'NotReadableError'){
+        alert('Your camera is busy in another app or tab. Close other video apps and try GO LIVE again.')
       } else {
-        alert('Could not start camera: ' + (err.message || name) + '\n\nTry reloading the page and clicking GO LIVE again.')
+        // GLOBAL FALLBACK: Never tell them their browser is wrong
+        setStatus('')
+        alert('Could not start Live right now. You can still post a video to your block - tap Post instead.')
       }
       setStatus('')
     }
@@ -102,7 +144,7 @@ export function LiveNowStrip(){
     <div style={{position:'fixed', bottom:20, right:20, zIndex:9999, background:'black', padding:8, borderRadius:16, border:'3px solid red', width:320}}>
       <video ref={videoRef} autoPlay muted playsInline style={{width:'100%', height:400, background:'black', borderRadius:12, objectFit:'cover'}} />
       <div style={{display:'flex', justifyContent:'space-between', marginTop:8, alignItems:'center'}}>
-        <span style={{color:'red', fontSize:12, fontWeight:700}}>● LIVE - 95122 {status? `- ${status}` : ''}</span>
+        <span style={{color:'red', fontSize:12, fontWeight:700}}>{status || '● LIVE'}</span>
         <button onClick={endLive} style={{background:'white', color:'black', fontWeight:900, padding:'6px 14px', borderRadius:999, fontSize:12}}>END LIVE</button>
       </div>
     </div>
