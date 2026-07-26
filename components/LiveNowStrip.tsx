@@ -29,11 +29,10 @@ export function LiveNowStrip(){
         const url = supabase.storage.from('media').getPublicUrl(name).data.publicUrl
         await supabase.from('posts').insert({body:'🔴 LIVE', content:'🔴 LIVE', media_urls:[url], post_type:'general', tag:'live', city:'San Jose', zip_code:'95122', user_id:user.id, author_id:user.id})
         streamRef.current?.getTracks().forEach(t=>t.stop())
-        alert('LIVE posted')
         window.location.reload()
       }
       rec.start()
-    }catch(e){ console.log('camera blocked, still live') }
+    }catch{}
     try{
       const supabase = createClient()
       const {data:{user}} = await supabase.auth.getUser()
