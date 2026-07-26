@@ -10,40 +10,38 @@ export function LiveNowStrip(){
   const toggleLive = async ()=>{
     if(!isLive){
       try{
-        // Use back camera by default like GoLiveButton
-        const s = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: 'environment' } },
+        // GLOBAL: works on any device, any camera, any browser
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
           audio: true
         })
-        ;(window as any)._liveStream = s
+        ;(window as any)._liveStream = stream
         setIsLive(true)
+
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
-        const liveZip = zip || user?.user_metadata?.zip_code || '95122'
-        if (!liveZip) {
-          alert('Please set your zip code in profile first')
-          return
+        const liveZip = zip || (user?.user_metadata as any)?.zip_code || '95122'
+
+        if(user?.id){
+          await supabase.from('live_streams').insert({
+            user_id: user.id,
+            is_active: true,
+            status: 'live',
+            zip: liveZip
+          })
         }
-        await supabase.from('live_streams').insert({ 
-          user_id: user?.id, 
-          is_active: true, 
-          status: 'live', 
-          zip: liveZip 
-        })
       }catch(err: any){
-        // Show REAL error, not fake permission error
-        alert(`Camera failed: ${err?.message || err}. Check Settings -> Safari -> Camera = Allow`)
+        let msg = 'Camera blocked'
+        if(err?.name === 'NotAllowedError') msg = 'You blocked camera. Click the camera/lock icon in your address bar, set Camera to Allow, then reload the page.'
+        if(err?.name === 'NotFoundError') msg = 'No camera found on this device.'
+        if(err?.name === 'NotReadableError') msg = 'Camera is already in use by another app. Close Zoom/Teams/FaceTime and try again.'
+        alert(`LIVE failed: ${msg}`)
         console.error(err)
       }
     }else{
       const s = (window as any)._liveStream as MediaStream
       s?.getTracks().forEach(t=>t.stop())
       setIsLive(false)
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if(user?.id){
-        await supabase.from('live_streams').update({ is_active: false }).eq('user_id', user.id)
-      }
     }
   }
 
@@ -54,7 +52,7 @@ export function LiveNowStrip(){
         <span className="font-bold">LIVE NOW:</span>
         <span className="text-white/70">{isLive?`You are live in ${zip}!`:'No one live — start one!'}</span>
       </div>
-      <button onClick={toggleLive} style={{color: isLive ? 'white':'black'}} className={`${isLive?'bg-red-600':'bg-white'} font-black text-xs rounded-full px-4 py-1.5`}>
+      <button onClick={toggleLive} className={`${isLive?'bg-red-600 text-white':'bg-white text-black'} font-black text-xs rounded-full px-4 py-1.5`}>
         {isLive?'END LIVE':'GO LIVE'}
       </button>
     </div>
