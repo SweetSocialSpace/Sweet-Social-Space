@@ -9,38 +9,29 @@ export function LiveNowStrip(){
 
   const toggleLive = async ()=>{
     if(!isLive){
+      // Try camera, but DON'T require it
       try{
-        // GLOBAL: works on any device, any camera, any browser
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        })
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         ;(window as any)._liveStream = stream
-        setIsLive(true)
-
+      }catch{
+        // If blocked or no camera, still go live — don't stop the user
+        console.log('Camera not available, going live without it')
+      }
+      
+      setIsLive(true)
+      try{
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
-        const liveZip = zip || (user?.user_metadata as any)?.zip_code || '95122'
-
         if(user?.id){
-          await supabase.from('live_streams').insert({
-            user_id: user.id,
-            is_active: true,
-            status: 'live',
-            zip: liveZip
-          })
+          await supabase.from('live_streams').insert({ user_id: user.id, is_active:true, status:'live', zip: zip || '95122' })
         }
-      }catch(err: any){
-        let msg = 'Camera blocked'
-        if(err?.name === 'NotAllowedError') msg = 'You blocked camera. Click the camera/lock icon in your address bar, set Camera to Allow, then reload the page.'
-        if(err?.name === 'NotFoundError') msg = 'No camera found on this device.'
-        if(err?.name === 'NotReadableError') msg = 'Camera is already in use by another app. Close Zoom/Teams/FaceTime and try again.'
-        alert(`LIVE failed: ${msg}`)
-        console.error(err)
-      }
+      }catch(e){ console.error(e) }
+      
     }else{
-      const s = (window as any)._liveStream as MediaStream
-      s?.getTracks().forEach(t=>t.stop())
+      try{
+        const s = (window as any)._liveStream as MediaStream
+        s?.getTracks().forEach(t=>t.stop())
+      }catch{}
       setIsLive(false)
     }
   }
