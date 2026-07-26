@@ -18,7 +18,7 @@ export default function GoLiveButton() {
         await videoRef.current.play()
       }
       let mime = 'video/webm'
-      if (!MediaRecorder.isTypeSupported(mime)) mime = 'video/mp4'
+      if (typeof MediaRecorder !== 'undefined' && !MediaRecorder.isTypeSupported(mime)) mime = 'video/mp4'
       const recorder = new MediaRecorder(stream, { mimeType: mime })
       recorderRef.current = recorder
       chunksRef.current = []
@@ -28,7 +28,8 @@ export default function GoLiveButton() {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
-        const name = `live-${user.id}-${Date.now()}.${mime.includes('mp4')? 'mp4' : 'webm'}`
+        const ext = mime.includes('mp4') ? 'mp4' : 'webm'
+        const name = `live-${user.id}-${Date.now()}.${ext}`
         await supabase.storage.from('media').upload(name, blob, { contentType: mime, upsert: true })
         const url = supabase.storage.from('media').getPublicUrl(name).data.publicUrl
         await supabase.from('posts').insert({
@@ -44,7 +45,7 @@ export default function GoLiveButton() {
       recorder.start(100)
       setRecording(true)
     } catch (err: any) {
-      alert(`No camera: ${err?.message}. Click lock icon by URL -> Camera Allow -> Reload`)
+      alert(`No camera: ${err?.message}`)
     }
   }
 
@@ -55,11 +56,11 @@ export default function GoLiveButton() {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-[9999] bg-black rounded-2xl p-2 shadow-2xl border-2 border-red-600 w-">
-      <video ref={videoRef} autoPlay muted playsInline className="w-full h- rounded-xl object-cover bg-black" />
-      <div className="flex justify-between items-center mt-2 px-2">
-        <span className="text-red-500 text-xs font-bold animate-pulse">● REC - You are LIVE</span>
-        <button onClick={stopLive} className="bg-white text-black font-black px-4 py-1.5 rounded-full text-xs">STOP & POST</button>
+    <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999, background: 'black', borderRadius: '16px', padding: '8px', border: '3px solid red', width: '320px' }}>
+      <video ref={videoRef} autoPlay muted playsInline style={{ width: '100%', height: '420px', borderRadius: '12px', objectFit: 'cover', background: 'black' }} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', padding: '0 8px' }}>
+        <span style={{ color: 'red', fontSize: '12px', fontWeight: 'bold' }}>● REC - You are LIVE</span>
+        <button onClick={stopLive} style={{ background: 'white', color: 'black', fontWeight: 900, padding: '6px 16px', borderRadius: '999px', fontSize: '12px' }}>STOP & POST</button>
       </div>
     </div>
   )
