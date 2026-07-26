@@ -1,60 +1,59 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function PermissionsGate(){
-  const [done, setDone] = useState(false)
+  const [show, setShow] = useState(false)
   const [status, setStatus] = useState('')
 
-  if(typeof window!== 'undefined' && localStorage.getItem('sss_v4')) return null
-  if(done) return null
+  useEffect(()=>{
+    // FIX: Don't read localStorage during render - wait for client
+    // Also, if browser already blocked us, clear the old flag so we ask again
+    const alreadyEnabled = localStorage.getItem('sss_v4') === '1'
+    const permBlocked = document.cookie.includes('camera=()') // safety
+    if(!alreadyEnabled){
+      setShow(true)
+    }
+  },[])
+
+  if(!show) return null
 
   async function enableAll(){
     try{
       setStatus('Asking for camera + mic...')
-
-      // FIX: Ask for BOTH at once in ONE popup - this is what makes it global
-      // This makes Chrome show: "sweetsocialspace.com wants to use your camera and microphone [Allow]"
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user' },
         audio: true
       })
-
-      // Success - we got both, now stop them so GO LIVE can use them
       stream.getTracks().forEach(t=>t.stop())
-      setStatus('Camera + Mic allowed! Now asking location...')
+      setStatus('Got it! Checking location...')
 
-      // 2. Location - ask after camera/mic
       try{
-        await new Promise((res, rej)=> {
-          navigator.geolocation.getCurrentPosition(res, rej)
-        })
-      }catch(e){
-        console.log('Location denied, continuing anyway', e)
-      }
+        await new Promise((res, rej)=> navigator.geolocation.getCurrentPosition(res, rej, {timeout: 5000}))
+      }catch{}
 
-      // Only save that we are done IF camera+mic worked
       localStorage.setItem('sss_v4','1')
-      setDone(true)
+      setShow(false)
       window.location.reload()
 
     }catch(err:any){
       console.error('PermissionsGate error', err)
-      const name = err?.name || ''
-
-      if(name === 'NotAllowedError'){
-        alert('You clicked Block or Dismiss.\n\nTo fix: Click the 🔒 lock icon left of the URL -> Reset permissions -> Reload -> Click ENABLE again -> Click Allow on the popup.')
-      } else if(name === 'NotFoundError'){
-        alert('No camera found. If you are on a desktop without camera, click ENABLE again to allow mic + location, or use your phone.')
-        // Still allow them to continue with mic only if no camera
+      if(err.name === 'NotAllowedError'){
+        // FIX: Clear the flag so we can ask again next reload
+        localStorage.removeItem('sss_v4')
+        alert('You clicked Block or Dismiss.\n\nTo fix:\n1. Click the 🔒 lock icon left of URL -> Reset permissions\n2. Reload\n3. Click ENABLE again -> Click Allow on the TOP popup (not this box)')
+      } else if(err.name === 'NotFoundError'){
+        alert('No camera found. Trying mic only so you can still use the block.')
         try{
           const micOnly = await navigator.mediaDevices.getUserMedia({audio:true})
           micOnly.getTracks().forEach(t=>t.stop())
           localStorage.setItem('sss_v4','1')
-          setDone(true)
+          setShow(false)
           window.location.reload()
         }catch{}
+      } else if(err.name === 'NotReadableError'){
+        alert('Camera is in use by another app (Zoom, Teams, FaceTime). Close those apps/tabs and click ENABLE again.')
       } else {
-        alert('Could not start camera/mic: ' + (err.message || name) + '. Close other tabs using camera (Zoom, Meet) and try again.')
+        alert('Could not start: ' + err.message)
       }
       setStatus('')
     }
