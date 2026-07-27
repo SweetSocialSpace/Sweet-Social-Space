@@ -106,7 +106,7 @@ function FeedContent() {
           <div className="mt-4"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
           <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName}</div>
-          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1 scrollbar-none">
+          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
             ))}
@@ -134,6 +134,7 @@ function FeedContent() {
           <Safe loader={() => import('@/components/UpcomingEvents')} name="UpcomingEvents" />
           <Safe loader={() => import('@/components/VerifiedSources')} name="VerifiedSources" />
         </div>
+      </div>
       <Safe loader={() => import('@/components/GoLive')} name="GoLive" />
     </>
   )
