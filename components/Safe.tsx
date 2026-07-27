@@ -5,10 +5,9 @@ import { useMemo } from 'react'
 
 const MAP: Record<string, any> = {
   WeatherBar: () => import('./WeatherBar').then(m => m.default).catch(() => ({ default: () => null })),
-  WhatsHappeningNearYou: () => import('./WhatsHappeningNearYou').then(m => m.default || m.WhatsHappeningNearYou).catch(() => ({ default: () => null })),
-  VerifiedSources: () => import('./VerifiedSources').then(m => m.default || m.VerifiedSources).catch(() => ({ default: () => null })),
-  UpcomingEvents: () => import('./UpcomingEvents').then(m => m.default || m.UpcomingEvents).catch(() => ({ default: () => null })),
-  CommunityAlerts: () => import('./CommunityAlerts').then(m => m.default || m.CommunityAlerts).catch(() => ({ default: () => null })),
+  WhatsHappeningNearYou: () => import('./WhatsHappeningNearYou').then(m => (m.default || m.WhatsHappeningNearYou) as any).catch(() => ({ default: () => null })),
+  VerifiedSources: () => import('./VerifiedSources').then(m => (m.default || m.VerifiedSources) as any).catch(() => ({ default: () => null })),
+  UpcomingEvents: () => import('./UpcomingEvents').then(m => (m.default || m.UpcomingEvents) as any).catch(() => ({ default: () => null })),
 }
 
 export function Safe({name}:{name:string}){
