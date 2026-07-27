@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
@@ -7,7 +8,6 @@ export async function GET(req: Request) {
     const zip = searchParams.get('zip');
     if (!zip) return NextResponse.json({ error: 'ZIP required' }, { status: 400 });
     
-    const { createClient } = await import('@/utils/supabase/server');
     const supabase = createClient();
     
     const { count: online } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('zip_code', zip);
