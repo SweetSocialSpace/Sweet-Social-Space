@@ -16,26 +16,7 @@ const CATEGORIES = [
   { id: 'job', label: 'Job', icon: '💼', needsAddress: true },
 ]
 
-function makeLegible(text: string){
-  if(!text) return text
-  let t = text.trim().replace(/\s+/g,' ')
-  if(!t) return t
-  const isQuestion = (s:string)=>{
-    return /^(who|what|where|when|why|how|how many|do you|does|did|are you|isn'?t|is this|are we|will|can you|is it|will it|would you|should|did you)/i.test(s.trim())
-  }
-  let parts = t.split(/(?<=[.!?])\s+/)
-  if(parts.length === 1){
-    parts = t.split(/(?=\bhow many\b|\bhow\b|\bwhat\b|\bwhere\b|\bwhen\b|\bwhy\b|\bdo you\b|\bare you\b|\bis it\b|\bwill it\b)/i)
-  }
-  parts = parts.map(s=>{
-    s = s.trim()
-    if(!s) return s
-    s = s.charAt(0).toUpperCase() + s.slice(1)
-    if(!/[?.!]$/.test(s)) s += isQuestion(s)? '?' : '.'
-    return s
-  })
-  return parts.join(' ').replace(/\s+([?.!])/g,'$1').replace(/\s{2,}/g,' ')
-}
+function makeLegible(text: string){ try { if(!text) return text; let t = text.trim().replace(/\s+/g,' '); if(!t) return t; const isQuestion = (s:string)=> /^(who|what|where|when|why|how|how many|do you|does|did|are you|isn'?t|is this|are we|will|can you|is it|will it|would you|should|did you)/i.test(s.trim()); let parts = t.split(/(?<=[.!?])\s+/); if(parts.length === 1){ parts = t.split(/(?=\bhow many\b|\bhow\b|\bwhat\b|\bwhere\b|\bwhen\b|\bwhy\b|\bdo you\b|\bare you\b|\bis it\b|\bwill it\b)/i) }; parts = parts.map(s=>{ s = s.trim(); if(!s) return s; s = s.charAt(0).toUpperCase() + s.slice(1); if(!/[?.!]$/.test(s)) s += isQuestion(s)? '?' : '.'; return s }); return parts.join(' ').replace(/\s+([?.!])/g,'$1').replace(/\s{2,}/g,' ') } catch { return text } }
 
 export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const { zip } = useLocation()
@@ -54,82 +35,27 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   const stopMic = () => {
     killedRef.current = true
-    try{
-      if(recRef.current){
-        recRef.current.onresult = null
-        recRef.current.onend = null
-        recRef.current.onerror = null
-        recRef.current.stop()
-      }
-    }catch{}
-    try{
-      if(mediaRef.current){
-        mediaRef.current.ondataavailable = null
-        mediaRef.current.onstop = null
-        mediaRef.current.stop()
-      }
-    }catch{}
-    try{
-      const s = (mediaRef.current as any)?.stream
-      if(s) s.getTracks().forEach((tr:any)=>tr.stop())
-    }catch{}
-    recRef.current = null
-    mediaRef.current = null
-    setListening(false)
+    try{ if(recRef.current){ recRef.current.onresult = null; recRef.current.onend = null; recRef.current.onerror = null; recRef.current.stop() } }catch{}
+    try{ if(mediaRef.current){ mediaRef.current.ondataavailable = null; mediaRef.current.onstop = null; mediaRef.current.stop() } }catch{}
+    try{ const s = (mediaRef.current as any)?.stream; if(s) s.getTracks().forEach((tr:any)=>tr.stop()) }catch{}
+    recRef.current = null; mediaRef.current = null; setListening(false)
   }
 
-  useEffect(()=>{ return ()=> stopMic() },[])
+  useEffect(()=>{ return ()=> { try { stopMic() } catch {} } },[])
 
   const toggleMic = async () => {
-    if(listening){
-      stopMic()
-      if(finalRef.current) setBody(makeLegible(finalRef.current))
-      return
-    }
+    if(listening){ try { stopMic(); if(finalRef.current) setBody(makeLegible(finalRef.current)) } catch {}; return }
     killedRef.current = false
-    const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-
-    if(SR && SR.available){
-      try{
-        const status = await SR.available({ langs: ["en-US"], processLocally: true })
-        if(status === "unavailable"){
-          startRecordingFallback()
-          return
-        }
-      }catch{}
-    }
-
+    const SR: any = typeof window!== 'undefined'? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition : null
+    if(SR && SR.available){ try{ const status = await SR.available({ langs: ["en-US"], processLocally: true }); if(status === "unavailable"){ startRecordingFallback(); return } }catch{} }
     if(SR){
       try{
-        const rec = new SR()
-        rec.continuous = true
-        rec.interimResults = true
-        rec.lang = 'en-US'
-        recRef.current = rec
-        finalRef.current = body? body + ' ' : ''
+        const rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = 'en-US'; recRef.current = rec; finalRef.current = body? body + ' ' : ''
         rec.onstart = () => { if(!killedRef.current) setListening(true) }
         rec.onend = () => { setListening(false); if(!killedRef.current && finalRef.current) setBody(makeLegible(finalRef.current)) }
-        rec.onresult = (e:any)=>{
-          if(killedRef.current) return
-          let interim = ''
-          for(let i=e.resultIndex; i<e.results.length; i++){
-            const t = e.results[i][0].transcript
-            if(!t) continue
-            if(e.results[i].isFinal){
-              const clean = t.trim()
-              if(clean &&!finalRef.current.toLowerCase().endsWith(clean.toLowerCase())){
-                finalRef.current = (finalRef.current + ' ' + clean).trim() + ' '
-              }
-            } else {
-              interim = t.trim()
-            }
-          }
-          const display = (finalRef.current + ' ' + interim).trim()
-          if(display) setBody(display)
-        }
+        rec.onresult = (e:any)=>{ if(killedRef.current) return; let interim = ''; for(let i=e.resultIndex; i<e.results.length; i++){ const t = e.results[i][0].transcript; if(!t) continue; if(e.results[i].isFinal){ const clean = t.trim(); if(clean &&!finalRef.current.toLowerCase().endsWith(clean.toLowerCase())){ finalRef.current = (finalRef.current + ' ' + clean).trim() + ' ' } } else { interim = t.trim() } }; const display = (finalRef.current + ' ' + interim).trim(); if(display) setBody(display) }
         rec.onerror = () => { if(!killedRef.current){ try{ rec.stop() }catch{}; startRecordingFallback() } }
-        rec.start()
-        return
+        rec.start(); return
       }catch{}
     }
     startRecordingFallback()
@@ -138,83 +64,40 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const startRecordingFallback = async () => {
     try{
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const mr = new MediaRecorder(stream)
-      mediaRef.current = mr
-      const chunks: BlobPart[] = []
+      const mr = new MediaRecorder(stream); mediaRef.current = mr; const chunks: BlobPart[] = []
       mr.ondataavailable = e=> { if(!killedRef.current) chunks.push(e.data) }
-      mr.onstop = async ()=>{
-        if(killedRef.current){ stopMic(); return }
-        stopMic()
-        const blob = new Blob(chunks, { type: 'audio/webm' })
-        try{
-          const fd = new FormData()
-          fd.append('audio', blob)
-          const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd })
-          const data = await res.json()
-          if(data.text &&!killedRef.current){
-            const legible = makeLegible(data.text)
-            setBody(prev=> makeLegible((prev? prev+' ':'') + legible))
-          }
-        }catch{}
-      }
-      mr.start()
-      setListening(true)
-      finalRef.current = body? body + ' ' : ''
-    }catch{
-      alert('Mic blocked - check browser permissions')
-    }
+      mr.onstop = async ()=>{ if(killedRef.current){ stopMic(); return }; stopMic(); const blob = new Blob(chunks, { type: 'audio/webm' }); try{ const fd = new FormData(); fd.append('audio', blob); const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd }); const data = await res.json(); if(data.text &&!killedRef.current){ const legible = makeLegible(data.text); setBody(prev=> makeLegible((prev? prev+' ':'') + legible)) } }catch{} }
+      mr.start(); setListening(true); finalRef.current = body? body + ' ' : ''
+    }catch{ try { alert('Mic blocked - check browser permissions') } catch {} }
   }
 
   const handlePost = async () => {
-    stopMic()
+    try { stopMic() } catch {}
     if(!body.trim()) return
     setPosting(true)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    const finalBody = makeLegible(body.trim())
-    // GLOBAL — never YOUR BLOCK — truth from localStorage + profile + zip
-    const effectiveZip = zip || (typeof window!== 'undefined'? localStorage.getItem('user_zip') : '') || ''
-    if (!effectiveZip || effectiveZip === 'YOUR BLOCK') {
-      alert('Still detecting your block... wait 2 sec and post again')
-      setPosting(false)
-      return
-    }
-    const payload: any = { body: finalBody, tag: category, category, zip_code: effectiveZip, user_id: user?.id, location_address: address || null }
-    if(price) payload.price = parseFloat(price)
-    if(category==='for_sale') payload.condition = condition
-    const { error } = await supabase.from('posts').insert(payload)
-    setPosting(false)
-    if(!error){ setBody(''); setPrice(''); setAddress(''); setCategory('general'); finalRef.current=''; onPosted?.() }
-    else alert(error.message)
+    try {
+      const supabase = createClient() as any
+      const { data: { user } } = await supabase.auth.getUser()
+      const finalBody = makeLegible(body.trim())
+      const effectiveZip = zip || (typeof window!== 'undefined'? localStorage.getItem('user_zip') : '') || ''
+      if (!effectiveZip || effectiveZip === 'YOUR BLOCK') { alert('Still detecting your block... wait 2 sec and post again'); setPosting(false); return }
+      const payload: any = { body: finalBody, tag: category, category, zip_code: effectiveZip, user_id: user?.id, location_address: address || null }
+      if(price) payload.price = parseFloat(price) || null
+      if(category==='for_sale') payload.condition = condition
+      const { error } = await supabase.from('posts').insert(payload)
+      if(!error){ setBody(''); setPrice(''); setAddress(''); setCategory('general'); finalRef.current=''; try { onPosted?.() } catch {} } else { try { alert(error.message) } catch {} }
+    } catch(e:any){ try { alert(e?.message || 'Post failed') } catch {} } finally { setPosting(false) }
   }
 
-  const displayZip = zip || (typeof window!== 'undefined'? localStorage.getItem('user_zip') : '') || 'YOUR BLOCK'
+  const displayZip = zip || (typeof window!== 'undefined'? (()=>{ try { return localStorage.getItem('user_zip') } catch { return '' } })() : '') || 'YOUR BLOCK'
 
   return (
     <div className="w-full max-w-full min-w-0 overflow-hidden bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white mb-4">
       <p className="font-bold mb-3">📝 Post to {displayZip} - One Stop</p>
-      <div className="flex flex-wrap gap-2 mb-4 w-full max-w-full min-w-0">
-        {CATEGORIES.map(c => (
-          <button key={c.id} onClick={()=>setCategory(c.id)} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${category===c.id? 'bg-white text-black border-white' : 'bg-white/10 border-white/20 text-white/70'}`}>{c.icon} {c.label}</button>
-        ))}
-      </div>
-      <div className="flex gap-2 w-full max-w-full min-w-0">
-        <textarea value={body} onChange={e=>setBody(e.target.value)} placeholder={`Tap mic - works in ${displayZip} - any phone or computer`} className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" />
-        <button onClick={toggleMic} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
-      </div>
-      {currentCat?.needsAddress && (
-        <div className="mt-3 bg-white/10 rounded-xl p-3 border border-white/10 w-full max-w-full min-w-0 overflow-hidden">
-          <div className="flex gap-2 w-full max-w-full min-w-0 flex-wrap">
-            <input value={price} onChange={e=>setPrice(e.target.value)} placeholder={category==='free'?'Free (0)': category==='for_sale'?'Price $':' '} className={`bg-white rounded-xl p-2.5 text-sm text-black ${category==='event' || category==='job'? 'hidden' : 'w-24'}`} />
-            {category==='for_sale' && <select value={condition} onChange={e=>setCondition(e.target.value)} className="bg-white rounded-xl p-2.5 text-sm text-black"><option value="new">New</option><option value="like_new">Like New</option><option value="good">Good</option><option value="fair">Fair</option></select>}
-            <input value={address} onChange={e=>setAddress(e.target.value)} placeholder="📍 Address - Private" className="flex-1 min-w-0 bg-white rounded-xl p-2.5 text-sm text-black" />
-          </div>
-        </div>
-      )}
-      <div className="flex justify-between items-center mt-3 w-full max-w-full min-w-0">
-        <p className="text-xs text-white/40">Posting as • {displayZip} • {currentCat?.icon} {category} • Universal Mic</p>
-        <button onClick={handlePost} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40">Post to {displayZip} 🚀</button>
-      </div>
+      <div className="flex flex-wrap gap-2 mb-4 w-full max-w-full min-w-0">{CATEGORIES.map(c => (<button key={c.id} onClick={()=>{ try { setCategory(c.id) } catch {} }} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition ${category===c.id? 'bg-white text-black border-white' : 'bg-white/10 border-white/20 text-white/70'}`}>{c.icon} {c.label}</button>))}</div>
+      <div className="flex gap-2 w-full max-w-full min-w-0"><textarea value={body} onChange={e=>{ try { setBody(e.target.value) } catch {} }} placeholder={`Tap mic - works in ${displayZip} - any phone or computer`} className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border" /><button onClick={()=>{ try { toggleMic() } catch {} }} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button></div>
+      {currentCat?.needsAddress && (<div className="mt-3 bg-white/10 rounded-xl p-3 border border-white/10 w-full max-w-full min-w-0 overflow-hidden"><div className="flex gap-2 w-full max-w-full min-w-0 flex-wrap"><input value={price} onChange={e=>{ try { setPrice(e.target.value) } catch {} }} placeholder={category==='free'?'Free (0)': category==='for_sale'?'Price $':' '} className={`bg-white rounded-xl p-2.5 text-sm text-black ${category==='event' || category==='job'? 'hidden' : 'w-24'}`} />{category==='for_sale' && <select value={condition} onChange={e=>{ try { setCondition(e.target.value) } catch {} }} className="bg-white rounded-xl p-2.5 text-sm text-black"><option value="new">New</option><option value="like_new">Like New</option><option value="good">Good</option><option value="fair">Fair</option></select>}<input value={address} onChange={e=>{ try { setAddress(e.target.value) } catch {} }} placeholder="📍 Address - Private" className="flex-1 min-w-0 bg-white rounded-xl p-2.5 text-sm text-black" /></div></div>)}
+      <div className="flex justify-between items-center mt-3 w-full max-w-full min-w-0"><p className="text-xs text-white/40">Posting as • {displayZip} • {currentCat?.icon} {category} • Universal Mic</p><button onClick={()=>{ try { handlePost() } catch {} }} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40">Post to {displayZip} 🚀</button></div>
     </div>
   )
 }
