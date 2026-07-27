@@ -3,7 +3,8 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
-// Phase 1: Notifications system stubbed. Will wire up in Phase 2.
+// Phase 1: Notifications system stubbed - house-safe, global, never dies
+// Will wire up in Phase 2 - but even stubbed it must not crash feed
 
 export type NotificationDTO = {
   id: string
@@ -26,13 +27,16 @@ export async function listNotifications(input?: {
   unread_only?: boolean;
   type?: 'like' | 'comment' | 'follow' | 'mention' | 'message' | 'event' | 'system';
 }): Promise<NotificationDTO[]> {
-  // Phase 1 stub: return empty array
-  return []
+  try {
+    // Phase 1 stub: return empty array - automated safe
+    return []
+  } catch {
+    return [] // House never dies
+  }
 }
 
 export async function getNotification(input: { id: string }): Promise<NotificationDTO | null> {
-  // Phase 1 stub
-  return null
+  try { return null } catch { return null }
 }
 
 export async function createNotification(input: {
@@ -45,26 +49,21 @@ export async function createNotification(input: {
   entity_type?: string | null
   entity_id?: string | null
 }): Promise<{ id: string }> {
-  // Phase 1 stub
-  return { id: "stubbed-for-phase-1" }
+  try { return { id: "stubbed-for-phase-1" } } catch { return { id: "stubbed" } }
 }
 
 export async function markNotificationRead(input: { id: string }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
 export async function markAllNotificationsRead(): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
 export async function deleteNotification(input: { id: string }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
 export async function getUnreadCount(): Promise<{ count: number }> {
-  // Phase 1 stub
-  return { count: 0 }
+  try { return { count: 0 } } catch { return { count: 0 } }
 }
