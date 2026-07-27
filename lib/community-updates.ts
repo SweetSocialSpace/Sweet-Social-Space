@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { applyScope, bboxForRadius, normalizeScopeInput, SCOPE_RADIUS_MILES, type LocationFilter } from '@/lib/location-scope'
 import { createClient } from '@/lib/supabase/server'
 
-// Phase 1: Community updates stubbed. Will wire up in Phase 2.
+// Phase 1: Community updates stubbed - global, independent, house-safe
 
 export type CommunityUpdateDTO = {
   id: string
@@ -21,8 +21,6 @@ export type CommunityUpdateDTO = {
   is_published: boolean
 }
 
-const SELECT_COLS = "id,title,body,category,location_label,city,state_code,latitude,longitude,created_at,created_by,is_published"
-
 const scopeInput = z.object({
   scope: z.enum(["5mi", "20mi", "50mi", "state", "nationwide"]).optional(),
   lat: z.number().nullable().optional(),
@@ -32,13 +30,11 @@ const scopeInput = z.object({
 }).partial()
 
 export async function listCommunityUpdates(input?: { limit?: number; scope?: Partial<LocationFilter> }): Promise<CommunityUpdateDTO[]> {
-  // Phase 1 stub: return empty array
-  return []
+  try { return [] } catch { return [] }
 }
 
 export async function getCommunityUpdate(input: { id: string }): Promise<CommunityUpdateDTO | null> {
-  // Phase 1 stub: return null
-  return null
+  try { return null } catch { return null }
 }
 
 export async function createCommunityUpdate(input: {
@@ -51,8 +47,7 @@ export async function createCommunityUpdate(input: {
   latitude?: number | null
   longitude?: number | null
 }): Promise<{ id: string }> {
-  // Phase 1 stub
-  return { id: "stubbed-for-phase-1" }
+  try { return { id: "stubbed-for-phase-1" } } catch { return { id: "stubbed" } }
 }
 
 export async function updateCommunityUpdate(input: {
@@ -62,11 +57,9 @@ export async function updateCommunityUpdate(input: {
   category?: string | null
   is_published?: boolean
 }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
 export async function deleteCommunityUpdate(input: { id: string }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
