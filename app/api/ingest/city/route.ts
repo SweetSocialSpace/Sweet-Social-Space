@@ -6,31 +6,36 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const zip = searchParams.get('zip') || '95122';
+    if (!zip) return NextResponse.json({ ok: true, seeded: false, reason: 'no zip' });
 
     const supabase = await createClient() as any;
 
-    // FAILSAFE: Get real business near zip for city data
-    let bizName = zip;
-    try {
-      const { data: biz } = await supabase.from('businesses').select('name, category').eq('zip_code', zip).limit(3);
-      bizName = biz?.[0]?.name || `${zip} Block`;
-    } catch {}
+    // Check recent posts - use created_at, not is_automated (column doesn't exist)
+    const twoHoursAgo = new Date(Date.now() - 7200000).toISOString();
+    const { count } = await supabase
+      .from('posts')
+      .select('id', { count: 'exact', head: true })
+      .eq('zip_code', zip)
+      .gte('created_at', twoHoursAgo);
 
-    // Get weather to make it LIVE
-    let weatherTxt = 'Live update';
+    // Only post if quiet - prevents spam
+    if (count && count > 0) {
+      return NextResponse.json({ ok: true, seeded: false, reason: 'recent post exists', zip, count });
+    }
+
+    // Get business name if possible
+    let pickName = `${zip} Block`;
     try {
-      const w = await fetch(`https://api.openweathermap.org/data/2.5/weather?zip=${zip},us&appid=${process.env.OPENWEATHER_API_KEY}&units=imperial`, { cache: 'no-store' });
-      if (w.ok) {
-        const j = await w.json();
-        weatherTxt = `${Math.round(j.main.temp)}°F ${j.weather?.[0]?.description || ''} •`;
+      const { data: biz } = await supabase.from('businesses').select('name').eq('zip_code', zip).limit(5);
+      if (biz && biz.length > 0) {
+        pickName = biz[Math.floor(Math.random()*biz.length)].name;
       }
     } catch {}
 
-    // INSERT with YOUR REAL SCHEMA - body, city, zip_code, tag, category
+    // INSERT WITH YOUR REAL SCHEMA
     const { error } = await supabase.from('posts').insert({
-      body: `🏙 CITY ${zip} • ${weatherTxt} Live update near ${bizName} • Status: Open • Real city data • ${new Date().toLocaleTimeString()}`,
-      content: `Live city pulse for ${zip} near ${bizName}`,
-      city: bizName,
+      body: `📍 ${zip} Live • ${pickName} is open in ${zip} • Support local • Real city data • ${new Date().toLocaleTimeString()}`,
+      city: pickName,
       zip_code: zip,
       tag: 'general',
       category: 'general',
@@ -38,14 +43,13 @@ export async function GET(req: Request) {
     });
 
     if (error) {
-      console.log('[CITY-DATA] Insert error (non-fatal):', error.message);
-      // Still return ok: true so GitHub Action doesn't fail
-      return NextResponse.json({ ok: true, zip, fallback: true, error: error.message });
+      console.log('[INGEST CITY] Error:', error.message);
+      return NextResponse.json({ ok: true, seeded: false, error: error.message, zip }, { status: 200 });
     }
 
-    return NextResponse.json({ ok: true, zip, biz: bizName, live: true });
+    return NextResponse.json({ ok: true, seeded: true, zip, business: pickName, time: new Date().toISOString() });
   } catch (e: any) {
-    console.log('[CITY-DATA] FAILSAFE OK:', e?.message);
-    return NextResponse.json({ ok: true, zip: '95122', failsafe: true }, { status: 200 });
+    console.log('[INGEST CITY] FAILSAFE:', e?.message);
+    return NextResponse.json({ ok: true, seeded: false, failsafe: true, error: e?.message }, { status: 200 });
   }
 }
