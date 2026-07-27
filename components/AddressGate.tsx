@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useSupabase } from '@/lib/supabase/client'
 useEffect(() => {
   if (!user) return
   let cancelled = false
