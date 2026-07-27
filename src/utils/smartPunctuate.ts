@@ -21,11 +21,9 @@ export function smartPunctuate(text: string): string {
       let str = s.trim()
       if (!str) return ''
 
-      // Global fix - find first letter even if starts with " ' (
       str = str.replace(/^([^A-Za-z]*)([a-z])/, (_, pre, firstLetter) => {
         return pre + firstLetter.toUpperCase()
       })
-      // Automated casing - independent
       str = str.replace(/\bi\b/g, 'I')
       str = str.replace(/\bi'm\b/gi, "I'm")
 
@@ -40,16 +38,13 @@ export function smartPunctuate(text: string): string {
     let out = fixed.filter(Boolean).join(' ')
 
     protections.forEach((original, i) => {
-      // Use exact token that was generated
       const tokenPrefix = `__SSS_PROT_${i}_`
-      // Find and replace the token with timestamp
       const regex = new RegExp(tokenPrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\d+__')
       out = out.replace(regex, original)
     })
 
     return out
   } catch {
-    // House never dies - if punctuation fails, return original text, don't kill post
     return text || ''
   }
 }
