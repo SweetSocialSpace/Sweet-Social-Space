@@ -89,7 +89,7 @@ function FeedContent() {
     <>
       <Safe loader={() => import('@/components/PermissionsGate')} name="PermissionsGate" />
       <Header />
-      <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
+      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
         <div className="space-y-6">
           <Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" />
           <Safe loader={() => import('@/components/AIMayor')} name="AIMayor" />
@@ -121,6 +121,7 @@ function FeedContent() {
               </div>
             ))}
           </div>
+        </div>
         <div className="space-y-6">
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/app/components/TheDrop')} name="TheDrop" />
@@ -133,6 +134,7 @@ function FeedContent() {
           <Safe loader={() => import('@/components/UpcomingEvents')} name="UpcomingEvents" />
           <Safe loader={() => import('@/components/VerifiedSources')} name="VerifiedSources" />
         </div>
+      </div>
       <Safe loader={() => import('@/components/GoLive')} name="GoLive" />
     </>
   )
