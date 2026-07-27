@@ -14,7 +14,7 @@ export default function AddressGate() {
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(({ data }: any) => {
       setUser(data?.user?? null)
     })
   }, [supabase])
