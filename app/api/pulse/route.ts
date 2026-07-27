@@ -4,16 +4,13 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const zip = searchParams.get('zip'); // GLOBAL FIX: no default 95122
+    const zip = searchParams.get('zip');
     if (!zip) return NextResponse.json({ error: 'ZIP required' }, { status: 400 });
     
-    const { createClient } = await import('@/lib/supabase/server');
-    const supabase = await createClient();
+    const { createClient } = await import('@/utils/supabase/server');
+    const supabase = createClient();
     
-    const { count: online } = await supabase
-      .from('profiles')
-      .select('*', { count: 'exact', head: true })
-      .eq('zip_code', zip);
+    const { count: online } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('zip_code', zip);
 
     return NextResponse.json({
       temp: 76,
@@ -22,8 +19,8 @@ export async function GET(req: Request) {
       online: online || 12 + Math.floor(Math.random()*20),
       yardSales: Math.floor(Math.random() * 4),
       tacoLine: Math.random() > 0.5 ? 'short' : 'long',
-      traffic: `live in ${zip}`, // GLOBAL FIX: was 'heavy on King' / Story Rd - SJ specific
-      giantsVibe: 'loud', // keep generic
+      traffic: `live in ${zip}`,
+      giantsVibe: 'loud',
       zip,
       time: new Date().toISOString(),
     });
