@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
@@ -9,7 +10,6 @@ export async function GET(req: Request) {
 
     let supabase: any = null;
     try {
-      const { createClient } = await import('@/utils/supabase/server');
       supabase = createClient();
     } catch {
       return NextResponse.json(null, { status: 204 });
