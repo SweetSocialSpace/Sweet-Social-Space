@@ -14,82 +14,108 @@ export type LivestreamDTO = {
   created_by: string
 }
 
-// THIS IS THE REAL GO LIVE - records your block
+// REAL GO LIVE - records YOUR block, not 95122 - global
 export async function createLivestream(input: {
   title: string
   description?: string | null
   scheduled_at?: string | null
-}): Promise<{ id: string; stream_key: string }> {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not logged in')
+}): Promise<{ id: string; stream_key: string } | { error: string }> {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Please sign in to go live' }
 
-  // Create a real post that says "LIVE from 95122" so feed shows it
-  const { data, error } = await supabase.from('posts').insert({
-    body: input.title || '🔴 LIVE on the block - recording',
-    content: input.description || 'Live recording from my block',
-    tag: 'live',
-    category: 'general',
-    post_type: 'general',
-    city: 'San Jose',
-    zip_code: '95122',
-    user_id: user.id
-  }).select().single()
+    // GLOBAL - get user's REAL zip/city from profile, not hard-coded 95122
+    let userZip = ''
+    let userCity = ''
+    let userCountry = ''
+    try {
+      const { data: profile } = await supabase.from('profiles')
+       .select('zip_code, zip, city, country')
+       .or(`id.eq.${user.id},user_id.eq.${user.id}`)
+       .maybeSingle()
+      userZip = profile?.zip_code || profile?.zip || ''
+      userCity = profile?.city || ''
+      userCountry = profile?.country || ''
+    } catch {}
 
-  if (error) throw new Error(error.message)
-  return { id: data.id, stream_key: data.id }
-}
+    const { data, error } = await supabase.from('posts').insert({
+      body: input.title || '🔴 LIVE on the block - recording',
+      content: input.description || 'Live recording from my block',
+      tag: 'live',
+      category: 'general',
+      post_type: 'general',
+      city: userCity || 'My Block', // Global fallback, not San Jose
+      zip_code: userZip || '', // Global - YOUR zip, not 95122
+      country: userCountry || '',
+      user_id: user.id
+    }).select().single()
 
-export async function getLivestream(input: { id: string }): Promise<LivestreamDTO | null> {
-  const supabase = await createClient()
-  const { data } = await supabase.from('posts').select('*').eq('id', input.id).single()
-  if (!data) return null
-  return {
-    id: data.id,
-    title: data.body || 'Live',
-    description: data.content || null,
-    stream_key: data.id,
-    playback_url: data.media_urls?.[0] || null,
-    status: 'live',
-    scheduled_at: data.created_at,
-    started_at: data.created_at,
-    ended_at: null,
-    created_by: data.user_id
+    if (error) return { error: error.message }
+    if (!data) return { error: 'Could not start live' }
+    return { id: data.id, stream_key: data.id }
+  } catch {
+    return { error: 'Safe mode - try again' }
   }
 }
 
+export async function getLivestream(input: { id: string }): Promise<LivestreamDTO | null> {
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase.from('posts').select('*').eq('id', input.id).single()
+    if (!data) return null
+    return {
+      id: data.id,
+      title: data.body || 'Live',
+      description: data.content || null,
+      stream_key: data.id,
+      playback_url: data.media_urls?.[0] || null,
+      status: 'live',
+      scheduled_at: data.created_at,
+      started_at: data.created_at,
+      ended_at: null,
+      created_by: data.user_id
+    }
+  } catch { return null }
+}
+
 export async function listLivestreams(input?: { limit?: number; status?: 'live' | 'scheduled' }): Promise<LivestreamDTO[]> {
-  const supabase = await createClient()
-  const { data } = await supabase.from('posts').select('*').eq('tag','live').order('created_at',{ascending:false}).limit(input?.limit || 10)
-  return (data || []).map(d => ({
-    id: d.id,
-    title: d.body || 'Live',
-    description: d.content,
-    stream_key: d.id,
-    playback_url: d.media_urls?.[0] || null,
-    status: 'live' as const,
-    scheduled_at: d.created_at,
-    started_at: d.created_at,
-    ended_at: null,
-    created_by: d.user_id
-  }))
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase.from('posts').select('*').eq('tag','live').order('created_at',{ascending:false}).limit(input?.limit || 10)
+    return (data || []).map(d => ({
+      id: d.id,
+      title: d.body || 'Live',
+      description: d.content,
+      stream_key: d.id,
+      playback_url: d.media_urls?.[0] || null,
+      status: 'live' as const,
+      scheduled_at: d.created_at,
+      started_at: d.created_at,
+      ended_at: null,
+      created_by: d.user_id
+    }))
+  } catch { return [] }
 }
 
 export async function startLivestream(input: { id: string }): Promise<{ ok: true }> {
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
 export async function endLivestream(input: { id: string }): Promise<{ ok: true }> {
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
-export async function deleteLivestream(input: { id: string }): Promise<{ ok: true }> {
-  const supabase = await createClient()
-  await supabase.from('posts').delete().eq('id', input.id)
-  return { ok: true }
+export async function deleteLivestream(input: { id: string }): Promise<{ ok: true } | { error: string }> {
+  try {
+    const supabase = await createClient()
+    await supabase.from('posts').delete().eq('id', input.id)
+    return { ok: true }
+  } catch {
+    return { error: 'Safe mode' }
+  }
 }
 
 export async function getLivestreamToken(input: { stream_id: string }): Promise<{ token: string | null }> {
-  // No token needed - we use phone camera directly
-  return { token: 'local-recording' }
+  try { return { token: 'local-recording' } } catch { return { token: null } }
 }
