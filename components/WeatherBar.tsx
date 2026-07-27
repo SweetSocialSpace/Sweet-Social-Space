@@ -7,39 +7,39 @@ export default function WeatherBar({ zip }: { zip: string }) {
   const [city, setCity] = useState(zip)
 
   useEffect(() => {
-    async function load() {
-      setCity(zip)
-      setDesc('loading...')
-      try {
-        const res = await fetch(`/api/weather?zip=${zip}`, { cache: 'no-store' })
-        if (res.ok) {
+    try {
+      const safeZip = String(zip||'').trim()
+      if (!safeZip || safeZip.toUpperCase() === 'YOUR BLOCK') return
+      let cancelled = false
+      async function load() {
+        try {
+          if (cancelled) return
+          try { setCity(safeZip) } catch {}
+          try { setDesc('loading...') } catch {}
+          const res = await fetch(`/api/weather?zip=${encodeURIComponent(safeZip)}`, { cache: 'no-store' })
+          if (!res.ok) return
           const data = await res.json()
-          // AUTOMATIC FIX: reads BOTH your API formats
-          let t = data?.temp ?? data?.main?.temp ?? null
-          if (t!== null && t > 150) t = Math.round((t - 273.15) * 9/5 + 32) // Kelvin to F
-          if (t!== null) setTemp(Math.round(t))
-          
-          // description: your API returns {description}, OpenWeather returns {weather[0].description}
-          if (data?.description) setDesc(data.description)
-          else if (data?.weather?.[0]?.description) setDesc(data.weather[0].description)
-          else if (data?.weather?.[0]?.main) setDesc(data.weather[0].main)
-          else setDesc('')
-
-          // city: your API returns {city}, OpenWeather returns {name}
-          if (data?.city) setCity(data.city)
-          else if (data?.name) setCity(data.name)
-          else setCity(zip)
-        }
-      } catch {
-        setDesc('')
+          if (cancelled) return
+          let t = (data as any)?.temp ?? (data as any)?.main?.temp ?? null
+          if (t!== null && typeof t === 'number' && t > 150) t = Math.round((t - 273.15) * 9/5 + 32)
+          if (t!== null) try { setTemp(Math.round(t)) } catch {}
+          try {
+            if ((data as any)?.description) setDesc((data as any).description)
+            else if ((data as any)?.weather?.[0]?.description) setDesc((data as any).weather[0].description)
+            else if ((data as any)?.weather?.[0]?.main) setDesc((data as any).weather[0].main)
+            else setDesc('')
+          } catch { try { setDesc('') } catch {} }
+          try {
+            if ((data as any)?.city) setCity((data as any).city)
+            else if ((data as any)?.name) setCity((data as any).name)
+            else setCity(safeZip)
+          } catch {}
+        } catch { try { setDesc('') } catch {} }
       }
-    }
-    if (zip) {
       load()
-      // AUTOMATIC: auto-refresh every 5 minutes, no manual
       const interval = setInterval(load, 300000)
-      return () => clearInterval(interval)
-    }
+      return () => { cancelled = true; try { clearInterval(interval) } catch {} }
+    } catch {}
   }, [zip])
 
   return (
@@ -50,7 +50,7 @@ export default function WeatherBar({ zip }: { zip: string }) {
         <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full truncate">{city}</span>
       </div>
       <div className="text-white/60 text-xs mt-1 capitalize">{desc? `${desc} • ${city}` : city}</div>
-      <div className="text-white/40 text- mt-2">Live from OpenWeather, NOAA, USGS • auto-refresh 5m</div>
+      <div className="text-white/40 text-xs mt-2">Live from OpenWeather, NOAA, USGS • auto-refresh 5m</div>
     </div>
   )
 }
