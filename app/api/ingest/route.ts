@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
@@ -7,7 +8,6 @@ export async function GET(req: Request) {
     const zip = searchParams.get('zip');
     if (!zip) return NextResponse.json({ ok: true, seeded: false, reason: 'no zip' });
 
-    const { createClient } = await import('@/utils/supabase/server');
     const supabase = createClient();
 
     const { data: biz } = await supabase.from('businesses').select('name').eq('zip_code', zip).limit(5);
