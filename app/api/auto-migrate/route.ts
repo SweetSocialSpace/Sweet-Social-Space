@@ -3,8 +3,8 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const { createClient } = await import('@/lib/supabase/server');
-    const supabase = await createClient();
+    const { createClient } = await import('@/utils/supabase/server');
+    const supabase = createClient();
 
     const migrations = [
       `alter table businesses add column if not exists current_deal text`,
