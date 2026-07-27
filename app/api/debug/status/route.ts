@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/client'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const zip = searchParams.get('zip');
 
+  const { createClient } = await import('@/utils/supabase/server')
   const supabase = createClient()
   const checks: any = {}
 
@@ -31,5 +31,5 @@ export async function GET(req: Request) {
     checks.error = e.message
   }
 
-  return NextResponse.json({ zip: zip || 'global', ...checks, time: new Date().toISOString() }) // GLOBAL FIX: was '95122'
+  return NextResponse.json({ zip: zip || 'global', ...checks, time: new Date().toISOString() })
 }
