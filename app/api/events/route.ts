@@ -2,13 +2,12 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const lat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : 30.2672 // Austin default
-  const lon = searchParams.get('lon') ? parseFloat(searchParams.get('lon')!) : -97.7431
+  const lat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : 37.3351 // GLOBAL: San Jose default, not Austin
+  const lon = searchParams.get('lon') ? parseFloat(searchParams.get('lon')!) : -121.8932 // GLOBAL
   const city = searchParams.get('city') || 'Local'
-  const zip = searchParams.get('zip') || 'local'
+  const zip = searchParams.get('zip') || '95122' // GLOBAL FIX: was 'local'
   const events: any[] = []
 
-  // FREE: SeatGeek - dynamic location
   try {
     const res = await fetch(`https://api.seatgeek.com/2/events?lat=${lat}&lon=${lon}&range=15mi&per_page=6&sort=score.desc`, { next: { revalidate: 1800 } })
     if (res.ok) {
