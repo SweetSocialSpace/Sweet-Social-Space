@@ -21,22 +21,11 @@ export default function AIMayor() {
         const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
         const cityName = w?.name || p?.city || ''
         const loc = cityName && cityName!== zip? `${cityName} ${zip}` : (zip || 'YOUR BLOCK')
-        if (count > 0) {
-          setBrief(`☀ Good morning ${loc} - ${date} - ${tempStr} ${cond} - ${count} new post${count>1?'s':''} on your block - No alerts.`)
-        } else {
-          setBrief(`☀ Good morning ${loc} - ${date} - ${tempStr} ${cond} - Your block is quiet - Be first to post!`)
-        }
-      } catch {
-        setBrief(`Good morning ${zip || 'YOUR BLOCK'} - Your block is quiet - Be first to post!`)
-      }
+        if (count > 0) { setBrief(`☀ Good morning ${loc} - ${date} - ${tempStr} ${cond} - ${count} new post${count>1?'s':''} on your block - No alerts.`) } else { setBrief(`☀ Good morning ${loc} - ${date} - ${tempStr} ${cond} - Your block is quiet - Be first to post!`) }
+      } catch { setBrief(`Good morning ${zip || 'YOUR BLOCK'} - Your block is quiet - Be first to post!`) }
     }
     load()
   }, [zip])
 
-  return (
-    <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
-      <div className="text-purple-300 font-black text-xs mb-1">🤖 AI MAYOR • {zip || 'YOUR BLOCK'} • LIVE</div>
-      <div className="text-white text-sm leading-snug">{brief}</div>
-    </div>
-  )
+  return (<div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 backdrop-blur-2xl rounded-2xl border border-white/10 p-4"><div className="text-purple-300 font-black text-xs mb-1">🤖 AI MAYOR • {zip || 'YOUR BLOCK'} • LIVE</div><div className="text-white text-sm leading-snug">{brief}</div></div>)
 }
