@@ -10,7 +10,6 @@ export default function StreetHeat() {
     if (!zip) return;
     const fetchHeat = async () => {
       try {
-        // GLOBAL FIX: pass real zip
         const r = await fetch(`/api/heat?zip=${zip}`, { cache: 'no-store' });
         if (r.status === 204) { setHeat(null); return; }
         if (r.ok) setHeat(await r.json());
@@ -18,7 +17,7 @@ export default function StreetHeat() {
     };
     fetchHeat();
     const id = setInterval(fetchHeat, 300000);
-    return () => clearInterval(id);
+    return () => { try { clearInterval(id) } catch {} }
   }, [zip]);
 
   if (!zip ||!heat) return null;
@@ -26,9 +25,7 @@ export default function StreetHeat() {
   return (
     <div className="w-full bg-zinc-900 rounded-full px-4 py-2 flex items-center gap-2 border border-white/10">
       <span className="text-xs">🔥</span>
-      <span className="text-white text-xs font-bold">
-        {heat.street} is hottest today • {heat.count} posts
-      </span>
+      <span className="text-white text-xs font-bold">{heat.street} is hottest today • {heat.count} posts</span>
       <span className="text-white/40 text-xs ml-auto">{heat.total} total in {zip}</span>
     </div>
   );
