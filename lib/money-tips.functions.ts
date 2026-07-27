@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
-// Phase 1: Money tips system stubbed. Will wire up in Phase 2.
+// Phase 1: Money tips stubbed - house-safe, global, never dies
 
 export type MoneyTipDTO = {
   id: string
@@ -17,11 +17,15 @@ export type MoneyTipDTO = {
   is_featured: boolean
 }
 
-async function getAuth() {
-  const supabase = createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) throw new Error('Unauthorized')
-  return { supabase, user }
+async function getAuthSafe() {
+  try {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+    return { supabase, user }
+  } catch {
+    return null // House never dies - auth fails -> safe null, not throw
+  }
 }
 
 export async function listMoneyTips(input?: { 
@@ -29,23 +33,25 @@ export async function listMoneyTips(input?: {
   category?: string | null;
   featured?: boolean;
 }): Promise<MoneyTipDTO[]> {
-  // Phase 1 stub: return empty array
-  return []
+  try { return [] } catch { return [] }
 }
 
 export async function getMoneyTip(input: { id: string }): Promise<MoneyTipDTO | null> {
-  // Phase 1 stub
-  return null
+  try { return null } catch { return null }
 }
 
 export async function createMoneyTip(input: {
   title: string
   content: string
   category?: string | null
-}): Promise<{ id: string }> {
-  await getAuth()
-  // Phase 1 stub
-  return { id: "stubbed-for-phase-1" }
+}): Promise<{ id: string } | { error: string }> {
+  try {
+    const auth = await getAuthSafe()
+    if (!auth) return { error: 'Please sign in' } // Global message, no throw
+    return { id: "stubbed-for-phase-1" }
+  } catch {
+    return { error: 'Safe mode - try again' }
+  }
 }
 
 export async function updateMoneyTip(input: {
@@ -54,23 +60,35 @@ export async function updateMoneyTip(input: {
   content?: string
   category?: string | null
   is_featured?: boolean
-}): Promise<{ ok: true }> {
-  await getAuth()
-  // Phase 1 stub
-  return { ok: true }
+}): Promise<{ ok: true } | { error: string }> {
+  try {
+    const auth = await getAuthSafe()
+    if (!auth) return { error: 'Please sign in' }
+    return { ok: true }
+  } catch {
+    return { error: 'Safe mode' }
+  }
 }
 
-export async function deleteMoneyTip(input: { id: string }): Promise<{ ok: true }> {
-  await getAuth()
-  // Phase 1 stub
-  return { ok: true }
+export async function deleteMoneyTip(input: { id: string }): Promise<{ ok: true } | { error: string }> {
+  try {
+    const auth = await getAuthSafe()
+    if (!auth) return { error: 'Please sign in' }
+    return { ok: true }
+  } catch {
+    return { error: 'Safe mode' }
+  }
 }
 
 export async function voteMoneyTip(input: {
   id: string
   vote_type: 'up' | 'down'
-}): Promise<{ ok: true }> {
-  await getAuth()
-  // Phase 1 stub
-  return { ok: true }
+}): Promise<{ ok: true } | { error: string }> {
+  try {
+    const auth = await getAuthSafe()
+    if (!auth) return { error: 'Please sign in' }
+    return { ok: true }
+  } catch {
+    return { error: 'Safe mode' }
+  }
 }
