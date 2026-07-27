@@ -2,16 +2,18 @@ name: Free Automation - No Vercel Cron
 
 on:
   schedule:
-    - cron: '0 * * * *'  # every hour, free
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
-      - name: Ingest San Jose 311 city data
+      - name: Ingest Global City Data
         run: |
-          echo "Calling real ingest route..."
-          curl -s "https://sweet-social-space.vercel.app/api/ingest"
+          echo "Calling global ingest..."
+          curl -s "https://sweet-social-space.vercel.app/api/ingest-sj"
+          curl -s "https://sweet-social-space.vercel.app/api/ingest-sanjose"
+          curl -s "https://sweet-social-space.vercel.app/api/city-data?zip=95122"
           echo ""
-          echo "Done - city data should be ingesting now"
+          echo "Done - global city data ingesting"
