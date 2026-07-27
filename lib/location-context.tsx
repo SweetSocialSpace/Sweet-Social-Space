@@ -11,15 +11,15 @@ type CtxType = Loc & {
   useMyLocation: () => void; 
 }
 
+// RULE 1 GLOBAL - Default is GLOBAL detection, never empty
 const LocationContext = createContext<CtxType>({
-  zip: '95122', city: 'San Jose', country: 'US', lat: 37.3352, lng: -121.8328, 
-  setLoc: () => {}, loading: false, radius: 20, 
+  zip: 'GLOBAL', city: 'Detecting Location...', country: 'US', lat: 0, lng: 0, 
+  setLoc: () => {}, loading: true, radius: 20, 
   setRadius: ()=>{}, useMyLocation: ()=>{}
 })
 
 export function LocationProvider({ children }: any) {
-  // RULE 1 GLOBAL: Default to GLOBAL 95122, never empty, never YOUR BLOCK
-  const [loc, setLoc] = useState<Loc>({ zip: '95122', city: 'San Jose', country: 'US', lat: 37.3352, lng: -121.8328 })
+  const [loc, setLoc] = useState<Loc>({ zip: 'GLOBAL', city: 'Detecting Location...', country: 'US', lat: 0, lng: 0 })
   const [radius, setRadius] = useState(20)
   const [loading, setLoading] = useState(true)
   
@@ -28,50 +28,49 @@ export function LocationProvider({ children }: any) {
 
   const setLocState = (l: Loc) => {
     try {
-      if (!l?.zip) return
+      if (!l?.zip || l.zip.toUpperCase()==='YOUR BLOCK' || l.zip==='') return
       setLoc(l)
-      // RULE 3: Save but don't LOCK future loads to profile
       if (!supabase) return
       supabase.auth.getUser().then(({ data }: any) => {
         if (!data?.user) return
-        supabase.from('profiles').update({ 
-          zip_code: l.zip, 
-          zip: l.zip, 
-          city: l.city || '', 
-          country: l.country || '' 
-        })
-        .or(`id.eq.${data.user.id},user_id.eq.${data.user.id}`)
-        .then(()=>{}).catch(()=>{})
+        supabase.from('profiles').update({ zip_code: l.zip, zip: l.zip, city: l.city||'', country: l.country||'' })
+        .or(`id.eq.${data.user.id},user_id.eq.${data.user.id}`).then(()=>{}).catch(()=>{})
       }).catch(()=>{})
     } catch {}
   }
 
   const useMyLocation = async () => {
     try {
-      if (typeof navigator === 'undefined' || !navigator.geolocation) {
-        // RULE 2 FAILSAFE: IP geolocate GLOBAL
-        const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
-        if (ip?.postal) setLocState({ zip: ip.postal, city: ip.city||'', country: ip.country||'US', lat: ip.latitude||0, lng: ip.longitude||0 })
-        return
-      }
       setLoading(true)
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        try {
-          const { latitude, longitude } = pos.coords
-          const r = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
-          if (r?.zip) {
-            setLocState({ zip: r.zip, city: r.city || '', country: r.country || 'US', lat: latitude, lng: longitude })
-          }
-        } catch {}
+      // RULE 1 - IP FIRST - GLOBAL for any user anywhere
+      try {
+        const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
+        if (ip?.postal) {
+          setLocState({ zip: ip.postal, city: ip.city||'', country: ip.country||'US', lat: ip.latitude||0, lng: ip.longitude||0 })
+          setLoading(false)
+          return
+        }
+      } catch {}
+
+      if (typeof navigator !== 'undefined' && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          try {
+            const { latitude, longitude } = pos.coords
+            const r = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
+            if (r?.zip) setLocState({ zip: r.zip, city: r.city||'', country: r.country||'US', lat: latitude, lng: longitude })
+          } catch {}
+          setLoading(false)
+        }, async () => {
+          // GPS denied - IP fallback - GLOBAL
+          try {
+            const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
+            if (ip?.postal) setLocState({ zip: ip.postal, city: ip.city||'', country: ip.country||'US', lat: ip.latitude||0, lng: ip.longitude||0 })
+          } catch {}
+          setLoading(false)
+        })
+      } else {
         setLoading(false)
-      }, async () => {
-        // GPS denied - RULE 2 IP fallback - GLOBAL
-        try {
-          const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
-          if (ip?.postal) setLocState({ zip: ip.postal, city: ip.city||'', country: ip.country||'US', lat: ip.latitude||0, lng: ip.longitude||0 })
-        } catch {}
-        setLoading(false)
-      })
+      }
     } catch { setLoading(false) }
   }
 
@@ -80,48 +79,39 @@ export function LocationProvider({ children }: any) {
       try {
         setLoading(true)
         
-        // RULE 1 GLOBAL: IP detect FIRST, not profile
+        // VERTEBRAE RULE - INDEPENDENT - IP FIRST, GLOBAL
         try {
           const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
-          if (ip?.postal) {
-            setLoc({ zip: ip.postal, city: ip.city||'San Jose', country: ip.country||'US', lat: ip.latitude||37.3352, lng: ip.longitude||-121.8328 })
+          if (ip?.postal && ip.postal.toUpperCase()!=='YOUR BLOCK') {
+            setLoc({ zip: ip.postal, city: ip.city||'', country: ip.country||'US', lat: ip.latitude||0, lng: ip.longitude||0 })
             setLoading(false)
             return
           }
         } catch {}
 
-        // Second - profile, but don't lock if IP already gave zip
+        // Profile SECOND, not first
         if (supabase) {
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user) {
-            const { data: profile } = await supabase.from('profiles')
-              .select('zip_code, zip, city, country')
-              .or(`id.eq.${user.id},user_id.eq.${user.id}`)
-              .maybeSingle()
-            const finalZip = profile?.zip_code || profile?.zip
-            if (finalZip && finalZip.trim()!=='' && finalZip.toUpperCase()!== 'YOUR BLOCK') {
-              setLoc({ zip: finalZip, city: profile?.city||'San Jose', country: profile?.country||'US', lat: 0, lng: 0 })
-              setLoading(false)
-              return
+          try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+              const { data: profile } = await supabase.from('profiles').select('zip_code, zip, city, country').or(`id.eq.${user.id},user_id.eq.${user.id}`).maybeSingle()
+              const finalZip = profile?.zip_code || profile?.zip
+              if (finalZip && finalZip.trim()!=='' && finalZip.toUpperCase()!=='YOUR BLOCK') {
+                setLoc({ zip: finalZip, city: profile?.city||'', country: profile?.country||'US', lat: 0, lng: 0 })
+                setLoading(false)
+                return
+              }
             }
-          }
+          } catch {}
         }
 
-        // RULE 5 NEVER BROKEN: Never return empty zip -> YOUR BLOCK
+        // RULE 2 FAILSAFE - NEVER empty, NEVER YOUR BLOCK
         setLoc({ zip: '95122', city: 'San Jose', country: 'US', lat: 37.3352, lng: -121.8328 })
       } catch {
         setLoc({ zip: '95122', city: 'San Jose', country: 'US', lat: 37.3352, lng: -121.8328 })
-      } finally {
-        setLoading(false)
-      }
+      } finally { setLoading(false) }
     }
     init()
-
-    try {
-      if (!supabase) return
-      const { data: sub } = supabase.auth.onAuthStateChange(() => init())
-      return () => { try { sub.subscription.unsubscribe() } catch {} }
-    } catch { return }
   }, [])
 
   return (
@@ -132,13 +122,7 @@ export function LocationProvider({ children }: any) {
 }
 
 export const useLocation = () => {
-  try {
-    return useContext(LocationContext)
-  } catch {
-    return {
-      zip: '95122', city: 'San Jose', country: 'US', lat: 37.3352, lng: 37.3352,
-      setLoc: () => {}, loading: false, radius: 20,
-      setRadius: () => {}, useMyLocation: () => {}
-    } as CtxType
+  try { return useContext(LocationContext) } catch {
+    return { zip: 'GLOBAL', city: 'Detecting Location...', country: 'US', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 20, setRadius: () => {}, useMyLocation: () => {} } as CtxType
   }
 }
