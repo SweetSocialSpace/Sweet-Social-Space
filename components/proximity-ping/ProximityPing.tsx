@@ -13,8 +13,8 @@ export default function ProximityPing() {
       } catch {}
     };
     fetchPing();
-    const interval = setInterval(fetchPing, 60000); // checks every minute - automated
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchPing, 60000);
+    return () => { try { clearInterval(interval) } catch {} }
   }, []);
 
   if (!ping) return null;
@@ -22,9 +22,7 @@ export default function ProximityPing() {
   return (
     <div className="w-full bg-blue-600/90 backdrop-blur rounded-full px-4 py-2 flex items-center gap-2 border border-white/20 animate-pulse">
       <span className="text-xs">🔵</span>
-      <span className="text-white text-xs font-black">
-        {ping.count} new post{ping.count > 1? 's' : ''} near {ping.street} in last 60m
-      </span>
+      <span className="text-white text-xs font-black">{ping.count} new post{ping.count > 1? 's' : ''} near {ping.street} in last 60m</span>
     </div>
   );
 }
