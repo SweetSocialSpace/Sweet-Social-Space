@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { applyScope, bboxForRadius, normalizeScopeInput, SCOPE_RADIUS_MILES, type LocationFilter } from '@/lib/location-scope'
 import { createClient } from '@/lib/supabase/server'
 
-// Phase 1: Events system stubbed. Will wire up in Phase 2.
+// Phase 1: Events stubbed - global, independent, house-safe
 
 export type UpcomingEventDTO = {
   id: string
@@ -22,8 +22,6 @@ export type UpcomingEventDTO = {
   is_automated?: boolean
 }
 
-const SELECT_COLS = "id,title,description,venue_name,address,city,state_code,latitude,longitude,organizer,starts_at,ends_at,is_automated"
-
 const scopeInput = z.object({
   scope: z.enum(["5mi", "20mi", "50mi", "state", "nationwide"]).optional(),
   lat: z.number().nullable().optional(),
@@ -33,13 +31,11 @@ const scopeInput = z.object({
 }).partial()
 
 export async function listUpcomingEvents(input?: { limit?: number; scope?: Partial<LocationFilter> }): Promise<UpcomingEventDTO[]> {
-  // Phase 1 stub: return empty array
-  return []
+  try { return [] } catch { return [] }
 }
 
 export async function getEvent(input: { id: string }): Promise<UpcomingEventDTO | null> {
-  // Phase 1 stub: return null
-  return null
+  try { return null } catch { return null }
 }
 
 export async function createEvent(input: {
@@ -55,8 +51,7 @@ export async function createEvent(input: {
   longitude?: number | null
   organizer?: string | null
 }): Promise<{ id: string }> {
-  // Phase 1 stub
-  return { id: "stubbed-for-phase-1" }
+  try { return { id: "stubbed-for-phase-1" } } catch { return { id: "stubbed" } }
 }
 
 export async function updateEvent(input: {
@@ -64,11 +59,9 @@ export async function updateEvent(input: {
   title?: string
   description?: string | null
 }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
 export async function deleteEvent(input: { id: string }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
