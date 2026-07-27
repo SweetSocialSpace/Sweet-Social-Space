@@ -10,20 +10,34 @@ export function useAuth() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const supabase = createClient()
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s)
-      setUser(s?.user?? null)
-    })
-    
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setUser(data.session?.user?? null)
-      setLoading(false)
-    })
-    
-    return () => subscription.unsubscribe()
+    let cancelled = false
+    let subscription: any = null
+    ;(async () => {
+      try {
+        const supabase = createClient() as any
+        try {
+          const { data: { subscription: sub } } = supabase.auth.onAuthStateChange((_e: any, s: any) => {
+            try {
+              if (cancelled) return
+              setSession(s)
+              setUser(s?.user?? null)
+            } catch {}
+          })
+          subscription = sub
+        } catch {}
+        try {
+          const { data } = await supabase.auth.getSession()
+          if (cancelled) return
+          setSession(data.session)
+          setUser(data.session?.user?? null)
+        } catch {} finally {
+          if (!cancelled) try { setLoading(false) } catch {}
+        }
+      } catch {
+        if (!cancelled) try { setLoading(false) } catch {}
+      }
+    })()
+    return () => { cancelled = true; try { subscription?.unsubscribe() } catch {} }
   }, [])
 
   return { session, user, loading }
