@@ -2,7 +2,6 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // BYPASS all API routes + static files - automated, let them run
   if (
     request.nextUrl.pathname.startsWith('/api/') ||
     request.nextUrl.pathname.startsWith('/_next') ||
@@ -18,8 +17,7 @@ export async function middleware(request: NextRequest) {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    
-    // House-safe - if env missing during build, don't kill house, let page load
+
     if (!supabaseUrl || !supabaseKey) {
       return response
     }
@@ -42,14 +40,18 @@ export async function middleware(request: NextRequest) {
       },
     })
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
-                       request.nextUrl.pathname.startsWith('/signup') || 
-                       request.nextUrl.pathname.startsWith('/auth')
+    const isAuthPage =
+      request.nextUrl.pathname.startsWith('/login') ||
+      request.nextUrl.pathname.startsWith('/signup') ||
+      request.nextUrl.pathname.startsWith('/auth')
 
-    const isProtectedPage = request.nextUrl.pathname.startsWith('/feed') || 
-                            request.nextUrl.pathname.startsWith('/onboarding')
+    const isProtectedPage =
+      request.nextUrl.pathname.startsWith('/feed') ||
+      request.nextUrl.pathname.startsWith('/onboarding')
 
     if (!user && isProtectedPage) {
       return NextResponse.redirect(new URL('/login', request.url))
@@ -61,7 +63,6 @@ export async function middleware(request: NextRequest) {
 
     return response
   } catch {
-    // GLOBAL FIX - House never dies - if auth fails, let page load, don't 500
     return response
   }
 }
