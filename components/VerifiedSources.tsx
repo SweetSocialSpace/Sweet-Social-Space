@@ -12,7 +12,7 @@ export function VerifiedSources(){
 
   useEffect(()=>{
     if (!zip) return
-    const supabase = createClient()
+    const supabase = createClient() as any
     let mounted = true
 
     const fetchLiveVerified = async () => {
@@ -56,7 +56,7 @@ export function VerifiedSources(){
       }
     }
 
-    supabase.from('verified_updates').select('id,title').eq('zip_code', zip).order('created_at',{ascending:false}).limit(3).then(({data})=>{
+    supabase.from('verified_updates').select('id,title').eq('zip_code', zip).order('created_at',{ascending:false}).limit(3).then(({data}: any)=>{
       if(mounted && data && data.length > 0){
         setVs(data as any)
       } else {
