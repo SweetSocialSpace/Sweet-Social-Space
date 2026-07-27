@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const zip = searchParams.get('zip')?.trim()
   if (!zip) return NextResponse.json({ drop: null })
 
-  const { createClient } = await import('@/utils/supabase/server')
   const supabase = createClient()
   
   const todayStart = new Date()
@@ -40,7 +40,6 @@ export async function POST(req: NextRequest) {
   const { zip_code, title, description, business_name, claim_url, price_paid } = body
   if (!zip_code || !title) return NextResponse.json({ error: 'Missing' }, { status: 400 })
 
-  const { createClient } = await import('@/utils/supabase/server')
   const supabase = createClient()
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)
