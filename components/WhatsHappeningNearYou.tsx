@@ -12,36 +12,32 @@ export function WhatsHappeningNearYou(){
 
   useEffect(()=>{
     if (!zip) return
-    const supabase = createClient()
     let mounted = true
-
     const load = async()=>{
       try{
-        // GLOBAL FIX: use real zip
-        const {data} = await supabase.from('posts').select('id,body,tag,created_at').eq('zip_code', zip).order('created_at',{ascending:false}).limit(2)
-
-        // GLOBAL FIX: pass zip to events API
-        const res = await fetch(`/api/events?zip=${zip}`)
-        const json = await res.json()
-        const liveEvents: EventItem[] = json.events || []
-
+        let posts: any[] = []
+        try {
+          const supabase = createClient() as any
+          const {data} = await supabase.from('posts').select('id,body,tag,created_at').eq('zip_code', zip).order('created_at',{ascending:false}).limit(2)
+          if (data) posts = data
+        } catch {}
+        let liveEvents: EventItem[] = []
+        try {
+          const res = await fetch(`/api/events?zip=${encodeURIComponent(zip)}`)
+          if (res.ok) {
+            const json = await res.json()
+            liveEvents = json.events || []
+          }
+        } catch {}
         const combined: EventItem[] = []
-        if(data && data.length > 0){
-          data.forEach((p:any)=> combined.push({ id: p.id, title: p.body.slice(0,70), body: p.body, tag: p.tag, icon: '📌', venue: 'Neighbor post', time: p.created_at }))
-        }
+        posts.forEach((p:any)=> combined.push({ id: p.id, title: String(p.body||'').slice(0,70), body: p.body, tag: p.tag, icon: '📌', venue: 'Neighbor post', time: p.created_at }))
         liveEvents.forEach(ev=> combined.push(ev))
-
-        if(mounted){
-          setEvents(combined.slice(0,5))
-          setLoading(false)
-        }
-      }catch{
-        if(mounted) setLoading(false)
-      }
+        if(mounted){ setEvents(combined.slice(0,5)); try { setLoading(false) } catch {} }
+      }catch{ if(mounted) try { setLoading(false) } catch {} }
     }
     load()
     const id = setInterval(load, 30*60*1000)
-    return ()=>{ mounted = false; clearInterval(id) }
+    return ()=>{ mounted = false; try { clearInterval(id) } catch {} }
   },[zip])
 
   if (!zip) return (
