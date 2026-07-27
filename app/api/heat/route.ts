@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
@@ -6,7 +7,6 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const zip = searchParams.get('zip');
     if (!zip) return new NextResponse(null, { status: 204 });
-    const { createClient } = await import('@/utils/supabase/server');
     const supabase = createClient();
     const startOfDay = new Date(); startOfDay.setHours(0,0,0,0);
     const { data } = await supabase.from('posts').select('location_text').eq('zip_code', zip).gte('created_at', startOfDay.toISOString()).not('location_text', 'is', null).limit(50);
