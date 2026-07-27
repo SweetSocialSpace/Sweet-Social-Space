@@ -1,8 +1,8 @@
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 
 export async function POST() {
+  const { createClient } = await import('@/utils/supabase/server')
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   
@@ -15,14 +15,10 @@ export async function POST() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  // 1. Delete posts first (foreign key)
   await admin.from('posts').delete().eq('user_id', user.id)
-  
-  // 2. Delete profile — kills ghost forever
   await admin.from('profiles').delete().eq('id', user.id)
   await admin.from('profiles').delete().eq('user_id', user.id)
   
-  // 3. Delete auth user
   const { error } = await admin.auth.admin.deleteUser(user.id)
   
   if (error) {
