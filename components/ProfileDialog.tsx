@@ -47,11 +47,11 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
 
   const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      const file = e.target.files?.[0]; e.target.value = ''
+      const file = e.target.files?.[0]; (e.target as any).value = ''
       if (!file ||!userId) return
       setErr(''); setMsg('')
       if (!file.type.startsWith('image/')) { setErr('Please choose an image file.'); return }
-      if (file.size > 5 * 1024) { setErr('Image must be 5 MB or smaller.'); return }
+      if (file.size > 5 * 1024 * 1024) { setErr('Image must be 5 MB or smaller.'); return }
       setUploading(true)
       try {
         const supabase = createClient() as any
@@ -89,7 +89,6 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
         const supabase = createClient() as any
         let u: any = null; try { const { data } = await supabase.auth.getUser(); u = data.user } catch {}
         if (!u) return
-        // GLOBAL FIX: try block, fallback no block column
         let error: any = null
         try { const res = await supabase.from('profiles').update({ display_name: name, bio: bio.trim() || null, block: block.trim() || null }).eq('user_id', u.id); error = res.error } catch (e) { error = e }
         if (error) {
@@ -121,6 +120,7 @@ export function ProfileDialog({ onClose }: { onClose: () => void }) {
             </div>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickFile} />
           </div>
+        </div>
         <div className="mt-4 space-y-3">
           <label className="block text-xs font-medium text-muted-foreground">Display name<input value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={40} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary" /></label>
           <label className="block text-xs font-medium text-muted-foreground">Block or neighborhood (optional)<input value={block} onChange={(e) => setBlock(e.target.value)} maxLength={80} placeholder="e.g. Elm St." className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary" /></label>
