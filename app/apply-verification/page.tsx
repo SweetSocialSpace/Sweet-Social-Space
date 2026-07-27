@@ -20,12 +20,8 @@ export default function ApplyVerificationPage() {
       setLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { alert('Please sign in first to apply'); setLoading(false); return }
-
-      // GLOBAL - capture visitor zip/city - vertebrae independent
       const safeZip = (zip && zip.toUpperCase()!=='YOUR BLOCK' && zip!==''? zip : 'GLOBAL')
       const safeCity = city || ''
-
-      // RULE 3 - use body columns that exist - check schema
       const { error } = await supabase.from('verification_requests').insert({
         user_id: user.id,
         organization: org.trim(),
@@ -34,13 +30,11 @@ export default function ApplyVerificationPage() {
         status: 'pending',
         zip_code: safeZip,
         city: safeCity,
-        body: `${org} - ${type} - ${safeCity} ${safeZip}`, // Never content, always body
+        body: `${org} - ${type} - ${safeCity} ${safeZip}`,
         created_at: new Date().toISOString()
-      })
-
+      } as any)
       if (error) {
-        // FAILSAFE - if table missing, fallback to profiles request
-        await supabase.from('profiles').update({ verification_request: `${org} - ${email} - ${type} - ${safeZip}` }).eq('id', user.id).then(()=>{}).catch(()=>{})
+        try { await supabase.from('profiles').update({ verification_request: `${org} - ${email} - ${type} - ${safeZip}` } as any).eq('id', user.id) } catch {}
         console.log('verification fallback:', error.message)
       }
       setDone(true)
