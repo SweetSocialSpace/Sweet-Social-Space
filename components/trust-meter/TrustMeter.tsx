@@ -28,7 +28,7 @@ export function TrustMeter() {
     }
     load()
     const id = setInterval(load, 60000)
-    return () => clearInterval(id)
+    return () => { try { clearInterval(id) } catch {} }
   }, [zip])
 
   return (
@@ -36,24 +36,11 @@ export function TrustMeter() {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-green-600/10" />
       <div className="relative">
         <div className="flex items-center justify-between">
-          <div className="text-white font-black text-xs tracking-wider">
-            TRUST METER • {zip || 'YOUR BLOCK'}
-          </div>
-          <div className={`text-xs font-black px-2 py-0.5 rounded-full ${data.percent===100?'bg-green-500 text-black':'bg-yellow-500 text-black'}`}>
-            {data.percent}% VERIFIED
-          </div>
+          <div className="text-white font-black text-xs tracking-wider">TRUST METER • {zip || 'YOUR BLOCK'}</div>
+          <div className={`text-xs font-black px-2 py-0.5 rounded-full ${data.percent===100?'bg-green-500 text-black':'bg-yellow-500 text-black'}`}>{data.percent}% VERIFIED</div>
         </div>
-        <div className="mt-2 flex items-center gap-3">
-          <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-1000" style={{width:`${data.percent}%`}} />
-          </div>
-          <div className="text-white/70 text-xs font-mono">
-            {data.verified}/{data.total} trusted
-          </div>
-        </div>
-        <div className="text-white/40 text- mt-1 uppercase tracking-widest">
-          Live • Auto-refresh • {zip || 'YOUR BLOCK'} block
-        </div>
+        <div className="mt-2 flex items-center gap-3"><div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-1000" style={{width:`${data.percent}%`}} /></div><div className="text-white/70 text-xs font-mono">{data.verified}/{data.total} trusted</div></div>
+        <div className="text-white/40 text- mt-1 uppercase tracking-widest">Live • Auto-refresh • {zip || 'YOUR BLOCK'} block</div>
       </div>
     </div>
   )
