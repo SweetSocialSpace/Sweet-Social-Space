@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const zip = searchParams.get('zip');
 
-  const { createClient } = await import('@/utils/supabase/server')
   const supabase = createClient()
   const checks: any = {}
 
