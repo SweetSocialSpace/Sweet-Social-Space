@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST() {
-  const { createClient } = await import('@/utils/supabase/server')
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   
@@ -17,6 +17,7 @@ export async function POST() {
 
   await admin.from('posts').delete().eq('user_id', user.id)
   await admin.from('profiles').delete().eq('id', user.id)
+  // @ts-ignore
   await admin.from('profiles').delete().eq('user_id', user.id)
   
   const { error } = await admin.auth.admin.deleteUser(user.id)
