@@ -14,26 +14,24 @@ export type LivestreamDTO = {
   created_by: string
 }
 
-// REAL GO LIVE - records YOUR block, not 95122 - global
 export async function createLivestream(input: {
   title: string
   description?: string | null
   scheduled_at?: string | null
 }): Promise<{ id: string; stream_key: string } | { error: string }> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient() as any
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Please sign in to go live' }
 
-    // GLOBAL - get user's REAL zip/city from profile, not hard-coded 95122
     let userZip = ''
     let userCity = ''
     let userCountry = ''
     try {
       const { data: profile } = await supabase.from('profiles')
-       .select('zip_code, zip, city, country')
-       .or(`id.eq.${user.id},user_id.eq.${user.id}`)
-       .maybeSingle()
+      .select('zip_code, zip, city, country')
+      .or(`id.eq.${user.id},user_id.eq.${user.id}`)
+      .maybeSingle()
       userZip = profile?.zip_code || profile?.zip || ''
       userCity = profile?.city || ''
       userCountry = profile?.country || ''
@@ -45,8 +43,8 @@ export async function createLivestream(input: {
       tag: 'live',
       category: 'general',
       post_type: 'general',
-      city: userCity || 'My Block', // Global fallback, not San Jose
-      zip_code: userZip || '', // Global - YOUR zip, not 95122
+      city: userCity || 'My Block',
+      zip_code: userZip || '',
       country: userCountry || '',
       user_id: user.id
     }).select().single()
@@ -61,7 +59,7 @@ export async function createLivestream(input: {
 
 export async function getLivestream(input: { id: string }): Promise<LivestreamDTO | null> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient() as any
     const { data } = await supabase.from('posts').select('*').eq('id', input.id).single()
     if (!data) return null
     return {
@@ -81,9 +79,9 @@ export async function getLivestream(input: { id: string }): Promise<LivestreamDT
 
 export async function listLivestreams(input?: { limit?: number; status?: 'live' | 'scheduled' }): Promise<LivestreamDTO[]> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient() as any
     const { data } = await supabase.from('posts').select('*').eq('tag','live').order('created_at',{ascending:false}).limit(input?.limit || 10)
-    return (data || []).map(d => ({
+    return (data || []).map((d: any) => ({
       id: d.id,
       title: d.body || 'Live',
       description: d.content,
@@ -108,7 +106,7 @@ export async function endLivestream(input: { id: string }): Promise<{ ok: true }
 
 export async function deleteLivestream(input: { id: string }): Promise<{ ok: true } | { error: string }> {
   try {
-    const supabase = await createClient()
+    const supabase = await createClient() as any
     await supabase.from('posts').delete().eq('id', input.id)
     return { ok: true }
   } catch {
