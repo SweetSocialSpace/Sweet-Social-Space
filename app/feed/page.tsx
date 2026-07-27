@@ -89,8 +89,8 @@ function FeedContent() {
     <>
       <Safe loader={() => import('@/components/PermissionsGate')} name="PermissionsGate" />
       <Header />
-      <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
-        <div className="space-y-6">
+      <div className="max-w- mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
+        <div className="space-y-4 xl:sticky xl:top-20">
           <Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" />
           <Safe loader={() => import('@/components/AIMayor')} name="AIMayor" />
           <Safe loader={() => import('@/components/BlockMap')} name="BlockMap" />
@@ -101,28 +101,28 @@ function FeedContent() {
           <Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" />
           <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
         </div>
-        <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-5">
+        <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
           <Safe loader={() => import('@/components/LocationScopeBar')} name="LocationScopeBar" />
           <div className="mt-4"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
           <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName}</div>
-          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
+          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1 scrollbar-none">
             {FILTERS.map(f=>(
-              <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
+              <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
             ))}
           </div>
           <div className="space-y-3 mt-2">
             {filtered.length===0 && <WelcomePost />}
             {filtered.map((p:any)=>(
-              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl">
-                <p className="text-black whitespace-pre-wrap break-words">{p.body}</p>
+              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
+                <p className="text-black whitespace-pre-wrap break-words text- leading-6">{p.body}</p>
                 <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {zip}</div>
                 {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-black">X</button>}
               </div>
             ))}
           </div>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-4 xl:sticky xl:top-20">
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/app/components/TheDrop')} name="TheDrop" />
           <Safe loader={() => import('@/components/KarmaLeaderboard')} name="KarmaLeaderboard" />
@@ -134,7 +134,6 @@ function FeedContent() {
           <Safe loader={() => import('@/components/UpcomingEvents')} name="UpcomingEvents" />
           <Safe loader={() => import('@/components/VerifiedSources')} name="VerifiedSources" />
         </div>
-      </div>
       <Safe loader={() => import('@/components/GoLive')} name="GoLive" />
     </>
   )
