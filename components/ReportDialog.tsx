@@ -1,54 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useId, useRef } from 'react'
 import { toast } from 'sonner'
 import MicRecorder from '@/components/mic/MicRecorder'
 import { createClient } from '@/lib/supabase/client'
 
-// Stub types and constants - replace with real imports when we port moderation.functions.ts
 type ReportTargetType = 'post' | 'comment' | 'user' | 'business' | 'message'
 type ReportCategory = 'harassment' | 'spam' | 'hate_speech' | 'violence' | 'misinformation' | 'illegal' | 'other'
-
-const REPORT_CATEGORIES: ReportCategory[] = ['harassment', 'spam', 'hate_speech', 'violence', 'misinformation', 'illegal', 'other']
-
+const REPORT_CATEGORIES: ReportCategory[] = ['harassment','spam','hate_speech','violence','misinformation','illegal','other']
 const REPORT_CATEGORY_LABEL: Record<ReportCategory, string> = {
-  harassment: 'Harassment or bullying',
-  spam: 'Spam or misleading',
-  hate_speech: 'Hate speech',
-  violence: 'Violence or dangerous acts',
-  misinformation: 'Misinformation',
-  illegal: 'Illegal activity',
-  other: 'Other',
+  harassment: 'Harassment or bullying', spam: 'Spam or misleading', hate_speech: 'Hate speech',
+  violence: 'Violence or dangerous acts', misinformation: 'Misinformation', illegal: 'Illegal activity', other: 'Other',
 }
 
-async function submitReport(data: {
-  target_type: ReportTargetType
-  target_id: string
-  category: ReportCategory
-  details?: string
-  turnstile_token?: string
-}) {
-  const supabase = createClient()
-  const { data: user } = await supabase.auth.getUser()
-  if (!user.user) throw new Error('Not authenticated')
-
-  const { error } = await supabase.from('reports').insert({
-    target_type: data.target_type,
-    target_id: data.target_id,
-    category: data.category,
-    details: data.details || null,
-    reporter_id: user.user.id,
-  })
-  if (error) throw error
+async function submitReport(data: { target_type: ReportTargetType; target_id: string; category: ReportCategory; details?: string; turnstile_token?: string }) {
+  try {
+    const supabase = createClient() as any
+    let user: any = null
+    try { const { data: u } = await supabase.auth.getUser(); user = u.user } catch {}
+    if (!user) throw new Error('Not authenticated')
+    const { error } = await supabase.from('reports').insert({ target_type: data.target_type, target_id: data.target_id, category: data.category, details: data.details || null, reporter_id: user.id })
+    if (error) throw error
+  } catch (e) { throw e }
 }
 
-type Props = {
-  targetType: ReportTargetType
-  targetId: string
-  label?: string
-  onClose: () => void
-}
-
+type Props = { targetType: ReportTargetType; targetId: string; label?: string; onClose: () => void }
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
@@ -61,24 +37,9 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
   const noun = label?? targetType.replace(/_/g, ' ')
 
   async function onSubmit() {
-    setBusy(true)
-    setError('')
-    try {
-      await submitReport({
-        target_type: targetType,
-        target_id: targetId,
-        category,
-        details: details.trim() || undefined,
-        turnstile_token: turnstileToken?? undefined,
-      })
-      setDone(true)
-      toast.success('Report submitted')
-    } catch (e) {
-      const msg = e instanceof Error? e.message : 'Failed to submit report'
-      setError(msg)
-    } finally {
-      setBusy(false)
-    }
+    try { setBusy(true); setError(''); await submitReport({ target_type: targetType, target_id: targetId, category, details: details.trim() || undefined, turnstile_token: turnstileToken?? undefined }); setDone(true); try { toast.success('Report submitted') } catch {} }
+    catch (e) { try { const msg = e instanceof Error? e.message : 'Failed to submit report'; setError(msg) } catch {} }
+    finally { try { setBusy(false) } catch {} }
   }
 
   return (
@@ -87,65 +48,23 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
         {done? (
           <>
             <h2 className="font-display text-lg font-semibold">Thanks for reporting</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              A moderator will review this {noun}. Reports are confidential.
-            </p>
-            <div className="mt-4 flex justify-end">
-              <button onClick={onClose} className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
-                Close
-              </button>
-            </div>
+            <p className="mt-2 text-sm text-muted-foreground">A moderator will review this {noun}. Reports are confidential.</p>
+            <div className="mt-4 flex justify-end"><button onClick={onClose} className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Close</button></div>
           </>
         ) : (
           <>
             <h2 className="font-display text-lg font-semibold">Report this {noun}</h2>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Reports go to our moderation queue. False reporting can affect your account standing.
-            </p>
-
+            <p className="mt-1 text-xs text-muted-foreground">Reports go to our moderation queue. False reporting can affect your account standing.</p>
             <label className="mt-4 block text-sm font-medium">Reason</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as ReportCategory)}
-              className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm"
-            >
-              {REPORT_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {REPORT_CATEGORY_LABEL[c]}
-                </option>
-              ))}
-            </select>
-
+            <select value={category} onChange={(e) => setCategory(e.target.value as ReportCategory)} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm">{REPORT_CATEGORIES.map((c) => (<option key={c} value={c}>{REPORT_CATEGORY_LABEL[c]}</option>))}</select>
             <label className="mt-3 block text-sm font-medium">Details (optional)</label>
-            <textarea
-              value={details}
-              onChange={(e) => setDetails(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              className="mt-1 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm"
-              placeholder="Anything that will help us review."
-            />
-            <div className="mt-1 flex justify-end">
-              <MicRecorder onTranscript={setDetails} />
-            </div>
-
-            {TURNSTILE_SITE_KEY && (
-              <TurnstileWidget siteKey={TURNSTILE_SITE_KEY} onToken={setTurnstileToken} />
-            )}
-
+            <textarea value={details} onChange={(e) => setDetails(e.target.value)} maxLength={1000} rows={3} className="mt-1 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm" placeholder="Anything that will help us review." />
+            <div className="mt-1 flex justify-end"><MicRecorder onTranscript={setDetails} /></div>
+            {TURNSTILE_SITE_KEY && (<TurnstileWidgetSafe siteKey={TURNSTILE_SITE_KEY} onToken={setTurnstileToken} />)}
             {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
-
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-secondary">
-                Cancel
-              </button>
-              <button
-                onClick={onSubmit}
-                disabled={busy || (!!TURNSTILE_SITE_KEY &&!turnstileToken)}
-                className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-              >
-                {busy? 'Sending…' : 'Submit report'}
-              </button>
+              <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-secondary">Cancel</button>
+              <button onClick={()=>{ try { onSubmit() } catch {} }} disabled={busy || (!!TURNSTILE_SITE_KEY &&!turnstileToken)} className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy? 'Sending…' : 'Submit report'}</button>
             </div>
           </>
         )}
@@ -154,24 +73,18 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
   )
 }
 
-function TurnstileWidget({ siteKey, onToken }: { siteKey: string; onToken: (t: string) => void }) {
-  const containerId = `ts-${siteKey.slice(0, 8)}`
-  if (typeof window!== 'undefined') {
-    const w = window as Window & { turnstile?: { render: (sel: string, cfg: Record<string, unknown>) => void } }
-    if (!document.querySelector('script[data-turnstile]')) {
-      const s = document.createElement('script')
-      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
-      s.async = true
-      s.defer = true
-      s.setAttribute('data-turnstile', '1')
-      document.head.appendChild(s)
-    }
-    setTimeout(() => {
-      const el = document.getElementById(containerId)
-      if (el && w.turnstile &&!el.hasChildNodes()) {
-        w.turnstile.render(`#${containerId}`, { sitekey: siteKey, callback: (tok: string) => onToken(tok) })
-      }
-    }, 300)
-  }
+function TurnstileWidgetSafe({ siteKey, onToken }: { siteKey: string; onToken: (t: string) => void }) {
+  const uid = useId().replace(/:/g,'')
+  const containerId = `ts-${uid}-${siteKey.slice(0, 8)}`
+  const renderedRef = useRef(false)
+  useEffect(()=>{
+    try {
+      if (typeof window === 'undefined' ||!siteKey) return
+      try { if (!document.querySelector('script[data-turnstile]')) { const s = document.createElement('script'); s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js'; s.async = true; s.defer = true; s.setAttribute('data-turnstile','1'); document.head.appendChild(s) } } catch {}
+      const w = window as any
+      const tryRender = () => { try { const el = document.getElementById(containerId); if (!el || renderedRef.current ||!w.turnstile) return false; renderedRef.current = true; w.turnstile.render(`#${containerId}`, { sitekey: siteKey, callback: (tok:string)=>{ try { onToken(tok) } catch {} } }); return true } catch { return false } }
+      if (!tryRender()) { const iv = setInterval(()=>{ try { if (tryRender()) clearInterval(iv) } catch {} },250); const to = setTimeout(()=>{ try { clearInterval(iv) } catch {} },8000); return ()=>{ try { clearInterval(iv) } catch {}; try { clearTimeout(to) } catch {} } }
+    } catch {}
+  },[containerId, siteKey, onToken])
   return <div id={containerId} className="mt-3" />
 }
