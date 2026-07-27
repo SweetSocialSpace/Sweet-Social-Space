@@ -3,11 +3,7 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
-// Phase 1: Moderation system stubbed. Will wire up in Phase 2.
-
-// ---------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------
+// Phase 1: Moderation stubbed - house-safe, global, automated, never dies
 
 export type ModerationReportDTO = {
   id: string
@@ -34,31 +30,24 @@ export type ModerationActionDTO = {
   created_at: string
 }
 
-// ---------------------------------------------------------------
-// Report Functions
-// ---------------------------------------------------------------
-
 export async function createReport(input: {
   content_type: 'post' | 'comment' | 'user' | 'message'
   content_id: string
   reason: string
   description?: string | null
 }): Promise<{ id: string }> {
-  // Phase 1 stub
-  return { id: "stubbed-for-phase-1" }
+  try { return { id: "stubbed-for-phase-1" } } catch { return { id: "stubbed" } }
 }
 
 export async function listReports(input?: { 
   limit?: number;
   status?: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
 }): Promise<ModerationReportDTO[]> {
-  // Phase 1 stub: return empty array
-  return []
+  try { return [] } catch { return [] }
 }
 
 export async function getReport(input: { id: string }): Promise<ModerationReportDTO | null> {
-  // Phase 1 stub
-  return null
+  try { return null } catch { return null }
 }
 
 export async function updateReportStatus(input: {
@@ -66,13 +55,8 @@ export async function updateReportStatus(input: {
   status: 'reviewed' | 'resolved' | 'dismissed'
   action_taken?: string | null
 }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
-
-// ---------------------------------------------------------------
-// Moderation Action Functions
-// ---------------------------------------------------------------
 
 export async function takeModerationAction(input: {
   action_type: 'warn' | 'remove_content' | 'ban_user' | 'restrict_user'
@@ -81,8 +65,7 @@ export async function takeModerationAction(input: {
   reason: string
   duration_hours?: number | null
 }): Promise<{ id: string }> {
-  // Phase 1 stub
-  return { id: "stubbed-for-phase-1" }
+  try { return { id: "stubbed-for-phase-1" } } catch { return { id: "stubbed" } }
 }
 
 export async function listModerationActions(input?: { 
@@ -90,20 +73,14 @@ export async function listModerationActions(input?: {
   target_type?: 'post' | 'comment' | 'user';
   target_id?: string;
 }): Promise<ModerationActionDTO[]> {
-  // Phase 1 stub
-  return []
+  try { return [] } catch { return [] }
 }
-
-// ---------------------------------------------------------------
-// Content Filtering Functions
-// ---------------------------------------------------------------
 
 export async function checkContent(input: { 
   text: string;
   content_type?: 'post' | 'comment' | 'message';
 }): Promise<{ flagged: boolean; reasons: string[] }> {
-  // Phase 1 stub: never flag anything
-  return { flagged: false, reasons: [] }
+  try { return { flagged: false, reasons: [] } } catch { return { flagged: false, reasons: [] } }
 }
 
 export async function hideContent(input: {
@@ -111,14 +88,12 @@ export async function hideContent(input: {
   content_id: string
   reason: string
 }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
 
 export async function unhideContent(input: {
   content_type: 'post' | 'comment'
   content_id: string
 }): Promise<{ ok: true }> {
-  // Phase 1 stub
-  return { ok: true }
+  try { return { ok: true } } catch { return { ok: true } }
 }
