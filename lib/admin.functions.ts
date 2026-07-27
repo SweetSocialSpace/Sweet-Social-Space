@@ -3,14 +3,10 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
-// Phase 1: All admin functions stubbed to return safe defaults
-// Will wire up real admin features in Phase 2
+// Phase 1: Admin stubbed - global, house-safe, never dies
 
-// Use the SECURITY DEFINER has_role RPC so admin checks are not affected by
-// user_roles RLS visibility from the authenticated client.
 export async function checkAdminRole(): Promise<{ allowed: boolean }> {
-  // Phase 1 stub: always false for now
-  return { allowed: false }
+  try { return { allowed: false } } catch { return { allowed: false } }
 }
 
 const toggleSchema = z.object({
@@ -21,13 +17,11 @@ const toggleSchema = z.object({
 export async function adminToggleUserRole(
   input: z.infer<typeof toggleSchema>
 ): Promise<{ ok: true; is_admin: boolean }> {
-  // Phase 1 stub
-  return { ok: true, is_admin: false }
+  try { return { ok: true, is_admin: false } } catch { return { ok: true, is_admin: false } }
 }
 
 export async function adminListAdminUserIds(): Promise<string[]> {
-  // Phase 1 stub: return empty array
-  return []
+  try { return [] } catch { return [] }
 }
 
 export async function adminRunCommunityBot(): Promise<{
@@ -38,13 +32,9 @@ export async function adminRunCommunityBot(): Promise<{
   updates: number
   verified: number
 }> {
-  // Phase 1 stub
-  return {
-    ok: true,
-    processed_locations: 0,
-    alerts: 0,
-    events: 0,
-    updates: 0,
-    verified: 0
+  try {
+    return { ok: true, processed_locations: 0, alerts: 0, events: 0, updates: 0, verified: 0 }
+  } catch {
+    return { ok: true, processed_locations: 0, alerts: 0, events: 0, updates: 0, verified: 0 }
   }
 }
