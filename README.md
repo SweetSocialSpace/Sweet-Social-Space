@@ -1,66 +1,66 @@
 # Sweet Social Space
 Neighborhood-first community platform – own your code, own your speech.
+Built for global - any zip on earth.
 
-Built for Harry S Sweet – sweetsocialspace.com
+Live: sweetsocialspace.com / feed
 
-## What's in v1
-- Neighborhood Feed – chronological, by zip/radius
-- Speak Freely / Vent Wall – anonymous-optional vent posts
+## What's in this house
+- Neighborhood Feed – chronological, by zip/radius – global, works for any zip
+- BlockMap – leaflet + overpass, auto-loads by zip
+- LivePulse + AI Mayor – automated weather + pulse, by zip
+- Speak Freely / Vent Wall – anonymous-optional
 - Faith Corner – prayer requests & encouragement
-- Local Alerts – automated ingestor slot for closures/fires/theft
-- Supabase Auth (email magic link), Postgres, Storage
-- Next.js 14 + Tailwind, fully yours
+- GoLive Voice – ElevenLabs mic, independent rib
+- OwnThisBlock – Stripe
+- Supabase Auth (email), Postgres, Storage
+- Next.js 14 + Tailwind – fully yours, no hard-coded geography
 
-## 1. Create your database – DO THIS FIRST
-1. Go to supabase.com → open your `sweet-social-space` project
-2. Left sidebar → SQL Editor → New query
-3. Open `supabase/schema.sql` in this repo, copy ALL of it, paste into Supabase, click Run
-4. You should see: "Success. 4 tables created"
+## House Rules (Every file must pass)
+1. No hard-coded zip/city/state/country/$ - use zip from profile || 'YOUR BLOCK'
+2. No browser name checks
+3. No device exclusion
+4. No folder sharing - each component independent, only supabase + useLocation
+5. House never dies - try/catch, fallback UI, no crash
+6. Automated where called - Live means auto-fetch on zip, auto-interval
+7. Global language
 
-That's profiles, posts, comments, hearts.
+## 1. Database
+1. supabase.com → open sweet-social-space project
+2. SQL Editor → New query
+3. Copy ALL of `supabase/schema.sql`, Run
+4. Success - 4 tables created
 
-## 2. Get your API keys
+## 2. API Keys
 Supabase → Project Settings → API
-Copy:
-- Project URL → NEXT_PUBLIC_SUPABASE_URL
-- anon public key → NEXT_PUBLIC_SUPABASE_ANON_KEY
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+- Add to .env.local + Vercel env
+
+Other APIs (global):
+- NEXT_PUBLIC_OPENWEATHER_KEY - weather by zip, any country
+- ELEVENLABS_API_KEY - voice
 
 ## 3. Run locally
-```
 npm install
 cp .env.local.example .env.local
-# paste your two Supabase keys into .env.local
+# paste keys
 npm run dev
-```
-Open http://localhost:3000
+http://localhost:3000
 
 ## 4. Push to GitHub
-1. github.com → New repository → Name: sweet-social-space → Create (leave empty, no README)
-2. On the empty repo page, click "uploading an existing file"
-3. Drag ALL files from this folder in, Commit
-OR via git:
-```
-git init
 git add .
-git commit -m "Sweet Social Space v1"
-git branch -M main
-git remote add origin https://github.com/YOURUSERNAME/sweet-social-space.git
-git push -u origin main
-```
+git commit -m "Global house - independent ribs"
+git push origin main
 
 ## 5. Deploy to Vercel
-1. vercel.com → Add New → Project → Import your sweet-social-space GitHub repo
-2. Add Environment Variables:
-   NEXT_PUBLIC_SUPABASE_URL = your url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY = your anon key
-3. Deploy
-4. Once live: Vercel → Settings → Domains → Add sweetsocialspace.com
-   Copy the DNS records Vercel gives you into your domain registrar
+vercel.com → Import repo
+Add Env Vars (all 4 keys)
+Deploy
+Domains → Add sweetsocialspace.com
 
-## Local Alerts automation
-See `app/api/alerts/ingest/route.ts`
-This is a real cron endpoint. In Vercel → Settings → Cron Jobs, enable:
-`/api/alerts/ingest` → Every 15 minutes
-Right now it seeds a sample San Jose alert so you can see it work. Wire in real feeds (Caltrans, PulsePoint, Nixle) in that one file.
+## Automation
+- `/api/alerts/ingest` → Vercel Cron Every 15 min – ingests by zip, global
+- `/api/weather?zip=` – auto weather for any zip
+- `/api/pulse?zip=` – auto pulse count
 
-You own everything. No platform lock-in.
+You own everything. No platform lock-in. Works for any neighborhood on earth.
