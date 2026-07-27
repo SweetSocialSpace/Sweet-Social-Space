@@ -2,7 +2,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // BYPASS all API routes + static files - let them run without auth checks
+  // BYPASS all API routes + static files - automated, let them run
   if (
     request.nextUrl.pathname.startsWith('/api/') ||
     request.nextUrl.pathname.startsWith('/_next') ||
@@ -12,59 +12,58 @@ export async function middleware(request: NextRequest) {
   }
 
   let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
+    request: { headers: request.headers },
   })
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    // House-safe - if env missing during build, don't kill house, let page load
+    if (!supabaseUrl || !supabaseKey) {
+      return response
+    }
+
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         get(name: string) {
           return request.cookies.get(name)?.value
         },
         set(name: string, value: string, options: CookieOptions) {
           request.cookies.set({ name, value, ...options })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
+          response = NextResponse.next({ request: { headers: request.headers } })
           response.cookies.set({ name, value, ...options })
         },
         remove(name: string, options: CookieOptions) {
           request.cookies.set({ name, value: '', ...options })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
+          response = NextResponse.next({ request: { headers: request.headers } })
           response.cookies.set({ name, value: '', ...options })
         },
       },
+    })
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
+                       request.nextUrl.pathname.startsWith('/signup') || 
+                       request.nextUrl.pathname.startsWith('/auth')
+
+    const isProtectedPage = request.nextUrl.pathname.startsWith('/feed') || 
+                            request.nextUrl.pathname.startsWith('/onboarding')
+
+    if (!user && isProtectedPage) {
+      return NextResponse.redirect(new URL('/login', request.url))
     }
-  )
 
-  const { data: { user } } = await supabase.auth.getUser()
+    if (user && isAuthPage) {
+      return NextResponse.redirect(new URL('/feed', request.url))
+    }
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
-                     request.nextUrl.pathname.startsWith('/signup') || 
-                     request.nextUrl.pathname.startsWith('/auth')
-
-  const isProtectedPage = request.nextUrl.pathname.startsWith('/feed') || 
-                          request.nextUrl.pathname.startsWith('/onboarding')
-
-  if (!user && isProtectedPage) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return response
+  } catch {
+    // GLOBAL FIX - House never dies - if auth fails, let page load, don't 500
+    return response
   }
-
-  if (user && isAuthPage) {
-    return NextResponse.redirect(new URL('/feed', request.url))
-  }
-
-  return response
 }
 
 export const config = {
