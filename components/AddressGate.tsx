@@ -1,3 +1,5 @@
+'use client'
+import { useEffect, useState } from 'react'
 useEffect(() => {
   if (!user) return
   let cancelled = false
