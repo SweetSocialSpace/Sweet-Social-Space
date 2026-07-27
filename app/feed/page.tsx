@@ -8,15 +8,12 @@ import Header from '@/app/components/Header'
 import WelcomePost from '@/app/components/WelcomePost'
 import React from 'react'
 
-// HOUSE RULE: Safe loader - if component exists, show it. If not, skip it. House never dies.
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
   const Comp = dynamic(
     () => loader().then((m:any)=> m.default || m[name] || m).catch(()=> ({ default: () => null })),
     { ssr: false, loading: () => null }
   )
-  return (
-    <ErrorBoundary name={name}><Comp /></ErrorBoundary>
-  )
+  return <ErrorBoundary name={name}><Comp /></ErrorBoundary>
 }
 
 class ErrorBoundary extends React.Component<{children:React.ReactNode, name:string},{hasError:boolean}>{
@@ -26,22 +23,17 @@ class ErrorBoundary extends React.Component<{children:React.ReactNode, name:stri
   render(){ return this.state.hasError? null : this.props.children as any }
 }
 
-// --- YOUR VERTEBRAE - SAME LOGIC, BUT IMPORTS ARE NOW SAFE ---
 function FeedContent() {
   const [filter, setFilter] = useState('all')
   const supabase = createClient()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
-  const [radius, setRadius] = useState(5)
   const { zip } = useLocation()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
 
-  useEffect(() => {
-    const f = searchParams.get('filter')
-    if (f) setFilter(f)
-  }, [searchParams])
+  useEffect(() => { const f = searchParams.get('filter'); if (f) setFilter(f) }, [searchParams])
 
   const handleFilter = (id: string) => {
     setFilter(id)
@@ -86,21 +78,15 @@ function FeedContent() {
     if (!error) setPosts(prev => prev.filter((p:any) => p.id!== postId))
   }
 
-  const filteredBase = filter==='all'? posts : posts.filter((p:any)=> {
+  const filtered = filter==='all'? posts : posts.filter((p:any)=> {
     const cat = (p.category||p.tag||'').toLowerCase().replace(/\s*&\s*/g,'_').replace(/\s+/g,'_')
     return cat===filter || cat.includes(filter)
   })
-
-  const catBadge = (cat: string) => {
-    const map: any = { general:'😊', safety:'🚨', for_sale:'💰', free:'🎁', lost_pet:'🐶', event:'🎉', help:'🤝', recommend:'🌮', job:'💼', faith:'✝' }
-    return map[cat] || '📌'
-  }
 
   const authorName = currentProfile?.username? currentProfile.username : 'YOUR BLOCK'
 
   return (
     <>
-      {/* HOUSE NEVER DIES: Each component is independent - if deleted, house stays live */}
       <Safe loader={() => import('@/components/PermissionsGate')} name="PermissionsGate" />
       <Header />
       <div className="max-w- mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)_360px] gap-6 items-start w-full">
@@ -119,7 +105,7 @@ function FeedContent() {
           <Safe loader={() => import('@/components/LocationScopeBar')} name="LocationScopeBar" />
           <div className="mt-4"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
-          <div className="mt-2 text- text-white/40 px-1">Posting as • {authorName}</div>
+          <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName}</div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
@@ -135,7 +121,6 @@ function FeedContent() {
               </div>
             ))}
           </div>
-        </div>
         <div className="space-y-6">
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/app/components/TheDrop')} name="TheDrop" />
@@ -148,8 +133,6 @@ function FeedContent() {
           <Safe loader={() => import('@/components/UpcomingEvents')} name="UpcomingEvents" />
           <Safe loader={() => import('@/components/VerifiedSources')} name="VerifiedSources" />
         </div>
-      </div>
-      {/* INDEPENDENT GO LIVE - does not share folder with anyone */}
       <Safe loader={() => import('@/components/GoLive')} name="GoLive" />
     </>
   )
