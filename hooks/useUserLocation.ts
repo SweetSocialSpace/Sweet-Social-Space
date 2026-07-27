@@ -19,7 +19,6 @@ const EMPTY: UserLocation = {
   location_label: null,
 }
 
-// Reverse geocode via BigDataCloud (free, no key, CORS-friendly)
 async function reverseGeocode(lat: number, lng: number): Promise<{
   state_code: string | null
   country_code: string | null
@@ -48,110 +47,97 @@ export function useUserLocation(userId: string | undefined) {
   const [prompting, setPrompting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Load saved profile location
   useEffect(() => {
-    if (!userId) {
-      setReady(true)
-      return
-    }
-    const supabase = createClient()
+    if (!userId) { setReady(true); return }
     let cancelled = false
     ;(async () => {
-      const { data } = await (supabase as any).rpc('get_my_private_profile')
-      if (cancelled) return
-      const row = (Array.isArray(data)? data[0] : data)?? {}
-      setLoc({
-        latitude: row.latitude?? null,
-        longitude: row.longitude?? null,
-        state_code: row.state_code?? null,
-        country_code: row.country_code?? null,
-        location_label: row.location_label?? null,
-      })
-      setReady(true)
+      try {
+        const supabase = createClient()
+        const { data } = await (supabase as any).rpc('get_my_private_profile')
+        if (cancelled) return
+        const row = (Array.isArray(data)? data[0] : data)?? {}
+        setLoc({
+          latitude: row.latitude?? null,
+          longitude: row.longitude?? null,
+          state_code: row.state_code?? null,
+          country_code: row.country_code?? null,
+          location_label: row.location_label?? null,
+        })
+      } catch {
+        // house never dies - stay empty
+      } finally {
+        if (!cancelled) setReady(true)
+      }
     })()
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [userId])
 
-  const saveLocation = useCallback(
-    async (next: UserLocation) => {
+  const saveLocation = useCallback(async (next: UserLocation) => {
+    try {
       setLoc(next)
       if (!userId) return
       const supabase = createClient()
-      await supabase
-    .from('profiles')
-    .update({
-          latitude: next.latitude,
-          longitude: next.longitude,
-          state_code: next.state_code,
-          country_code: next.country_code,
-          location_label: next.location_label,
-        })
-    .eq('user_id', userId)
-    },
-    [userId],
-  )
+      await (supabase as any).from('profiles').update({
+        latitude: next.latitude,
+        longitude: next.longitude,
+        state_code: next.state_code,
+        country_code: next.country_code,
+        location_label: next.location_label,
+      }).eq('user_id', userId)
+    } catch {}
+  }, [userId])
 
   const requestGeolocation = useCallback(async () => {
-    if (!('geolocation' in navigator)) {
-      setError("Your browser doesn't support location.")
-      return
-    }
-    setError(null)
-    setPrompting(true)
     try {
+      if (typeof window === 'undefined' ||!('geolocation' in navigator)) {
+        setError("Your browser doesn't support location.")
+        return
+      }
+      setError(null)
+      setPrompting(true)
       const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: false,
-          timeout: 10000,
-          maximumAge: 300000,
+          enableHighAccuracy: false, timeout: 10000, maximumAge: 300000,
         }),
       )
       const lat = pos.coords.latitude
       const lng = pos.coords.longitude
       const geo = await reverseGeocode(lat, lng)
       await saveLocation({
-        latitude: lat,
-        longitude: lng,
-        state_code: geo.state_code,
-        country_code: geo.country_code,
-        location_label: geo.label,
+        latitude: lat, longitude: lng,
+        state_code: geo.state_code, country_code: geo.country_code, location_label: geo.label,
       })
     } catch (e: any) {
-      setError(e?.message || "Couldn't get your location.")
+      try { setError(e?.message || "Couldn't get your location.") } catch {}
     } finally {
-      setPrompting(false)
+      try { setPrompting(false) } catch {}
     }
   }, [saveLocation])
 
-  // AUTOMATIC FIX: if no saved location, auto-request it once — no manual click needed
   useEffect(() => {
-    if (!ready) return
-    if (loc.latitude!== null && loc.longitude!== null) return
-    if (prompting) return
-    // Only auto-run once per session if we have no location
-    const hasTried = sessionStorage.getItem('auto-geo-tried')
-    if (hasTried) return
-    sessionStorage.setItem('auto-geo-tried', '1')
-    requestGeolocation()
+    try {
+      if (!ready) return
+      if (loc.latitude!== null && loc.longitude!== null) return
+      if (prompting) return
+      if (typeof window === 'undefined') return
+      let hasTried = null
+      try { hasTried = sessionStorage.getItem('auto-geo-tried') } catch {}
+      if (hasTried) return
+      try { sessionStorage.setItem('auto-geo-tried', '1') } catch {}
+      requestGeolocation()
+    } catch {}
   }, [ready, loc.latitude, loc.longitude, prompting, requestGeolocation])
 
   return { loc, ready, prompting, error, requestGeolocation, saveLocation }
 }
 
-export function milesBetween(
-  lat1: number,
-  lng1: number,
-  lat2: number,
-  lng2: number,
-): number {
-  const toRad = (d: number) => (d * Math.PI) / 180
-  const R = 3958.7613
-  const dLat = toRad(lat2 - lat1)
-  const dLng = toRad(lng2 - lng1)
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2
-  return 2 * R * Math.asin(Math.sqrt(a))
+export function milesBetween(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  try {
+    const toRad = (d: number) => (d * Math.PI) / 180
+    const R = 3958.7613
+    const dLat = toRad(lat2 - lat1)
+    const dLng = toRad(lng2 - lng1)
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2
+    return 2 * R * Math.asin(Math.sqrt(a))
+  } catch { return 0 }
 }
