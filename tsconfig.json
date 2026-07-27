@@ -1,5 +1,4 @@
-{
-  "compilerOptions": {
+    "compilerOptions": {
     "target": "es2017",
     "downlevelIteration": true,
     "lib": ["dom", "dom.iterable", "es2015", "es2016", "es2017"],
@@ -14,15 +13,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "plugins": [{ "name": "next" }],
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
