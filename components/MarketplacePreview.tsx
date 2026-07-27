@@ -3,15 +3,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
 
-type Item = {
-  id: string;
-  title: string;
-  price?: number;
-  address?: string;
-  sale_date?: string;
-  sale_time?: string;
-  status?: string;
-}
+type Item = { id: string; title: string; price?: number; address?: string; sale_date?: string; sale_time?: string; status?: string }
 
 export function MarketplacePreview(){
   const { zip } = useLocation()
@@ -19,50 +11,25 @@ export function MarketplacePreview(){
 
   useEffect(()=>{
     if (!zip) return
-    const supabase = createClient()
     let mounted = true
     const load = async()=>{
-      // ONLY show active listings - deleted/sold won't show
-      const {data} = await supabase
-       .from('marketplace')
-       .select('id,title,price,address,sale_date,sale_time,status')
-       .eq('zip_code', zip)
-       .eq('status', 'active')
-       .order('created_at',{ascending:false})
-       .limit(10)
-      if(mounted && data) setItems(data as any)
+      try {
+        const supabase = createClient() as any
+        const {data} = await supabase.from('marketplace').select('id,title,price,address,sale_date,sale_time,status').eq('zip_code', zip).eq('status', 'active').order('created_at',{ascending:false}).limit(10)
+        if(mounted && data) setItems(data as any)
+      } catch {}
     }
     load()
-    const id = setInterval(load, 2*60*1000)
-    return ()=>{ mounted = false; clearInterval(id) }
+    const id = setInterval(()=>{ try { load() } catch {} }, 2*60*1000)
+    return ()=>{ mounted = false; try { clearInterval(id) } catch {} }
   },[zip])
 
-  if (!zip) return (
-    <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">🛒 Marketplace • Loading...</p>
-    </div>
-  )
-
+  if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">🛒 Marketplace • Loading...</p></div>)
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
       <p className="font-bold">🛒 Marketplace • Near {zip} • Live</p>
       {items.length===0? <p className="text-sm mt-3 text-white/60">No listings yet - post a garage sale!</p> : (
-        <div className="mt-3 space-y-3">
-          {items.map(i=>(
-            <div key={i.id} className="bg-white/5 rounded-xl p-3">
-              <div className="flex justify-between">
-                <span className="font-semibold truncate pr-2 text-xs">{i.title}</span>
-                {i.price!== undefined && <span className="text-white/60 text-xs">${i.price}</span>}
-              </div>
-              {i.sale_date && <p className="text-xs text-white/50 mt-1.5">📅 {i.sale_date} {i.sale_time || ''}</p>}
-              {i.address && (
-                <div className="mt-2.5">
-                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(i.address)}`} target="_blank" className="inline-flex text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">📍 Map & Directions</a>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        <div className="mt-3 space-y-3">{items.map(i=>(<div key={i.id} className="bg-white/5 rounded-xl p-3"><div className="flex justify-between"><span className="font-semibold truncate pr-2 text-xs">{i.title}</span>{i.price!== undefined && <span className="text-white/60 text-xs">${i.price}</span>}</div>{i.sale_date && <p className="text-xs text-white/50 mt-1.5">📅 {i.sale_date} {i.sale_time || ''}</p>}{i.address && (<div className="mt-2.5"><a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(i.address)}`} target="_blank" className="inline-flex text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-full">📍 Map & Directions</a></div>)}</div>))}</div>
       )}
     </div>
   )
