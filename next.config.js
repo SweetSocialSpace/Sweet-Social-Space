@@ -14,12 +14,13 @@ const nextConfig = {
             key: 'Content-Security-Policy', 
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.supabase.co https://*.vercel-scripts.com https://vercel.live",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com",
               "media-src 'self' blob: https://*.supabase.co https://*.elevenlabs.io",
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://overpass-api.de https://api.weather.gov https://api.openweathermap.org https://date.nager.at https://*.openstreetmap.org https://api.elevenlabs.io https://*.elevenlabs.io https://api.stripe.com"
+              // FIXED 28th - added ipapi.co + nominatim + vercel live for GLOBAL detection
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://ipapi.co https://overpass-api.de https://api.weather.gov https://api.openweathermap.org https://date.nager.at https://*.openstreetmap.org https://nominatim.openstreetmap.org https://api.elevenlabs.io https://*.elevenlabs.io https://api.stripe.com https://vercel.live https://*.vercel.app"
             ].join("; ")
           }
         ],
@@ -41,4 +42,3 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
-
