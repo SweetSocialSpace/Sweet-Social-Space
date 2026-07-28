@@ -1,4 +1,5 @@
 'use client'
+import GlobalFooter from '@/components/GlobalFooter'
 import { useState, useEffect, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -7,6 +8,11 @@ import { useLocation } from '@/lib/location-context'
 import Header from '@/app/components/Header'
 import WelcomePost from '@/app/components/WelcomePost'
 import React from 'react'
+
+<body>
+  {children}
+  <GlobalFooter />
+</body>
 
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
   const Comp = dynamic(
