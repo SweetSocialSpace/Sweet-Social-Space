@@ -1,4 +1,3 @@
-import React from 'react'
 import { LegalLayout } from '@/components/LegalLayout'
 
 type LegalContent = {
