@@ -1,33 +1,95 @@
-import Link from 'next/link'
+import { LegalLayout } from '@/components/LegalLayout'
 
-export default function TermsPage() {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4">
-      {/* outer light border - same as About */}
-      <div className="w-full max-w-3xl bg-white/[0.07] backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl p-3">
-        {/* inner content box - same as About */}
-        <div className="bg-black/40 rounded-xl border border-white/10 p-8 md:p-10">
-          <h1 className="text-3xl font-bold text-white mb-1">Terms of Service</h1>
-          <p className="text-sm text-white/60 mb-8">Last updated: July 9, 2026</p>
+const PAGES: Record<string, { title: string; updated: string; content: React.ReactNode }> = {
+  terms: {
+    title: 'Terms of Service',
+    updated: 'July 27, 2026',
+    content: (
+      <>
+        <p><strong>Welcome to Sweet Social Space. By using sweetsocialspace.com you agree to these Terms.</strong></p>
 
-          <div className="space-y-6 text-white/90 leading-relaxed">
-            <div>
-              <h2 className="text-lg font-bold text-white mb-2">1. Speak Freely. Love Your Neighbor.</h2>
-              <p>You own your content. By posting, you grant Sweet Social Space license to display it. No harassment, illegal content, or spam. We reserve the right to remove content that violates these terms.</p>
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-white mb-2">2. Account Security</h2>
-              <p>You are responsible for your password. We use industry-standard encryption with HTTPS, HSTS, and hashed passwords via Supabase Auth.</p>
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-white mb-2">3. Data & Privacy</h2>
-              <p>Your data is protected by Row Level Security. We never sell your information. See our Privacy Policy for details.</p>
-            </div>
-          </div>
+        <h2>1. What We Are</h2>
+        <p>Sweet Social Space is a hyperlocal private social network - your block within 10 miles of you, wherever you are in the world (GLOBAL). We help neighbors share couches, jobs, alerts, and help - not doomscroll the world.</p>
 
-          <a href="/" className="inline-block mt-8 text-sm text-blue-300 hover:underline">← Back to Sweet Social Space</a>
-        </div>
-      </div>
-    </div>
-  )
+        <h2>2. Eligibility & Accounts</h2>
+        <p>You must be 13+ (or 16+ in EU). One account per person. You provide a Zip Code for proximity - we detect location via IP (ipapi.co/json) first, your profile second, GLOBAL failsafe third. You are responsible for your account security. We use Supabase Auth with Row Level Security and encrypt at rest.</p>
+
+        <h2>3. Your Content - You Own It</h2>
+        <p>You own what you post. You grant us a non-exclusive license to display it to neighbors within ~10 miles and to operate the service. You can delete your content anytime in Profile. No scraping, no bots, no spam.</p>
+
+        <h2>4. Community Rules - Speak Freely, Love Your Neighbor</h2>
+        <ul>
+          <li>No harassment, threats, doxxing, or hate targeting protected groups</li>
+          <li>No illegal goods, drugs, weapons</li>
+          <li>No spam, bots, or fake accounts - NO ROBOTS</li>
+          <li>Be local, be helpful. This is your block.</li>
+          <li>We do NOT shadowban for faith ✝, politics, or lawful viewpoints. If we moderate, we will tell you why.</li>
+        </ul>
+
+        <h2>5. Privacy</h2>
+        <p>We collect minimal data: email, zip, city, username. IP via ipapi.co/json for GLOBAL detection only. We do NOT sell data. No Facebook Pixel. See our <a href="/legal/privacy">Privacy Policy</a>. Private to 10 miles of YOU.</p>
+
+        <h2>6. Verified Sources</h2>
+        <p>Feed includes Verified Sources • Near GLOBAL - e.g., Fire Station 3, 63 - verified fire_station data, WeatherBar LIVE, Latest Alerts GLOBAL from open APIs. Not guaranteed real-time.</p>
+
+        <h2>7. Intellectual Property & DMCA</h2>
+        <p>We respect IP. Report infringements to legal@sweetsocialspace.com with DMCA notice. We will remove infringing content. See <a href="/legal/legal">Legal</a>.</p>
+
+        <h2>8. Security</h2>
+        <p>All traffic https only - TLS 1.3 via Vercel - SSL Secured. Report vulnerabilities to security@sweetsocialspace.com. No warranty of absolute security.</p>
+
+        <h2>9. Disclaimers & Limitation of Liability</h2>
+        <p>Service provided AS IS. We are not liable for neighbor interactions, deals, or alerts - use common sense, meet in public, verify. To the fullest extent allowed by law, liability capped at $100 or amount paid in last 12 months.</p>
+
+        <h2>10. Termination</h2>
+        <p>You can delete your account in Profile → Delete Account - erases your data per RLS. We may suspend accounts that violate these Terms, spam, or threaten safety. YOUR BLOCK FIRST - but safety first.</p>
+
+        <h2>11. Governing Law</h2>
+        <p>California law. Venue Santa Clara County. We are independent - not Big Tech.</p>
+
+        <h2>12. Contact</h2>
+        <p>Support: support@sweetsocialspace.com • Legal: legal@sweetsocialspace.com • Verification: verification@sweetsocialspace.com</p>
+
+        <p style={{marginTop:32, fontSize:12, color:'#888'}}>GLOBAL LIVE VERTEBRAE FAILSAFE - Independent - No Robots - SSL Secured</p>
+      </>
+    )
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    updated: 'July 27, 2026',
+    content: (
+      <>
+        <h2>Data We Collect</h2><p>Email, username, zip code, city. IP via ipapi.co/json for GLOBAL detection (not hardwired to 95122). No selling. No Pixel. Supabase RLS, encrypted at rest.</p>
+        <h2>How We Use It</h2><p>To show you neighbors within 10 miles of YOU wherever you are GLOBAL, chronological feed by zip_code, verified sources, weather, events.</p>
+        <h2>Your Rights</h2><p>Access, correct, delete via Profile. Email privacy@sweetsocialspace.com</p>
+      </>
+    )
+  },
+  verification: {
+    title: 'Verification • GLOBAL',
+    updated: 'July 27, 2026',
+    content: (
+      <>
+        <h2>1. SSL Secured</h2><p>https://sweetsocialspace.com - padlock - TLS 1.3 - Vercel</p>
+        <h2>2. Domain</h2><p>Official domain sweetsocialspace.com only. DNS via Vercel. iad1 Washington DC.</p>
+        <h2>3. GLOBAL Detection Test</h2><p>Incognito /feed shows GLOBAL not hardwired. IP via ipapi.co/json first.</p>
+        <h2>4. Verified Sources</h2><p>Fire Station 3, 63 - verified fire_station - WeatherBar LIVE</p>
+      </>
+    )
+  },
+  guarantees: {
+    title: 'Our Guarantees • GLOBAL',
+    updated: 'July 27, 2026',
+    content: <><p>1. YOUR BLOCK FIRST 2. NO SHADOWBANS FOR FAITH 3. NO ROBOTS 4. GLOBAL DETECTION 5. VERIFIED SOURCES LIVE 6. SSL SECURED 7. INDEPENDENT FAILSAFE</p></>
+  },
+  security: { title: 'Security • SSL Secured', updated: 'July 27, 2026', content: <p>https only TLS 1.3 Vercel. RLS encrypted. Report security@sweetsocialspace.com</p> },
+  legal: { title: 'Legal • GLOBAL', updated: 'July 27, 2026', content: <p>DMCA legal@sweetsocialspace.com. Governing Law California. GLOBAL LIVE.</p> },
+  contact: { title: 'Contact Us', updated: 'July 27, 2026', content: <p>support@sweetsocialspace.com • verification@sweetsocialspace.com • legal@sweetsocialspace.com</p> },
+  about: { title: 'About • GLOBAL', updated: 'July 27, 2026', content: <p>Your block not world. 10 miles of YOU wherever you are GLOBAL.</p> }
+}
+
+export default function LegalSlugPage({ params }: { params: { slug: string } }) {
+  const slug = params.slug?.toLowerCase() || 'legal'
+  const page = PAGES[slug] || PAGES['legal']
+  return <LegalLayout title={page.title} updated={page.updated}>{page.content}</LegalLayout>
 }
