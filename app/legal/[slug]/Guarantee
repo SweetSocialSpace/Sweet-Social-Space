@@ -1,0 +1,78 @@
+import Link from 'next/link'
+
+export default function GuaranteesPage() {
+  return (
+    <div className="min-h-screen w-full bg-black text-white">
+      <div className="relative z-10 p-10 pt-20 max-w-5xl mx-auto">
+        <Link href="/" className="text-white/50 text-sm uppercase tracking-widest">← Home • GLOBAL</Link>
+        
+        <h1 className="text-6xl font-black mt-6">Our Guarantees • GLOBAL</h1>
+        <p className="mt-2 text-white/40 uppercase tracking-widest text-sm">Vertebrae Independent Failsafe • No Trash • GLOBAL LIVE</p>
+
+        <div className="mt-12 space-y-6">
+          <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-2xl p-8">
+            <h2 className="font-black text-2xl">1. YOUR BLOCK FIRST</h2>
+            <p className="mt-3 text-white/70 leading-relaxed">
+              Facebook shows you the world. We show you your block. Private to neighbors within 10 miles of YOU — wherever you are in the world — GLOBAL. Your neighbor has a free couch. Another needs a job. Someone 3 houses down just posted an alert. You missed it scrolling people 3,000 miles away.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-2xl p-8">
+            <h2 className="font-black text-2xl">2. NO SHADOWBANS FOR FAITH</h2>
+            <p className="mt-3 text-white/70 leading-relaxed">
+              SPEAK FREELY. LOVE YOUR NEIGHBOR. GLOBAL • VERTEBRAE • INDEPENDENT. We never shadowban for your faith — Christian ✝, any faith. Faith filter exists to find, never to hide. Trust Meter shows LIVE.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-2xl p-8">
+            <h2 className="font-black text-2xl">3. NO ROBOTS, NO BOTS</h2>
+            <p className="mt-3 text-white/70 leading-relaxed">
+              No robots deciding what you see. No AI censoring your feed. Chronological feed by zip_code, filtered only by YOU via filters: Faith, Safety, For Sale, Free, Lost Pet, Event, Help, Tacos. You control it.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-2xl p-8">
+            <h2 className="font-black text-2xl">4. GLOBAL DETECTION, NEVER HARDWIRED</h2>
+            <p className="mt-3 text-white/70 leading-relaxed">
+              Behind the scenes is truly GLOBAL. IP detection first via ipapi.co/json — works for any user anywhere. Profile second. GLOBAL failsafe third — never hardwired to 95122 or San Jose. Incognito /feed shows GLOBAL. Signup demands Zip/Postal — GLOBAL demands, not defaults.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-2xl p-8">
+            <h2 className="font-black text-2xl">5. VERIFIED SOURCES • LIVE</h2>
+            <p className="mt-3 text-white/70 leading-relaxed">
+              Latest Alerts • GLOBAL, WeatherBar, Upcoming Events Near GLOBAL • Live, Verified Sources Near GLOBAL — Alameda Fire Station 3, Fire Station 63, Emeryville Fire 34 — Verified fire_station. NOAA alerts, OpenWeather alerts, quakes &gt;2.0 last 24h, Live Pulse, Block Map, Pinned Automated Alerts.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-2xl p-8">
+            <h2 className="font-black text-2xl">6. SSL SECURED & PRIVATE</h2>
+            <p className="mt-3 text-white/70 leading-relaxed">
+              Full SSL/TLS via Vercel, Supabase Auth with Row Level Security, passwords hashed, encrypted at rest, https only. We never sell your data. Your zip stays in profile only. Contact us within 24h: support@sweetsocialspace.com
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/10 rounded-2xl p-8">
+            <h2 className="font-black text-2xl">7. INDEPENDENT FAILSAFE</h2>
+            <p className="mt-3 text-white/70 leading-relaxed">
+              Independent — not owned by Big Tech. Vertebrae — independent, not dependent. Failsafe — ErrorBoundary House skips broken components, feed stays LIVE. If one widget fails, block stays up. GLOBAL • VERTEBRAE • FAILSAFE • INDEPENDENT.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-12 bg-white text-black rounded-2xl p-8 text-center">
+          <h2 className="text-3xl font-black">SPEAK FREELY. LOVE YOUR NEIGHBOR.</h2>
+          <p className="mt-2 text-sm tracking-widest uppercase opacity-60">GLOBAL • VERTEBRAE • INDEPENDENT • FAILSAFE • SSL SECURED • LIVE</p>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3 justify-center">
+          <Link href="/legal/verification" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Verification</Link>
+          <Link href="/legal/terms" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Terms</Link>
+          <Link href="/legal/privacy" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Privacy</Link>
+          <Link href="/legal/security" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Security</Link>
+          <Link href="/legal/contact" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Contact</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
