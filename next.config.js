@@ -26,6 +26,18 @@ const nextConfig = {
       },
     ]
   },
+  async redirects() {
+    return [
+      { source: '/terms', destination: '/legal/terms', permanent: true },
+      { source: '/privacy', destination: '/legal/privacy', permanent: true },
+      { source: '/contact', destination: '/legal/contact', permanent: true },
+      { source: '/security', destination: '/legal/security', permanent: true },
+      { source: '/verification', destination: '/legal/verification', permanent: true },
+      { source: '/guarantees', destination: '/legal/guarantees', permanent: true },
+      { source: '/about', destination: '/legal/about', permanent: true },
+      { source: '/legal', destination: '/legal/legal', permanent: false },
+    ]
+  },
 }
 
 module.exports = nextConfig
