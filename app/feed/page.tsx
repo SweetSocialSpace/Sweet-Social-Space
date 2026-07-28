@@ -9,11 +9,6 @@ import Header from '@/app/components/Header'
 import WelcomePost from '@/app/components/WelcomePost'
 import React from 'react'
 
-<body>
-  {children}
-  <GlobalFooter />
-</body>
-
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
   const Comp = dynamic(
     () => loader().then((m:any)=> m.default || m[name] || m).catch(()=> ({ default: () => null })),
@@ -25,7 +20,7 @@ function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
 class ErrorBoundary extends React.Component<{children:React.ReactNode, name:string},{hasError:boolean}>{
   state = {hasError:false}
   static getDerivedStateFromError(){ return {hasError:true} }
-  componentDidCatch(err:any){ console.log(`[HOUSE] ${this.props.name} failed, skipping:`, err.message) }
+  componentDidCatch(err:any){ console.log(`[HOUSE] ${this.props.name} failed:`, err.message) }
   render(){ return this.state.hasError? null : this.props.children as any }
 }
 
@@ -40,7 +35,6 @@ function FeedContent() {
   const [currentProfile, setCurrentProfile] = useState<any>(null)
 
   useEffect(() => { const f = searchParams.get('filter'); if (f) setFilter(f) }, [searchParams])
-
   const handleFilter = (id: string) => {
     setFilter(id)
     router.push(id === 'all'? '/feed' : `/feed?filter=${id}`)
@@ -57,7 +51,9 @@ function FeedContent() {
   const fetchPosts = async (zipToUse?: string) => {
     const z = zipToUse || zip
     if (!z) return
-    const { data } = await supabase.from('posts').select('*').eq('zip_code', z).order('created_at',{ascending:false}).limit(100)
+    let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
+    if (z!== 'GLOBAL') query = query.eq('zip_code', z)
+    const { data } = await query
     if(data) setPosts(data)
   }
 
@@ -72,7 +68,7 @@ function FeedContent() {
         const zipVal = profile.zip || profile.zip_code
         if(zipVal) fetchPosts(zipVal)
         if(!profile.username) router.push('/profile?required=1')
-      }
+      } else { fetchPosts() }
     })()
   }, [])
 
@@ -90,6 +86,7 @@ function FeedContent() {
   })
 
   const authorName = currentProfile?.username? currentProfile.username : 'YOUR BLOCK'
+  const displayZip = zip === 'GLOBAL'? 'GLOBAL' : zip
 
   return (
     <>
@@ -111,7 +108,7 @@ function FeedContent() {
           <Safe loader={() => import('@/components/LocationScopeBar')} name="LocationScopeBar" />
           <div className="mt-4"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
-          <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName}</div>
+          <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName} • {displayZip}</div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
@@ -121,8 +118,8 @@ function FeedContent() {
             {filtered.length===0 && <WelcomePost />}
             {filtered.map((p:any)=>(
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
-                <p className="text-black whitespace-pre-wrap break-words text- leading-6">{p.body}</p>
-                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {zip}</div>
+                <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body}</p>
+                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
                 {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-black">X</button>}
               </div>
             ))}
@@ -142,6 +139,7 @@ function FeedContent() {
         </div>
       </div>
       <Safe loader={() => import('@/components/GoLive')} name="GoLive" />
+      <GlobalFooter />
     </>
   )
 }
