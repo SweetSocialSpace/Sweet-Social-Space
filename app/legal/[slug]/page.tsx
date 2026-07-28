@@ -83,11 +83,14 @@ const PAGES: Record<string, LegalContent> = {
     updated: 'July 27, 2026',
     content: <p>Support support@sweetsocialspace.com Verification verification@sweetsocialspace.com Legal legal@sweetsocialspace.com</p>,
   },
-  legal: {
-    title: 'Legal',
-    updated: 'July 27, 2026',
-    content: <p>DMCA legal@sweetsocialspace.com Governing Law California Santa Clara County GLOBAL LIVE VERTEBRAE FAILSAFE.</p>,
-  },
+  legal: { title: 'Legal', updated: 'July 27, 2026', content: 
+<div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+<p><strong>DMCA / Copyright</strong><br/>If you believe content infringes your copyright, email legal@sweetsocialspace.com with: (1) description of work, (2) URL on site, (3) your contact, (4) good faith statement, (5) signature. We respond within 48 hours and remove verified infringement.</p>
+<p><strong>Governing Law</strong><br/>California law, Santa Clara County venue, without regard to conflict of laws. Disputes resolved via binding arbitration in San Jose, CA unless prohibited.</p>
+<p><strong>Contact</strong><br/>Legal: legal@sweetsocialspace.com<br/>Support: support@sweetsocialspace.com<br/>Security: security@sweetsocialspace.com</p>
+<p><strong>Platform</strong><br/>Sweet Social Space • GLOBAL • SSL SECURED • IP detection via ipapi.co/json • Supabase RLS • Vercel iad1 • Independent - No Big Tech.</p>
+</div> 
+},
 }
 
 const ALIASES: Record<string, string> = {
