@@ -30,14 +30,27 @@ function FeedContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
-  const { zip } = useLocation()
+  const { zip: locationZip } = useLocation()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
+  const [nearZip, setNearZip] = useState<string>('') // single source of truth
+  const [radius, setRadius] = useState<number>(5)
 
-  useEffect(() => { const f = searchParams.get('filter'); if (f) setFilter(f) }, [searchParams])
+  useEffect(() => {
+    const f = searchParams.get('filter');
+    if (f) setFilter(f)
+    const savedRadius = localStorage.getItem('feed_radius')
+    if (savedRadius) setRadius(parseInt(savedRadius))
+  }, [searchParams])
+
   const handleFilter = (id: string) => {
     setFilter(id)
     router.push(id === 'all'? '/feed' : `/feed?filter=${id}`)
+  }
+
+  const handleRadiusChange = (newRadius: number) => {
+    setRadius(newRadius)
+    localStorage.setItem('feed_radius', String(newRadius))
   }
 
   const FILTERS = [
@@ -48,31 +61,72 @@ function FeedContent() {
     { id: 'help', label: 'Help 🤝' }, { id: 'recommend', label: 'Tacos 🌮' },
   ]
 
-  const fetchPosts = async (zipToUse?: string) => {
-    const z = zipToUse || zip
+  const fetchPosts = async (zipToUse?: string, radiusToUse: number = radius) => {
+    const z = zipToUse || nearZip || locationZip
     if (!z) return
-    let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
-    if (z!== 'GLOBAL') query = query.eq('zip_code', z)
+
+    // If GLOBAL - show all
+    if (z === 'GLOBAL') {
+      const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
+      if(data) setPosts(data)
+      return
+    }
+
+    // For radius > 5, we need nearby zips - for now fetch exact + prepare for radius API
+    // TODO: replace with supabase.rpc('nearby_posts', { center_zip: z, radius_miles: radiusToUse })
+    // For MVP: exact zip - radius UI saves choice, backend can expand later
+    let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
+    query = query.eq('zip_code', z)
+
     const { data } = await query
     if(data) setPosts(data)
   }
 
+  // 1. Load profile FIRST - this is neighborhood center - profile wins
   useEffect(() => {
     (async()=>{
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      if (!user) {
+        // anonymous - use locationZip (ipapi) -> GLOBAL
+        if (locationZip) {
+          setNearZip(locationZip)
+          fetchPosts(locationZip)
+        }
+        return
+      }
       setCurrentUserId(user.id)
       const { data: profile } = await supabase.from('profiles').select('*').or(`user_id.eq.${user.id},id.eq.${user.id}`).single()
       if(profile){
         setCurrentProfile(profile)
-        const zipVal = profile.zip || profile.zip_code
-        if(zipVal) fetchPosts(zipVal)
+        const zipVal = profile.zip_code || profile.zip
+        if(zipVal) {
+          setNearZip(zipVal)
+          fetchPosts(zipVal)
+        } else if (locationZip) {
+          // no profile zip - use location as fallback
+          setNearZip(locationZip)
+          fetchPosts(locationZip)
+        }
         if(!profile.username) router.push('/profile?required=1')
-      } else { fetchPosts() }
+      } else if (locationZip) {
+        setNearZip(locationZip)
+        fetchPosts(locationZip)
+      }
     })()
-  }, [])
+  }, []) // only once - not dependent on locationZip to avoid race
 
-  useEffect(()=>{ if (zip) fetchPosts(zip) }, [zip])
+  // 2. Only use locationZip if nearZip not set yet (first load / anonymous)
+  useEffect(()=>{
+    if (!nearZip && locationZip) {
+      setNearZip(locationZip)
+      fetchPosts(locationZip)
+    }
+  }, [locationZip, nearZip])
+
+  // 3. When radius changes, refetch
+  useEffect(()=>{
+    if (nearZip) fetchPosts(nearZip, radius)
+  }, [radius])
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
@@ -86,7 +140,7 @@ function FeedContent() {
   })
 
   const authorName = currentProfile?.username? currentProfile.username : 'YOUR BLOCK'
-  const displayZip = zip === 'GLOBAL'? 'GLOBAL' : zip
+  const displayZip = nearZip || locationZip || 'GLOBAL'
 
   return (
     <>
@@ -105,10 +159,25 @@ function FeedContent() {
           <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
+          {/* Radius selector - 5,10,15,20 - user choice - saved */}
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-white text-xs font-bold">NEAR: {displayZip}</span>
+            <select
+              value={radius}
+              onChange={(e)=>handleRadiusChange(parseInt(e.target.value))}
+              className="bg-white text-black rounded-full px-3 py-1 text-xs font-black"
+            >
+              <option value={5}>5 mi</option>
+              <option value={10}>10 mi</option>
+              <option value={15}>15 mi</option>
+              <option value={20}>20 mi</option>
+            </select>
+            <span className="text-white/40 text-xs">• {filtered.length} posts</span>
+          </div>
           <Safe loader={() => import('@/components/LocationScopeBar')} name="LocationScopeBar" />
           <div className="mt-4"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
-          <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName} • {displayZip}</div>
+          <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName} • {displayZip} • {radius}mi</div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
