@@ -47,4 +47,3 @@ export default function LegalPage({ params }: { params: { slug: string } }) {
     </div>
   )
 }
-
