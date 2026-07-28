@@ -1,0 +1,68 @@
+import Link from 'next/link'
+
+export default function VerificationPage() {
+  return (
+    <div className="min-h-screen w-full bg-black text-white">
+      <div className="absolute inset-0 bg-cover bg-center opacity-20" style={{ backgroundImage: `url('/golden_droplet_heart_wallpaper.jpg')` }} />
+      <div className="relative z-10 p-10 pt-20 max-w-5xl mx-auto">
+        <Link href="/" className="text-white/50 text-sm uppercase tracking-widest">← Home • GLOBAL</Link>
+        
+        <h1 className="text-6xl font-black mt-6">Verification • GLOBAL</h1>
+        <p className="mt-2 text-white/40 uppercase tracking-widest text-sm">How to verify Sweet Social Space is secured • SSL • VERTEBRAE • FAILSAFE</p>
+
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="font-black text-xl">1. SSL Secured</h2>
+            <p className="mt-3 text-white/70 text-sm leading-relaxed">
+              Check browser padlock: URL is https://sweetsocialspace.com • TLS 1.3 • Certificate by Vercel • All traffic encrypted. No http. Passwords hashed with Supabase Auth, never plaintext.
+            </p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="font-black text-xl">2. Domain Verification</h2>
+            <p className="mt-3 text-white/70 text-sm leading-relaxed">
+              Official domain: sweetsocialspace.com only. DNS via Vercel. Deployed Washington DC - iad1. Build logs public on Vercel. No clone domains. Verify in WHOIS.
+            </p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="font-black text-xl">3. GLOBAL Detection Test</h2>
+            <p className="mt-3 text-white/70 text-sm leading-relaxed">
+              Open Incognito /feed — shows GLOBAL, not hardwired zip. Signup demands Zip/Postal Code — GLOBAL demands, never defaults. IP first via ipapi.co/json, profile second, GLOBAL failsafe third. No 95122 hardwire.
+            </p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="font-black text-xl">4. Verified Sources</h2>
+            <p className="mt-3 text-white/70 text-sm leading-relaxed">
+              Feed shows Verified Sources • Near GLOBAL — Alameda Fire Station 3, Fire Station 63, Emeryville Fire 34 — verified fire_station. Upcoming Events live from GLOBAL. Latest Alerts from NWS. Trust Meter LIVE.
+            </p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="font-black text-xl">5. Privacy Guarantee</h2>
+            <p className="mt-3 text-white/70 text-sm leading-relaxed">
+              Private to 10 miles of YOU — wherever you are in world. Posts filtered by zip_code only. No tracking cookies. No selling data. Row Level Security on Supabase. You control your block.
+            </p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="font-black text-xl">6. Independent</h2>
+            <p className="mt-3 text-white/70 text-sm leading-relaxed">
+              No Big Tech owner. No robots deciding feed. No shadowbans for faith. Speak Freely. Love Your Neighbor. GLOBAL • VERTEBRAE • INDEPENDENT • FAILSAFE. Code in github.com/SweetSocialSpace/Sweet-Social-Space
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-12 bg-white text-black rounded-2xl p-8">
+          <h2 className="text-2xl font-black">Contact for Verification</h2>
+          <p className="mt-4 text-sm">Support: support@sweetsocialspace.com • Verification: verification@sweetsocialspace.com • Legal: legal@sweetsocialspace.com • Response 24h</p>
+          <p className="mt-4 text-xs text-black/50 uppercase tracking-widest">SSL SECURED • GLOBAL • VERTEBRAE • FAILSAFE • INDEPENDENT • © 2026 Sweet Social Space</p>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link href="/legal/terms" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Terms</Link>
+          <Link href="/legal/privacy" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Privacy</Link>
+          <Link href="/legal/security" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Security</Link>
+          <Link href="/legal/guarantees" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Guarantees</Link>
+          <Link href="/legal/contact" className="px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black uppercase tracking-widest">Contact</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
