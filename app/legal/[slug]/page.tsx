@@ -10,7 +10,7 @@ type LegalContent = {
 const PAGES: Record<string, LegalContent> = {
   terms: {
     title: 'Terms of Service',
-    updated: 'July 27, 2026',
+    updated: 'July 28, 2026',
     content: (
       <div>
         <p><strong>Welcome to Sweet Social Space. By using sweetsocialspace.com you agree to these Terms of Service.</strong></p>
@@ -31,7 +31,7 @@ const PAGES: Record<string, LegalContent> = {
   },
   privacy: {
   title: 'Privacy Policy',
-  updated: 'July 27, 2026',
+  updated: 'July 28, 2026',
   content: (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <p><strong>We built Sweet Social Space to be private - your block, not the world.</strong> We only ask for what we need to put you near neighbors within 10 miles of YOU.</p>
@@ -44,12 +44,12 @@ const PAGES: Record<string, LegalContent> = {
 },
   security: {
     title: 'Security',
-    updated: 'July 27, 2026',
+    updated: 'July 28, 2026',
     content: <p>SSL Secured https only TLS 1.3 via Vercel. Supabase Auth RLS encrypted at rest. Report security@sweetsocialspace.com</p>,
   },
   verification: {
     title: 'Verification',
-    updated: 'July 27, 2026',
+    updated: 'July 28, 2026',
     content: (
       <div>
         <p>1. SSL Secured - https://sweetsocialspace.com TLS 1.3 Vercel</p>
@@ -63,7 +63,7 @@ const PAGES: Record<string, LegalContent> = {
   },
   guarantees: {
     title: 'Our Guarantees',
-    updated: 'July 27, 2026',
+    updated: 'July 28, 2026',
     content: (
       <div>
         <p>1. YOUR BLOCK FIRST - Private within 10 miles of YOU GLOBAL</p>
@@ -78,15 +78,15 @@ const PAGES: Record<string, LegalContent> = {
   },
   about: {
     title: 'About',
-    updated: 'July 27, 2026',
+    updated: 'July 28, 2026',
     content: <p>Your block not the world. 10 miles of YOU wherever you are GLOBAL. Independent No Big Tech Speak Freely Love Neighbor.</p>,
   },
   contact: {
     title: 'Contact Us',
-    updated: 'July 27, 2026',
+    updated: 'July 28, 2026',
     content: <p>Support support@sweetsocialspace.com Verification verification@sweetsocialspace.com Legal legal@sweetsocialspace.com</p>,
   },
-  legal: { title: 'Legal', updated: 'July 27, 2026', content: 
+  legal: { title: 'Legal', updated: 'July 28, 2026', content: 
 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 <p><strong>DMCA / Copyright</strong><br/>If you believe content infringes your copyright, email legal@sweetsocialspace.com with: (1) description of work, (2) URL on site, (3) your contact, (4) good faith statement, (5) signature. We respond within 48 hours and remove verified infringement.</p>
 <p><strong>Governing Law</strong><br/>California law, Santa Clara County venue, without regard to conflict of laws. Disputes resolved via binding arbitration in San Jose, CA unless prohibited.</p>
