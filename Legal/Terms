@@ -1,7 +1,13 @@
+import React from 'react'
 import { LegalLayout } from '@/components/LegalLayout'
 
-const PAGES: Record<string, { title: string; updated: string; content: React.ReactNode }> = {
-  terms: {
+type LegalContent = {
+  title: string
+  updated: string
+  content: React.ReactNode
+}
+
+const PAGES: Record<string, LegalContent> = {
     title: 'Terms of Service',
     updated: 'July 27, 2026',
     content: (
@@ -54,39 +60,7 @@ const PAGES: Record<string, { title: string; updated: string; content: React.Rea
       </>
     )
   },
-  privacy: {
-    title: 'Privacy Policy',
-    updated: 'July 27, 2026',
-    content: (
-      <>
-        <h2>Data We Collect</h2><p>Email, username, zip code, city. IP via ipapi.co/json for GLOBAL detection (not hardwired to 95122). No selling. No Pixel. Supabase RLS, encrypted at rest.</p>
-        <h2>How We Use It</h2><p>To show you neighbors within 10 miles of YOU wherever you are GLOBAL, chronological feed by zip_code, verified sources, weather, events.</p>
-        <h2>Your Rights</h2><p>Access, correct, delete via Profile. Email privacy@sweetsocialspace.com</p>
-      </>
-    )
-  },
-  verification: {
-    title: 'Verification • GLOBAL',
-    updated: 'July 27, 2026',
-    content: (
-      <>
-        <h2>1. SSL Secured</h2><p>https://sweetsocialspace.com - padlock - TLS 1.3 - Vercel</p>
-        <h2>2. Domain</h2><p>Official domain sweetsocialspace.com only. DNS via Vercel. iad1 Washington DC.</p>
-        <h2>3. GLOBAL Detection Test</h2><p>Incognito /feed shows GLOBAL not hardwired. IP via ipapi.co/json first.</p>
-        <h2>4. Verified Sources</h2><p>Fire Station 3, 63 - verified fire_station - WeatherBar LIVE</p>
-      </>
-    )
-  },
-  guarantees: {
-    title: 'Our Guarantees • GLOBAL',
-    updated: 'July 27, 2026',
-    content: <><p>1. YOUR BLOCK FIRST 2. NO SHADOWBANS FOR FAITH 3. NO ROBOTS 4. GLOBAL DETECTION 5. VERIFIED SOURCES LIVE 6. SSL SECURED 7. INDEPENDENT FAILSAFE</p></>
-  },
-  security: { title: 'Security • SSL Secured', updated: 'July 27, 2026', content: <p>https only TLS 1.3 Vercel. RLS encrypted. Report security@sweetsocialspace.com</p> },
-  legal: { title: 'Legal • GLOBAL', updated: 'July 27, 2026', content: <p>DMCA legal@sweetsocialspace.com. Governing Law California. GLOBAL LIVE.</p> },
-  contact: { title: 'Contact Us', updated: 'July 27, 2026', content: <p>support@sweetsocialspace.com • verification@sweetsocialspace.com • legal@sweetsocialspace.com</p> },
-  about: { title: 'About • GLOBAL', updated: 'July 27, 2026', content: <p>Your block not world. 10 miles of YOU wherever you are GLOBAL.</p> }
-}
+  
 
 export default function LegalSlugPage({ params }: { params: { slug: string } }) {
   const slug = params.slug?.toLowerCase() || 'legal'
