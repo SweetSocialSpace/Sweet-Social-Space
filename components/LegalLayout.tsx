@@ -2,18 +2,25 @@ import Link from 'next/link'
 import type { ReactNode } from 'react'
 import { LegalFooter } from './LegalFooter'
 
-const logo = '/sweet-social-logo.png'
-
 export function LegalLayout({ title, updated, children }: { title: string; updated: string; children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5">
-          <Link href="/" className="flex items-center gap-2"><img src={logo} alt="Sweet Social Space" className="h-8 w-8 rounded-full object-cover" onError={(e)=>{ try { (e.target as any).style.display='none' } catch {} }} /><span className="font-display text-lg font-semibold">Sweet Social Space</span></Link>
-          <div className="flex items-center gap-3"><Link href="/feed" className="text-sm text-muted-foreground hover:text-foreground">Feed →</Link></div>
+    <div style={{minHeight:'100vh', background:'#ffffff', color:'#111', display:'flex', flexDirection:'column', fontFamily:'system-ui, sans-serif'}}>
+      <header style={{borderBottom:'1px solid #e5e7eb', padding:'20px'}}>
+        <div style={{maxWidth:'768px', margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+          <Link href="/" style={{display:'flex', alignItems:'center', gap:8, fontWeight:600, color:'#111', textDecoration:'none'}}>
+            <img src="/sweet-social-logo.png" alt="logo" style={{height:32, width:32, borderRadius:'50%'}} onError={(e)=>{(e.target as any).style.display='none'}} />
+            Sweet Social Space
+          </Link>
+          <Link href="/feed" style={{fontSize:14, color:'#666'}}>Feed →</Link>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12 prose prose-sm dark:prose-invert prose-headings:font-display prose-headings:font-semibold"><h1>{title}</h1><p className="text-sm text-muted-foreground">Last updated: {updated}</p>{children}</main>
+      <main style={{maxWidth:'768px', margin:'0 auto', width:'100%', flex:1, padding:'48px 24px'}}>
+        <h1 style={{fontSize:28, fontWeight:700, marginBottom:8}}>{title}</h1>
+        <p style={{fontSize:13, color:'#666', marginBottom:32}}>Last updated: {updated}</p>
+        <div style={{lineHeight:1.7, fontSize:15, color:'#222'}}>
+          {children}
+        </div>
+      </main>
       <LegalFooter />
     </div>
   )
