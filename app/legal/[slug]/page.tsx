@@ -30,16 +30,18 @@ const PAGES: Record<string, LegalContent> = {
     ),
   },
   privacy: {
-    title: 'Privacy Policy',
-    updated: 'July 27, 2026',
-    content: (
-      <div>
-        <h2>What We Collect</h2><p>Email username zip city. IP via ipapi.co/json for GLOBAL detection only.</p>
-        <h2>What We Do Not</h2><p>No selling. No Facebook Pixel. No tracking. Row Level Security.</p>
-        <h2>Your Rights</h2><p>Access correct delete via Profile. privacy@sweetsocialspace.com</p>
-      </div>
-    ),
-  },
+  title: 'Privacy Policy',
+  updated: 'July 27, 2026',
+  content: (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <p><strong>We built Sweet Social Space to be private - your block, not the world.</strong> We only ask for what we need to put you near neighbors within 10 miles of YOU.</p>
+      <p><strong>What We Collect:</strong> Email to log you in, username you choose, zip and city for proximity. Your IP is checked via ipapi.co/json ONLY to detect GLOBAL vs local - we do not store it, we do not track it across the web.</p>
+      <p><strong>What We NEVER Do:</strong> No selling your data. Ever. No Facebook Pixel. No Google trackers. No ad networks watching your feed. Your feed is chronological by zip_code, not by algorithm selling your attention. Supabase Row Level Security means even we can't read what we shouldn't.</p>
+      <p><strong>Your Rights:</strong> You own you. View, correct, or delete your info anytime via Profile. Request export or deletion at privacy@sweetsocialspace.com - we respond within 48 hours. No dark patterns.</p>
+      <p><strong>Why We Care:</strong> Independent - No Big Tech. We live on your block too. Speak Freely Love Neighbor means your porch talk stays on your porch - within 10 miles, SSL SECURED, TLS 1.3 via Vercel, not sold to the world.</p>
+    </div>
+  ),
+},
   security: {
     title: 'Security',
     updated: 'July 27, 2026',
