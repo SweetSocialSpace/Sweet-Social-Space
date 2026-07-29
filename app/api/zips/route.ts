@@ -8,7 +8,6 @@ const supabase = createClient(
 
 export async function GET() {
   try {
-    // get real zips people are in - dynamic - global - no 95122 hard
     const { data, error } = await supabase
       .from('profiles')
       .select('zip')
@@ -19,9 +18,9 @@ export async function GET() {
 
     if (error) throw error
 
-    const zips = [...new Set((data || []).map((r: any) => String(r.zip).trim()).filter(Boolean))]
+    const raw = (data || []).map((r: any) => String(r.zip).trim()).filter(Boolean)
+    const zips = Array.from(new Set(raw))
 
-    // fallback - if no profiles yet - house stays live
     if (zips.length === 0) {
       return NextResponse.json(['95122'])
     }
@@ -30,7 +29,6 @@ export async function GET() {
       headers: { 'Cache-Control': 'no-store' }
     })
   } catch {
-    // failsafe - still returns something so cron doesn't die
     return NextResponse.json(['95122'], {
       headers: { 'Cache-Control': 'no-store' }
     })
