@@ -1,153 +1,223 @@
-'use client';
-import { useState, useRef, useEffect } from "react";
+'use client'
+import GlobalFooter from '@/components/GlobalFooter'
+import { useState, useEffect, Suspense } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter, useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic'
+import { useLocation } from '@/lib/location-context'
+import Header from '@/app/components/Header'
+import WelcomePost from '@/app/components/WelcomePost'
+import GoLive from '@/components/GoLive'
+import React from 'react'
 
-type Props = { userId?: string; zipCode?: string; };
+function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
+  const Comp = dynamic(
+    () => loader().then((m:any)=> m.default || m[name] || m).catch(()=> ({ default: () => null })),
+    { ssr: false, loading: () => null }
+  )
+  return <ErrorBoundary name={name}><Comp /></ErrorBoundary>
+}
 
-export default function GoLive({ userId, zipCode }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [hasStream, setHasStream] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [status, setStatus] = useState("Tap Enable Camera");
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const streamRef = useRef<MediaStream | null>(null);
+class ErrorBoundary extends React.Component<{children:React.ReactNode, name:string},{hasError:boolean}>{
+  state = {hasError:false}
+  static getDerivedStateFromError(){ return {hasError:true} }
+  componentDidCatch(err:any){ console.log(`[HOUSE] ${this.props.name} failed:`, err.message) }
+  render(){ return this.state.hasError? null : this.props.children as any }
+}
 
-  const openLive = () => {
-    setStatus("Modal opened");
-    setHasStream(false);
-    setIsOpen(true);
-  };
+function FeedContent() {
+  const [filter, setFilter] = useState('all')
+  const supabase = createClient()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [posts, setPosts] = useState<any[]>([])
+  const { zip: locationZip, city: locationCity } = useLocation()
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [currentProfile, setCurrentProfile] = useState<any>(null)
+  const [nearZip, setNearZip] = useState<string>('')
+  const [radius, setRadius] = useState<number>(5)
 
-  const enableCamera = async () => {
-    setStatus("Requesting camera...");
-    try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        setStatus("getUserMedia not supported");
-        return;
-      }
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      streamRef.current = stream;
-      setHasStream(true);
-      setStatus("Camera granted - preview live");
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        try { await videoRef.current.play(); setStatus("Preview live - tap REC"); } catch {}
-      }
-    } catch (err: any) {
-      setStatus(`Failed: ${err.name} - ${err.message}`);
+  useEffect(() => {
+    const f = searchParams.get('filter');
+    if (f) setFilter(f)
+    const savedRadius = localStorage.getItem('feed_radius')
+    if (savedRadius) setRadius(parseInt(savedRadius))
+  }, [searchParams])
+
+  const handleFilter = (id: string) => {
+    setFilter(id)
+    router.push(id === 'all'? '/feed' : `/feed?filter=${id}`)
+  }
+
+  const handleRadiusChange = (newRadius: number) => {
+    setRadius(newRadius)
+    localStorage.setItem('feed_radius', String(newRadius))
+  }
+
+  const FILTERS = [
+    { id: 'all', label: 'All' }, { id: 'faith', label: 'Faith' },
+    { id: 'general', label: 'General' }, { id: 'safety', label: 'Safety' },
+    { id: 'for_sale', label: 'For Sale' }, { id: 'free', label: 'Free' },
+    { id: 'lost_pet', label: 'Lost Pet' }, { id: 'event', label: 'Event' },
+    { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' },
+  ]
+
+  const fetchPosts = async (zipToUse?: string, radiusToUse: number = radius) => {
+    const z = zipToUse || nearZip || locationZip
+    if (!z) return
+    if (z === 'GLOBAL') {
+      const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
+      if(data) setPosts(data)
+      return
     }
-  };
+    const { data } = await supabase.from('posts').select('*').eq('zip_code', z).order('created_at',{ascending:false}).limit(150)
+    if(data) setPosts(data)
+  }
 
-  const closeLive = () => {
-    try { mediaRecorderRef.current?.stop(); } catch {}
-    streamRef.current?.getTracks().forEach(t=>t.stop());
-    streamRef.current = null;
-    setIsOpen(false);
-    setHasStream(false);
-    setIsRecording(false);
-    setIsUploading(false);
-    setStatus("Tap Enable Camera");
-  };
+  useEffect(() => {
+    (async()=>{
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        if (locationZip) {
+          setNearZip(locationZip)
+          fetchPosts(locationZip)
+        }
+        return
+      }
+      setCurrentUserId(user.id)
+      const { data: profile } = await supabase.from('profiles').select('*').or(`user_id.eq.${user.id},id.eq.${user.id}`).single()
+      if(profile){
+        setCurrentProfile(profile)
+        const zipVal = profile.zip_code || profile.zip
+        if(zipVal) {
+          setNearZip(zipVal)
+          fetchPosts(zipVal)
+        } else if (locationZip) {
+          setNearZip(locationZip)
+          fetchPosts(locationZip)
+        }
+        if(!profile.username) router.push('/profile?required=1')
+      } else if (locationZip) {
+        setNearZip(locationZip)
+        fetchPosts(locationZip)
+      }
+    })()
+  }, [])
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    setStatus("Uploading file...");
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("zip", zipCode || "GLOBAL");
-    fd.append("type", "golive");
-    if (userId) fd.append("userId", userId);
-    try {
-      const r = await fetch("/api/upload", { method: "POST", body: fd });
-      if (!r.ok) throw new Error(await r.text());
-      setStatus("Uploaded!");
-      closeLive();
-      location.reload();
-    } catch (err: any) {
-      setStatus(`Upload failed: ${err.message}`);
-      setIsUploading(false);
+  useEffect(()=>{
+    if (!nearZip && locationZip) {
+      setNearZip(locationZip)
+      fetchPosts(locationZip)
     }
-  };
+  }, [locationZip, nearZip])
 
-  const startRec = () => {
-    if (!streamRef.current) { setStatus("Enable camera first"); return; }
-    chunksRef.current = [];
-    const rec = new MediaRecorder(streamRef.current);
-    mediaRecorderRef.current = rec;
-    rec.ondataavailable = ev => { if (ev.data.size>0) chunksRef.current.push(ev.data); };
-    rec.onstop = async () => {
-      const blob = new Blob(chunksRef.current, { type: rec.mimeType || "video/webm" });
-      setIsUploading(true);
-      setStatus("Uploading...");
-      const fd = new FormData();
-      fd.append("file", blob, `live-${Date.now()}.webm`);
-      fd.append("zip", zipCode || "GLOBAL");
-      fd.append("type", "golive");
-      if (userId) fd.append("userId", userId);
-      try {
-        const r = await fetch("/api/upload", { method: "POST", body: fd });
-        if (!r.ok) throw new Error(await r.text());
-        closeLive();
-        location.reload();
-      } catch (e: any) { setStatus(`Upload failed: ${e.message}`); setIsUploading(false); }
-    };
-    rec.start();
-    setIsRecording(true);
-    setStatus("Recording...");
-  };
+  useEffect(()=>{
+    if (nearZip) fetchPosts(nearZip, radius)
+  }, [radius])
 
-  const stopRec = () => { mediaRecorderRef.current?.stop(); setIsRecording(false); };
+  const deletePost = async (postId: string) => {
+    if (!confirm('Delete this post?')) return
+    const { error } = await supabase.from('posts').delete().eq('id', postId)
+    if (!error) setPosts(prev => prev.filter((p:any) => p.id!== postId))
+  }
 
-  useEffect(()=>{ return ()=>{ streamRef.current?.getTracks().forEach(t=>t.stop()); }; },[]);
+  const filtered = filter==='all'? posts : posts.filter((p:any)=> {
+    const cat = (p.category||p.tag||'').toLowerCase().replace(/\s*&\s*/g,'_').replace(/\s+/g,'_')
+    return cat===filter || cat.includes(filter)
+  })
+
+  const authorName = currentProfile?.username || 'your block'
+  const displayZip = nearZip || locationZip || ''
+  const displayCity = currentProfile?.city || locationCity || 'your area'
+  const isGlobal =!displayZip || displayZip === 'GLOBAL'
 
   return (
     <>
-      <button onClick={openLive} className="bg-red-600 text-white font-bold px-4 py-1.5 rounded-full text-sm flex items-center gap-1.5">
-        <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span> Go Live
-      </button>
-      {isOpen && (
-        <div className="fixed inset-0 z-[99999] bg-black flex flex-col">
-          <div className="flex justify-between items-center p-3 bg-zinc-900 text-white">
-            <span className="text-xs">{status}</span>
-            <button onClick={closeLive} className="bg-white/10 px-3 py-1 rounded-full text-xs">Close</button>
-          </div>
-          <div className="flex-1 relative bg-black flex items-center justify-center">
-            <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover max-w- mx-auto bg-zinc-900" />
-            {!hasStream && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/80 p-6">
-                <button onClick={enableCamera} className="bg-white text-black px-8 py-3 rounded-full font-bold text-base">Enable Camera</button>
-                <span className="text-white/50 text-xs text-center">{status}</span>
-                <div className="mt-4 flex flex-col items-center gap-2">
-                  <span className="text-white/30 text-">or if camera blocked</span>
-                  <label className="bg-white/10 text-white px-4 py-2 rounded-full text-xs cursor-pointer">
-                    Upload Video Instead
-                    <input type="file" accept="video/*" onChange={handleFileUpload} className="hidden" />
-                  </label>
-                </div>
-              </div>
-            )}
-            {isUploading && <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white text-sm">Uploading...</div>}
-          </div>
-          <div className="p-5 bg-zinc-900 flex flex-col items-center gap-2">
-            <div className="flex justify-center">
-              {!isRecording? (
-                <button onClick={startRec} disabled={!hasStream} className={`w-20 h-20 rounded-full flex items-center justify-center border-4 ${hasStream? "bg-red-600 border-white/20" : "bg-zinc-700 border-white/10 opacity-50"}`}>
-                  <div className="w-8 h-8 bg-white rounded-full"></div>
-                </button>
-              ) : (
-                <button onClick={stopRec} className="w-20 h-20 rounded-full bg-white border-4 border-red-600 flex items-center justify-center">
-                  <div className="w-6 h-6 bg-red-600 rounded-sm"></div>
-                </button>
-              )}
-            </div>
-            <span className="text- text-white/30">{zipCode || "GLOBAL"} • {hasStream? "camera ready" : "no stream"}</span>
-          </div>
+      <Safe loader={() => import('@/components/PermissionsGate')} name="PermissionsGate" />
+      <Header />
+      <div className="max-w- mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
+        <div className="space-y-4 xl:sticky xl:top-20">
+          <Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" />
+          <Safe loader={() => import('@/components/AIMayor')} name="AIMayor" />
+          <Safe loader={() => import('@/components/BlockMap')} name="BlockMap" />
+          <Safe loader={() => import('@/components/trust-meter/TrustMeter')} name="TrustMeter" />
+          <Safe loader={() => import('@/components/WeatherBar')} name="WeatherBar" />
+          <Safe loader={() => import('@/components/PinnedAutomatedAlert')} name="PinnedAutomatedAlert" />
+          <Safe loader={() => import('@/components/EmergencyAlerts')} name="EmergencyAlerts" />
+          <Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" />
+          <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
         </div>
-      )}
+        <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
+          {/* Near bar - ABOVE feed box - Go Live RIGHT NEXT TO LIVE - correct placement */}
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-white/60 text-xs font-bold">Near</span>
+            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">
+              {isGlobal? displayCity : displayZip}
+            </span>
+            <select
+              value={radius}
+              onChange={(e)=>handleRadiusChange(parseInt(e.target.value))}
+              className="bg-white/10 text-white rounded-full px-3 py-1 text-xs font-bold border border-white/20"
+            >
+              <option value={5}>5 mi</option>
+              <option value={10}>10 mi</option>
+              <option value={15}>15 mi</option>
+              <option value={20}>20 mi</option>
+            </select>
+            <span className="text-white/40 text-xs">• {filtered.length} posts</span>
+            <div className="ml-auto flex items-center gap-2">
+              <GoLive userId={currentUserId || undefined} zipCode={displayZip || 'GLOBAL'} />
+              <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
+            </div>
+          </div>
+
+          <div className="mt-2"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
+
+          {/* CreatePost FULL WIDTH - no Go Live here anymore */}
+          <div className="mt-4">
+            <Safe loader={() => import('@/components/CreatePost')} name="CreatePost" />
+          </div>
+
+          <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
+          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
+            {FILTERS.map(f=>(
+              <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
+            ))}
+          </div>
+          <div className="space-y-3 mt-2">
+            {filtered.length===0 && <WelcomePost />}
+            {filtered.map((p:any)=>(
+              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
+                <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body}</p>
+                {p.media_url && p.media_type==='video' && (
+                  <video src={p.media_url} controls className="mt-3 w-full rounded-xl bg-black" />
+                )}
+                {p.media_url && p.media_type==='image' && (
+                  <img src={p.media_url} alt="" className="mt-3 w-full rounded-xl" />
+                )}
+                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
+                {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
+              </div>
+            ))}
+          </div>
+        <div className="space-y-4 xl:sticky xl:top-20">
+          <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
+          <Safe loader={() => import('@/app/components/TheDrop')} name="TheDrop" />
+          <Safe loader={() => import('@/components/KarmaLeaderboard')} name="KarmaLeaderboard" />
+          <Safe loader={() => import('@/components/proximity-ping/ProximityPing')} name="ProximityPing" />
+          <Safe loader={() => import('@/components/street-heat/StreetHeat')} name="StreetHeat" />
+          <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
+          <Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" />
+          <Safe loader={() => import('@/components/own-this-block/OwnThisBlock')} name="OwnThisBlock" />
+          <Safe loader={() => import('@/components/UpcomingEvents')} name="UpcomingEvents" />
+          <Safe loader={() => import('@/components/VerifiedSources')} name="VerifiedSources" />
+        </div>
+      </div>
+      <GlobalFooter />
     </>
-  );
+  )
+}
+
+export default function FeedPage() {
+  return <Suspense fallback={<div className="text-white p-10 text-center">Loading feed...</div>}><FeedContent /></Suspense>
 }
