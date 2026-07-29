@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   }
   const zip = rawZip.replace(/\s+/g, '')
 
-  // 1. try US first - 5 digit US zips - fixes 95122 = San Jose not Manado
+  // 1. try US first - global US lookup
   try {
     const usRes = await fetch(`https://api.zippopotam.us/us/${zip}`, { next: { revalidate: 3600 } })
     if (usRes.ok) {
@@ -23,10 +23,8 @@ export async function GET(req: Request) {
     }
   } catch {}
 
-  // 2. global fallback - try without country lock - works in Indonesia, PH, JP, etc
+  // 2. global fallback - try other countries
   try {
-    // zippopotam needs country, so try ID, PH, etc - or use open API
-    // simple global: try to fetch via geocode.maps.co or keep US fail as global
     const globalRes = await fetch(`https://api.zippopotam.us/id/${zip}`, { next: { revalidate: 3600 } })
     if (globalRes.ok) {
       const data = await globalRes.json()
@@ -40,7 +38,7 @@ export async function GET(req: Request) {
     }
   } catch {}
 
-  // 3. final fallback - no Manado hard - no San Jose hard - just return zip - global safe
+  // 3. final fallback - global safe - no hardcoat
   return NextResponse.json(
     { zip, city: zip, country: 'GLOBAL' },
     { headers: { 'Cache-Control': 'public, s-maxage=3600' } }
