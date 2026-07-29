@@ -147,8 +147,8 @@ function FeedContent() {
           <Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" />
           <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
         </div>
+
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
-          {/* Near bar - ABOVE feed box - Go Live RIGHT NEXT TO LIVE - correct placement */}
           <div className="flex items-center gap-3 mb-4">
             <span className="text-white/60 text-xs font-bold">Near</span>
             <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">
@@ -173,17 +173,18 @@ function FeedContent() {
 
           <div className="mt-2"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
 
-          {/* CreatePost FULL WIDTH - no Go Live here anymore */}
           <div className="mt-4">
             <Safe loader={() => import('@/components/CreatePost')} name="CreatePost" />
           </div>
 
           <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
+
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
               <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
             ))}
           </div>
+
           <div className="space-y-3 mt-2">
             {filtered.length===0 && <WelcomePost />}
             {filtered.map((p:any)=>(
@@ -200,6 +201,8 @@ function FeedContent() {
               </div>
             ))}
           </div>
+        </div>
+
         <div className="space-y-4 xl:sticky xl:top-20">
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/app/components/TheDrop')} name="TheDrop" />
