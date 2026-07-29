@@ -67,8 +67,15 @@ export function useUserLocation(userId: string | undefined) {
       const supabase=createClient()
       const safeZip=(next.zip&&next.zip.toUpperCase()!=='YOUR BLOCK'&&next.zip!==''?next.zip:'GLOBAL')
       await (supabase as any).from('profiles').update({
-        latitude:next.latitude,longitude:next.longitude,state_code:next.state_code,country_code:next.country_code,location_label:next.location_label,
-        zip_code:safeZip==='GLOBAL'?'95122':safeZip,zip:safeZip==='GLOBAL'?'95122':safeZip,city:next.city||'',body:`${next.city||''} ${safeZip} - location`
+        latitude:next.latitude,
+        longitude:next.longitude,
+        state_code:next.state_code,
+        country_code:next.country_code,
+        location_label:next.location_label,
+        zip_code:safeZip,
+        zip:safeZip,
+        city:next.city||'',
+        body:`${next.city||''} ${safeZip} - location`
       }).eq('user_id',userId)
     }catch{}
   },[userId])
@@ -99,6 +106,7 @@ export function useUserLocation(userId: string | undefined) {
 
   return {loc,ready,prompting,error,requestGeolocation,saveLocation}
 }
+
 export function milesBetween(lat1:number,lng1:number,lat2:number,lng2:number):number{
   try{const toRad=(d:number)=>(d*Math.PI)/180;const R=3958.7613;const dLat=toRad(lat2-lat1);const dLng=toRad(lng2-lng1);const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(a))}catch{return 0}
 }
