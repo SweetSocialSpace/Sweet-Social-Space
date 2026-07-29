@@ -4,16 +4,17 @@ import { useLocation } from '@/lib/location-context'
 
 export default function WeatherBar() {
   const { zip: globalZip, city: globalCity } = useLocation()
-  const zip = globalZip && globalZip !== 'GLOBAL' ? globalZip : ''
+  const zip = globalZip && globalZip!== 'GLOBAL'? globalZip : ''
   const [temp, setTemp] = useState<number | null>(null)
-  const [desc, setDesc] = useState('clear sky')
-  const [city, setCity] = useState(globalCity || '')
+  const [desc, setDesc] = useState('')
+  const [city, setCity] = useState('')
 
   useEffect(() => {
-    if (!zip || zip === 'GLOBAL') {
-      setCity(globalCity || 'San Jose')
-      setTemp(84)
-      setDesc('clear sky')
+    if (!zip) {
+      // GLOBAL - no hardcoded city - use whatever location-context gives - or generic
+      setCity(globalCity || '')
+      setDesc('')
+      setTemp(null)
       return
     }
     let cancelled = false
@@ -28,15 +29,16 @@ export default function WeatherBar() {
           if (t > 150) t = (t - 273.15) * 9/5 + 32
           setTemp(Math.round(Number(t)))
         }
-        let d = data?.description || data?.weather?.[0]?.description || 'clear sky'
-        setDesc(String(d).toLowerCase())
-        setCity(data?.city || data?.name || globalCity || 'San Jose')
+        setDesc((data?.description || data?.weather?.[0]?.description || '').toLowerCase())
+        setCity(data?.city || data?.name || globalCity || '')
       } catch {}
     }
     load()
     const id = setInterval(load, 300000)
     return () => { cancelled = true; clearInterval(id) }
   }, [zip, globalCity])
+
+  const displayCity = city || globalCity || (zip? zip : 'your area')
 
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
@@ -46,9 +48,9 @@ export default function WeatherBar() {
       </div>
       <div className="flex items-center gap-3 mt-2">
         <div className="text-white text-3xl font-black">{temp!== null? `${temp}°F` : '--°F'}</div>
-        <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">{city || 'San Jose'}</span>
+        <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full truncate max-w-">{displayCity}</span>
       </div>
-      <div className="text-white/60 text-xs mt-2 capitalize">{desc}</div>
+      {desc && <div className="text-white/60 text-xs mt-2 capitalize">{desc}</div>}
     </div>
   )
 }
