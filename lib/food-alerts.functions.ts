@@ -3,7 +3,7 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
-const BOT_USER_ID = "b0700000-0000-0000-0000-000000095122" // bot identity, not geography filter
+const BOT_USER_ID = "b0700000-0000-0000-0000-000000000001" // global bot identity
 
 async function getAuthSafe() {
   try {
@@ -12,7 +12,7 @@ async function getAuthSafe() {
     if (!user) return null
     return { supabase, userId: user.id }
   } catch {
-    return null // House never dies
+    return null
   }
 }
 
@@ -30,7 +30,7 @@ const inputSchema = z.object({
   vendor: z.string().trim().min(1).max(80),
   caption: z.string().trim().min(1).max(400),
   source_url: z.string().trim().url().max(500).optional().or(z.literal("")),
-  zip_code: z.string().trim().min(2).max(12), // Global - accepts 5-digit US, 6-digit CA, etc.
+  zip_code: z.string().trim().min(2).max(12),
   lat: z.number().optional(),
   lng: z.number().optional(),
 })
@@ -44,7 +44,6 @@ export async function postFoodAlert(input: z.infer<typeof inputSchema>): Promise
     const isAdmin = await assertAdminSafe(auth.supabase, auth.userId)
     if (!isAdmin) return { error: 'Admin only' }
 
-    // GLOBAL - uses passed zip, works any country, any block
     const { data, error } = await auth.supabase.from('posts').insert({
       body: `${parsed.vendor}: ${parsed.caption}`,
       tag: 'Alert',
