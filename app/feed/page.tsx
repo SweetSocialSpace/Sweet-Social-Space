@@ -148,6 +148,7 @@ function FeedContent() {
           <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
+          {/* Near bar - ABOVE feed box - Go Live RIGHT NEXT TO LIVE - correct placement */}
           <div className="flex items-center gap-3 mb-4">
             <span className="text-white/60 text-xs font-bold">Near</span>
             <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">
@@ -164,19 +165,17 @@ function FeedContent() {
               <option value={20}>20 mi</option>
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
-            <span className="ml-auto text- bg-green-500 text-black px-2 py-0.5 rounded-full">LIVE</span>
+            <div className="ml-auto flex items-center gap-2">
+              <GoLive userId={currentUserId || undefined} zipCode={displayZip || 'GLOBAL'} />
+              <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
+            </div>
           </div>
 
           <div className="mt-2"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
 
-          {/* GO LIVE - placed where it belongs - next to CreatePost */}
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="flex-1">
-              <Safe loader={() => import('@/components/CreatePost')} name="CreatePost" />
-            </div>
-            <div className="shrink-0">
-              <GoLive userId={currentUserId || undefined} zipCode={displayZip || 'GLOBAL'} />
-            </div>
+          {/* CreatePost FULL WIDTH - no Go Live here anymore */}
+          <div className="mt-4">
+            <Safe loader={() => import('@/components/CreatePost')} name="CreatePost" />
           </div>
 
           <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
@@ -190,12 +189,17 @@ function FeedContent() {
             {filtered.map((p:any)=>(
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body}</p>
+                {p.media_url && p.media_type==='video' && (
+                  <video src={p.media_url} controls className="mt-3 w-full rounded-xl bg-black" />
+                )}
+                {p.media_url && p.media_type==='image' && (
+                  <img src={p.media_url} alt="" className="mt-3 w-full rounded-xl" />
+                )}
                 <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
                 {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
               </div>
             ))}
           </div>
-        </div>
         <div className="space-y-4 xl:sticky xl:top-20">
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/app/components/TheDrop')} name="TheDrop" />
