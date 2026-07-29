@@ -8,11 +8,11 @@ export function useOnlinePresence() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!zip) return; // wait for real zip, don't default to 95122 - global
+    if (!zip) return;
     let channel: any = null
     try {
       const supabase = createSSRClient() as any
-      const channelName = `${String(zip).trim()}-presence`; // GLOBAL: per-zip presence, not hardcoded 95122, any zip 2-12 chars worldwide
+      const channelName = `${String(zip).trim()}-presence`;
       channel = supabase.channel(channelName, { config: { presence: { key: 'user' } } });
       channel.on('presence', { event: 'sync' }, () => {
         try {
@@ -25,7 +25,7 @@ export function useOnlinePresence() {
         } catch {}
       });
     } catch {
-      // house never dies - presence optional
+      
     }
     return () => { try { channel?.unsubscribe(); } catch {} };
   }, [zip]);
