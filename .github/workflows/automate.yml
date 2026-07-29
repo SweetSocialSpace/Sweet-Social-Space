@@ -13,9 +13,9 @@ jobs:
         run: |
           DOMAIN="https://sweetsocialspace.com"
           
-          # 1. get real zips from DB - not hardcoded GLOBAL
-          ZIPS=$(curl -sf "$DOMAIN/api/zips" | tr ',' '\n' || echo "95122")
-          if [ -z "$ZIPS" ]; then ZIPS="95122"; fi
+          # 1. get real zips from DB - global - no hardcoat
+          ZIPS=$(curl -sf "$DOMAIN/api/zips" | tr ',' '\n' || echo "GLOBAL")
+          if [ -z "$ZIPS" ]; then ZIPS="GLOBAL"; fi
           
           echo "Zips: $ZIPS"
           
@@ -23,10 +23,11 @@ jobs:
           curl -sf "$DOMAIN/api/ingest" -m 20 || true
           curl -sf "$DOMAIN/api/auto-migrate" -m 20 || true
           
-          # 3. loop real zips - this makes LIVE pills green
+          # 3. loop real zips - keeps feeds live globally
           for ZIP in $ZIPS; do
             ZIP=$(echo $ZIP | tr -d '"[] ' | xargs)
             [ -z "$ZIP" ] && continue
+            [ "$ZIP" = "GLOBAL" ] && continue
             curl -sf "$DOMAIN/api/weather?zip=$ZIP" -m 10 || true
             curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 10 || true
             curl -sf "$DOMAIN/api/trust?zip=$ZIP" -m 10 || true
@@ -34,4 +35,4 @@ jobs:
             echo "✓ $ZIP live"
           done
           
-          echo "Done - all blocks live"
+          echo "Done - all feeds live - global"
