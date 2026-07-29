@@ -3,7 +3,6 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
-// Phase 1: Admin bot triggers stubbed - global, house-safe, no 95122
 
 const BOT_CONFIGS = {
   emergency: {
