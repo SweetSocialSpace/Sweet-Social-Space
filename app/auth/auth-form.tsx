@@ -19,8 +19,7 @@ export default function AuthForm() {
     setLoading(true)
     setError(null)
     try {
-      // GLOBAL - capture IP location at signup - vertebrae
-      const safeZip = (zip && zip.toUpperCase()!=='YOUR BLOCK' && zip.trim()!=='' && zip.toUpperCase()!=='GLOBAL')? zip : 'GLOBAL'
+      const safeZip = (zip && zip.toUpperCase()!=='YOUR BLOCK' && zip.trim()!=='' )? zip : 'GLOBAL'
       const safeCity = city || ''
 
       const { data, error } = isSignUp
@@ -35,10 +34,8 @@ export default function AuthForm() {
 
       if (error) throw error
 
-      // GLOBAL - if signup, ensure profile has location - failsafe
       if (isSignUp && data?.user) {
         try {
-          // Detect real IP if GLOBAL
           let finalZip = safeZip
           let finalCity = safeCity
           if (safeZip === 'GLOBAL') {
@@ -47,11 +44,12 @@ export default function AuthForm() {
               if (ip?.postal) { finalZip = ip.postal; finalCity = ip.city || '' }
             } catch {}
           }
+          // GLOBAL FIX: no 95122 hardcoat - save what we have - GLOBAL allowed
           await supabase.from('profiles').upsert({
             id: data.user.id,
             user_id: data.user.id,
-            zip_code: finalZip === 'GLOBAL'? '95122' : finalZip,
-            zip: finalZip === 'GLOBAL'? '95122' : finalZip,
+            zip_code: finalZip,
+            zip: finalZip,
             city: finalCity,
             country: country || 'US',
             email: email.trim()
