@@ -2,10 +2,10 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const lat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : 37.3351 // GLOBAL: San Jose default, not Austin
-  const lon = searchParams.get('lon') ? parseFloat(searchParams.get('lon')!) : -121.8932 // GLOBAL
+  const lat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : 37.3351
+  const lon = searchParams.get('lon') ? parseFloat(searchParams.get('lon')!) : -121.8932
   const city = searchParams.get('city') || 'Local'
-  const zip = searchParams.get('zip') || '95122' // GLOBAL FIX: was 'local'
+  const zip = searchParams.get('zip') || 'local'
   const events: any[] = []
 
   try {
