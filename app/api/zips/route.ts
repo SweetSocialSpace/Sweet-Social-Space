@@ -21,15 +21,13 @@ export async function GET() {
     const raw = (data || []).map((r: any) => String(r.zip).trim()).filter(Boolean)
     const zips = Array.from(new Set(raw))
 
-    if (zips.length === 0) {
-      return NextResponse.json(['95122'])
-    }
-
+    // GLOBAL FIX: return what exists - not hardcoded 95122 - house works anywhere
     return NextResponse.json(zips, {
       headers: { 'Cache-Control': 'no-store' }
     })
   } catch {
-    return NextResponse.json(['95122'], {
+    // GLOBAL FIX: empty - not 95122 - never hardcoat
+    return NextResponse.json([], {
       headers: { 'Cache-Control': 'no-store' }
     })
   }
