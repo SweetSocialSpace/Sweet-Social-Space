@@ -3,7 +3,6 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
-
 const BOT_CONFIGS = {
   emergency: {
     path: "/api/public/bots/emergency-alerts-daily",
