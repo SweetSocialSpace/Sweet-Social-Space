@@ -48,12 +48,11 @@ export default function ProfilePage(){
     setMsg('')
     const { data: { user } } = await supabase.auth.getUser()
     if(!user){ setMsg('Not logged in'); setSaving(false); return }
-    if(!profile.zip.trim()){ setMsg('Zip required — global'); setSaving(false); return }
+    if(!profile.zip.trim()){ setMsg('Zip required'); setSaving(false); return }
 
     const cleanUsername = profile.username.trim().toLowerCase().replace(/\s+/g,'') || `user_${user.id.slice(0,8)}`
     const zipClean = profile.zip.trim()
 
-    // GLOBAL — whole earth — turn any postal code into lat/lng (best effort)
     let lat: number | null = null
     let lng: number | null = null
     let cityName = ''
@@ -70,7 +69,6 @@ export default function ProfilePage(){
     } catch {}
 
     try {
-      // 1. Core save — this will ALWAYS work even without new columns
       let { error } = await supabase.from('profiles').upsert({
         user_id: user.id,
         id: user.id,
@@ -103,7 +101,6 @@ export default function ProfilePage(){
       }
       if (error) throw error
 
-      // 2. Try to save lat/lng if columns exist — if not, ignore, don't block user
       if (lat!== null && lng!== null) {
         await supabase.from('profiles').update({
           latitude: lat,
@@ -113,7 +110,7 @@ export default function ProfilePage(){
       }
 
       setLoc({ zip: zipClean, city: cityName || '', country: '', lat: lat || 0, lng: lng || 0 })
-      setMsg('Saved! Taking you to your block...')
+      setMsg('Saved! Taking you to your feed...')
       window.location.href = '/feed'
 
     } catch (e:any) {
@@ -136,33 +133,34 @@ export default function ProfilePage(){
       <div className="w-full max-w-2xl bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden">
         <div className="p-4 flex items-center justify-between border-b border-white/10 shrink-0">
           <button onClick={()=> window.location.href='/feed'} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
-          <h1 className="text-lg font-black text-white truncate">@{profile.username || 'yourname'} • {profile.zip || 'YOUR BLOCK'}</h1>
+          <h1 className="text-lg font-black text-white truncate">@{profile.username || 'yourname'} • {profile.zip || 'GLOBAL'}</h1>
           <div className="w-16"></div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           <div>
-            <label className="text-xs text-white font-bold uppercase tracking-wider">Username • Public — What neighbors see on your posts</label>
-            <input value={profile.username} onChange={e=>setProfile({...profile, username:e.target.value})} placeholder="NeighborOnQuimby" className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm font-black text-black mt-1" />
-            <p className="text-xs text-white/40 mt-1">Shown on feed, comments, marketplace. Be anonymous if you want.</p>
+            
+            <label className="text-xs text-white font-bold uppercase tracking-wider">Username • Public</label>
+            <input value={profile.username} onChange={e=>setProfile({...profile, username:e.target.value})} placeholder="Choose a username" className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm font-black text-black mt-1" />
+            <p className="text-xs text-white/40 mt-1">Shown on feed. Be anonymous if you want.</p>
           </div>
 
           <div>
-            <label className="text-xs text-white/40">Your Real Name • Private — Never public, for account only</label>
-            <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} placeholder="Harry Sweet" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/80 mt-1" />
-            <p className="text-xs text-white/20 mt-1">Only you see this. Use a fictitious public username above for privacy.</p>
+            <label className="text-xs text-white/40">Real Name • Private</label>
+            <input value={profile.display_name} onChange={e=>setProfile({...profile, display_name:e.target.value})} placeholder="Your name - private" className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white/80 mt-1" />
+            <p className="text-xs text-white/20 mt-1">Only you see this.</p>
           </div>
 
           <div>
             <label className="text-xs text-white/40">Bio</label>
-            <textarea value={profile.bio} onChange={e=>setProfile({...profile, bio:e.target.value})} className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white mt-1 h-20 resize-none" placeholder="Owner and creator" />
+            <textarea value={profile.bio} onChange={e=>setProfile({...profile, bio:e.target.value})} className="w-full bg-white/[0.05] border border-white/10 rounded-xl p-3 text-sm text-white mt-1 h-20 resize-none" placeholder="Tell neighbors about you" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-white/60 font-bold">Zip Code • Global</label>
-              <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm text-black font-black mt-1" placeholder="95122 or 12828 or SW1A 0AA" />
-              <p className="text-xs text-white/30 mt-1">What goes on in {profile.zip || 'your block'} stays in {profile.zip || 'your block'}</p>
+              <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm text-black font-black mt-1" placeholder="ZIP Code" />
+              <p className="text-xs text-white/30 mt-1">What goes on in {profile.zip || 'your area'} stays in {profile.zip || 'your area'}</p>
             </div>
             <div>
               <label className="text-xs text-white/40">Cross Street</label>
@@ -181,7 +179,7 @@ export default function ProfilePage(){
           {msg && <p className="text-sm text-center mb-3 text-green-300">{msg}</p>}
           <div className="flex gap-3">
             <button onClick={()=> window.location.href='/feed'} className="flex-1 bg-white/10 py-3 rounded-xl text-sm font-bold text-white/70 hover:bg-white/20">Cancel</button>
-            <button onClick={handleSave} disabled={saving} className="flex-[2] bg-white text-black py-3 rounded-xl text-sm font-black hover:bg-white/90 disabled:opacity-50">{saving?'Saving...':'SAVE • Update Block'}</button>
+            <button onClick={handleSave} disabled={saving} className="flex-[2] bg-white text-black py-3 rounded-xl text-sm font-black hover:bg-white/90 disabled:opacity-50">{saving?'Saving...':'SAVE'}</button>
           </div>
         </div>
       </div>
