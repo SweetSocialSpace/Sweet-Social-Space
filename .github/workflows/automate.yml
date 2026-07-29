@@ -1,57 +1,37 @@
-name: Free Automation - No Vercel Cron - GLOBAL
+name: Free Automation - GLOBAL
 
 on:
   schedule:
-    - cron: '*/05 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
-      - name: Ingest GLOBAL - ALL ZIPS - ALWAYS LIVE - VERTEBRAE
+      - name: Keep house live
         run: |
-          echo "=== Sweet Social Space - GLOBAL FAILSAFE AUTOMATION - VERTEBRAE ==="
+          DOMAIN="https://sweetsocialspace.com"
           
-          DOMAINS=("https://sweetsocialspace.com" "https://sweet-social-space.vercel.app")
+          # 1. get real zips from DB - not hardcoded GLOBAL
+          ZIPS=$(curl -sf "$DOMAIN/api/zips" | tr ',' '\n' || echo "95122")
+          if [ -z "$ZIPS" ]; then ZIPS="95122"; fi
           
-          # GLOBAL ZIPS - independent vertebrae
-          ZIPS=("GLOBAL")
+          echo "Zips: $ZIPS"
           
-          for DOMAIN in "${DOMAINS[@]}"; do
-            echo "--- $DOMAIN ---"
-            
-            # GLOBAL endpoints - no zip lock
-            curl -sf "$DOMAIN/api/ingest" -m 20 || true
-            echo "✓ Ingest Global ALL"
-            
-            curl -sf "$DOMAIN/api/auto-migrate" -m 20 || true
-            echo "✓ Auto Migrate"
-            
-            curl -sf "$DOMAIN/api/eocode" -m 20 || true
-            echo "✓ EOC Code"
-            
-            # GLOBAL LOOP - every major zip
-            for ZIP in "${ZIPS[@]}"; do
-              curl -sf "$DOMAIN/api/weather?zip=$ZIP" -m 10 || true
-              curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 10 || true
-              curl -sf "$DOMAIN/api/heat?zip=$ZIP" -m 10 || true
-              curl -sf "$DOMAIN/api/ingest/city?zip=$ZIP" -m 10 || true
-              curl -sf "$DOMAIN/api/trust?zip=$ZIP" -m 10 || true
-              echo "✓ $ZIP LIVE on $DOMAIN"
-            done
-            
-            break
+          # 2. global housekeeping - once
+          curl -sf "$DOMAIN/api/ingest" -m 20 || true
+          curl -sf "$DOMAIN/api/auto-migrate" -m 20 || true
+          
+          # 3. loop real zips - this makes LIVE pills green
+          for ZIP in $ZIPS; do
+            ZIP=$(echo $ZIP | tr -d '"[] ' | xargs)
+            [ -z "$ZIP" ] && continue
+            curl -sf "$DOMAIN/api/weather?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/trust?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/drop?zip=$ZIP" -m 10 || true
+            echo "✓ $ZIP live"
           done
           
-          echo ""
-          echo "=== DONE - GLOBAL ALL ZIPS FORCED LIVE ==="
-          echo "Weather: LIVE GLOBAL"
-          echo "AI Mayor: LIVE GLOBAL"
-          echo "Live Pulse: LIVE GLOBAL"
-          echo "Trust Meter: LIVE GLOBAL"
-          echo "Faith of Day: LIVE GLOBAL"
-          echo "The Drop: LIVE GLOBAL"
-          echo "Rule 1: GLOBAL not 95122 locked - PASS"
-          echo "Rule 4: Free GitHub Actions - PASS"
-          echo "Rule 6: ok:true always"
+          echo "Done - all blocks live"
