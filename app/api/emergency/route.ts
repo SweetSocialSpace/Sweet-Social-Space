@@ -6,7 +6,6 @@ export async function GET(request: Request) {
   if (!zip) return NextResponse.json({ error: 'ZIP required' }, { status: 400 })
   const alerts: any[] = []
 
-  // GLOBAL FIX: Geocode ZIP to lat/lng dynamically, not hardcoded 95122
   let lat = 37.3382
   let lon = -121.8413
   try {
