@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic'
 import { useLocation } from '@/lib/location-context'
 import Header from '@/app/components/Header'
 import WelcomePost from '@/app/components/WelcomePost'
+import GoLive from '@/components/GoLive'
 import React from 'react'
 
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
@@ -147,7 +148,6 @@ function FeedContent() {
           <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
-          {/* KISS - ONE NEAR BAR - inviting - not aggressive */}
           <div className="flex items-center gap-3 mb-4">
             <span className="text-white/60 text-xs font-bold">Near</span>
             <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">
@@ -167,10 +167,18 @@ function FeedContent() {
             <span className="ml-auto text- bg-green-500 text-black px-2 py-0.5 rounded-full">LIVE</span>
           </div>
 
-          {/* LocationScopeBar REMOVED - was second NEAR - clutter */}
-
           <div className="mt-2"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
-          <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
+
+          {/* GO LIVE - placed where it belongs - next to CreatePost */}
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <div className="flex-1">
+              <Safe loader={() => import('@/components/CreatePost')} name="CreatePost" />
+            </div>
+            <div className="shrink-0">
+              <GoLive userId={currentUserId || undefined} zipCode={displayZip || 'GLOBAL'} />
+            </div>
+          </div>
+
           <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
@@ -201,7 +209,6 @@ function FeedContent() {
           <Safe loader={() => import('@/components/VerifiedSources')} name="VerifiedSources" />
         </div>
       </div>
-      <Safe loader={() => import('@/components/GoLive')} name="GoLive" />
       <GlobalFooter />
     </>
   )
