@@ -44,7 +44,7 @@ export default function AuthForm() {
               if (ip?.postal) { finalZip = ip.postal; finalCity = ip.city || '' }
             } catch {}
           }
-          // GLOBAL FIX: no 95122 hardcoat - save what we have - GLOBAL allowed
+          
           await supabase.from('profiles').upsert({
             id: data.user.id,
             user_id: data.user.id,
