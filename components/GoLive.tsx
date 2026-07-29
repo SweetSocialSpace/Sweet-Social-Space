@@ -24,22 +24,18 @@ export default function GoLive({ userId, zipCode }: Props) {
     setStatus("Requesting camera...");
     try {
       if (!navigator.mediaDevices?.getUserMedia) {
-        setStatus("getUserMedia not supported in this browser");
+        setStatus("getUserMedia not supported");
         return;
       }
-      // simplest constraints - universal - any camera
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       streamRef.current = stream;
       setHasStream(true);
-      setStatus("Camera granted - starting preview");
+      setStatus("Camera granted - preview live");
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = async () => {
-          try { await videoRef.current?.play(); setStatus("Preview live - tap REC"); } catch(e:any){ setStatus("Play failed: "+e.message); }
-        };
+        try { await videoRef.current.play(); setStatus("Preview live - tap REC"); } catch {}
       }
     } catch (err: any) {
-      console.error("camera error", err);
       setStatus(`Failed: ${err.name} - ${err.message}`);
     }
   };
@@ -53,54 +49,60 @@ export default function GoLive({ userId, zipCode }: Props) {
     setIsRecording(false);
     setIsUploading(false);
     setStatus("Tap Enable Camera");
+  };
 
-    <input type="file" accept="video/*" capture="user" onChange={async (e)=>{
-  const file = e.target.files?.[0];
-  if(!file) return;
-  setIsUploading(true);
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("zip", zipCode || "GLOBAL");
-  fd.append("type", "golive");
-  if(userId) fd.append("userId", userId);
-  await fetch("/api/upload", {method:"POST", body:fd});
-  location.reload();
-}} className="mt-3 text-xs text-white/60" />
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
+    setStatus("Uploading file...");
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("zip", zipCode || "GLOBAL");
+    fd.append("type", "golive");
+    if (userId) fd.append("userId", userId);
+    try {
+      const r = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!r.ok) throw new Error(await r.text());
+      setStatus("Uploaded!");
+      closeLive();
+      location.reload();
+    } catch (err: any) {
+      setStatus(`Upload failed: ${err.message}`);
+      setIsUploading(false);
+    }
   };
 
   const startRec = () => {
     if (!streamRef.current) { setStatus("Enable camera first"); return; }
     chunksRef.current = [];
-    try {
-      const rec = new MediaRecorder(streamRef.current);
-      mediaRecorderRef.current = rec;
-      rec.ondataavailable = e => { if(e.data.size>0) chunksRef.current.push(e.data); };
-      rec.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: rec.mimeType || "video/webm" });
-        setIsUploading(true);
-        setStatus("Uploading...");
-        const fd = new FormData();
-        fd.append("file", blob, `live-${Date.now()}.webm`);
-        fd.append("zip", zipCode || "GLOBAL");
-        fd.append("type", "golive");
-        if (userId) fd.append("userId", userId);
-        try {
-          const r = await fetch("/api/upload", { method:"POST", body:fd });
-          if(!r.ok) throw new Error(await r.text());
-          setStatus("Uploaded!");
-          closeLive();
-          location.reload();
-        } catch(e:any){ setStatus("Upload failed: "+e.message); setIsUploading(false); }
-      };
-      rec.start();
-      setIsRecording(true);
-      setStatus("Recording...");
-    } catch(e:any){ setStatus("Recorder failed: "+e.message); }
+    const rec = new MediaRecorder(streamRef.current);
+    mediaRecorderRef.current = rec;
+    rec.ondataavailable = ev => { if (ev.data.size>0) chunksRef.current.push(ev.data); };
+    rec.onstop = async () => {
+      const blob = new Blob(chunksRef.current, { type: rec.mimeType || "video/webm" });
+      setIsUploading(true);
+      setStatus("Uploading...");
+      const fd = new FormData();
+      fd.append("file", blob, `live-${Date.now()}.webm`);
+      fd.append("zip", zipCode || "GLOBAL");
+      fd.append("type", "golive");
+      if (userId) fd.append("userId", userId);
+      try {
+        const r = await fetch("/api/upload", { method: "POST", body: fd });
+        if (!r.ok) throw new Error(await r.text());
+        closeLive();
+        location.reload();
+      } catch (e: any) { setStatus(`Upload failed: ${e.message}`); setIsUploading(false); }
+    };
+    rec.start();
+    setIsRecording(true);
+    setStatus("Recording...");
   };
 
-  const stopRec = () => { mediaRecorderRef.current?.stop(); setIsRecording(false); setStatus("Stopping..."); };
+  const stopRec = () => { mediaRecorderRef.current?.stop(); setIsRecording(false); };
 
-  useEffect(()=>{ return ()=>streamRef.current?.getTracks().forEach(t=>t.stop()); },[]);
+  useEffect(()=>{ return ()=>{ streamRef.current?.getTracks().forEach(t=>t.stop()); }; },[]);
 
   return (
     <>
@@ -119,9 +121,16 @@ export default function GoLive({ userId, zipCode }: Props) {
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/80 p-6">
                 <button onClick={enableCamera} className="bg-white text-black px-8 py-3 rounded-full font-bold text-base">Enable Camera</button>
                 <span className="text-white/50 text-xs text-center">{status}</span>
+                <div className="mt-4 flex flex-col items-center gap-2">
+                  <span className="text-white/30 text-">or if camera blocked</span>
+                  <label className="bg-white/10 text-white px-4 py-2 rounded-full text-xs cursor-pointer">
+                    Upload Video Instead
+                    <input type="file" accept="video/*" onChange={handleFileUpload} className="hidden" />
+                  </label>
+                </div>
               </div>
             )}
-            {isUploading && <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white">Uploading...</div>}
+            {isUploading && <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white text-sm">Uploading...</div>}
           </div>
           <div className="p-5 bg-zinc-900 flex flex-col items-center gap-2">
             <div className="flex justify-center">
