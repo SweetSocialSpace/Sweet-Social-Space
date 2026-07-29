@@ -9,30 +9,48 @@ jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
-      - name: Keep house live
+      - name: Keep house live - all components
         run: |
           DOMAIN="https://sweetsocialspace.com"
           
-          # 1. get real zips from DB - global - no hardcoat
+          # 1. get real zips from DB - global - no hardcoat - postal service not IP
           ZIPS=$(curl -sf "$DOMAIN/api/zips" | tr ',' '\n' || echo "GLOBAL")
           if [ -z "$ZIPS" ]; then ZIPS="GLOBAL"; fi
           
           echo "Zips: $ZIPS"
           
-          # 2. global housekeeping - once
+          # 2. global housekeeping - once - no zip needed
+          echo "== GLOBAL HOUSEKEEPING =="
           curl -sf "$DOMAIN/api/ingest" -m 20 || true
           curl -sf "$DOMAIN/api/auto-migrate" -m 20 || true
+          curl -sf "$DOMAIN/api/pulse" -m 20 || true
+          curl -sf "$DOMAIN/api/feed/refresh" -m 20 || true
           
-          # 3. loop real zips - keeps feeds live globally
+          # 3. loop real zips - keeps ALL feeds live globally
           for ZIP in $ZIPS; do
             ZIP=$(echo $ZIP | tr -d '"[] ' | xargs)
             [ -z "$ZIP" ] && continue
             [ "$ZIP" = "GLOBAL" ] && continue
+            
+            echo "== ZIP: $ZIP =="
+            
+            # Core automations
             curl -sf "$DOMAIN/api/weather?zip=$ZIP" -m 10 || true
             curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 10 || true
+            
+            # Trust & Safety
             curl -sf "$DOMAIN/api/trust?zip=$ZIP" -m 10 || true
+            
+            # Features - all components
             curl -sf "$DOMAIN/api/drop?zip=$ZIP" -m 10 || true
-            echo "✓ $ZIP live"
+            curl -sf "$DOMAIN/api/marketplace?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/karma?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/live-map?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/feed?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/notifications?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/events?zip=$ZIP" -m 10 || true
+            
+            echo "✓ $ZIP - all components live"
           done
           
-          echo "Done - all feeds live - global"
+          echo "Done - all feeds live - global - for ANYBODY"
