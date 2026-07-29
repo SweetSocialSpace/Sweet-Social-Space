@@ -37,7 +37,7 @@ const baseSchema = z.object({
   details: z.string().trim().max(400).optional().or(z.literal("")),
   source_url: z.string().trim().url().max(500).optional().or(z.literal("")),
   status: z.enum(["draft", "published"]).default("published"),
-  zip_code: z.string().trim().min(2).max(12), // Global - any country format
+  zip_code: z.string().trim().min(2).max(12),
   lat: z.number().optional(),
   lng: z.number().optional(),
 })
@@ -73,7 +73,7 @@ export async function postEmergencyAlert(input: z.infer<typeof baseSchema>): Pro
     const { data, error } = await auth.supabase.from('posts').insert({
       body: buildBody(parsed),
       tag: 'Emergency',
-      zip_code: parsed.zip_code, // Global - YOUR zip, not 95122
+      zip_code: parsed.zip_code, 
       latitude: parsed.lat,
       longitude: parsed.lng,
       user_id: BOT_USER_ID,
