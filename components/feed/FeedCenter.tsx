@@ -15,11 +15,11 @@ export default function FeedCenter() {
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState<typeof TAGS[number]>('General')
   const [posts, setPosts] = useState<any[]>([])
-  const [zip, setZip] = useState('') // GLOBAL FIX: no hardcoded 95122
+  const [zip, setZip] = useState('')
   const [radius, setRadius] = useState(10)
   const [isPosting, setIsPosting] = useState(false)
 
-  // Sync with global location when it loads
+
   useEffect(() => {
     if (userZip &&!zip) setZip(userZip)
   }, [userZip])
@@ -29,7 +29,7 @@ export default function FeedCenter() {
     const { data } = await supabase
     .from('posts')
     .select('*')
-    .eq('zip_code', zip) // GLOBAL FIX: filter by real zip
+    .eq('zip_code', zip) 
     .order('created_at',{ascending:false})
     .limit(100)
     if(data) setPosts(data)
@@ -47,7 +47,7 @@ export default function FeedCenter() {
         user_id: user.id,
         body: draft.trim(),
         tag,
-        zip_code: zip // GLOBAL FIX: save real zip, not hardcoded
+        zip_code: zip 
       })
       setDraft('')
       await load()
