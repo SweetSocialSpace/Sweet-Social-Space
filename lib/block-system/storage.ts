@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/client'
 export async function getBlockTruth(): Promise<{zip:string,city:string,lat:number,lng:number}> {
   const safe = { zip: '', city: '', lat: 0, lng: 0 }
   
-  // 1. PROFILE FIRST — truth — global — forced at signup — NOT localStorage
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -30,7 +29,6 @@ export async function getBlockTruth(): Promise<{zip:string,city:string,lat:numbe
     }
   } catch {}
 
-  // 2. localStorage only if same user — prevents 95122 bleeding into 12828 — global
   try {
     if (typeof window !== 'undefined') {
       const z = localStorage.getItem('user_zip')
@@ -41,7 +39,6 @@ export async function getBlockTruth(): Promise<{zip:string,city:string,lat:numbe
     }
   } catch {}
 
-  // 3. IP global fallback - any country, any zip 2-12 chars
   try {
     const r = await fetch('/api/geocode', { cache: 'no-store' })
     if (r.ok) {
