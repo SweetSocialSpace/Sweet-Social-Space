@@ -19,11 +19,13 @@ export default function GoLive({ userId, zipCode }: Props) {
   const openLive = async () => {
     setErrorMsg(null);
     setIsOpen(true);
-    // small delay so video element mounts
-    await new Promise(r => setTimeout(r, 50));
+  };
+
+  const enableCamera = async () => {
+    setErrorMsg(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 720 }, height: { ideal: 1280 } },
+        video: { facingMode: "user" },
         audio: true,
       });
       streamRef.current = stream;
@@ -33,8 +35,11 @@ export default function GoLive({ userId, zipCode }: Props) {
       }
     } catch (err: any) {
       console.error("camera error", err);
-      setErrorMsg(err?.message || "Camera permission denied");
-      setIsOpen(false);
+      if (err?.name === "NotAllowedError") {
+        setErrorMsg("Permission denied by system - Allow camera in browser + System Settings > Privacy > Camera");
+      } else {
+        setErrorMsg(err?.message || "Camera failed");
+      }
     }
   };
 
@@ -53,6 +58,7 @@ export default function GoLive({ userId, zipCode }: Props) {
   };
 
   const getMimeType = () => {
+    if (typeof MediaRecorder === "undefined") return "";
     if (MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) return "video/webm;codecs=vp9";
     if (MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) return "video/webm;codecs=vp8";
     if (MediaRecorder.isTypeSupported("video/webm")) return "video/webm";
@@ -61,28 +67,26 @@ export default function GoLive({ userId, zipCode }: Props) {
   };
 
   const startRecording = () => {
-    if (!streamRef.current) return;
+    if (!streamRef.current) {
+      setErrorMsg("Tap Enable Camera first");
+      return;
+    }
     chunksRef.current = [];
     try {
       const mimeType = getMimeType();
       const recorder = mimeType? new MediaRecorder(streamRef.current, { mimeType }) : new MediaRecorder(streamRef.current);
       mediaRecorderRef.current = recorder;
-
       recorder.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
+        if (e.data.size > 0) chunksRef.current.push(e.data);
       };
-
       recorder.onstop = async () => {
-        const type = recorder.mimeType || "video/webm";
-        const blob = new Blob(chunksRef.current, { type });
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "video/webm" });
         await uploadVideo(blob);
       };
-
       recorder.start(100);
       setIsRecording(true);
     } catch (e: any) {
-      console.error(e);
-      setErrorMsg("Recording not supported on this device");
+      setErrorMsg("Recording not supported");
     }
   };
 
@@ -102,29 +106,28 @@ export default function GoLive({ userId, zipCode }: Props) {
       formData.append("visibility", "global");
       if (userId) formData.append("userId", userId);
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error(await res.text());
 
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(txt || "upload failed");
-      }
-
-      await fetch("/api/feed/refresh", { method: "POST" }).catch(()=>{});
       closeLive();
       window.location.reload();
     } catch (e: any) {
-      console.error(e);
       setErrorMsg(e.message || "Upload failed");
       setIsUploading(false);
     }
   };
 
   useEffect(() => {
+    if (isOpen) {
+      // auto try camera when modal opens
+      const t = setTimeout(() => enableCamera(), 100);
+      return () => clearTimeout(t);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     return () => {
-      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
     };
   }, []);
 
@@ -143,9 +146,9 @@ export default function GoLive({ userId, zipCode }: Props) {
           <div className="flex justify-between items-center p-3 bg-zinc-900 text-white">
             <div className="flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${isRecording? "bg-red-500 animate-pulse" : "bg-white/50"}`}></span>
-              <span className="text-sm font-semibold">{isRecording? "REC • Recording" : "Preview"}</span>
+              <span className="text-sm font-semibold">{isRecording? "REC" : "Live Preview"}</span>
             </div>
-            <button onClick={closeLive} className="bg-white/10 px-3 py-1 rounded-full text-sm">✕ Close</button>
+            <button onClick={closeLive} className="bg-white/10 px-3 py-1 rounded-full text-sm">Close</button>
           </div>
 
           <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
@@ -156,39 +159,37 @@ export default function GoLive({ userId, zipCode }: Props) {
               playsInline
               className="w-full h-full object-cover max-w- mx-auto"
             />
+            {!streamRef.current && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6">
+                <button onClick={enableCamera} className="bg-white text-black px-5 py-2 rounded-full font-bold text-sm">
+                  Enable Camera
+                </button>
+                <p className="text-white/50 text-xs text-center">Tap to allow camera + mic</p>
+              </div>
+            )}
             {errorMsg && (
-              <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-6 text-center">
-                <div className="bg-white rounded-xl p-4 text-black text-sm">{errorMsg}</div>
+              <div className="absolute bottom-20 left-4 right-4 bg-white rounded-xl p-3 text-black text-xs text-center">
+                {errorMsg}
               </div>
             )}
             {isUploading && (
-              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white gap-3">
+              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white gap-2">
                 <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span className="text-sm">Uploading instantly...</span>
+                <span className="text-sm">Uploading...</span>
               </div>
             )}
           </div>
 
           <div className="p-6 bg-zinc-900 flex justify-center gap-6">
             {!isRecording? (
-              <button
-                onClick={startRecording}
-                className="w-20 h-20 rounded-full bg-red-600 border- border-white/20 flex items-center justify-center"
-              >
+              <button onClick={startRecording} className="w-20 h-20 rounded-full bg-red-600 border-4 border-white/20 flex items-center justify-center">
                 <div className="w-8 h-8 bg-white rounded-full"></div>
               </button>
             ) : (
-              <button
-                onClick={stopRecording}
-                className="w-20 h-20 rounded-full bg-white border- border-red-600 flex items-center justify-center"
-              >
-                <div className="w-7 h-7 bg-red-600 rounded-sm"></div>
+              <button onClick={stopRecording} className="w-20 h-20 rounded-full bg-white border-4 border-red-600 flex items-center justify-center">
+                <div className="w-6 h-6 bg-red-600 rounded-sm"></div>
               </button>
             )}
-          </div>
-
-          <div className="text- text-white/40 text-center pb-4 bg-zinc-900">
-            Instant upload • Global feed • {zipCode || "GLOBAL"}
           </div>
         </div>
       )}
