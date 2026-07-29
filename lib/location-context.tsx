@@ -3,17 +3,11 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
 type Loc = { zip: string; city: string; country: string; lat: number; lng: number }
-type CtxType = Loc & { 
-  setLoc: (l: Loc) => void; 
-  loading: boolean; 
-  radius: number; 
-  setRadius: (n:number)=>void; 
-  useMyLocation: () => void; 
-}
+type CtxType = Loc & { setLoc: (l: Loc) => void; loading: boolean; radius: number; setRadius: (n:number)=>void; useMyLocation: () => void }
 
 const LocationContext = createContext<CtxType>({
-  zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0, 
-  setLoc: () => {}, loading: true, radius: 5, 
+  zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0,
+  setLoc: () => {}, loading: true, radius: 5,
   setRadius: ()=>{}, useMyLocation: ()=>{}
 })
 
@@ -38,7 +32,6 @@ export function LocationProvider({ children }: any) {
   const [loc, setLoc] = useState<Loc>({ zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0 })
   const [radius, setRadius] = useState(5)
   const [loading, setLoading] = useState(true)
-  
   let supabase: any
   try { supabase = createClient() } catch { supabase = null }
 
@@ -58,13 +51,7 @@ export function LocationProvider({ children }: any) {
       if (ip?.postal) {
         const cleaned = cleanCity(ip.city || '')
         const resolved = await resolveCity(ip.postal, cleaned, ip.country || 'US')
-        setLoc({ 
-          zip: ip.postal, 
-          city: cleanCity(resolved.city) || cleaned, 
-          country: resolved.country || ip.country || 'US', 
-          lat: resolved.lat || ip.latitude || 0, 
-          lng: resolved.lng || ip.longitude || 0 
-        })
+        setLoc({ zip: ip.postal, city: cleanCity(resolved.city) || cleaned, country: resolved.country || ip.country || 'US', lat: resolved.lat || ip.latitude || 0, lng: resolved.lng || ip.longitude || 0 })
       }
     } catch {}
     setLoading(false)
@@ -82,20 +69,13 @@ export function LocationProvider({ children }: any) {
             if (finalZip && finalZip.trim() !== '' && finalZip !== 'GLOBAL') {
               const cleaned = cleanCity(profile?.city || '')
               const resolved = await resolveCity(finalZip, cleaned, profile?.country || 'US')
-              setLoc({ 
-                zip: finalZip, 
-                city: cleanCity(resolved.city) || cleaned, 
-                country: resolved.country || profile?.country || 'US', 
-                lat: resolved.lat, 
-                lng: resolved.lng 
-              })
+              setLoc({ zip: finalZip, city: cleanCity(resolved.city) || cleaned, country: resolved.country || profile?.country || 'US', lat: resolved.lat, lng: resolved.lng })
               setLoading(false)
               return
             }
           }
         } catch {}
       }
-
       try {
         const saved = localStorage.getItem('feed_near_zip')
         if (saved && saved !== 'GLOBAL') {
@@ -105,23 +85,31 @@ export function LocationProvider({ children }: any) {
           return
         }
       } catch {}
-
       try {
         const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
         if (ip?.postal) {
           const cleaned = cleanCity(ip.city || '')
           const resolved = await resolveCity(ip.postal, cleaned, ip.country || 'US')
-          setLoc({ 
-            zip: ip.postal, 
-            city: cleanCity(resolved.city) || cleaned, 
-            country: resolved.country || ip.country || 'US', 
-            lat: resolved.lat || ip.latitude || 0, 
-            lng: resolved.lng || ip.longitude || 0 
-          })
+          setLoc({ zip: ip.postal, city: cleanCity(resolved.city) || cleaned, country: resolved.country || ip.country || 'US', lat: resolved.lat || ip.latitude || 0, lng: resolved.lng || ip.longitude || 0 })
           setLoading(false)
           return
         }
       } catch {}
-
       setLoc({ zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0 })
-      set
+      setLoading(false)
+    }
+    init()
+  }, [])
+
+  return (
+    <LocationContext.Provider value={{ ...loc, setLoc: setLocState as any, loading, radius, setRadius, useMyLocation }}>
+      {children}
+    </LocationContext.Provider>
+  )
+}
+
+export const useLocation = () => {
+  try { return useContext(LocationContext) } catch {
+    return { zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 5, setRadius: () => {}, useMyLocation: () => {} } as CtxType
+  }
+}
