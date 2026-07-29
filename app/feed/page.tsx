@@ -30,10 +30,10 @@ function FeedContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
-  const { zip: locationZip } = useLocation()
+  const { zip: locationZip, city: locationCity } = useLocation()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
-  const [nearZip, setNearZip] = useState<string>('') // single source of truth
+  const [nearZip, setNearZip] = useState<string>('')
   const [radius, setRadius] = useState<number>(5)
 
   useEffect(() => {
@@ -54,40 +54,29 @@ function FeedContent() {
   }
 
   const FILTERS = [
-    { id: 'all', label: 'All 🌎' }, { id: 'faith', label: 'Faith ✝' },
-    { id: 'general', label: 'General 😊' }, { id: 'safety', label: 'Safety 🚨' },
-    { id: 'for_sale', label: 'For Sale 💰' }, { id: 'free', label: 'Free 🎁' },
-    { id: 'lost_pet', label: 'Lost Pet 🐶' }, { id: 'event', label: 'Event 🎉' },
-    { id: 'help', label: 'Help 🤝' }, { id: 'recommend', label: 'Tacos 🌮' },
+    { id: 'all', label: 'All' }, { id: 'faith', label: 'Faith' },
+    { id: 'general', label: 'General' }, { id: 'safety', label: 'Safety' },
+    { id: 'for_sale', label: 'For Sale' }, { id: 'free', label: 'Free' },
+    { id: 'lost_pet', label: 'Lost Pet' }, { id: 'event', label: 'Event' },
+    { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' },
   ]
 
   const fetchPosts = async (zipToUse?: string, radiusToUse: number = radius) => {
     const z = zipToUse || nearZip || locationZip
     if (!z) return
-
-    // If GLOBAL - show all
     if (z === 'GLOBAL') {
       const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
       if(data) setPosts(data)
       return
     }
-
-    // For radius > 5, we need nearby zips - for now fetch exact + prepare for radius API
-    // TODO: replace with supabase.rpc('nearby_posts', { center_zip: z, radius_miles: radiusToUse })
-    // For MVP: exact zip - radius UI saves choice, backend can expand later
-    let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
-    query = query.eq('zip_code', z)
-
-    const { data } = await query
+    const { data } = await supabase.from('posts').select('*').eq('zip_code', z).order('created_at',{ascending:false}).limit(150)
     if(data) setPosts(data)
   }
 
-  // 1. Load profile FIRST - this is neighborhood center - profile wins
   useEffect(() => {
     (async()=>{
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
-        // anonymous - use locationZip (ipapi) -> GLOBAL
         if (locationZip) {
           setNearZip(locationZip)
           fetchPosts(locationZip)
@@ -103,7 +92,6 @@ function FeedContent() {
           setNearZip(zipVal)
           fetchPosts(zipVal)
         } else if (locationZip) {
-          // no profile zip - use location as fallback
           setNearZip(locationZip)
           fetchPosts(locationZip)
         }
@@ -113,9 +101,8 @@ function FeedContent() {
         fetchPosts(locationZip)
       }
     })()
-  }, []) // only once - not dependent on locationZip to avoid race
+  }, [])
 
-  // 2. Only use locationZip if nearZip not set yet (first load / anonymous)
   useEffect(()=>{
     if (!nearZip && locationZip) {
       setNearZip(locationZip)
@@ -123,7 +110,6 @@ function FeedContent() {
     }
   }, [locationZip, nearZip])
 
-  // 3. When radius changes, refetch
   useEffect(()=>{
     if (nearZip) fetchPosts(nearZip, radius)
   }, [radius])
@@ -139,8 +125,10 @@ function FeedContent() {
     return cat===filter || cat.includes(filter)
   })
 
-  const authorName = currentProfile?.username? currentProfile.username : 'YOUR BLOCK'
-  const displayZip = nearZip || locationZip || 'GLOBAL'
+  const authorName = currentProfile?.username || 'your block'
+  const displayZip = nearZip || locationZip || ''
+  const displayCity = currentProfile?.city || locationCity || 'your area'
+  const isGlobal =!displayZip || displayZip === 'GLOBAL'
 
   return (
     <>
@@ -159,13 +147,16 @@ function FeedContent() {
           <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
         </div>
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
-          {/* Radius selector - 5,10,15,20 - user choice - saved */}
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-white text-xs font-bold">NEAR: {displayZip}</span>
+          {/* KISS - ONE NEAR BAR - inviting - not aggressive */}
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-white/60 text-xs font-bold">Near</span>
+            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">
+              {isGlobal? displayCity : displayZip}
+            </span>
             <select
               value={radius}
               onChange={(e)=>handleRadiusChange(parseInt(e.target.value))}
-              className="bg-white text-black rounded-full px-3 py-1 text-xs font-black"
+              className="bg-white/10 text-white rounded-full px-3 py-1 text-xs font-bold border border-white/20"
             >
               <option value={5}>5 mi</option>
               <option value={10}>10 mi</option>
@@ -173,14 +164,17 @@ function FeedContent() {
               <option value={20}>20 mi</option>
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
+            <span className="ml-auto text- bg-green-500 text-black px-2 py-0.5 rounded-full">LIVE</span>
           </div>
-          <Safe loader={() => import('@/components/LocationScopeBar')} name="LocationScopeBar" />
-          <div className="mt-4"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
+
+          {/* LocationScopeBar REMOVED - was second NEAR - clutter */}
+
+          <div className="mt-2"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
-          <div className="mt-2 text-xs text-white/40 px-1">Posting as • {authorName} • {displayZip} • {radius}mi</div>
+          <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(
-              <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap border-2 shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
+              <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
             ))}
           </div>
           <div className="space-y-3 mt-2">
@@ -189,7 +183,7 @@ function FeedContent() {
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body}</p>
                 <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
-                {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-black">X</button>}
+                {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
               </div>
             ))}
           </div>
