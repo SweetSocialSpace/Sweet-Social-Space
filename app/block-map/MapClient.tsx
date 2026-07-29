@@ -35,10 +35,9 @@ export default function MapClient(){
   const [pins,setPins]=useState<any[]>([])
   const [lostPets,setLostPets]=useState<any[]>([])
   const supabase=createClient()
-  // FIXED: your hook is { zip, city, lat, lng } not coords
+  
   const { zip, lat, lng } = useLocation()
 
-  // GLOBAL FIX: Center on USER, not 95122
   const mapCenter: [number, number] = (lat && lng)? [lat, lng] : [37.3369,-121.8563]
 
   useEffect(()=>{
