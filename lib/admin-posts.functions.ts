@@ -39,7 +39,6 @@ function toVisibility(hidden: boolean, status: string | null): PostVisibility {
 }
 
 const BOT_IDS = new Set([
-  "b0700000-0000-0000-0000-000000095122",
   "b0700000-0000-0000-0000-000000911911",
   "b0700000-0000-0000-0000-000000555555",
   "b07b07b0-0000-4000-8000-000000071175",
