@@ -8,7 +8,6 @@ export async function GET(req: Request) {
   }
   const zip = rawZip.replace(/\s+/g, '')
 
-  // 1. try US first - global US lookup
   try {
     const usRes = await fetch(`https://api.zippopotam.us/us/${zip}`, { next: { revalidate: 3600 } })
     if (usRes.ok) {
@@ -23,7 +22,6 @@ export async function GET(req: Request) {
     }
   } catch {}
 
-  // 2. global fallback - try other countries
   try {
     const globalRes = await fetch(`https://api.zippopotam.us/id/${zip}`, { next: { revalidate: 3600 } })
     if (globalRes.ok) {
@@ -38,7 +36,6 @@ export async function GET(req: Request) {
     }
   } catch {}
 
-  // 3. final fallback - global safe - no hardcoat
   return NextResponse.json(
     { zip, city: zip, country: 'GLOBAL' },
     { headers: { 'Cache-Control': 'public, s-maxage=3600' } }
