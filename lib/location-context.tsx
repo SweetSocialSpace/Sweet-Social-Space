@@ -6,30 +6,30 @@ type Loc = { zip: string; city: string; country: string; lat: number; lng: numbe
 type CtxType = Loc & { setLoc: (l: Loc) => void; loading: boolean; radius: number; setRadius: (n:number)=>void; useMyLocation: () => void }
 
 const LocationContext = createContext<CtxType>({
-  zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0,
+  zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0,
   setLoc: () => {}, loading: true, radius: 5,
   setRadius: ()=>{}, useMyLocation: ()=>{}
 })
 
 function cleanCity(rawCity: string) {
-  if (!rawCity) return ''
+  if (!rawCity || rawCity.trim()==='') return 'your area'
   return rawCity
 }
 
 async function resolveCity(zip: string, fallbackCity: string, fallbackCountry: string) {
-  if (!zip || zip === 'GLOBAL') return { city: fallbackCity, country: fallbackCountry, lat: 0, lng: 0 }
+  if (!zip || zip === 'GLOBAL') return { city: 'your area', country: fallbackCountry, lat: 0, lng: 0 }
   try {
     const res = await fetch(`/api/geocode?zip=${encodeURIComponent(zip)}`)
     if (res.ok) {
       const data = await res.json()
-      return { city: data.city || fallbackCity, country: data.country || fallbackCountry, lat: Number(data.lat)||0, lng: Number(data.lon)||0 }
+      return { city: data.city || fallbackCity || zip, country: data.country || fallbackCountry, lat: Number(data.lat)||0, lng: Number(data.lon)||0 }
     }
   } catch {}
-  return { city: fallbackCity, country: fallbackCountry, lat: 0, lng: 0 }
+  return { city: fallbackCity || zip, country: fallbackCountry, lat: 0, lng: 0 }
 }
 
 export function LocationProvider({ children }: any) {
-  const [loc, setLoc] = useState<Loc>({ zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0 })
+  const [loc, setLoc] = useState<Loc>({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
   const [radius, setRadius] = useState(5)
   const [loading, setLoading] = useState(true)
   let supabase: any
@@ -47,11 +47,12 @@ export function LocationProvider({ children }: any) {
   const useMyLocation = async () => {
     setLoading(true)
     try {
-      const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
-      if (ip?.postal) {
-        const cleaned = cleanCity(ip.city || '')
-        const resolved = await resolveCity(ip.postal, cleaned, ip.country || 'US')
-        setLoc({ zip: ip.postal, city: cleanCity(resolved.city) || cleaned, country: resolved.country || ip.country || 'US', lat: resolved.lat || ip.latitude || 0, lng: resolved.lng || ip.longitude || 0 })
+      // ONLY when user clicks button - postal service, not auto IP
+      const pos = await new Promise<GeolocationPosition>((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:8000}))
+      const { latitude, longitude } = pos.coords
+      const r = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`).then(x=>x.json()).catch(()=>null)
+      if(r?.zip){
+        setLoc({ zip: r.zip, city: cleanCity(r.city), country: r.country||'US', lat: latitude, lng: longitude })
       }
     } catch {}
     setLoading(false)
@@ -60,6 +61,7 @@ export function LocationProvider({ children }: any) {
   useEffect(() => {
     async function init() {
       setLoading(true)
+      // 1. DB - postal service - real zips from profile
       if (supabase) {
         try {
           const { data: { user } } = await supabase.auth.getUser()
@@ -76,26 +78,18 @@ export function LocationProvider({ children }: any) {
           }
         } catch {}
       }
+      // 2. User chosen zip from localStorage
       try {
         const saved = localStorage.getItem('feed_near_zip')
-        if (saved && saved !== 'GLOBAL') {
+        if (saved && saved !== 'GLOBAL' && saved !== '95122') {
           const resolved = await resolveCity(saved, '', 'US')
           setLoc({ zip: saved, city: cleanCity(resolved.city), country: resolved.country, lat: resolved.lat, lng: resolved.lng })
           setLoading(false)
           return
         }
       } catch {}
-      try {
-        const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
-        if (ip?.postal) {
-          const cleaned = cleanCity(ip.city || '')
-          const resolved = await resolveCity(ip.postal, cleaned, ip.country || 'US')
-          setLoc({ zip: ip.postal, city: cleanCity(resolved.city) || cleaned, country: resolved.country || ip.country || 'US', lat: resolved.lat || ip.latitude || 0, lng: resolved.lng || ip.longitude || 0 })
-          setLoading(false)
-          return
-        }
-      } catch {}
-      setLoc({ zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0 })
+      // 3. Default GLOBAL - never IP auto
+      setLoc({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
       setLoading(false)
     }
     init()
@@ -110,6 +104,6 @@ export function LocationProvider({ children }: any) {
 
 export const useLocation = () => {
   try { return useContext(LocationContext) } catch {
-    return { zip: 'GLOBAL', city: '', country: 'US', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 5, setRadius: () => {}, useMyLocation: () => {} } as CtxType
+    return { zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 5, setRadius: () => {}, useMyLocation: () => {} } as CtxType
   }
 }
