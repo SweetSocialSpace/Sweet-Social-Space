@@ -88,6 +88,7 @@ export default function GoLive({ userId, zipCode }: Props) {
   const uploadVideo = async (blob: Blob) => {
     setIsUploading(true);
     setErrorMsg(null);
+    const supabase = createClient()
     try {
       if (!userId) throw new Error("Not logged in");
       const ext = blob.type.includes("mp4")? "mp4" : "webm";
