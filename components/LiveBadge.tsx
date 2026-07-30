@@ -1,3 +1,7 @@
-export default function LiveBadge({ isLive }: { isLive?: boolean }) {
-  return <span className={`text- font-black px-2 py-0.5 rounded-full ${isLive ? 'bg-green-500 text-black' : 'bg-white/10 text-white/30'}`}>LIVE</span>
+'use client'
+import { useLocation } from '@/lib/location-context'
+export default function LiveBadge(){
+  const { zip } = useLocation()
+  const label = zip && zip !== 'GLOBAL' ? zip : 'YOUR AREA'
+  return <div className="text-white/60 text-xs font-black">{label} • LIVE</div>
 }
