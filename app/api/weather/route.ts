@@ -6,6 +6,8 @@ export async function GET(req: NextRequest) {
   if (!zip) return NextResponse.json({ temp: null })
 
   try {
+    // with OpenWeather API key in.env as OPENWEATHER_KEY
+const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?zip=${zip},us&appid=${process.env.OPENWEATHER_KEY}&units=imperial`)
     // 1. Zip -> lat/lon (free, no key)
     const geo = await fetch(`https://api.zippopotam.us/us/${zip}`).then(r=>r.json()).catch(()=>null)
     const lat = geo?.places?.[0]?.latitude
