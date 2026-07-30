@@ -47,7 +47,6 @@ export function LocationProvider({ children }: any) {
   const useMyLocation = async () => {
     setLoading(true)
     try {
-      // ONLY when user clicks button - postal service, not auto IP
       const pos = await new Promise<GeolocationPosition>((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:8000}))
       const { latitude, longitude } = pos.coords
       const r = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`).then(x=>x.json()).catch(()=>null)
@@ -61,7 +60,6 @@ export function LocationProvider({ children }: any) {
   useEffect(() => {
     async function init() {
       setLoading(true)
-      // 1. DB - postal service - real zips from profile
       if (supabase) {
         try {
           const { data: { user } } = await supabase.auth.getUser()
@@ -78,17 +76,15 @@ export function LocationProvider({ children }: any) {
           }
         } catch {}
       }
-      // 2. User chosen zip from localStorage
       try {
         const saved = localStorage.getItem('feed_near_zip')
-        if (saved && saved !== 'GLOBAL' && saved !== '95122') {
+        if (saved && saved !== 'GLOBAL') {
           const resolved = await resolveCity(saved, '', 'US')
           setLoc({ zip: saved, city: cleanCity(resolved.city), country: resolved.country, lat: resolved.lat, lng: resolved.lng })
           setLoading(false)
           return
         }
       } catch {}
-      // 3. Default GLOBAL - never IP auto
       setLoc({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
       setLoading(false)
     }
