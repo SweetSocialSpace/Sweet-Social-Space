@@ -1,5 +1,6 @@
 "use client"
 import { useState, useRef, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 type Props = {
   userId?: string;
@@ -19,8 +20,7 @@ export default function GoLive({ userId, zipCode }: Props) {
   const openLive = async () => {
     setErrorMsg(null);
     setIsOpen(true);
-    // small delay so video element mounts
-    await new Promise(r => setTimeout(r, 50));
+    await new Promise(r => setTimeout(r, 100));
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 720 }, height: { ideal: 1280 } },
@@ -32,7 +32,6 @@ export default function GoLive({ userId, zipCode }: Props) {
         await videoRef.current.play().catch(()=>{});
       }
     } catch (err: any) {
-      console.error("camera error", err);
       setErrorMsg(err?.message || "Camera permission denied");
       setIsOpen(false);
     }
@@ -49,7 +48,6 @@ export default function GoLive({ userId, zipCode }: Props) {
     setIsOpen(false);
     setIsRecording(false);
     setIsUploading(false);
-    setErrorMsg(null);
   };
 
   const getMimeType = () => {
@@ -67,22 +65,18 @@ export default function GoLive({ userId, zipCode }: Props) {
       const mimeType = getMimeType();
       const recorder = mimeType? new MediaRecorder(streamRef.current, { mimeType }) : new MediaRecorder(streamRef.current);
       mediaRecorderRef.current = recorder;
-
       recorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
       };
-
       recorder.onstop = async () => {
         const type = recorder.mimeType || "video/webm";
         const blob = new Blob(chunksRef.current, { type });
         await uploadVideo(blob);
       };
-
       recorder.start(100);
       setIsRecording(true);
     } catch (e: any) {
-      console.error(e);
-      setErrorMsg("Recording not supported on this device");
+      setErrorMsg("Recording not supported");
     }
   };
 
@@ -93,31 +87,39 @@ export default function GoLive({ userId, zipCode }: Props) {
 
   const uploadVideo = async (blob: Blob) => {
     setIsUploading(true);
+    setErrorMsg(null);
     try {
-      const formData = new FormData();
+      if (!userId) throw new Error("Not logged in");
       const ext = blob.type.includes("mp4")? "mp4" : "webm";
-      formData.append("file", blob, `golive-${Date.now()}.${ext}`);
-      formData.append("zip", zipCode || "GLOBAL");
-      formData.append("type", "golive");
-      formData.append("visibility", "global");
-      if (userId) formData.append("userId", userId);
+      const fileName = `${userId}/${Date.now()}.${ext}`;
+      
+      // 1. Upload to Supabase Storage directly - no Vercel timeout
+      const { error: uploadError } = await supabase.storage
+        .from("golive")
+        .upload(fileName, blob, { contentType: blob.type, upsert: true });
+      
+      if (uploadError) throw uploadError;
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
+      const { data: { publicUrl } } = supabase.storage.from("golive").getPublicUrl(fileName);
+
+      // 2. Insert post
+      const { error: insertError } = await supabase.from("posts").insert({
+        user_id: userId,
+        zip_code: zipCode || "GLOBAL",
+        video_url: publicUrl,
+        content: "",
+        type: "golive",
+        visibility: "global",
       });
 
-      if (!res.ok) {
-        const txt = await res.text();
-        throw new Error(txt || "upload failed");
-      }
+      if (insertError) throw insertError;
 
-      await fetch("/api/feed/refresh", { method: "POST" }).catch(()=>{});
       closeLive();
-      window.location.reload();
+      // No reload - just close and feed will show on next refresh
+      window.location.href = "/feed";
     } catch (e: any) {
       console.error(e);
-      setErrorMsg(e.message || "Upload failed");
+      setErrorMsg(e.message || "Upload failed - check bucket 'golive' exists");
       setIsUploading(false);
     }
   };
@@ -149,45 +151,32 @@ export default function GoLive({ userId, zipCode }: Props) {
           </div>
 
           <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              className="w-full h-full object-cover max-w- mx-auto"
-            />
+            <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mx-auto" />
             {errorMsg && (
               <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-6 text-center">
-                <div className="bg-white rounded-xl p-4 text-black text-sm">{errorMsg}</div>
+                <div className="bg-white rounded-xl p-4 text-black text-sm">{errorMsg}<br/><button onClick={closeLive} className="mt-3 bg-black text-white px-4 py-1 rounded-full">Close</button></div>
               </div>
             )}
             {isUploading && (
               <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white gap-3">
                 <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                <span className="text-sm">Uploading instantly...</span>
+                <span className="text-sm">Publishing instantly...</span>
               </div>
             )}
           </div>
 
           <div className="p-6 bg-zinc-900 flex justify-center gap-6">
             {!isRecording? (
-              <button
-                onClick={startRecording}
-                className="w-20 h-20 rounded-full bg-red-600 border- border-white/20 flex items-center justify-center"
-              >
+              <button onClick={startRecording} className="w-20 h-20 rounded-full bg-red-600 border-4 border-white/20 flex items-center justify-center">
                 <div className="w-8 h-8 bg-white rounded-full"></div>
               </button>
             ) : (
-              <button
-                onClick={stopRecording}
-                className="w-20 h-20 rounded-full bg-white border- border-red-600 flex items-center justify-center"
-              >
+              <button onClick={stopRecording} className="w-20 h-20 rounded-full bg-white border-4 border-red-600 flex items-center justify-center">
                 <div className="w-7 h-7 bg-red-600 rounded-sm"></div>
               </button>
             )}
           </div>
-
-          <div className="text- text-white/40 text-center pb-4 bg-zinc-900">
+          <div className="text-xs text-white/40 text-center pb-4 bg-zinc-900">
             Instant upload • Global feed • {zipCode || "GLOBAL"}
           </div>
         </div>
