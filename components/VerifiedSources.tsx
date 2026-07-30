@@ -11,6 +11,8 @@ export function VerifiedSources(){
   useEffect(()=>{
     if (!zip) return
     let mounted = true
+    const CACHE_KEY = `verified_${zip}_v1`
+    const CACHE_TIME_KEY = `verified_${zip}_v1_time`
 
     const fetchLiveVerified = async () => {
       try {
@@ -24,18 +26,29 @@ export function VerifiedSources(){
           return
         }
 
+        // RULES: cache check 15min
+        const cached = localStorage.getItem(CACHE_KEY)
+        const cachedTime = localStorage.getItem(CACHE_TIME_KEY)
+        if (cached && cachedTime && Date.now() - parseInt(cachedTime) < 15*60*1000) {
+          if(mounted) setLiveVs(JSON.parse(cached))
+          return
+        }
+
         const useLat = lat || 0
         const useLng = lng || 0
         
-        // If no lat/lng (GLOBAL user) skip Overpass
         if (useLat === 0 && useLng === 0) {
-          if(mounted) setLiveVs([
+          const fallback = [
             { id: 'live-1', title: `${city || 'Local'} Police — Verified` },
             { id: 'live-2', title: `${city || 'Local'} Fire — Verified` },
             { id: 'live-3', title: `NWS — Verified` },
-          ])
+          ]
+          if(mounted) setLiveVs(fallback)
           return
         }
+
+        // RULES: stagger 3s so BusinessDirectory goes first - prevents 429
+        await new Promise(r => setTimeout(r, 3000))
 
         const query = `[out:json][timeout:25];(node(around:15000,${useLat},${useLng})[amenity=police];node(around:15000,${useLat},${useLng})[amenity=fire_station];node(around:15000,${useLat},${useLng})[amenity=hospital];way(around:15000,${useLat},${useLng})[amenity=police];);out 10;`
         const res = await fetch('https://overpass-api.de/api/interpreter', {
@@ -43,30 +56,43 @@ export function VerifiedSources(){
           body: query,
           headers: { 'Content-Type': 'text/plain' }
         })
-        const json = await res.json()
-        if(mounted && json.elements && json.elements.length > 0){
-          const live: V[] = json.elements.filter((el:any)=>el.tags?.name).slice(0,3).map((el:any)=>({
-            id: `live-${el.id}`,
-            title: `${el.tags.name} — Verified ${el.tags.amenity}`
-          }))
-          if(live.length===0){
-            setLiveVs([
-              { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
-              { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
-              { id: 'live-3', title: 'NWS — Verified' },
-            ])
-          } else {
-            setLiveVs(live)
-          }
-        } else {
-          setLiveVs([
+
+        if (res.status === 429) {
+          console.warn('VerifiedSources Overpass 429 - using cache')
+          if (cached && mounted) setLiveVs(JSON.parse(cached))
+          else if(mounted) setLiveVs([
             { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
             { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
             { id: 'live-3', title: 'NWS — Verified' },
           ])
+          return
+        }
+
+        if (!res.ok) throw new Error('overpass fail')
+        const json = await res.json()
+        let live: V[] = []
+        if(json.elements && json.elements.length > 0){
+          live = json.elements.filter((el:any)=>el.tags?.name).slice(0,3).map((el:any)=>({
+            id: `live-${el.id}`,
+            title: `${el.tags.name} — Verified ${el.tags.amenity}`
+          }))
+        }
+        if(live.length===0){
+          live = [
+            { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
+            { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
+            { id: 'live-3', title: 'NWS — Verified' },
+          ]
+        }
+        if(mounted){
+          setLiveVs(live)
+          localStorage.setItem(CACHE_KEY, JSON.stringify(live))
+          localStorage.setItem(CACHE_TIME_KEY, String(Date.now()))
         }
       } catch {
-        if(mounted) setLiveVs([
+        const cached = localStorage.getItem(CACHE_KEY)
+        if (cached && mounted) setLiveVs(JSON.parse(cached))
+        else if(mounted) setLiveVs([
           { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
           { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
           { id: 'live-3', title: 'NWS — Verified' },
