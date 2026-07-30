@@ -1,34 +1,28 @@
+// app/api/weather/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const zip = searchParams.get('zip')?.trim()
-
-  if (!zip) {
-    return NextResponse.json({ error: 'zip required - global' }, { status: 400 })
-  }
+export async function GET(req: NextRequest) {
+  const zip = req.nextUrl.searchParams.get('zip')
+  if (!zip) return NextResponse.json({ temp: null })
 
   try {
-    // GLOBAL - supports any country postal code
-    const query = encodeURIComponent(zip)
-    const res = await fetch(
-     `https://api.openweathermap.org/data/2.5/weather?zip=${query}&appid=${process.env.OPENWEATHER_API_KEY}&units=imperial`,
-     { next: { revalidate: 300 } }
-    )
+    // 1. Zip -> lat/lon (free, no key)
+    const geo = await fetch(`https://api.zippopotam.us/us/${zip}`).then(r=>r.json()).catch(()=>null)
+    const lat = geo?.places?.[0]?.latitude
+    const lon = geo?.places?.[0]?.longitude
+    if (!lat ||!lon) return NextResponse.json({ temp: null })
 
-    if (!res.ok) throw new Error('Weather fetch failed')
-
-    const data = await res.json()
+    // 2. lat/lon -> real weather from internet
+    const weather = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&temperature_unit=fahrenheit`,
+      { next: { revalidate: 600 } }
+    ).then(r=>r.json())
 
     return NextResponse.json({
-      temp: Math.round(data.main.temp),
-      description: data.weather[0].description,
-      icon: data.weather[0].icon,
-      city: data.name,
-      zip
+      temp: weather?.current?.temperature_2m,
+      source: 'open-meteo'
     })
-
-  } catch (error) {
-    return NextResponse.json({ error: 'Could not fetch weather' }, { status: 500 })
+  } catch (e) {
+    return NextResponse.json({ temp: null }, { status: 200 })
   }
 }
