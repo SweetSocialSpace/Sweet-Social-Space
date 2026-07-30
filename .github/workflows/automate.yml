@@ -1,8 +1,8 @@
-name: Free Automation - GLOBAL
+# name: Free Automation - GLOBAL - All Components Live
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -13,20 +13,21 @@ jobs:
         run: |
           DOMAIN="https://sweetsocialspace.com"
           
-          # 1. get real zips from DB - global - no hardcoat - postal service not IP
+          # 1. get real zips from DB - GLOBAL - no hardcode - postal not IP
           ZIPS=$(curl -sf "$DOMAIN/api/zips" | tr ',' '\n' || echo "GLOBAL")
           if [ -z "$ZIPS" ]; then ZIPS="GLOBAL"; fi
           
           echo "Zips: $ZIPS"
           
-          # 2. global housekeeping - once - no zip needed
+          # 2. GLOBAL housekeeping - once - no zip needed - keeps house alive
           echo "== GLOBAL HOUSEKEEPING =="
           curl -sf "$DOMAIN/api/ingest" -m 20 || true
           curl -sf "$DOMAIN/api/auto-migrate" -m 20 || true
           curl -sf "$DOMAIN/api/pulse" -m 20 || true
           curl -sf "$DOMAIN/api/feed/refresh" -m 20 || true
+          curl -sf "$DOMAIN/api/verified-sources" -m 20 || true
           
-          # 3. loop real zips - keeps ALL feeds live globally
+          # 3. loop real zips - keeps ALL feeds live globally - ANYBODY anywhere
           for ZIP in $ZIPS; do
             ZIP=$(echo $ZIP | tr -d '"[] ' | xargs)
             [ -z "$ZIP" ] && continue
@@ -34,23 +35,31 @@ jobs:
             
             echo "== ZIP: $ZIP =="
             
-            # Core automations
-            curl -sf "$DOMAIN/api/weather?zip=$ZIP" -m 10 || true
+            # Core live - left column
             curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 10 || true
-            
-            # Trust & Safety
-            curl -sf "$DOMAIN/api/trust?zip=$ZIP" -m 10 || true
-            
-            # Features - all components
-            curl -sf "$DOMAIN/api/drop?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/marketplace?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/karma?zip=$ZIP" -m 10 || true
             curl -sf "$DOMAIN/api/live-map?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/trust?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/weather?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/emergency?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/latest-alerts?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/whats-happening?zip=$ZIP" -m 10 || true
+            
+            # Center + AI
+            curl -sf "$DOMAIN/api/ai-mayor?zip=$ZIP" -m 10 || true
             curl -sf "$DOMAIN/api/feed?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/notifications?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/live-now?zip=$ZIP" -m 10 || true
+            
+            # Right column - all features
+            curl -sf "$DOMAIN/api/faith?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/drop?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/karma?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/proximity?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/street-heat?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/marketplace?zip=$ZIP" -m 10 || true
+            curl -sf "$DOMAIN/api/business-directory?zip=$ZIP" -m 10 || true
             curl -sf "$DOMAIN/api/events?zip=$ZIP" -m 10 || true
             
             echo "✓ $ZIP - all components live"
           done
           
-          echo "Done - all feeds live - global - for ANYBODY"
+          echo "Done - all feeds live - GLOBAL - for ANYBODY anywhere"
