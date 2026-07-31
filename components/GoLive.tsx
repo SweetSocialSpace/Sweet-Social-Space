@@ -58,7 +58,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
       await supabase.from("posts").insert({ user_id: userId, zip_code: zipCode || "GLOBAL", video_url: data.publicUrl, body: "" });
       closeLive();
       window.location.href = "/feed";
-    } catch (e: any) {
+    } catch {
       setErrorMsg("Upload failed");
       setIsUploading(false);
     }
@@ -98,11 +98,11 @@ export default function GoLive({ userId, zipCode, city }: Props) {
         <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span> Go Live
       </button>
       {isOpen && (
-        <div className="fixed inset-0 z-[99999] bg-black/90 flex items-center justify-center">
-          <div className="bg-zinc-900 rounded-xl overflow-hidden w- shadow-2xl">
+        <div className="fixed inset-0 z-[99999] bg-black/90 flex items-start justify-center pt-">
+          <div className="bg-zinc-900 rounded-xl overflow-hidden w- shadow-2xl mt-2">
             <div className="flex justify-between items-center px-2 py-1 bg-black text-white text-">
               <span>{isRecording? "REC" : "Preview"}</span>
-              <button onClick={closeLive} className="bg-white/20 px-2 py-0.5 rounded-full">X</button>
+              <button onClick={closeLive} className="bg-white/20 w-5 h-5 rounded-full flex items-center justify-center">X</button>
             </div>
             <div className="relative w- h- bg-black">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
