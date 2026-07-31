@@ -5,9 +5,10 @@ import { createClient } from '@/lib/supabase/client';
 type Props = {
   userId?: string;
   zipCode?: string;
+  city?: string;
 };
 
-export default function GoLive({ userId, zipCode }: Props) {
+export default function GoLive({ userId, zipCode, city }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -63,7 +64,7 @@ export default function GoLive({ userId, zipCode }: Props) {
     chunksRef.current = [];
     try {
       const mimeType = getMimeType();
-      const recorder = mimeType? new MediaRecorder(streamRef.current, { mimeType }) : new MediaRecorder(streamRef.current);
+      const recorder = mimeType ? new MediaRecorder(streamRef.current, { mimeType }) : new MediaRecorder(streamRef.current);
       mediaRecorderRef.current = recorder;
       recorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
@@ -75,8 +76,8 @@ export default function GoLive({ userId, zipCode }: Props) {
       };
       recorder.start(100);
       setIsRecording(true);
-    } catch (e: any) {
-      setErrorMsg("Recording not supported");
+    } catch {
+      setErrorMsg("Recording not supported on this device");
     }
   };
 
@@ -91,10 +92,9 @@ export default function GoLive({ userId, zipCode }: Props) {
     const supabase = createClient()
     try {
       if (!userId) throw new Error("Not logged in");
-      const ext = blob.type.includes("mp4")? "mp4" : "webm";
+      const ext = blob.type.includes("mp4") ? "mp4" : "webm";
       const fileName = `${userId}/${Date.now()}.${ext}`;
       
-      // 1. Upload to Supabase Storage directly - no Vercel timeout
       const { error: uploadError } = await supabase.storage
         .from("golive")
         .upload(fileName, blob, { contentType: blob.type, upsert: true });
@@ -103,24 +103,23 @@ export default function GoLive({ userId, zipCode }: Props) {
 
       const { data: { publicUrl } } = supabase.storage.from("golive").getPublicUrl(fileName);
 
-      // 2. Insert post
+      // RULES: use existing posts schema - media_url + media_type per feed/page.tsx
       const { error: insertError } = await supabase.from("posts").insert({
         user_id: userId,
         zip_code: zipCode || "GLOBAL",
-        video_url: publicUrl,
-        content: "",
-        type: "golive",
-        visibility: "global",
+        media_url: publicUrl,
+        media_type: "video",
+        body: "",
+        category: "general",
       });
 
       if (insertError) throw insertError;
 
       closeLive();
-      // No reload - just close and feed will show on next refresh
       window.location.href = "/feed";
     } catch (e: any) {
       console.error(e);
-      setErrorMsg(e.message || "Upload failed - check bucket 'golive' exists");
+      setErrorMsg(e.message || "Upload failed - run SQL to create bucket 'golive'");
       setIsUploading(false);
     }
   };
@@ -130,6 +129,9 @@ export default function GoLive({ userId, zipCode }: Props) {
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
     };
   }, []);
+
+  // RULES: GLOBAL displays as city / your area, never hardcoded 95122
+  const displayLocation = !zipCode || zipCode === 'GLOBAL' ? (city || 'your area') : zipCode;
 
   return (
     <>
@@ -145,8 +147,8 @@ export default function GoLive({ userId, zipCode }: Props) {
         <div className="fixed inset-0 z-[99999] bg-black flex flex-col">
           <div className="flex justify-between items-center p-3 bg-zinc-900 text-white">
             <div className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${isRecording? "bg-red-500 animate-pulse" : "bg-white/50"}`}></span>
-              <span className="text-sm font-semibold">{isRecording? "REC • Recording" : "Preview"}</span>
+              <span className={`w-2 h-2 rounded-full ${isRecording ? "bg-red-500 animate-pulse" : "bg-white/50"}`}></span>
+              <span className="text-sm font-semibold">{isRecording ? "REC • Recording" : "Preview"}</span>
             </div>
             <button onClick={closeLive} className="bg-white/10 px-3 py-1 rounded-full text-sm">✕ Close</button>
           </div>
@@ -167,7 +169,7 @@ export default function GoLive({ userId, zipCode }: Props) {
           </div>
 
           <div className="p-6 bg-zinc-900 flex justify-center gap-6">
-            {!isRecording? (
+            {!isRecording ? (
               <button onClick={startRecording} className="w-20 h-20 rounded-full bg-red-600 border-4 border-white/20 flex items-center justify-center">
                 <div className="w-8 h-8 bg-white rounded-full"></div>
               </button>
@@ -178,7 +180,7 @@ export default function GoLive({ userId, zipCode }: Props) {
             )}
           </div>
           <div className="text-xs text-white/40 text-center pb-4 bg-zinc-900">
-            Instant upload • Global feed • {zipCode === 'GLOBAL' || !zipCode ? (city || 'your area') : zipCode}
+            Instant upload • Global feed • {displayLocation}
           </div>
         </div>
       )}
