@@ -18,10 +18,10 @@ export default function GoLive({ userId, zipCode, city }: Props) {
   const openLive = async () => {
     setErrorMsg(null);
     setIsOpen(true);
-    await new Promise(r => setTimeout(r, 150));
+    await new Promise(r => setTimeout(r, 100));
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 360 }, height: { ideal: 480 } },
+        video: { facingMode: "user", width: { ideal: 320 }, height: { ideal: 400 } },
         audio: true
       });
       streamRef.current = stream;
@@ -51,7 +51,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
 
   const uploadVideo = async (blob: Blob) => {
     setIsUploading(true);
-    setErrorMsg(null);
     const supabase = createClient();
     try {
       if (!userId) throw new Error("Not logged in");
@@ -78,21 +77,17 @@ export default function GoLive({ userId, zipCode, city }: Props) {
     if (!streamRef.current) return;
     chunksRef.current = [];
     try {
-      const recorder = new MediaRecorder(streamRef.current, { mimeType: "video/webm", videoBitsPerSecond: 400000 } as any);
+      const recorder = new MediaRecorder(streamRef.current, { mimeType: "video/webm", videoBitsPerSecond: 350000 } as any);
       mediaRecorderRef.current = recorder;
       recorder.ondataavailable = (ev) => { if (ev.data.size > 0) chunksRef.current.push(ev.data); };
       recorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "video/webm" });
-        if (blob.size > 12 * 1024 * 1024) {
-          setErrorMsg("Too large, keep under 30s");
-          return;
-        }
         await uploadVideo(blob);
       };
       recorder.start(200);
       setIsRecording(true);
       timerRef.current = setTimeout(() => { try { recorder.stop(); } catch {} }, 30000);
-    } catch (e) {
+    } catch {
       setErrorMsg("Recording not supported");
     }
   };
@@ -116,27 +111,27 @@ export default function GoLive({ userId, zipCode, city }: Props) {
         <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span> Go Live
       </button>
       {isOpen && (
-        <div className="fixed inset-0 z-[99999] bg-black flex flex-col">
-          <div className="flex justify-between items-center p-3 bg-zinc-900 text-white">
-            <span className="text-sm">{isRecording? "REC • 30s max" : "Preview"}</span>
-            <button onClick={closeLive} className="bg-white/10 px-3 py-1 rounded-full text-sm">X Close</button>
-          </div>
-          <div className="flex-1 bg-black flex items-center justify-center p-4">
-            <div className="relative w-full max-w- aspect-[9/16] bg-zinc-900 rounded-2xl overflow-hidden">
-              <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
-              {errorMsg && <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-4 text-white text-sm">{errorMsg}</div>}
-              {isUploading && <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white text-sm">Publishing...</div>}
+        <div className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center p-4">
+          <div className="bg-zinc-900 rounded-2xl overflow-hidden w-full max-w- shadow-2xl">
+            <div className="flex justify-between items-center p-2 bg-black text-white text-xs">
+              <span>{isRecording? "REC • 30s" : "Preview"}</span>
+              <button onClick={closeLive} className="bg-white/20 px-2 py-0.5 rounded-full">X</button>
             </div>
-          </div>
-          <div className="p-6 bg-zinc-900 flex justify-center">
-            {!isRecording? (
-              <button onClick={startRecording} className="w-16 h-16 rounded-full bg-red-600 border-4 border-white/20 flex items-center justify-center"><div className="w-6 h-6 bg-white rounded-full"></div></button>
-            ) : (
-              <button onClick={stopRecording} className="w-16 h-16 rounded-full bg-white border-4 border-red-600 flex items-center justify-center"><div className="w-5 h-5 bg-red-600 rounded-sm"></div></button>
-            )}
-          </div>
-          <div className="text-xs text-white/40 text-center pb-4 bg-zinc-900">
-            Instant upload • Global feed • {city || 'your area'}
+            <div className="relative aspect-[9/16] bg-black">
+              <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
+              {errorMsg && <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-2 text-white text-xs text-center">{errorMsg}</div>}
+              {isUploading && <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white text-xs">Publishing...</div>}
+            </div>
+            <div className="p-3 bg-zinc-900 flex flex-col items-center gap-2">
+              {!isRecording? (
+                <button onClick={startRecording} className="w-12 h-12 rounded-full bg-red-600 border-2 border-white/20 flex items-center justify-center"><div className="w-4 h-4 bg-white rounded-full"></div></button>
+              ) : (
+                <button onClick={stopRecording} className="w-12 h-12 rounded-full bg-white border-2 border-red-600 flex items-center justify-center"><div className="w-3 h-3 bg-red-600 rounded-sm"></div></button>
+              )}
+              <div className="text- text-white/30 text-center">
+                Global • {city || 'your area'}
+              </div>
+            </div>
           </div>
         </div>
       )}
