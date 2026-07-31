@@ -70,8 +70,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
         if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
       };
       recorder.onstop = async () => {
-        const type = recorder.mimeType || "video/webm";
-        const blob = new Blob(chunksRef.current, { type });
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "video/webm" });
         await uploadVideo(blob);
       };
       recorder.start(100);
@@ -94,24 +93,16 @@ export default function GoLive({ userId, zipCode, city }: Props) {
       if (!userId) throw new Error("Not logged in");
       const ext = blob.type.includes("mp4") ? "mp4" : "webm";
       const fileName = `${userId}/${Date.now()}.${ext}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from("golive")
-        .upload(fileName, blob, { contentType: blob.type, upsert: true });
-      
+      const { error: uploadError } = await supabase.storage.from("golive").upload(fileName, blob, { contentType: blob.type, upsert: true });
       if (uploadError) throw uploadError;
-
       const { data: { publicUrl } } = supabase.storage.from("golive").getPublicUrl(fileName);
-
       const { error: insertError } = await supabase.from("posts").insert({
         user_id: userId,
         zip_code: zipCode || "GLOBAL",
         video_url: publicUrl,
         content: "",
       });
-
       if (insertError) throw insertError;
-
       closeLive();
       window.location.href = "/feed";
     } catch (e: any) {
@@ -127,18 +118,14 @@ export default function GoLive({ userId, zipCode, city }: Props) {
     };
   }, []);
 
-  const displayLocation = !zipCode || zipCode === 'GLOBAL' ? (city || 'your area') : zipCode;
+  const displayLocation = !zipCode || zipCode === 'GLOBAL' ? (city || 'your area') : city || 'your area';
 
   return (
     <>
-      <button
-        onClick={openLive}
-        className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg text-sm"
-      >
+      <button onClick={openLive} className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg text-sm">
         <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
         Go Live
       </button>
-
       {isOpen && (
         <div className="fixed inset-0 z-[99999] bg-black flex flex-col">
           <div className="flex justify-between items-center p-3 bg-zinc-900 text-white">
@@ -148,7 +135,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
             </div>
             <button onClick={closeLive} className="bg-white/10 px-3 py-1 rounded-full text-sm">✕ Close</button>
           </div>
-
           <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
             <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover mx-auto" />
             {errorMsg && (
@@ -163,7 +149,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
               </div>
             )}
           </div>
-
           <div className="p-6 bg-zinc-900 flex justify-center gap-6">
             {!isRecording ? (
               <button onClick={startRecording} className="w-20 h-20 rounded-full bg-red-600 border-4 border-white/20 flex items-center justify-center">
