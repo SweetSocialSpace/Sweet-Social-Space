@@ -1,6 +1,6 @@
 'use client'
 import GlobalFooter from '@/components/GlobalFooter'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, Suspense, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
@@ -72,37 +72,28 @@ function FeedContent() {
     { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' },
   ]
 
-  const fetchPosts = async (zipToUse?: string, radiusToUse: number = radius) => {
+  // FIX GLITCH - useCallback stable, no infinite loop
+  const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius, latLonOverride?: {lat:number, lon:number}|null) => {
     const z = zipToUse || nearZip || locationZip
     if (!z) return
-
     if (z === 'GLOBAL') {
       const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
       if(data) setPosts(data)
       return
     }
-
-    if (!userLatLon) {
-      const geo = await fetch(`/api/zips?zip=${z}`).then(r=>r.json()).catch(()=>null)
-      if (geo?.lat && geo?.lon) {
-        setUserLatLon({ lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) })
-        if (geo.city) setRealCityFromZip(`${geo.city}, ${geo.state || 'CA'}`)
-      }
-    }
-
+    const latLon = latLonOverride || userLatLon
     const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
     if (!data) return
-
-    if (userLatLon) {
-      const filteredByRadius = data.filter((p:any)=>{
+    if (latLon) {
+      const filtered = data.filter((p:any)=>{
         if (!p.lat ||!p.lon) return p.zip_code === z
-        return milesBetween(userLatLon.lat, userLatLon.lon, p.lat, p.lon) <= radiusToUse
+        return milesBetween(latLon.lat, latLon.lon, p.lat, p.lon) <= radiusToUse
       })
-      setPosts(filteredByRadius)
+      setPosts(filtered)
     } else {
       setPosts(data.filter((p:any)=> p.zip_code === z ||!p.zip_code))
     }
-  }
+  }, [nearZip, locationZip, userLatLon, radius, supabase])
 
   useEffect(() => {
     (async()=>{
@@ -110,8 +101,15 @@ function FeedContent() {
       if (!user) {
         if (locationZip) {
           setNearZip(locationZip)
-          fetch(`/api/zips?zip=${locationZip}`).then(r=>r.json()).then(g=>{ if(g?.city) setRealCityFromZip(`${g.city}, ${g.state||'CA'}`) }).catch(()=>{})
-          fetchPosts(locationZip)
+          const geo = await fetch(`/api/zips?zip=${locationZip}`).then(r=>r.json()).catch(()=>null)
+          if (geo?.lat) {
+            const ll = { lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) }
+            setUserLatLon(ll)
+            if (geo.city) setRealCityFromZip(`${geo.city}, ${geo.state||'CA'}`)
+            fetchPosts(locationZip, 5, ll)
+          } else {
+            fetchPosts(locationZip)
+          }
         }
         return
       }
@@ -124,10 +122,13 @@ function FeedContent() {
           setNearZip(zipVal)
           const geo = await fetch(`/api/zips?zip=${zipVal}`).then(r=>r.json()).catch(()=>null)
           if (geo?.lat) {
-            setUserLatLon({ lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) })
+            const ll = { lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) }
+            setUserLatLon(ll)
             if (geo.city) setRealCityFromZip(`${geo.city}, ${geo.state||'CA'}`)
+            fetchPosts(zipVal, radius, ll)
+          } else {
+            fetchPosts(zipVal)
           }
-          fetchPosts(zipVal)
         } else if (locationZip) {
           setNearZip(locationZip)
           fetchPosts(locationZip)
@@ -138,19 +139,19 @@ function FeedContent() {
         fetchPosts(locationZip)
       }
     })()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // FIX GLITCH - only fetch when radius changes, not when userLatLon changes infinitely
   useEffect(()=>{
-    if (!nearZip && locationZip) {
-      setNearZip(locationZip)
-      fetch(`/api/zips?zip=${locationZip}`).then(r=>r.json()).then(g=>{ if(g?.city) setRealCityFromZip(`${g.city}, ${g.state||'CA'}`) }).catch(()=>{})
-      fetchPosts(locationZip)
-    }
-  }, [locationZip, nearZip])
+    if (nearZip && userLatLon) fetchPosts(nearZip, radius, userLatLon)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [radius])
 
-  useEffect(()=>{
-    if (nearZip) fetchPosts(nearZip, radius)
-  }, [radius, userLatLon])
+  // smooth insert for GoLive - no reload
+  const handleLivePosted = (newPost:any) => {
+    setPosts(prev=>[newPost,...prev])
+  }
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
@@ -165,7 +166,6 @@ function FeedContent() {
 
   const authorName = currentProfile?.username || currentProfile?.display_name || 'there'
   const displayZip = nearZip || locationZip || ''
-  // FIX: Use real city from zip lookup, NOT IP city (Manado) - per RULES.md NEVER IP
   const displayCity = realCityFromZip || currentProfile?.city || 'your area'
   const isGlobal =!displayZip || displayZip === 'GLOBAL'
 
@@ -204,7 +204,7 @@ function FeedContent() {
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
-              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={displayCity} />
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={displayCity} onLivePosted={handleLivePosted} />
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
             </div>
           </div>
@@ -226,9 +226,9 @@ function FeedContent() {
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
                 {(p.video_url || p.media_url) && (() => {
                   const url = p.video_url || p.media_url;
-                  const isVideo = p.type === 'golive' || p.media_type === 'video' || url.endsWith('.webm') || url.endsWith('.mp4') || url.includes('golive');
+                  const isVideo = p.type === 'live' || p.type === 'golive' || p.media_type === 'video' || url.endsWith('.webm') || url.endsWith('.mp4') || url.includes('golive');
                   return isVideo? (
-                    <video src={url} controls playsInline className="mt-3 w-full rounded-xl bg-black" />
+                    <video src={url} controls playsInline preload="metadata" className="mt-3 w-full rounded-xl bg-black max-h-" />
                   ) : (
                     <img src={url} alt="" className="mt-3 w-full rounded-xl" />
                   );
