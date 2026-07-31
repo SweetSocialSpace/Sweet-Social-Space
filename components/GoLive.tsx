@@ -2,60 +2,50 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
-export default function GoLive({ userId, zipCode, city, onLivePosted }: any) {
+export default function GoLive(props: any) {
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const supabase = createClient()
-  const zip = zipCode || 'GLOBAL'
-  const cleanCity = (city || 'your area').replace(/, CA, CA/, ', CA')
+  const zip = props.zipCode || '95122'
+  const city = (props.city || 'San Jose, CA').replace(/, CA, CA/, ', CA')
 
-  const postLive = async () => {
+  const postNow = async () => {
+    if (saving) return
     setSaving(true)
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      const uid = user?.id || userId
-      if (!uid) { alert('Login required'); setSaving(false); return }
-
-      // FIX: Your posts table columns = user_id, zip_code, city, body, content, category
-      // NO type column - removed - per your schema cache error
-      const { data, error } = await supabase.from('posts').insert({
-        user_id: uid,
-        zip_code: zip,
-        city: cleanCity,
-        body: `🔴 LIVE from ${cleanCity} - ${new Date().toLocaleString()} - Watchable later`,
-        content: `🔴 LIVE from ${cleanCity}`,
-        category: 'general'
-      }).select().single()
-
-      if (error) {
-        console.error(error)
-        alert('Post failed: ' + error.message)
-        setSaving(false)
-        return
-      }
-
-      setOpen(false)
-      setSaving(false)
-      if (data && onLivePosted) onLivePosted(data)
-    } catch (e: any) {
-      alert('Failed: ' + e.message)
-      setSaving(false)
-    }
+    const { data: { user } } = await supabase.auth.getUser()
+    const uid = user?.id || props.userId
+    if (!uid) { alert('Login first'); setSaving(false); return }
+    const { data, error } = await supabase.from('posts').insert({
+      user_id: uid,
+      zip_code: zip,
+      city: city,
+      body: `🔴 LIVE from ${city} - ${new Date().toLocaleString()}`,
+      content: `🔴 LIVE from ${city}`,
+      category: 'general'
+    }).select().single()
+    if (error) { alert(error.message); setSaving(false); return }
+    setSaving(false)
+    setOpen(false)
+    if (props.onLivePosted && data) props.onLivePosted(data)
+    else if (data) window.location.reload() // fallback - ensures you see it even if feed callback missing
   }
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">Go Live</button>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt- bg-black/60 p-4">
-          <div className="bg-zinc-900 rounded-2xl w- p-4 border border-white/10">
-            <div className="flex justify-between mb-3"><span className="text-white font-bold text-sm">Go Live in {cleanCity}?</span><button onClick={() => setOpen(false)} className="w-6 h-6 bg-zinc-800 rounded-full text-white text-xs">X</button></div>
-            <div className="bg-black rounded-xl h- flex items-center justify-center text-white/40 text-xs mb-4">🔴 LIVE • {zip} • {cleanCity}</div>
-            <button onClick={postLive} disabled={saving} className="w-full bg-red-600 text-white py-2.5 rounded-full font-bold disabled:opacity-50">{saving? 'Posting...' : `Go Live Now in ${zip}`}</button>
-            <button onClick={() => setOpen(false)} className="w-full mt-2 bg-zinc-800 text-white py-2 rounded-full text-sm">Cancel</button>
+      <button type="button" onClick={() => setOpen(true)} className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold">Go Live</button>
+      {open? (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', paddingTop: '10vh' }}>
+          <div style={{ background: '#18181b', borderRadius: 16, width: 320, padding: 16, height: 'fit-content', border: '1px solid #333' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+              <span style={{ color: 'white', fontWeight: 'bold' }}>Go Live in {city}?</span>
+              <button onClick={() => setOpen(false)} style={{ background: '#333', color: 'white', borderRadius: 999, width: 24, height: 24 }}>X</button>
+            </div>
+            <div style={{ background: 'black', borderRadius: 12, height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', marginBottom: 12 }}>🔴 {zip} • {city}</div>
+            <button onClick={postNow} disabled={saving} style={{ width: '100%', background: saving? '#666' : '#dc2626', color: 'white', padding: '10px', borderRadius: 999, fontWeight: 'bold' }}>{saving? 'Posting...' : 'Go Live Now'}</button>
+            <button onClick={() => setOpen(false)} style={{ width: '100%', marginTop: 8, background: '#27272a', color: 'white', padding: '8px', borderRadius: 999 }}>Cancel</button>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   )
 }
