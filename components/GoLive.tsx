@@ -4,16 +4,33 @@ import { createClient } from '@/lib/supabase/client';
 
 type Props = { userId?: string; zipCode?: string; city?: string; };
 
-export default function GoLive({ userId, zipCode, city }: Props) {
+export default function GoLive({ userId, zipCode, city: ipCityProp }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [realCity, setRealCity] = useState<string>(ipCityProp || '');
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<any>(null);
+
+  // NEVER USE IP - use postal lookup api/zips?zip=USER_ZIP per RULES.md
+  useEffect(() => {
+    if (!zipCode || zipCode === 'GLOBAL') {
+      setRealCity('your area');
+      return;
+    }
+    // Fetch real city from zip, not IP
+    fetch(`/api/zips?zip=${zipCode}`)
+     .then(r => r.json())
+     .then(d => {
+        if (d?.city) setRealCity(`${d.city}, ${d.state || 'CA'}`);
+        else setRealCity('your area');
+      })
+     .catch(() => setRealCity('your area'));
+  }, [zipCode]);
 
   const openLive = async () => {
     setErrorMsg(null);
@@ -29,7 +46,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play().catch(()=>{});
       }
-    } catch (e: any) {
+    } catch {
       setErrorMsg("Camera denied");
       setIsOpen(false);
     }
@@ -85,13 +102,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
     setIsRecording(false);
   };
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
-    };
-  }, []);
-
   return (
     <>
       <button onClick={openLive} className="bg-red-600 text-white font-bold px-3 py-1 rounded-full text-xs flex items-center gap-1">
@@ -99,7 +109,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
       </button>
       {isOpen && (
         <div className="fixed inset-0 z-[99999] bg-black/90 flex items-start justify-center pt-">
-          <div className="bg-zinc-900 rounded-xl overflow-hidden w- shadow-2xl mt-2">
+          <div className="bg-zinc-900 rounded-xl overflow-hidden w- shadow-2xl">
             <div className="flex justify-between items-center px-2 py-1 bg-black text-white text-">
               <span>{isRecording? "REC" : "Preview"}</span>
               <button onClick={closeLive} className="bg-white/20 w-5 h-5 rounded-full flex items-center justify-center">X</button>
@@ -115,7 +125,9 @@ export default function GoLive({ userId, zipCode, city }: Props) {
               ) : (
                 <button onClick={stopRecording} className="w-10 h-10 rounded-full bg-white flex items-center justify-center"><div className="w-3 h-3 bg-red-600 rounded-sm"></div></button>
               )}
-              <div className="text- text-white/30">{city || 'your area'}</div>
+              <div className="text- text-white/30 text-center">
+                {realCity || 'your area'}
+              </div>
             </div>
           </div>
         </div>
