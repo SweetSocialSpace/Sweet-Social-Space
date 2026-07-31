@@ -69,6 +69,10 @@ export default function GoLive({ userId, zipCode, city }: Props) {
       recorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunksRef.current.push(e.data); };
       recorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "video/webm" });
+        if (blob.size > 12 * 1024 * 1024) {
+          setErrorMsg(`Too large ${(blob.size/1024/1024).toFixed(1)}MB. Keep under 30s.`);
+          return;
+        }
         await uploadVideo(blob);
       };
       recorder.start(200);
@@ -144,7 +148,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
                 </div>
               )}
             </div>
-          </div>
           <div className="p-6 bg-zinc-900 flex justify-center gap-6">
             {!isRecording? (
               <button onClick={startRecording} className="w-16 h-16 rounded-full bg-red-600 border-4 border-white/20 flex items-center justify-center">
