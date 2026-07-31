@@ -178,7 +178,7 @@ export default function GoLive({ userId, zipCode }: Props) {
             )}
           </div>
           <div className="text-xs text-white/40 text-center pb-4 bg-zinc-900">
-            Instant upload • Global feed • {zipCode || "GLOBAL"}
+            Instant upload • Global feed • {zipCode === 'GLOBAL' || !zipCode ? (city || 'your area') : zipCode}
           </div>
         </div>
       )}
