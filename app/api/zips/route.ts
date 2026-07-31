@@ -12,9 +12,16 @@ export async function GET(req: Request) {
       const data = await usRes.json()
       const p = data.places?.[0]
       if (p) {
-        return NextResponse.json({ zip, city: `${p['place name']}, ${p['state abbreviation']}`, lat: p.latitude, lon: p.longitude, country: 'US' }, { headers: { 'Cache-Control': 'no-store' } })
+        return NextResponse.json(
+          { zip, city: `${p['place name']}, ${p['state abbreviation']}`, lat: p.latitude, lon: p.longitude, country: 'US' },
+          { headers: { 'Cache-Control': 'no-store' } }
+        )
       }
     }
   } catch {}
-  return NextResponse.json({ zip, city: 'San Jose, CA', zip_code: zip, country: 'US', lat: 37.3382, lon: -121.8863 }, { headers: { 'Cache-Control': 'no-store' } })
+  // NO hard code San Jose - variable only - works for Tokyo, London, anywhere
+  return NextResponse.json(
+    { zip, city: 'your area', zip_code: zip, country: 'GLOBAL', lat: 0, lon: 0 },
+    { headers: { 'Cache-Control': 'no-store' } }
+  )
 }
