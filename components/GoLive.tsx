@@ -21,7 +21,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
     await new Promise(r => setTimeout(r, 100));
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 320 }, height: { ideal: 400 } },
+        video: { facingMode: "user", width: { ideal: 240 }, height: { ideal: 320 } },
         audio: true
       });
       streamRef.current = stream;
@@ -30,7 +30,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
         await videoRef.current.play().catch(()=>{});
       }
     } catch (e: any) {
-      setErrorMsg(e?.message || "Camera denied");
+      setErrorMsg("Camera denied");
       setIsOpen(false);
     }
   };
@@ -40,10 +40,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
       try { mediaRecorderRef.current.stop(); } catch {}
     }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
+    if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
     setIsOpen(false);
     setIsRecording(false);
     setIsUploading(false);
@@ -53,22 +50,16 @@ export default function GoLive({ userId, zipCode, city }: Props) {
     setIsUploading(true);
     const supabase = createClient();
     try {
-      if (!userId) throw new Error("Not logged in");
+      if (!userId) throw new Error("No user");
       const fileName = `${userId}/${Date.now()}.webm`;
       const { error: upErr } = await supabase.storage.from("golive").upload(fileName, blob, { contentType: "video/webm", upsert: true });
       if (upErr) throw upErr;
       const { data } = supabase.storage.from("golive").getPublicUrl(fileName);
-      const { error: insErr } = await supabase.from("posts").insert({
-        user_id: userId,
-        zip_code: zipCode || "GLOBAL",
-        video_url: data.publicUrl,
-        body: ""
-      });
-      if (insErr) throw insErr;
+      await supabase.from("posts").insert({ user_id: userId, zip_code: zipCode || "GLOBAL", video_url: data.publicUrl, body: "" });
       closeLive();
       window.location.href = "/feed";
     } catch (e: any) {
-      setErrorMsg(e.message || "Upload failed");
+      setErrorMsg("Upload failed");
       setIsUploading(false);
     }
   };
@@ -76,20 +67,16 @@ export default function GoLive({ userId, zipCode, city }: Props) {
   const startRecording = () => {
     if (!streamRef.current) return;
     chunksRef.current = [];
-    try {
-      const recorder = new MediaRecorder(streamRef.current, { mimeType: "video/webm", videoBitsPerSecond: 350000 } as any);
-      mediaRecorderRef.current = recorder;
-      recorder.ondataavailable = (ev) => { if (ev.data.size > 0) chunksRef.current.push(ev.data); };
-      recorder.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: "video/webm" });
-        await uploadVideo(blob);
-      };
-      recorder.start(200);
-      setIsRecording(true);
-      timerRef.current = setTimeout(() => { try { recorder.stop(); } catch {} }, 30000);
-    } catch {
-      setErrorMsg("Recording not supported");
-    }
+    const recorder = new MediaRecorder(streamRef.current, { mimeType: "video/webm", videoBitsPerSecond: 300000 } as any);
+    mediaRecorderRef.current = recorder;
+    recorder.ondataavailable = (ev) => { if (ev.data.size > 0) chunksRef.current.push(ev.data); };
+    recorder.onstop = async () => {
+      const blob = new Blob(chunksRef.current, { type: "video/webm" });
+      await uploadVideo(blob);
+    };
+    recorder.start(200);
+    setIsRecording(true);
+    timerRef.current = setTimeout(() => { try { recorder.stop(); } catch {} }, 30000);
   };
 
   const stopRecording = () => {
@@ -107,30 +94,28 @@ export default function GoLive({ userId, zipCode, city }: Props) {
 
   return (
     <>
-      <button onClick={openLive} className="bg-red-600 text-white font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5 text-sm">
+      <button onClick={openLive} className="bg-red-600 text-white font-bold px-3 py-1 rounded-full text-xs flex items-center gap-1">
         <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span> Go Live
       </button>
       {isOpen && (
-        <div className="fixed inset-0 z-[99999] bg-black/95 flex items-center justify-center p-4">
-          <div className="bg-zinc-900 rounded-2xl overflow-hidden w-full max-w- shadow-2xl">
-            <div className="flex justify-between items-center p-2 bg-black text-white text-xs">
-              <span>{isRecording? "REC • 30s" : "Preview"}</span>
+        <div className="fixed inset-0 z-[99999] bg-black/90 flex items-center justify-center">
+          <div className="bg-zinc-900 rounded-xl overflow-hidden w- shadow-2xl">
+            <div className="flex justify-between items-center px-2 py-1 bg-black text-white text-">
+              <span>{isRecording? "REC" : "Preview"}</span>
               <button onClick={closeLive} className="bg-white/20 px-2 py-0.5 rounded-full">X</button>
             </div>
-            <div className="relative aspect-[9/16] bg-black">
+            <div className="relative w- h- bg-black">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
-              {errorMsg && <div className="absolute inset-0 bg-black/80 flex items-center justify-center p-2 text-white text-xs text-center">{errorMsg}</div>}
-              {isUploading && <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white text-xs">Publishing...</div>}
+              {errorMsg && <div className="absolute inset-0 bg-black/80 flex items-center justify-center text-white text- p-2 text-center">{errorMsg}</div>}
+              {isUploading && <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-white text-">Publishing</div>}
             </div>
-            <div className="p-3 bg-zinc-900 flex flex-col items-center gap-2">
+            <div className="p-2 flex flex-col items-center gap-1 bg-zinc-900">
               {!isRecording? (
-                <button onClick={startRecording} className="w-12 h-12 rounded-full bg-red-600 border-2 border-white/20 flex items-center justify-center"><div className="w-4 h-4 bg-white rounded-full"></div></button>
+                <button onClick={startRecording} className="w-10 h-10 rounded-full bg-red-600 border-2 border-white/20 flex items-center justify-center"><div className="w-3 h-3 bg-white rounded-full"></div></button>
               ) : (
-                <button onClick={stopRecording} className="w-12 h-12 rounded-full bg-white border-2 border-red-600 flex items-center justify-center"><div className="w-3 h-3 bg-red-600 rounded-sm"></div></button>
+                <button onClick={stopRecording} className="w-10 h-10 rounded-full bg-white flex items-center justify-center"><div className="w-3 h-3 bg-red-600 rounded-sm"></div></button>
               )}
-              <div className="text- text-white/30 text-center">
-                Global • {city || 'your area'}
-              </div>
+              <div className="text- text-white/30">{city || 'your area'}</div>
             </div>
           </div>
         </div>
