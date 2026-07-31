@@ -4,33 +4,35 @@ import { createClient } from '@/lib/supabase/client';
 
 type Props = { userId?: string; zipCode?: string; city?: string; };
 
-export default function GoLive({ userId, zipCode, city: ipCityProp }: Props) {
+export default function GoLive({ userId, zipCode, city }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [realCity, setRealCity] = useState<string>(ipCityProp || '');
+  const [realCity, setRealCity] = useState<string>(city || 'your area');
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<any>(null);
 
-  // NEVER USE IP - use postal lookup api/zips?zip=USER_ZIP per RULES.md
   useEffect(() => {
     if (!zipCode || zipCode === 'GLOBAL') {
-      setRealCity('your area');
+      setRealCity(city || 'your area');
       return;
     }
-    // Fetch real city from zip, not IP
     fetch(`/api/zips?zip=${zipCode}`)
      .then(r => r.json())
      .then(d => {
-        if (d?.city) setRealCity(`${d.city}, ${d.state || 'CA'}`);
-        else setRealCity('your area');
+        if (d?.city) {
+          const st = d.state ? `, ${d.state}` : '';
+          setRealCity(`${d.city}${st}`);
+        } else {
+          setRealCity(city || 'your area');
+        }
       })
-     .catch(() => setRealCity('your area'));
-  }, [zipCode]);
+     .catch(() => setRealCity(city || 'your area'));
+  }, [zipCode, city]);
 
   const openLive = async () => {
     setErrorMsg(null);
@@ -125,9 +127,7 @@ export default function GoLive({ userId, zipCode, city: ipCityProp }: Props) {
               ) : (
                 <button onClick={stopRecording} className="w-10 h-10 rounded-full bg-white flex items-center justify-center"><div className="w-3 h-3 bg-red-600 rounded-sm"></div></button>
               )}
-              <div className="text- text-white/30 text-center">
-                {realCity || 'your area'}
-              </div>
+              <div className="text- text-white/30 text-center">{realCity || 'your area'}</div>
             </div>
           </div>
         </div>
