@@ -45,6 +45,7 @@ function FeedContent() {
   const [nearZip, setNearZip] = useState<string>('')
   const [radius, setRadius] = useState<number>(5)
   const [userLatLon, setUserLatLon] = useState<{lat:number, lon:number} | null>(null)
+  const [realCityFromZip, setRealCityFromZip] = useState<string>('')
 
   useEffect(() => {
     const f = searchParams.get('filter');
@@ -81,19 +82,20 @@ function FeedContent() {
       return
     }
 
-    // Get lat/lon for radius filtering from internet - per RULES.md
     if (!userLatLon) {
       const geo = await fetch(`/api/zips?zip=${z}`).then(r=>r.json()).catch(()=>null)
-      if (geo?.lat && geo?.lon) setUserLatLon({ lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) })
+      if (geo?.lat && geo?.lon) {
+        setUserLatLon({ lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) })
+        if (geo.city) setRealCityFromZip(`${geo.city}, ${geo.state || 'CA'}`)
+      }
     }
 
-    // Fetch by zip first, then filter by radius if we have lat/lon - GLOBAL works for any zip
     const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
     if (!data) return
 
     if (userLatLon) {
       const filteredByRadius = data.filter((p:any)=>{
-        if (!p.lat ||!p.lon) return p.zip_code === z // fallback to zip match
+        if (!p.lat ||!p.lon) return p.zip_code === z
         return milesBetween(userLatLon.lat, userLatLon.lon, p.lat, p.lon) <= radiusToUse
       })
       setPosts(filteredByRadius)
@@ -108,6 +110,7 @@ function FeedContent() {
       if (!user) {
         if (locationZip) {
           setNearZip(locationZip)
+          fetch(`/api/zips?zip=${locationZip}`).then(r=>r.json()).then(g=>{ if(g?.city) setRealCityFromZip(`${g.city}, ${g.state||'CA'}`) }).catch(()=>{})
           fetchPosts(locationZip)
         }
         return
@@ -120,7 +123,10 @@ function FeedContent() {
         if(zipVal) {
           setNearZip(zipVal)
           const geo = await fetch(`/api/zips?zip=${zipVal}`).then(r=>r.json()).catch(()=>null)
-          if (geo?.lat) setUserLatLon({ lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) })
+          if (geo?.lat) {
+            setUserLatLon({ lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) })
+            if (geo.city) setRealCityFromZip(`${geo.city}, ${geo.state||'CA'}`)
+          }
           fetchPosts(zipVal)
         } else if (locationZip) {
           setNearZip(locationZip)
@@ -137,6 +143,7 @@ function FeedContent() {
   useEffect(()=>{
     if (!nearZip && locationZip) {
       setNearZip(locationZip)
+      fetch(`/api/zips?zip=${locationZip}`).then(r=>r.json()).then(g=>{ if(g?.city) setRealCityFromZip(`${g.city}, ${g.state||'CA'}`) }).catch(()=>{})
       fetchPosts(locationZip)
     }
   }, [locationZip, nearZip])
@@ -158,7 +165,8 @@ function FeedContent() {
 
   const authorName = currentProfile?.username || currentProfile?.display_name || 'there'
   const displayZip = nearZip || locationZip || ''
-  const displayCity = currentProfile?.city || locationCity || 'your area'
+  // FIX: Use real city from zip lookup, NOT IP city (Manado) - per RULES.md NEVER IP
+  const displayCity = realCityFromZip || currentProfile?.city || 'your area'
   const isGlobal =!displayZip || displayZip === 'GLOBAL'
 
   return (
@@ -196,7 +204,7 @@ function FeedContent() {
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
-              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={currentProfile?.city || locationCity || 'your area'} />
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={displayCity} />
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
             </div>
           </div>
@@ -216,17 +224,16 @@ function FeedContent() {
             {filtered.map((p:any)=>(
           <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
-                {/* RULES: support both video_url (golive) and media_url (old posts) */}
                 {(p.video_url || p.media_url) && (() => {
                   const url = p.video_url || p.media_url;
                   const isVideo = p.type === 'golive' || p.media_type === 'video' || url.endsWith('.webm') || url.endsWith('.mp4') || url.includes('golive');
-                  return isVideo ? (
+                  return isVideo? (
                     <video src={url} controls playsInline className="mt-3 w-full rounded-xl bg-black" />
                   ) : (
                     <img src={url} alt="" className="mt-3 w-full rounded-xl" />
                   );
                 })()}
-                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL' ? displayCity : (p.zip_code || displayZip)}</div>
+                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
                 {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
               </div>
             ))}
