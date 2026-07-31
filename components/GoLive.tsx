@@ -100,7 +100,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
         user_id: userId,
         zip_code: zipCode || "GLOBAL",
         video_url: publicUrl,
-        content: "",
+        body: "",
       });
       if (insertError) throw insertError;
       closeLive();
