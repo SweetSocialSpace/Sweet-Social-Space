@@ -214,11 +214,19 @@ function FeedContent() {
           <div className="space-y-3 mt-2">
             {filtered.length===0 && <WelcomePost />}
             {filtered.map((p:any)=>(
-              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
+          <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
-                {p.media_url && p.media_type==='video' && <video src={p.media_url} controls className="mt-3 w-full rounded-xl bg-black" />}
-                {p.media_url && p.media_type==='image' && <img src={p.media_url} alt="" className="mt-3 w-full rounded-xl" />}
-                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
+                {/* RULES: support both video_url (golive) and media_url (old posts) */}
+                {(p.video_url || p.media_url) && (() => {
+                  const url = p.video_url || p.media_url;
+                  const isVideo = p.type === 'golive' || p.media_type === 'video' || url.endsWith('.webm') || url.endsWith('.mp4') || url.includes('golive');
+                  return isVideo ? (
+                    <video src={url} controls playsInline className="mt-3 w-full rounded-xl bg-black" />
+                  ) : (
+                    <img src={url} alt="" className="mt-3 w-full rounded-xl" />
+                  );
+                })()}
+                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL' ? displayCity : (p.zip_code || displayZip)}</div>
                 {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
               </div>
             ))}
