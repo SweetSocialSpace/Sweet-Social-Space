@@ -103,14 +103,12 @@ export default function GoLive({ userId, zipCode, city }: Props) {
 
       const { data: { publicUrl } } = supabase.storage.from("golive").getPublicUrl(fileName);
 
-      // RULES: use existing posts schema - media_url + media_type per feed/page.tsx
       const { error: insertError } = await supabase.from("posts").insert({
         user_id: userId,
         zip_code: zipCode || "GLOBAL",
-        media_url: publicUrl,
-        media_type: "video",
-        body: "",
-        category: "general",
+        video_url: publicUrl,
+        content: "",
+        type: "golive",
       });
 
       if (insertError) throw insertError;
@@ -119,7 +117,7 @@ export default function GoLive({ userId, zipCode, city }: Props) {
       window.location.href = "/feed";
     } catch (e: any) {
       console.error(e);
-      setErrorMsg(e.message || "Upload failed - run SQL to create bucket 'golive'");
+      setErrorMsg(e.message || "Upload failed");
       setIsUploading(false);
     }
   };
@@ -130,7 +128,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
     };
   }, []);
 
-  // RULES: GLOBAL displays as city / your area, never hardcoded 95122
   const displayLocation = !zipCode || zipCode === 'GLOBAL' ? (city || 'your area') : zipCode;
 
   return (
