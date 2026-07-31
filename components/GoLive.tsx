@@ -69,10 +69,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
       recorder.ondataavailable = (e) => { if (e.data && e.data.size > 0) chunksRef.current.push(e.data); };
       recorder.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "video/webm" });
-        if (blob.size > 12 * 1024) {
-          setErrorMsg(`Too large ${(blob.size/1024/1024).toFixed(1)}MB. Keep under 30s.`);
-          return;
-        }
         await uploadVideo(blob);
       };
       recorder.start(200);
@@ -133,7 +129,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
             </div>
             <button onClick={closeLive} className="bg-white/10 px-3 py-1 rounded-full text-sm">✕ Close</button>
           </div>
-          {/* FIXED SIZE - HALF AS BEFORE - SMALL PORTRAIT CARD */}
           <div className="flex-1 bg-black flex items-center justify-center p-4 overflow-hidden">
             <div className="relative w-full max-w- aspect-[9/16] bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
@@ -161,7 +156,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
               </button>
             )}
           </div>
-          {/* FIXED - RULES.md COMPLIANT - NO ZIP, NO IP CITY, NO MANADO - GLOBAL PLATFORM */}
           <div className="text-xs text-white/40 text-center pb-4 bg-zinc-900">
             Instant upload • Global feed • {city || 'your area'}
           </div>
