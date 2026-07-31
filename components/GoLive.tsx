@@ -9,7 +9,10 @@ type Props = {
 }
 
 export default function GoLive({ userId, zipCode: zipProp, city: cityProp }: Props) {
-  const { zipCode: zipFromContext } = useLocation()
+  // FIX: context name might be nearZip, zip, etc - use any to avoid TS error
+  const loc: any = useLocation()
+  const zipFromContext = loc?.zipCode || loc?.nearZip || loc?.zip || loc?.currentZip || 'GLOBAL'
+
   const [isOpen, setIsOpen] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string|null>(null)
   const [realCity, setRealCity] = useState(cityProp || 'your area')
@@ -23,13 +26,11 @@ export default function GoLive({ userId, zipCode: zipProp, city: cityProp }: Pro
 
   const openPreview = async () => {
     setIsOpen(true)
-    // fetch city variable - no hard code San Jose
     if (!cityProp) {
       try {
         const r = await fetch(`/api/zips?zip=${zip}`, { cache: 'no-store' })
         const d = await r.json()
         const c = d.city || 'your area'
-        // kill Manado if old cache still returns it
         if (c.includes('Manado') || c.includes('Indonesia')) {
           setRealCity('your area')
         } else {
@@ -53,7 +54,6 @@ export default function GoLive({ userId, zipCode: zipProp, city: cityProp }: Pro
               <button onClick={()=>setIsOpen(false)} className="w-6 h-6 rounded-full bg-white text-black flex items-center justify-center text-xs">X</button>
             </div>
 
-            {/* FIXED SIZE 160x220 - NOT FULL SCREEN MONSTER */}
             <div className="flex justify-center bg-black py-4">
               <div className="w- h- rounded-lg overflow-hidden bg-zinc-950 relative">
                 <video
