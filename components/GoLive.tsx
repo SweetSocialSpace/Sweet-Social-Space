@@ -108,7 +108,6 @@ export default function GoLive({ userId, zipCode, city }: Props) {
         zip_code: zipCode || "GLOBAL",
         video_url: publicUrl,
         content: "",
-        type: "golive",
       });
 
       if (insertError) throw insertError;
