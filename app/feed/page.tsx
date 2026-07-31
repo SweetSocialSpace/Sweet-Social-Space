@@ -196,7 +196,7 @@ function FeedContent() {
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
-              <GoLive userId={currentUserId || undefined} zipCode={displayZip || 'GLOBAL'} city={displayCity} />
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={currentProfile?.city || locationCity || 'your area'} />
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
             </div>
           </div>
