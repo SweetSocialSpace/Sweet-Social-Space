@@ -130,12 +130,12 @@ export function BusinessDirectory(){
   const display = biz.length > 0 ? biz : liveBiz
   const displayArea = zip === 'GLOBAL' || !zip ? (city || 'your area') : zip
 
-  if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">🏢 Local Businesses</p><p className="text-xs text-white/50">Loading {displayArea}...</p></div>)
+  if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Local Businesses</p><p className="text-xs text-white/50">Loading {displayArea}...</p></div>)
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">🏢 Local Businesses</p>
-      <p className="text-xs text-white/50 mt-1">Near {displayArea} • Live</p>
+      <p className="font-bold">Local Businesses</p>
+      <p className="text-xs text-white/50 mt-1">Near {displayArea} - Live</p>
       {loading ? <p className="text-sm mt-3 text-white/60">Loading...</p> : 
       display.length===0? <p className="text-sm mt-3 text-white/60">No businesses yet</p> : 
       (<div className="mt-3 space-y-2">{display.map(b=>(<div key={b.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex justify-between"><span className="truncate">{b.name}</span><span className="text-white/40">{b.category||''}</span></div>))}</div>)}
