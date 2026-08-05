@@ -49,13 +49,14 @@ export default function GoLive(props: any) {
       setToken(tokenData.token)
       setStreaming(true)
 
-      // Create live post WITHOUT zip_code so it's visible globally
+      // Create live post with room name so others can join
       const payload: any = {
         body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
         tag: 'live',
         category: 'general',
         zip_code: null, // null = visible globally
-        user_id: uid
+        user_id: uid,
+        livekit_room: newRoomName // Store room name for joining
       }
       const { data, error } = await supabase.from('posts').insert(payload).select().single()
 
