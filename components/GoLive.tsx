@@ -49,11 +49,12 @@ export default function GoLive(props: any) {
       setToken(tokenData.token)
       setStreaming(true)
 
+      // Create live post WITHOUT zip_code so it's visible globally
       const payload: any = {
         body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
         tag: 'live',
         category: 'general',
-        zip_code: zip,
+        zip_code: null, // null = visible globally
         user_id: uid
       }
       const { data, error } = await supabase.from('posts').insert(payload).select().single()
@@ -134,7 +135,7 @@ export default function GoLive(props: any) {
         )}
         
         <div className="mt-3 text-center text-neutral-500 text-xs">
-          Only visible to subscribers in {zip}
+          Live stream visible to all users
         </div>
       </div>
     </div>
