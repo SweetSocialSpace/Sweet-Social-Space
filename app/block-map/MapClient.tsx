@@ -38,7 +38,8 @@ export default function MapClient(){
   
   const { zip, lat, lng } = useLocation()
 
-  const mapCenter: [number, number] = (lat && lng)? [lat, lng] : [37.3369,-121.8563]
+  // RULES: No hardcoded location - require real user coordinates
+  const mapCenter: [number, number] = (lat && lng)? [lat, lng] : [0, 0] // Will show world map if no location
 
   useEffect(()=>{
     (async()=>{
@@ -52,6 +53,19 @@ export default function MapClient(){
       }
     })()
   },[])
+
+  // If no location, show loading state
+  if (!lat || !lng) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-black text-white">
+        <div className="text-center">
+          <div className="text-4xl mb-4">📍</div>
+          <p className="text-xl font-bold">Loading your location...</p>
+          <p className="text-sm text-white/60 mt-2">Please enable location services</p>
+        </div>
+      </div>
+    )
+  }
 
   return(
     <div>
