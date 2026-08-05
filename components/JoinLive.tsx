@@ -1,13 +1,22 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
 import { useTracks } from '@livekit/components-react'
-import { TrackReference } from '@livekit/components-react'
 
 function ParticipantView() {
   const tracks = useTracks([], { onlySubscribed: false })
   const remoteTracks = tracks.filter(track => track.participant.isLocal === false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    if (videoRef.current && remoteTracks.length > 0) {
+      const cameraTrack = remoteTracks.find(t => t.source === 'camera')
+      if (cameraTrack && cameraTrack.publication.track) {
+        cameraTrack.publication.track.attach(videoRef.current)
+      }
+    }
+  }, [remoteTracks])
 
   if (remoteTracks.length === 0) {
     return (
@@ -19,18 +28,12 @@ function ParticipantView() {
 
   return (
     <div className="relative w-full h-full">
-      {remoteTracks.map(track => (
-        <div key={track.participant.identity} className="absolute inset-0">
-          {track.source === 'camera' && (
-            <video
-              ref={track.publication.track?.attach}
-              className="w-full h-full object-cover"
-              autoPlay
-              playsInline
-            />
-          )}
-        </div>
-      ))}
+      <video
+        ref={videoRef}
+        className="w-full h-full object-cover"
+        autoPlay
+        playsInline
+      />
     </div>
   )
 }
