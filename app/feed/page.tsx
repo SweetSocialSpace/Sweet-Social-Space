@@ -7,7 +7,6 @@ import dynamic from 'next/dynamic'
 import { useLocation } from '@/lib/location-context'
 import Header from '@/app/components/Header'
 import WelcomePost from '@/app/components/WelcomePost'
-import GoLive from '@/components/GoLive'
 import React from 'react'
 
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
@@ -124,7 +123,7 @@ function FeedContent() {
           if (geo?.lat) {
             const ll = { lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) }
             setUserLatLon(ll)
-            if (geo.city) setRealCityFromZip(`${geo.city}, ${geo.state||'CA'}`)
+            if (geo.city) setRealCityFromZip(`${geo.city}${geo.state ? ', ' + geo.state : ''}`)
             fetchPosts(zipVal, radius, ll)
           } else {
             fetchPosts(zipVal)
