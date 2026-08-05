@@ -47,7 +47,9 @@ export default function GoLive(props: any) {
     }
   }
 
-  const startRecording = () => {
+  const startRecording = async () => {
+    await startCamera()
+    
     if (!stream) return
     
     chunksRef.current = []
@@ -93,6 +95,8 @@ export default function GoLive(props: any) {
       if (!uid) { alert('Login first'); setUploading(false); return }
 
       const fileName = `live-${uid}-${Date.now()}.webm`
+      console.log('Uploading video:', fileName, 'Size:', blob.size)
+      
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('livestreams')
         .upload(fileName, blob)
@@ -104,9 +108,13 @@ export default function GoLive(props: any) {
         return
       }
 
+      console.log('Upload successful:', uploadData)
+
       const { data: { publicUrl } } = supabase.storage
         .from('livestreams')
         .getPublicUrl(fileName)
+
+      console.log('Public URL:', publicUrl)
 
       const { data, error } = await supabase.from('posts').insert({
         user_id: uid,
@@ -118,7 +126,14 @@ export default function GoLive(props: any) {
         media_url: publicUrl
       }).select().single()
 
-      if (error) { alert(error.message); setUploading(false); return }
+      if (error) { 
+        console.error('Database insert error:', error)
+        alert(error.message); 
+        setUploading(false); 
+        return 
+      }
+      
+      console.log('Post created:', data)
       
       setUploading(false)
       setOpen(false)
@@ -157,16 +172,11 @@ export default function GoLive(props: any) {
   }
 
   useEffect(() => {
-    if (open) {
-      startCamera()
-    } else {
-      stopCamera()
-    }
     return () => {
       stopCamera()
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [open])
+  }, [])
 
   if (!open) {
     return <button type="button" onClick={() => setOpen(true)} className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold">Go Live</button>
@@ -179,7 +189,7 @@ export default function GoLive(props: any) {
           <span className="text-white font-bold text-lg">
             {recording ? 'LIVE' : 'Go Live in ' + city}
           </span>
-          <button onClick={() => { setOpen(false); if (recording) stopRecording(); }} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
+          <button onClick={() => { setOpen(false); if (recording) stopRecording(); stopCamera(); }} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
         </div>
         
         <div className="relative bg-black rounded-xl overflow-hidden mb-4 aspect-video">
@@ -199,7 +209,7 @@ export default function GoLive(props: any) {
           {!stream && !error && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-500">
               <div className="text-3xl mb-2">Camera</div>
-              <span>Starting camera...</span>
+              <span>Click Start Recording to begin</span>
             </div>
           )}
         </div>
@@ -213,7 +223,7 @@ export default function GoLive(props: any) {
         {!recording ? (
           <button 
             onClick={startRecording} 
-            disabled={!stream || uploading}
+            disabled={uploading}
             className="w-full bg-red-600 text-white p-3.5 rounded-full font-bold text-base border-none disabled:bg-neutral-600 disabled:cursor-not-allowed cursor-pointer"
           >
             {uploading ? 'Uploading...' : 'Start Recording'}
