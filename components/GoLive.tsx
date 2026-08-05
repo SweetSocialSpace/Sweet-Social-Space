@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LiveKitRoom, VideoConference, RoomAudioRenderer } from '@livekit/components-react'
 
@@ -45,17 +45,18 @@ export default function GoLive(props: any) {
       setToken(tokenData.token)
       setStreaming(true)
 
-      const { data, error } = await supabase.from('posts').insert({
-        user_id: uid,
-        zip_code: zip,
+      const payload: any = {
         body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
         tag: 'live',
         category: 'general',
-        livekit_room: newRoomName
-      }).select().single()
+        zip_code: zip,
+        user_id: uid
+      }
+      const { data, error } = await supabase.from('posts').insert(payload).select().single()
 
       if (error) { 
-        setError(error.message)
+        console.error('Database insert error:', error)
+        setError('Database error: ' + error.message + ' (Code: ' + error.code + ')')
         setStreaming(false)
         return 
       }
