@@ -19,9 +19,9 @@ export function VerifiedSources(){
         // GLOBAL = your area, no lat/lng search
         if (zip === 'GLOBAL') {
           if(mounted) setLiveVs([
-            { id: 'live-1', title: `Global Trust Network — Verified` },
-            { id: 'live-2', title: `Community Safety — Verified` },
-            { id: 'live-3', title: `NWS — Verified` },
+            { id: 'live-1', title: `Global Trust Network - Verified` },
+            { id: 'live-2', title: `Community Safety - Verified` },
+            { id: 'live-3', title: `NWS - Verified` },
           ])
           return
         }
@@ -61,9 +61,9 @@ export function VerifiedSources(){
             useLat === 0 || useLng === 0) {
           console.log('VerifiedSources: Invalid coordinates, using city fallback')
           const fallback = [
-            { id: 'live-1', title: `${city || 'Local'} Police — Verified` },
-            { id: 'live-2', title: `${city || 'Local'} Fire — Verified` },
-            { id: 'live-3', title: `NWS — Verified` },
+            { id: 'live-1', title: `${city || 'Local'} Police - Verified` },
+            { id: 'live-2', title: `${city || 'Local'} Fire - Verified` },
+            { id: 'live-3', title: `NWS - Verified` },
           ]
           if(mounted) setLiveVs(fallback)
           return
@@ -83,9 +83,9 @@ export function VerifiedSources(){
           console.warn('VerifiedSources Overpass returned error status (non-critical):', res.status)
           if (cached && mounted) setLiveVs(JSON.parse(cached))
           else if(mounted) setLiveVs([
-            { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
-            { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
-            { id: 'live-3', title: 'NWS — Verified` },
+            { id: 'live-1', title: `${city || 'your area'} Police - Verified` },
+            { id: 'live-2', title: `${city || 'your area'} Fire - Verified` },
+            { id: 'live-3', title: `NWS - Verified` },
           ])
           return
         }
@@ -96,14 +96,14 @@ export function VerifiedSources(){
         if(json.elements && json.elements.length > 0){
           live = json.elements.filter((el:any)=>el.tags?.name).slice(0,3).map((el:any)=>({
             id: `live-${el.id}`,
-            title: `${el.tags.name} — Verified ${el.tags.amenity}`
+            title: `${el.tags.name} - Verified ${el.tags.amenity}`
           }))
         }
         if(live.length===0){
           live = [
-            { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
-            { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
-            { id: 'live-3', title: 'NWS — Verified' },
+            { id: 'live-1', title: `${city || 'your area'} Police - Verified` },
+            { id: 'live-2', title: `${city || 'your area'} Fire - Verified` },
+            { id: 'live-3', title: 'NWS - Verified` },
           ]
         }
         if(mounted){
@@ -115,9 +115,9 @@ export function VerifiedSources(){
         const cached = localStorage.getItem(CACHE_KEY)
         if (cached && mounted) setLiveVs(JSON.parse(cached))
         else if(mounted) setLiveVs([
-          { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
-          { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
-          { id: 'live-3', title: 'NWS — Verified' },
+          { id: 'live-1', title: `${city || 'your area'} Police - Verified` },
+          { id: 'live-2', title: `${city || 'your area'} Fire - Verified` },
+          { id: 'live-3', title: `NWS - Verified` },
         ])
       }
     }
@@ -127,7 +127,7 @@ export function VerifiedSources(){
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">✅ Verified Sources</p>
+      <p className="font-bold">Verified Sources</p>
       <p className="text-xs text-white/50">Loading...</p>
     </div>
   )
@@ -136,12 +136,12 @@ export function VerifiedSources(){
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">✅ Verified Sources • Near {displayZip}</p>
-      {liveVs.length===0? <p className="text-sm mt-3 text-white/60">No verified orgs yet — apply!</p> : (
+      <p className="font-bold">Verified Sources - Near {displayZip}</p>
+      {liveVs.length===0? <p className="text-sm mt-3 text-white/60">No verified orgs yet - apply!</p> : (
         <div className="mt-3 space-y-2">
           {liveVs.map(v=>(
             <div key={v.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex items-center gap-2">
-              <span>✅</span><span className="truncate">{v.title}</span>
+              <span>Verified</span><span className="truncate">{v.title}</span>
             </div>
           ))}
         </div>
