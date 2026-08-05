@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic'
 import { useLocation } from '@/lib/location-context'
 import Header from '@/app/components/Header'
 import WelcomePost from '@/app/components/WelcomePost'
+import GoLive from '@/components/GoLive'
 import React from 'react'
 
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
@@ -147,7 +148,9 @@ function FeedContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius])
 
-
+const handleLivePosted = (newPost:any) => {
+  setPosts(prev=>[newPost,...prev])
+}
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
     const { error } = await supabase.from('posts').delete().eq('id', postId)
@@ -200,6 +203,7 @@ function FeedContent() {
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={displayCity} onLivePosted={handleLivePosted} />
             </div>
           </div>
 
