@@ -4,7 +4,7 @@ import { AccessToken } from 'livekit-server-sdk'
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { roomName, participantName } = body
+    const { roomName, participantName, role = 'viewer' } = body
 
     if (!roomName || !participantName) {
       return NextResponse.json({ error: 'Missing roomName or participantName' }, { status: 400 })
@@ -22,10 +22,13 @@ export async function POST(req: NextRequest) {
       identity: participantName,
     })
 
+    // Viewer: can only subscribe (watch), cannot publish (camera/mic)
+    // Host: can both subscribe and publish
+    const isHost = role === 'host'
     at.addGrant({
       room: roomName,
       roomJoin: true,
-      canPublish: true,
+      canPublish: isHost,
       canSubscribe: true,
     })
 
