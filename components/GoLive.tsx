@@ -4,22 +4,17 @@ import { createClient } from '@/lib/supabase/client'
 
 export default function GoLive(props: any) {
   const [open, setOpen] = useState(false)
-  const [recording, setRecording] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [stream, setStream] = useState<MediaStream | null>(null)
-  const [recordingTime, setRecordingTime] = useState(0)
+  const [streaming, setStreaming] = useState(false)
   const [error, setError] = useState('')
+  const [stream, setStream] = useState<MediaStream | null>(null)
   
   const videoRef = useRef<HTMLVideoElement>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<BlobPart[]>([])
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
   
   const supabase = createClient()
   const zip = props.zipCode
   const city = props.city
 
-  const startCamera = async () => {
+  const goLive = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { facingMode: 'user', width: 640, height: 480 },
@@ -30,91 +25,19 @@ export default function GoLive(props: any) {
         videoRef.current.srcObject = mediaStream
         videoRef.current.muted = true
       }
-      setError('')
-    } catch (err: any) {
-      setError('Camera access denied. Please allow camera and microphone access.')
-      console.error('Camera error:', err)
-    }
-  }
-
-  const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop())
-      setStream(null)
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null
-    }
-  }
-
-  const startRecording = async () => {
-    await startCamera()
-    
-    if (!stream) return
-    
-    chunksRef.current = []
-    const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' })
-    mediaRecorderRef.current = mediaRecorder
-    
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        chunksRef.current.push(event.data)
-      }
-    }
-    
-    mediaRecorder.onstop = async () => {
-      const blob = new Blob(chunksRef.current, { type: 'video/webm' })
-      await uploadVideo(blob)
-    }
-    
-    mediaRecorder.start()
-    setRecording(true)
-    setRecordingTime(0)
-    
-    timerRef.current = setInterval(() => {
-      setRecordingTime(prev => prev + 1)
-    }, 1000)
-  }
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && recording) {
-      mediaRecorderRef.current.stop()
-      setRecording(false)
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-        timerRef.current = null
-      }
-    }
-  }
-
-  const uploadVideo = async (blob: Blob) => {
-    setUploading(true)
-    try {
+      
+      setStreaming(true)
+      
       const { data: { user } } = await supabase.auth.getUser()
       const uid = user?.id || props.userId
-      if (!uid) { alert('Login first'); setUploading(false); return }
-
-      const fileName = `live-${uid}-${Date.now()}.webm`
-      console.log('Uploading video:', fileName, 'Size:', blob.size)
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('livestreams')
-        .upload(fileName, blob)
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError)
-        await createPostWithoutVideo(uid)
-        setUploading(false)
-        return
+      if (!uid) { 
+        setError('Please login first')
+        setStreaming(false)
+        return 
       }
 
-      console.log('Upload successful:', uploadData)
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('livestreams')
-        .getPublicUrl(fileName)
-
-      console.log('Public URL:', publicUrl)
+      const livekitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL
+      const roomName = `live-${zip}-${Date.now()}`
 
       const { data, error } = await supabase.from('posts').insert({
         user_id: uid,
@@ -122,61 +45,44 @@ export default function GoLive(props: any) {
         body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
         tag: 'live',
         category: 'general',
-        video_url: publicUrl,
-        media_url: publicUrl
+        livekit_room: roomName,
+        livekit_url: livekitUrl
       }).select().single()
 
       if (error) { 
-        console.error('Database insert error:', error)
-        alert(error.message); 
-        setUploading(false); 
+        setError(error.message)
+        setStreaming(false)
         return 
       }
-      
-      console.log('Post created:', data)
-      
-      setUploading(false)
-      setOpen(false)
-      stopCamera()
       
       if (props.onLivePosted && data) props.onLivePosted(data)
       
     } catch (err: any) {
-      console.error('Upload error:', err)
-      setError('Upload failed. Please try again.')
-      setUploading(false)
+      console.error('Go live error:', err)
+      setError('Failed to start live stream: ' + err.message)
+      setStreaming(false)
     }
   }
 
-  const createPostWithoutVideo = async (uid: string) => {
-    const { data, error } = await supabase.from('posts').insert({
-      user_id: uid,
-      zip_code: zip,
-      body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
-      tag: 'live',
-      category: 'general'
-    }).select().single()
-
-    if (error) { alert(error.message); return }
-    
+  const endLive = async () => {
+    setStreaming(false)
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop())
+      setStream(null)
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
+    }
     setOpen(false)
-    stopCamera()
-    
-    if (props.onLivePosted && data) props.onLivePosted(data)
-  }
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return mins + ':' + secs.toString().padStart(2, '0')
   }
 
   useEffect(() => {
     return () => {
-      stopCamera()
-      if (timerRef.current) clearInterval(timerRef.current)
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop())
+      }
     }
-  }, [])
+  }, [stream])
 
   if (!open) {
     return <button type="button" onClick={() => setOpen(true)} className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold">Go Live</button>
@@ -187,9 +93,9 @@ export default function GoLive(props: any) {
       <div className="bg-neutral-900 rounded-2xl w-full max-w-md p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
           <span className="text-white font-bold text-lg">
-            {recording ? 'LIVE' : 'Go Live in ' + city}
+            {streaming ? 'LIVE' : 'Go Live in ' + city}
           </span>
-          <button onClick={() => { setOpen(false); if (recording) stopRecording(); stopCamera(); }} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
+          <button onClick={() => { setOpen(false); if (streaming) endLive(); }} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
         </div>
         
         <div className="relative bg-black rounded-xl overflow-hidden mb-4 aspect-video">
@@ -200,16 +106,16 @@ export default function GoLive(props: any) {
             playsInline
             className="w-full h-full object-cover"
           />
-          {recording && (
+          {streaming && (
             <div className="absolute top-3 left-3 bg-red-600/90 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
               <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-              LIVE {formatTime(recordingTime)}
+              LIVE
             </div>
           )}
           {!stream && !error && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-500">
               <div className="text-3xl mb-2">Camera</div>
-              <span>Click Start Recording to begin</span>
+              <span>Ready to stream</span>
             </div>
           )}
         </div>
@@ -220,21 +126,19 @@ export default function GoLive(props: any) {
           </div>
         )}
         
-        {!recording ? (
+        {!streaming ? (
           <button 
-            onClick={startRecording} 
-            disabled={uploading}
-            className="w-full bg-red-600 text-white p-3.5 rounded-full font-bold text-base border-none disabled:bg-neutral-600 disabled:cursor-not-allowed cursor-pointer"
+            onClick={goLive} 
+            className="w-full bg-red-600 text-white p-3.5 rounded-full font-bold text-base border-none cursor-pointer"
           >
-            {uploading ? 'Uploading...' : 'Start Recording'}
+            Start Live Stream
           </button>
         ) : (
           <button 
-            onClick={stopRecording}
-            disabled={uploading}
-            className="w-full bg-neutral-700 text-white p-3.5 rounded-full font-bold text-base border-none disabled:bg-neutral-600 disabled:cursor-not-allowed cursor-pointer"
+            onClick={endLive}
+            className="w-full bg-neutral-700 text-white p-3.5 rounded-full font-bold text-base border-none cursor-pointer"
           >
-            {uploading ? 'Uploading...' : 'Stop & Post'}
+            End Stream
           </button>
         )}
         
