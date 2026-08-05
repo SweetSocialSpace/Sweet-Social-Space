@@ -57,6 +57,22 @@ export function LocationProvider({ children }: any) {
     setLoading(false)
   }
 
+  const loadLocationForUser = async (userId: string) => {
+    setLoading(true)
+    try {
+      const { data: profile } = await supabase.from('profiles').select('zip_code, zip, city, country').or(`id.eq.${userId},user_id.eq.${userId}`).maybeSingle()
+      const finalZip = profile?.zip_code || profile?.zip
+      if (finalZip && finalZip.trim() !== '' && finalZip !== 'GLOBAL') {
+        const cleaned = cleanCity(profile?.city || '')
+        const resolved = await resolveCity(finalZip, cleaned, profile?.country || 'US')
+        setLoc({ zip: finalZip, city: cleanCity(resolved.city) || cleaned, country: resolved.country || profile?.country || 'US', lat: resolved.lat, lng: resolved.lng })
+        setLoading(false)
+        return
+      }
+    } catch {}
+    setLoading(false)
+  }
+
   useEffect(() => {
     async function init() {
       setLoading(true)
@@ -64,15 +80,8 @@ export function LocationProvider({ children }: any) {
         try {
           const { data: { user } } = await supabase.auth.getUser()
           if (user) {
-            const { data: profile } = await supabase.from('profiles').select('zip_code, zip, city, country').or(`id.eq.${user.id},user_id.eq.${user.id}`).maybeSingle()
-            const finalZip = profile?.zip_code || profile?.zip
-            if (finalZip && finalZip.trim() !== '' && finalZip !== 'GLOBAL') {
-              const cleaned = cleanCity(profile?.city || '')
-              const resolved = await resolveCity(finalZip, cleaned, profile?.country || 'US')
-              setLoc({ zip: finalZip, city: cleanCity(resolved.city) || cleaned, country: resolved.country || profile?.country || 'US', lat: resolved.lat, lng: resolved.lng })
-              setLoading(false)
-              return
-            }
+            await loadLocationForUser(user.id)
+            return
           }
         } catch {}
       }
@@ -90,6 +99,18 @@ export function LocationProvider({ children }: any) {
     }
     
     init()
+
+    if (supabase) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          await loadLocationForUser(session.user.id)
+        } else if (event === 'SIGNED_OUT') {
+          setLoc({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
+          setLoading(false)
+        }
+      })
+      return () => subscription.unsubscribe()
+    }
   }, [])
 
   return (
@@ -101,6 +122,6 @@ export function LocationProvider({ children }: any) {
 
 export const useLocation = () => {
   try { return useContext(LocationContext) } catch {
- return { zip: 'GLOBAL', city: 'your area', country: '', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 5, setRadius: () => {}, useMyLocation: () => {} } as CtxType
+    return { zip: 'GLOBAL', city: 'your area', country: '', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 5, setRadius: () => {}, useMyLocation: () => {} } as CtxType
   }
 }
