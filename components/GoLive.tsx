@@ -2,7 +2,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LiveKitRoom, VideoConference, RoomAudioRenderer } from '@livekit/components-react'
-import '@livekit/components-styles/css'
 
 export default function GoLive(props: any) {
   const [open, setOpen] = useState(false)
