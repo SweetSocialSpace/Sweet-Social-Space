@@ -1,7 +1,39 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { LiveKitRoom, VideoConference, RoomAudioRenderer } from '@livekit/components-react'
+import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
+import { useTracks } from '@livekit/components-react'
+import { TrackReference } from '@livekit/components-react'
+
+function ParticipantView() {
+  const tracks = useTracks([], { onlySubscribed: false })
+  const remoteTracks = tracks.filter(track => track.participant.isLocal === false)
+
+  if (remoteTracks.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-white">Waiting for stream to start...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      {remoteTracks.map(track => (
+        <div key={track.participant.identity} className="absolute inset-0">
+          {track.source === 'camera' && (
+            <video
+              ref={track.publication.track?.attach}
+              className="w-full h-full object-cover"
+              autoPlay
+              playsInline
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 export default function JoinLive({ roomName, userName, onClose }: { roomName: string, userName: string, onClose: () => void }) {
   const [token, setToken] = useState('')
@@ -22,7 +54,7 @@ export default function JoinLive({ roomName, userName, onClose }: { roomName: st
           body: JSON.stringify({
             roomName: roomName,
             participantName: uid,
-            role: 'viewer' // Viewer-only: no camera/mic permissions
+            role: 'viewer'
           })
         })
 
@@ -74,10 +106,10 @@ export default function JoinLive({ roomName, userName, onClose }: { roomName: st
               serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
               connect={true}
               onDisconnected={onClose}
-              video={false} // Viewer-only: no camera
-              audio={false} // Viewer-only: no mic
+              audio={false}
+              video={false}
             >
-              <VideoConference />
+              <ParticipantView />
               <RoomAudioRenderer />
             </LiveKitRoom>
           </div>
