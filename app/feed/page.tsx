@@ -147,10 +147,6 @@ function FeedContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius])
 
-  // smooth insert for GoLive - no reload
-  const handleLivePosted = (newPost:any) => {
-    setPosts(prev=>[newPost,...prev])
-  }
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
