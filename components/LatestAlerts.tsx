@@ -20,20 +20,36 @@ export function LatestAlerts(){
         const supabase = createClient() as any
         const {data}= await supabase.from('alerts').select('*').eq('is_active', true).eq('zip_code', zip).order('created_at',{ascending:false}).limit(5)
         if(mounted && data && data.length > 0){ setAlerts(data as any); setLoading(false); return }
-        // NWS live fallback - RULES: no hardcoded location, use user's real coordinates
+        
+        // NWS live fallback - AUTOMATIC: get coordinates from zip if not available
         try {
-          const pointLat = lat
-          const pointLng = lng
+          let pointLat = lat
+          let pointLng = lng
+          
+          // AUTOMATIC: Fetch coordinates from zip if not available
           if (!pointLat || !pointLng) {
-            console.log('LatestAlerts: No coordinates available, skipping NWS API')
-            if(mounted) setLoading(false)
-            return
+            try {
+              const geoRes = await fetch(`/api/zips?zip=${zip}`)
+              if (geoRes.ok) {
+                const geoData = await geoRes.json()
+                if (geoData.lat && geoData.lon) {
+                  pointLat = parseFloat(geoData.lat)
+                  pointLng = parseFloat(geoData.lon)
+                }
+              }
+            } catch (e) {
+              console.log('LatestAlerts: Failed to get coordinates from zip (non-critical):', e)
+            }
           }
-          const res = await fetch(`https://api.weather.gov/alerts/active?point=${pointLat},${pointLng}`, { headers: { 'Accept': 'application/geo+json' } })
-          const json = await res.json()
-          if(mounted && json.features && json.features.length > 0){
-            const live: Alert[] = json.features.slice(0,5).map((f:any, i:number)=>({ id: f.id || `live-${i}`, title: f.properties?.event || 'Live Alert', body: f.properties?.headline || f.properties?.description?.slice(0,120), severity: f.properties?.severity, created_at: f.properties?.sent || new Date().toISOString() }))
-            setAlerts(live)
+          
+          // Only try NWS API if we have coordinates now
+          if (pointLat && pointLng) {
+            const res = await fetch(`https://api.weather.gov/alerts/active?point=${pointLat},${pointLng}`, { headers: { 'Accept': 'application/geo+json' } })
+            const json = await res.json()
+            if(mounted && json.features && json.features.length > 0){
+              const live: Alert[] = json.features.slice(0,5).map((f:any, i:number)=>({ id: f.id || `live-${i}`, title: f.properties?.event || 'Live Alert', body: f.properties?.headline || f.properties?.description?.slice(0,120), severity: f.properties?.severity, created_at: f.properties?.sent || new Date().toISOString() }))
+              setAlerts(live)
+            }
           }
         } catch {}
         if(mounted) setLoading(false)
