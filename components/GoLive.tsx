@@ -57,25 +57,25 @@ export default function GoLive(props: any) {
   }
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: 'rgba(0,0,0,0.9)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-      <div style={{ background: '#18181b', borderRadius: 16, width: '100%', maxWidth: 400, padding: 20, border: '1px solid '#333' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <span style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>
+    <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-5">
+      <div className="bg-neutral-900 rounded-2xl w-full max-w-md p-5 border border-neutral-700">
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-white font-bold text-lg">
             Go Live in {city}
           </span>
-          <button onClick={() => setOpen(false)} style={{ background: '#333', color: 'white', borderRadius: 999, width: 32, height: 32, border: 'none', cursor: 'pointer', fontSize: 16 }}>X</button>
+          <button onClick={() => setOpen(false)} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
         </div>
         
-        <div style={{ background: 'black', borderRadius: 12, overflow: 'hidden', marginBottom: 16, aspectRatio: '4/3', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 32, marginBottom: 8 }}>Camera</div>
+        <div className="bg-black rounded-xl overflow-hidden mb-4 aspect-video flex items-center justify-center text-neutral-500">
+          <div className="text-center">
+            <div className="text-3xl mb-2">Camera</div>
             <span>Live streaming feature</span>
-            <div style={{ marginTop: 8, fontSize: 12 }}>Zip: {zip}</div>
+            <div className="mt-2 text-xs">Zip: {zip}</div>
           </div>
         </div>
         
         {error && (
-          <div style={{ background: 'rgba(220, 38, 38, 0.1)', border: '1px solid #dc2626', color: '#fca5a5', padding: 12, borderRadius: 8, marginBottom: 16, fontSize: 14 }}>
+          <div className="bg-red-900/20 border border-red-600 text-red-400 p-3 rounded-lg mb-4 text-sm">
             {error}
           </div>
         )}
@@ -83,22 +83,12 @@ export default function GoLive(props: any) {
         <button 
           onClick={goLive} 
           disabled={loading}
-          style={{ 
-            width: '100%', 
-            background: loading ? '#666' : '#dc2626', 
-            color: 'white', 
-            padding: '14px', 
-            borderRadius: 999, 
-            fontWeight: 'bold', 
-            fontSize: 16,
-            border: 'none',
-            cursor: loading ? 'not-allowed' : 'pointer'
-          }}
+          className="w-full bg-red-600 text-white p-3.5 rounded-full font-bold text-base border-none disabled:bg-neutral-600 disabled:cursor-not-allowed cursor-pointer"
         >
           {loading ? 'Starting...' : 'Go Live Now'}
         </button>
         
-        <div style={{ marginTop: 12, textAlign: 'center', color: '#888', fontSize: 12 }}>
+        <div className="mt-3 text-center text-neutral-500 text-xs">
           Only visible to subscribers in {zip}
         </div>
       </div>
