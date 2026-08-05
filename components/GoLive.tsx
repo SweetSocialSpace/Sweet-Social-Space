@@ -55,7 +55,7 @@ export default function GoLive(props: any) {
         body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
         tag: 'live',
         category: 'general',
-        zip_code: null, // null = visible globally
+        zip_code: zip || 'GLOBAL', // Use actual zip or GLOBAL for visibility
         user_id: uid,
         livekit_room: newRoomName // Store room name for joining
       }
