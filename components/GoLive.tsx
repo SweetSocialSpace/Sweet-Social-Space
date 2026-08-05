@@ -35,7 +35,8 @@ export default function GoLive(props: any) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           roomName: newRoomName,
-          participantName: uid
+          participantName: uid,
+          role: 'host' // Host: can publish camera/mic
         })
       })
 
