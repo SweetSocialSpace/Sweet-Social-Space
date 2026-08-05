@@ -20,9 +20,15 @@ export function LatestAlerts(){
         const supabase = createClient() as any
         const {data}= await supabase.from('alerts').select('*').eq('is_active', true).eq('zip_code', zip).order('created_at',{ascending:false}).limit(5)
         if(mounted && data && data.length > 0){ setAlerts(data as any); setLoading(false); return }
-        // NWS live fallback
+        // NWS live fallback - RULES: no hardcoded location, use user's real coordinates
         try {
-          const pointLat = lat || 37.7749; const pointLng = lng || -122.4194
+          const pointLat = lat
+          const pointLng = lng
+          if (!pointLat || !pointLng) {
+            console.log('LatestAlerts: No coordinates available, skipping NWS API')
+            if(mounted) setLoading(false)
+            return
+          }
           const res = await fetch(`https://api.weather.gov/alerts/active?point=${pointLat},${pointLng}`, { headers: { 'Accept': 'application/geo+json' } })
           const json = await res.json()
           if(mounted && json.features && json.features.length > 0){
