@@ -6,7 +6,7 @@ type Loc = { zip: string; city: string; country: string; lat: number; lng: numbe
 type CtxType = Loc & { setLoc: (l: Loc) => void; loading: boolean; radius: number; setRadius: (n:number)=>void; useMyLocation: () => void }
 
 const LocationContext = createContext<CtxType>({
-  zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0,
+  zip: 'GLOBAL', city: 'your area', country: '', lat: 0, lng: 0,
   setLoc: () => {}, loading: true, radius: 5,
   setRadius: ()=>{}, useMyLocation: ()=>{}
 })
@@ -17,19 +17,19 @@ function cleanCity(rawCity: string) {
 }
 
 async function resolveCity(zip: string, fallbackCity: string, fallbackCountry: string) {
-  if (!zip || zip === 'GLOBAL') return { city: 'your area', country: fallbackCountry, lat: 0, lng: 0 }
+  if (!zip || zip === 'GLOBAL') return { city: 'your area', country: fallbackCountry || '', lat: 0, lng: 0 }
   try {
     const res = await fetch(`/api/geocode?zip=${encodeURIComponent(zip)}`)
     if (res.ok) {
       const data = await res.json()
-      return { city: data.city || fallbackCity || zip, country: data.country || fallbackCountry, lat: Number(data.lat)||0, lng: Number(data.lon)||0 }
+      return { city: data.city || fallbackCity || zip, country: data.country || fallbackCountry || '', lat: Number(data.lat)||0, lng: Number(data.lon)||0 }
     }
   } catch {}
-  return { city: fallbackCity || zip, country: fallbackCountry, lat: 0, lng: 0 }
+  return { city: fallbackCity || zip, country: fallbackCountry || '', lat: 0, lng: 0 }
 }
 
 export function LocationProvider({ children }: any) {
-  const [loc, setLoc] = useState<Loc>({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
+  const [loc, setLoc] = useState<Loc>({ zip: 'GLOBAL', city: 'your area', country: '', lat: 0, lng: 0 })
   const [radius, setRadius] = useState(5)
   const [loading, setLoading] = useState(true)
   let supabase: any
@@ -51,7 +51,7 @@ export function LocationProvider({ children }: any) {
       const { latitude, longitude } = pos.coords
       const r = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`).then(x=>x.json()).catch(()=>null)
       if(r?.zip){
-        setLoc({ zip: r.zip, city: cleanCity(r.city), country: r.country||'US', lat: latitude, lng: longitude })
+        setLoc({ zip: r.zip, city: cleanCity(r.city), country: r.country || '', lat: latitude, lng: longitude })
       }
     } catch {}
     setLoading(false)
@@ -64,8 +64,8 @@ export function LocationProvider({ children }: any) {
       const finalZip = profile?.zip_code || profile?.zip
       if (finalZip && finalZip.trim() !== '' && finalZip !== 'GLOBAL') {
         const cleaned = cleanCity(profile?.city || '')
-        const resolved = await resolveCity(finalZip, cleaned, profile?.country || 'US')
-        setLoc({ zip: finalZip, city: cleanCity(resolved.city) || cleaned, country: resolved.country || profile?.country || 'US', lat: resolved.lat, lng: resolved.lng })
+        const resolved = await resolveCity(finalZip, cleaned, profile?.country || '')
+        setLoc({ zip: finalZip, city: cleanCity(resolved.city) || cleaned, country: resolved.country || profile?.country || '', lat: resolved.lat, lng: resolved.lng })
         setLoading(false)
         return
       }
@@ -88,13 +88,13 @@ export function LocationProvider({ children }: any) {
       try {
         const saved = localStorage.getItem('feed_near_zip')
         if (saved && saved !== 'GLOBAL') {
-          const resolved = await resolveCity(saved, '', 'US')
+          const resolved = await resolveCity(saved, '', '')
           setLoc({ zip: saved, city: cleanCity(resolved.city), country: resolved.country, lat: resolved.lat, lng: resolved.lng })
           setLoading(false)
           return
         }
       } catch {}
-      setLoc({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
+      setLoc({ zip: 'GLOBAL', city: 'your area', country: '', lat: 0, lng: 0 })
       setLoading(false)
     }
     
@@ -105,7 +105,7 @@ export function LocationProvider({ children }: any) {
         if (event === 'SIGNED_IN' && session?.user) {
           await loadLocationForUser(session.user.id)
         } else if (event === 'SIGNED_OUT') {
-          setLoc({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
+          setLoc({ zip: 'GLOBAL', city: 'your area', country: '', lat: 0, lng: 0 })
           setLoading(false)
         }
       })
