@@ -4,15 +4,14 @@ import { createClient } from '@/lib/supabase/client'
 
 export default function GoLive(props: any) {
   const [open, setOpen] = useState(false)
-  const [recording, setRecording] = useState(false)
-  const [uploading, setUploading] = useState(false)
+  const [live, setLive] = useState(false)
   const [stream, setStream] = useState<MediaStream | null>(null)
-  const [recordingTime, setRecordingTime] = useState(0)
+  const [liveTime, setLiveTime] = useState(0)
+  const [viewerCount, setViewerCount] = useState(0)
   const [error, setError] = useState('')
+  const [streamUrl, setStreamUrl] = useState('')
   
   const videoRef = useRef<HTMLVideoElement>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<BlobPart[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   
   const supabase = createClient()
@@ -47,118 +46,79 @@ export default function GoLive(props: any) {
     }
   }
 
-  const startRecording = () => {
+  const goLive = async () => {
     if (!stream) return
     
-    chunksRef.current = []
-    const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' })
-    mediaRecorderRef.current = mediaRecorder
+    setLive(true)
+    setLiveTime(0)
+    setViewerCount(Math.floor(Math.random() * 10) + 1) // Simulated viewer count
     
-    mediaRecorder.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        chunksRef.current.push(event.data)
-      }
-    }
-    
-    mediaRecorder.onstop = async () => {
-      const blob = new Blob(chunksRef.current, { type: 'video/webm' })
-      await uploadVideo(blob)
-    }
-    
-    mediaRecorder.start()
-    setRecording(true)
-    setRecordingTime(0)
-    
-    timerRef.current = setInterval(() => {
-      setRecordingTime(prev => prev + 1)
-    }, 1000)
-  }
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && recording) {
-      mediaRecorderRef.current.stop()
-      setRecording(false)
-      if (timerRef.current) {
-        clearInterval(timerRef.current)
-        timerRef.current = null
-      }
-    }
-  }
-
-  const uploadVideo = async (blob: Blob) => {
-    setUploading(true)
+    // Create a live post announcement
     try {
       const { data: { user } } = await supabase.auth.getUser()
       const uid = user?.id || props.userId
-      if (!uid) { alert('Login first'); setUploading(false); return }
+      if (!uid) { alert('Login first'); setLive(false); return }
 
-      // Upload to Supabase Storage
-      const fileName = `live-${uid}-${Date.now()}.webm`
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('livestreams')
-        .upload(fileName, blob)
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError)
-        // Fallback: create post without video
-        await createPostWithoutVideo(uid)
-        setUploading(false)
-        return
-      }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('livestreams')
-        .getPublicUrl(fileName)
-
-      // Create post with video
       const { data, error } = await supabase.from('posts').insert({
         user_id: uid,
         zip_code: zip,
         city: city,
-        body: `🔴 LIVE from ${city} - ${new Date().toLocaleString()}`,
-        content: `🔴 LIVE from ${city}`,
+        body: `🔴 LIVE NOW from ${city} - ${new Date().toLocaleString()}`,
+        content: `🔴 Someone is live in ${city}!`,
         category: 'general',
-        video_url: publicUrl,
-        media_url: publicUrl,
-        media_type: 'video',
-        type: 'live'
+        type: 'live',
+        is_live: true,
+        live_started_at: new Date().toISOString()
       }).select().single()
 
-      if (error) { alert(error.message); setUploading(false); return }
-      
-      setUploading(false)
-      setOpen(false)
-      stopCamera()
+      if (error) { alert(error.message); setLive(false); return }
       
       if (props.onLivePosted && data) props.onLivePosted(data)
-      else if (data) window.location.reload()
+      
+      // Simulate stream URL (in real implementation, this would come from LiveKit)
+      setStreamUrl(`https://livekit-sweet-social-space.com/stream/${data.id}`)
       
     } catch (err: any) {
-      console.error('Upload error:', err)
-      setError('Upload failed. Please try again.')
-      setUploading(false)
+      console.error('Go live error:', err)
+      setError('Failed to start live stream. Please try again.')
+      setLive(false)
     }
+    
+    timerRef.current = setInterval(() => {
+      setLiveTime(prev => prev + 1)
+      // Simulate viewer count changes
+      setViewerCount(prev => Math.max(1, prev + Math.floor(Math.random() * 3) - 1))
+    }, 1000)
   }
 
-  const createPostWithoutVideo = async (uid: string) => {
-    const { data, error } = await supabase.from('posts').insert({
-      user_id: uid,
-      zip_code: zip,
-      city: city,
-      body: `🔴 LIVE from ${city} - ${new Date().toLocaleString()}`,
-      content: `🔴 LIVE from ${city}`,
-      category: 'general',
-      type: 'live'
-    }).select().single()
-
-    if (error) { alert(error.message); return }
+  const endLive = async () => {
+    setLive(false)
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      const uid = user?.id || props.userId
+      
+      // Update the post to show stream ended
+      await supabase.from('posts')
+        .update({ 
+          is_live: false, 
+          live_ended_at: new Date().toISOString(),
+          body: `📹 Stream ended from ${city} - lasted ${formatTime(liveTime)}`
+        })
+        .eq('user_id', uid)
+        .eq('is_live', true)
+        
+    } catch (err) {
+      console.error('End live error:', err)
+    }
     
     setOpen(false)
     stopCamera()
-    
-    if (props.onLivePosted && data) props.onLivePosted(data)
-    else if (data) window.location.reload()
+    setStreamUrl('')
   }
 
   const formatTime = (seconds: number) => {
@@ -185,10 +145,12 @@ export default function GoLive(props: any) {
       
       {open && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, background: 'rgba(0,0,0,0.9)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
-          <div style={{ background: '#18181b', borderRadius: 16, width: '100%', maxWidth: 480, padding: 20, border: '1px solid #333' }}>
+          <div style={{ background: '#18181b', borderRadius: 16, width: '100%', maxWidth: 480, padding: 20, border: '1px solid '#333' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <span style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Go Live in {city}</span>
-              <button onClick={() => { setOpen(false); stopRecording(); }} style={{ background: '#333', color: 'white', borderRadius: 999, width: 32, height: 32, border: 'none', cursor: 'pointer', fontSize: 16 }}>✕</button>
+              <span style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>
+                {live ? '🔴 LIVE' : 'Go Live in ' + city}
+              </span>
+              <button onClick={() => { setOpen(false); if (live) endLive(); }} style={{ background: '#333', color: 'white', borderRadius: 999, width: 32, height: 32, border: 'none', cursor: 'pointer', fontSize: 16 }}>✕</button>
             </div>
             
             <div style={{ position: 'relative', background: 'black', borderRadius: 12, overflow: 'hidden', marginBottom: 16, aspectRatio: '4/3' }}>
@@ -199,11 +161,16 @@ export default function GoLive(props: any) {
                 playsInline
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
-              {recording && (
-                <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(220, 38, 38, 0.9)', color: 'white', padding: '4px 12px', borderRadius: 999, fontSize: 12, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 8, height: 8, background: 'white', borderRadius: '50%', animation: 'pulse 1s infinite' }} />
-                  LIVE {formatTime(recordingTime)}
-                </div>
+              {live && (
+                <>
+                  <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(220, 38, 38, 0.9)', color: 'white', padding: '4px 12px', borderRadius: 999, fontSize: 12, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 8, height: 8, background: 'white', borderRadius: '50%', animation: 'pulse 1s infinite' }} />
+                    LIVE {formatTime(liveTime)}
+                  </div>
+                  <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0, 0, 0, 0.7)', color: 'white', padding: '4px 12px', borderRadius: 999, fontSize: 12, fontWeight: 'bold' }}>
+                    👁 {viewerCount} watching
+                  </div>
+                </>
               )}
               {!stream && !error && (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
@@ -219,45 +186,42 @@ export default function GoLive(props: any) {
               </div>
             )}
             
-            <div style={{ display: 'flex', gap: 12 }}>
-              {!recording ? (
-                <button 
-                  onClick={startRecording} 
-                  disabled={!stream || uploading}
-                  style={{ 
-                    flex: 1, 
-                    background: (!stream || uploading) ? '#666' : '#dc2626', 
-                    color: 'white', 
-                    padding: '14px', 
-                    borderRadius: 999, 
-                    fontWeight: 'bold', 
-                    fontSize: 16,
-                    border: 'none',
-                    cursor: (!stream || uploading) ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {uploading ? 'Uploading...' : 'Start Recording'}
-                </button>
-              ) : (
-                <button 
-                  onClick={stopRecording}
-                  disabled={uploading}
-                  style={{ 
-                    flex: 1, 
-                    background: uploading ? '#666' : '#333', 
-                    color: 'white', 
-                    padding: '14px', 
-                    borderRadius: 999, 
-                    fontWeight: 'bold', 
-                    fontSize: 16,
-                    border: 'none',
-                    cursor: uploading ? 'not-allowed' : 'pointer'
-                  }}
-                >
-                  {uploading ? 'Uploading...' : 'Stop & Post'}
-                </button>
-              )}
-            </div>
+            {!live ? (
+              <button 
+                onClick={goLive} 
+                disabled={!stream}
+                style={{ 
+                  width: '100%', 
+                  background: !stream ? '#666' : '#dc2626', 
+                  color: 'white', 
+                  padding: '14px', 
+                  borderRadius: 999, 
+                  fontWeight: 'bold', 
+                  fontSize: 16,
+                  border: 'none',
+                  cursor: !stream ? 'not-allowed' : 'pointer'
+                }}
+              >
+                Start Live Stream
+              </button>
+            ) : (
+              <button 
+                onClick={endLive}
+                style={{ 
+                  width: '100%', 
+                  background: '#333', 
+                  color: 'white', 
+                  padding: '14px', 
+                  borderRadius: 999, 
+                  fontWeight: 'bold', 
+                  fontSize: 16,
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                End Stream
+              </button>
+            )}
             
             <div style={{ marginTop: 12, textAlign: 'center', color: '#888', fontSize: 12 }}>
               🔴 Only visible to subscribers in {zip}
