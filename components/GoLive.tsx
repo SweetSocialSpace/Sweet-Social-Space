@@ -16,6 +16,10 @@ export default function GoLive(props: any) {
 
   const goLive = async () => {
     try {
+      // Request camera and microphone permissions before connecting
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      stream.getTracks().forEach(track => track.stop())
+      
       const { data: { user } } = await supabase.auth.getUser()
       const uid = user?.id || props.userId
       if (!uid) { 
@@ -65,7 +69,11 @@ export default function GoLive(props: any) {
       
     } catch (err: any) {
       console.error('Go live error:', err)
-      setError('Failed to start live stream: ' + err.message)
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setError('Camera/microphone permission denied. Please allow access in your browser settings.')
+      } else {
+        setError('Failed to start live stream: ' + err.message)
+      }
       setStreaming(false)
     }
   }
@@ -115,6 +123,8 @@ export default function GoLive(props: any) {
                 serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
                 connect={true}
                 onDisconnected={() => endLive()}
+                video={true}
+                audio={true}
               >
                 <VideoConference />
                 <RoomAudioRenderer />
