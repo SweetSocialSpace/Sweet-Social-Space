@@ -23,12 +23,11 @@ export default function GoLive(props: any) {
       }
 
       const { data, error } = await supabase.from('posts').insert({
-  user_id: uid,
-  zip_code: zip,
-  body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
-  tag: 'live',
-  category: 'general'
-}).select().single()
+        user_id: uid,
+        zip_code: zip,
+        body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
+        tag: 'live',
+        category: 'general'
       }).select().single()
 
       if (error) { 
