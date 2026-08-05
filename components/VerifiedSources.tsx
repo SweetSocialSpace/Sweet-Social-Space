@@ -34,10 +34,27 @@ export function VerifiedSources(){
           return
         }
 
-        const useLat = lat || 0
-        const useLng = lng || 0
+        let useLat = lat
+        let useLng = lng
         
-        if (useLat === 0 && useLng === 0) {
+        // AUTOMATIC: Fetch coordinates from zip if not available
+        if (!useLat || !useLng) {
+          try {
+            const geoRes = await fetch(`/api/zips?zip=${zip}`)
+            if (geoRes.ok) {
+              const geoData = await geoRes.json()
+              if (geoData.lat && geoData.lon) {
+                useLat = parseFloat(geoData.lat)
+                useLng = parseFloat(geoData.lon)
+              }
+            }
+          } catch (e) {
+            console.log('VerifiedSources: Failed to get coordinates from zip (non-critical):', e)
+          }
+        }
+        
+        // If still no coordinates, use city-based fallback
+        if (!useLat || !useLng) {
           const fallback = [
             { id: 'live-1', title: `${city || 'Local'} Police — Verified` },
             { id: 'live-2', title: `${city || 'Local'} Fire — Verified` },
