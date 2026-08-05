@@ -2,11 +2,23 @@ import { NextResponse } from 'next/server'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const lat = searchParams.get('lat') ? parseFloat(searchParams.get('lat')!) : 37.3351
-  const lon = searchParams.get('lon') ? parseFloat(searchParams.get('lon')!) : -121.8932
+  const lat = searchParams.get('lat')
+  const lon = searchParams.get('lon')
   const city = searchParams.get('city') || 'Local'
   const zip = searchParams.get('zip') || 'local'
   const events: any[] = []
+
+  // RULES: No hardcoded location - require real user coordinates
+  if (!lat || !lon) {
+    return NextResponse.json({ 
+      events: [
+        { id: '1', title: `Enable location for events near ${zip}`, type: 'Event', venue: 'Your Area', time: new Date().toISOString(), icon: '🎉' }
+      ], 
+      zip, 
+      lat: 0, 
+      lon: 0 
+    })
+  }
 
   try {
     const res = await fetch(`https://api.seatgeek.com/2/events?lat=${lat}&lon=${lon}&range=15mi&per_page=6&sort=score.desc`, { next: { revalidate: 1800 } })
@@ -34,5 +46,5 @@ export async function GET(req: Request) {
     )
   }
 
-  return NextResponse.json({ events: events.slice(0,5), zip, lat, lon })
+  return NextResponse.json({ events: events.slice(0,5), zip, lat: parseFloat(lat), lon: parseFloat(lon) })
 }
