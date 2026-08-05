@@ -53,8 +53,13 @@ export function VerifiedSources(){
           }
         }
         
-        // If still no coordinates, use city-based fallback
-        if (!useLat || !useLng) {
+        // Validate coordinates are valid numbers and within reasonable ranges
+        if (!useLat || !useLng || 
+            isNaN(useLat) || isNaN(useLng) ||
+            useLat < -90 || useLat > 90 ||
+            useLng < -180 || useLng > 180 ||
+            useLat === 0 || useLng === 0) {
+          console.log('VerifiedSources: Invalid coordinates, using city fallback')
           const fallback = [
             { id: 'live-1', title: `${city || 'Local'} Police — Verified` },
             { id: 'live-2', title: `${city || 'Local'} Fire — Verified` },
@@ -67,20 +72,20 @@ export function VerifiedSources(){
         // RULES: stagger 3s so BusinessDirectory goes first - prevents 429
         await new Promise(r => setTimeout(r, 3000))
 
-        const query = `[out:json][timeout:25];(node(around:15000,${useLat},${useLng})[amenity=police];node(around:15000,${useLat},${useLng})[amenity=fire_station];node(around:15000,${useLat},${useLng})[amenity=hospital];way(around:15000,${useLat},${useLng})[amenity=police];);out 10;`
+        const query = `[out:json][timeout:25];(node(around:15000,${useLat},${useLng})[amenity=police];node(around:15000,${useLat},${useLng})[amenity=fire_station];node(around:15000,${useLat},${useLng})[amenity=hospital];way(around:15000,${useLat},${useLng})[amenity=police]););out 10;`
         const res = await fetch('https://overpass-api.de/api/interpreter', {
           method: 'POST',
           body: query,
           headers: { 'Content-Type': 'text/plain' }
         })
 
-        if (res.status === 429) {
-          console.warn('VerifiedSources Overpass 429 - using cache')
+        if (res.status === 429 || res.status === 504 || res.status === 400) {
+          console.warn('VerifiedSources Overpass returned error status (non-critical):', res.status)
           if (cached && mounted) setLiveVs(JSON.parse(cached))
           else if(mounted) setLiveVs([
             { id: 'live-1', title: `${city || 'your area'} Police — Verified` },
             { id: 'live-2', title: `${city || 'your area'} Fire — Verified` },
-            { id: 'live-3', title: 'NWS — Verified' },
+            { id: 'live-3', title: 'NWS — Verified` },
           ])
           return
         }
