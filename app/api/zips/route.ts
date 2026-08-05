@@ -13,34 +13,65 @@ export async function GET(req: Request) {
     if (r.ok) {
       const j = await r.json()
       const p = j.places?.[0]
-      if (p) return NextResponse.json({ 
-        zip, 
-        city: `${p['place name']}, ${p['state abbreviation']}`, 
-        lat: parseFloat(p.latitude), 
-        lon: parseFloat(p.longitude) 
-      }, { headers: { 'Cache-Control': 'no-store' } })
-    }
-  } catch {}
-
-  // 2. Try global postal search (worldwide zips) - still variable, not hard code, fixes temp for any zip
-  try {
-    // Try without country - zippopotam tries to guess
-    const codes = ['us','ca','gb','de','au','jp']
-    for (const c of codes) {
-      const r = await fetch(`https://api.zippopotam.us/${c}/${zip}`, { cache: 'no-store' })
-      if (r.ok) {
-        const j = await r.json()
-        const p = j.places?.[0]
-        if (p) return NextResponse.json({ 
+      if (p && p.latitude && p.longitude) {
+        console.log(`Zip lookup success: ${zip} -> ${p['place name']}, ${p['state abbreviation']} (${p.latitude}, ${p.longitude})`)
+        return NextResponse.json({ 
           zip, 
-          city: `${p['place name']}, ${p['state abbreviation'] || p.state || ''}`.replace(/, $/,''), 
+          city: `${p['place name']}, ${p['state abbreviation']}`, 
           lat: parseFloat(p.latitude), 
           lon: parseFloat(p.longitude) 
         }, { headers: { 'Cache-Control': 'no-store' } })
       }
     }
-  } catch {}
+  } catch (error) {
+    console.error('US zip lookup failed:', error)
+  }
 
-  // 3. Last fallback - no hard code city - temp will be null (shows --°F) not lie - per RULES
+  // 2. Try global postal search (worldwide zips) - still variable, not hard code, fixes temp for any zip
+  try {
+    // Try without country - zippopotam tries to guess
+    const codes = ['us','ca','gb','de','au','jp','fr','it','es','nl','in','br','mx']
+    for (const c of codes) {
+      const r = await fetch(`https://api.zippopotam.us/${c}/${zip}`, { cache: 'no-store' })
+      if (r.ok) {
+        const j = await r.json()
+        const p = j.places?.[0]
+        if (p && p.latitude && p.longitude) {
+          console.log(`Global zip lookup success: ${zip} -> ${p['place name']}, ${p['state abbreviation'] || p.state || ''} (${p.latitude}, ${p.longitude})`)
+          return NextResponse.json({ 
+            zip, 
+            city: `${p['place name']}, ${p['state abbreviation'] || p.state || ''}`.replace(/, $/,''), 
+            lat: parseFloat(p.latitude), 
+            lon: parseFloat(p.longitude) 
+          }, { headers: { 'Cache-Control': 'no-store' } })
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Global zip lookup failed:', error)
+  }
+
+  // 3. Fallback to Open-Meteo geocoding (more accurate)
+  try {
+    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&count=1&language=en&format=json`, { cache: 'no-store' })
+    if (r.ok) {
+      const j = await r.json()
+      const result = j.results?.[0]
+      if (result && result.latitude && result.longitude) {
+        console.log(`Open-Meteo geocoding success: ${zip} -> ${result.name}, ${result.country} (${result.latitude}, ${result.longitude})`)
+        return NextResponse.json({ 
+          zip, 
+          city: `${result.name}, ${result.country_code || result.country || ''}`, 
+          lat: result.latitude, 
+          lon: result.longitude 
+        }, { headers: { 'Cache-Control': 'no-store' } })
+      }
+    }
+  } catch (error) {
+    console.error('Open-Meteo geocoding failed:', error)
+  }
+
+  // 4. Last fallback - no hard code city - temp will be null (shows --°F) not lie - per RULES
+  console.log(`All zip lookups failed for: ${zip}`)
   return NextResponse.json({ zip, city: 'your area', lat: null, lon: null }, { headers: { 'Cache-Control': 'no-store' } })
 }
