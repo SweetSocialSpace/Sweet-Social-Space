@@ -8,8 +8,8 @@ export default function GoLive(props: any) {
   const [error, setError] = useState('')
   
   const supabase = createClient()
-  const zip = props.zipCode || '95122'
-  const city = props.city || 'San Jose, CA'
+  const zip = props.zipCode || 'your area'
+  const city = props.city || 'your area'
 
   const goLive = async () => {
     setLoading(true)
