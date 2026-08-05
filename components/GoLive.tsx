@@ -9,14 +9,13 @@ export default function GoLive(props: any) {
   const [liveTime, setLiveTime] = useState(0)
   const [viewerCount, setViewerCount] = useState(0)
   const [error, setError] = useState('')
-  const [streamUrl, setStreamUrl] = useState('')
   
   const videoRef = useRef<HTMLVideoElement>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   
   const supabase = createClient()
   const zip = props.zipCode || '95122'
-  const city = (props.city || 'San Jose, CA').replace(/, CA, CA/, ', CA')
+  const city = props.city || 'San Jose, CA'
 
   const startCamera = async () => {
     try {
@@ -62,8 +61,8 @@ export default function GoLive(props: any) {
         user_id: uid,
         zip_code: zip,
         city: city,
-        body: `LIVE NOW from ${city} - ${new Date().toLocaleString()}`,
-        content: `Someone is live in ${city}!`,
+        body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
+        content: 'Someone is live in ' + city + '!',
         category: 'general',
         type: 'live',
         is_live: true,
@@ -101,7 +100,7 @@ export default function GoLive(props: any) {
         .update({ 
           is_live: false, 
           live_ended_at: new Date().toISOString(),
-          body: `Stream ended from ${city} - lasted ${formatTime(liveTime)}`
+          body: 'Stream ended from ' + city + ' - lasted ' + formatTime(liveTime)
         })
         .eq('user_id', uid)
         .eq('is_live', true)
@@ -112,13 +111,12 @@ export default function GoLive(props: any) {
     
     setOpen(false)
     stopCamera()
-    setStreamUrl('')
   }
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
+    return mins + ':' + secs.toString().padStart(2, '0')
   }
 
   useEffect(() => {
@@ -168,7 +166,7 @@ export default function GoLive(props: any) {
               )}
               {!stream && !error && (
                 <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
-                  <div style={{ fontSize: 32, marginBottom: 8 }}>📹</div>
+                  <div style={{ fontSize: 32, marginBottom: 8 }}>Camera</div>
                   <span>Starting camera...</span>
                 </div>
               )}
