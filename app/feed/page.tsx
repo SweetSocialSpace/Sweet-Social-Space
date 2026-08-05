@@ -219,25 +219,43 @@ const handleLivePosted = (newPost:any) => {
             ))}
           </div>
 
-         {filtered.map((p:any)=>(
-  <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
-    <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
-    {/* Live stream join button */}
-    {p.tag === 'live' && p.livekit_room && (
-      <button 
-        onClick={() => setJoinLivePost(p)}
-        className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm border-none cursor-pointer w-full"
-      >
-        🔴 Join Live Stream
-      </button>
-    )}
-    {(p.video_url || p.media_url) && (() => {
-      const url = p.video_url || p.media_url;
-      const isVideo = p.type === 'live' || p.type === 'golive' || p.media_type === 'video' || url.endsWith('.webm') || url.endsWith('.mp4') || url.includes('golive');
-      return isVideo? (
-        {joinLivePost && (
-  <JoinLive 
-    roomName={joinLivePost.livekit_room} 
+            <div className="space-y-3 mt-2">
+            {filtered.length===0 && <WelcomePost />}
+            {filtered.map((p:any)=>(
+              <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
+                <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
+                {/* Live stream join button */}
+                {p.tag === 'live' && p.livekit_room && (
+                  <button 
+                    onClick={() => setJoinLivePost(p)}
+                    className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm border-none cursor-pointer w-full"
+                  >
+                    🔴 Join Live Stream
+                  </button>
+                )}
+                {(p.video_url || p.media_url) && (() => {
+                  const url = p.video_url || p.media_url;
+                  const isVideo = p.type === 'live' || p.type === 'golive' || p.media_type === 'video' || url.endsWith('.webm') || url.endsWith('.mp4') || url.includes('golive');
+                  return isVideo? (
+                    <video src={url} controls playsInline preload="metadata" className="mt-3 w-full rounded-xl bg-black max-h-" />
+                  ) : (
+                    <img src={url} alt="" className="mt-3 w-full rounded-xl" />
+                  );
+                })()}
+                <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
+                {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
+              </div>
+            ))}
+          </div>
+          
+          {/* JoinLive modal - OUTSIDE the map loop */}
+          {joinLivePost && (
+            <JoinLive 
+              roomName={joinLivePost.livekit_room} 
+              userName={currentProfile?.username || 'User'} 
+              onClose={() => setJoinLivePost(null)} 
+            />
+          )}
     userName={currentProfile?.username || 'User'} 
     onClose={() => setJoinLivePost(null)} 
   />
