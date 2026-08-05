@@ -75,26 +75,10 @@ function FeedContent() {
   ]
 
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius, latLonOverride?: {lat:number, lon:number}|null) => {
-    const z = zipToUse || nearZip || locationZip
-    if (!z) return
-    if (z === 'GLOBAL') {
-      const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(100)
-      if(data) setPosts(data)
-      return
-    }
-    const latLon = latLonOverride || userLatLon
     const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
     if (!data) return
-    if (latLon) {
-      const filtered = data.filter((p:any)=>{
-        if (!p.lat ||!p.lon) return p.zip_code === z
-        return milesBetween(latLon.lat, latLon.lon, p.lat, p.lon) <= radiusToUse
-      })
-      setPosts(filtered)
-    } else {
-      setPosts(data.filter((p:any)=> p.zip_code === z ||!p.zip_code))
-    }
-  }, [nearZip, locationZip, userLatLon, radius, supabase])
+    setPosts(data)
+  }, [supabase])
 
   useEffect(() => {
     (async()=>{
