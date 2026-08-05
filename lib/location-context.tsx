@@ -115,6 +115,6 @@ export function LocationProvider({ children }: any) {
 
 export const useLocation = () => {
   try { return useContext(LocationContext) } catch {
-    return { zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 5, setRadius: () => {}, useMyLocation: () => {} } as CtxType
+ return { zip: 'GLOBAL', city: 'your area', country: '', lat: 0, lng: 0, setLoc: () => {}, loading: false, radius: 5, setRadius: () => {}, useMyLocation: () => {} } as CtxType
   }
 }
