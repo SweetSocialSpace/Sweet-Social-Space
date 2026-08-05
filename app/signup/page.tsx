@@ -83,6 +83,15 @@ export default function SignupPage() {
           <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">Facebook shows you the world.<br/>We show you your area.</h1>
           <p className="mt-6 text-lg text-white/90 font-semibold">Your neighbor has a free couch. Another needs a job. Someone nearby just posted an update.</p>
           <p className="mt-4 text-base text-white/70">Sweet Social Space is personalized to your area within {radius} miles of YOU — wherever you are in the world. GLOBAL feed, local focus.</p>
+          <div className="mt-4 bg-white/10 border border-white/20 rounded-xl p-4">
+            <p className="text-sm font-bold text-white">📍 Why we need your location:</p>
+            <ul className="text-sm text-white/80 mt-2 space-y-1">
+              <li>• Show you posts from your actual neighborhood</li>
+              <li>• Give you accurate local weather & alerts</li>
+              <li>• Connect you with nearby events & businesses</li>
+              <li>• Keep your community safe and relevant</li>
+            </ul>
+          </div>
           <p className="mt-6 text-sm font-bold text-white/50 tracking-widest uppercase">Speak Freely. Love Your Neighbor.</p>
         </div>
         <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
@@ -93,6 +102,10 @@ export default function SignupPage() {
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Create a password *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <div className="pt-2 border-t border-white/10">
               <p className="text-xs font-black tracking-widest text-white/50 mb-2 uppercase">Where are you? (Required — Global)</p>
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-3">
+                <p className="text-xs text-blue-200 font-semibold">🔒 Your Privacy Protected</p>
+                <p className="text-xs text-white/70 mt-1">We use your zip code (not GPS tracking) to show you posts, weather, and alerts near you. Your exact address is never shared.</p>
+              </div>
               <input type="text" value={zip} onChange={e=>{setZip(e.target.value); lookupZip(e.target.value)}} onBlur={e=>lookupZip(e.target.value)} placeholder="Zip / Postal Code *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
               <div className="grid grid-cols-2 gap-3 mt-3">
                 <input type="text" value={city} onChange={e=>setCity(e.target.value)} placeholder="City *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
