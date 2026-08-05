@@ -33,12 +33,7 @@ export default function Onboarding() {
       if (!safeZip || safeZip.toUpperCase()==='YOUR BLOCK' || safeZip==='') safeZip = 'GLOBAL'
 
       let finalCity = city || ''
-      if (safeZip === 'GLOBAL') {
-        try {
-          const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
-          if (ip?.postal) { safeZip = ip.postal; finalCity = ip.city || finalCity }
-        } catch {}
-      }
+      // No IP fallback - pure zip code based as requested
 
       const { error } = await supabase.from('profiles').upsert({
         id: user.id,
@@ -67,6 +62,10 @@ export default function Onboarding() {
       <form onSubmit={handleSubmit} className="relative bg-white/[0.08] backdrop-blur-2xl p-8 rounded-2xl shadow-2xl w-full max-w-md border border-white/15">
         <h1 className="text-2xl font-black text-white mb-2">Welcome to Sweet Social Space</h1>
         <p className="text-white/60 mb-6">Let’s get you set up with your neighbors in <span className="text-white font-bold">{city || 'your area'}</span></p>
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-4">
+          <p className="text-xs text-blue-200 font-semibold">🔒 Zip Code Based - Not GPS Tracking</p>
+          <p className="text-xs text-white/70 mt-1">Your exact location is never tracked. We only use your zip code to show you relevant local content.</p>
+        </div>
         <input className="w-full p-3 border border-white/20 rounded-xl mb-4 bg-black text-white" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
         <input className="w-full p-3 border border-white/20 rounded-xl mb-4 bg-black text-white" placeholder="Age" type="number" value={age} onChange={(e) => setAge(e.target.value)} required />
         <input className="w-full p-3 border border-white/20 rounded-xl mb-6 bg-black text-white font-bold" placeholder={detectedZip? `ZIP - ${detectedZip}` : 'ZIP Code'} value={zip} onChange={(e) => setZip(e.target.value)} required />
