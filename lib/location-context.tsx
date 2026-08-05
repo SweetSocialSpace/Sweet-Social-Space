@@ -32,7 +32,6 @@ export function LocationProvider({ children }: any) {
   const [loc, setLoc] = useState<Loc>({ zip: 'GLOBAL', city: 'your area', country: 'US', lat: 0, lng: 0 })
   const [radius, setRadius] = useState(5)
   const [loading, setLoading] = useState(true)
-  const [mounted, setMounted] = useState(false)
   let supabase: any
   try { supabase = createClient() } catch { supabase = null }
 
@@ -59,7 +58,6 @@ export function LocationProvider({ children }: any) {
   }
 
   useEffect(() => {
-    setMounted(true)
     async function init() {
       setLoading(true)
       if (supabase) {
@@ -91,20 +89,8 @@ export function LocationProvider({ children }: any) {
       setLoading(false)
     }
     
-    // Delay initialization to prevent conflicts with middleware redirects
-    const timeoutId = setTimeout(init, 100)
-    return () => clearTimeout(timeoutId)
+    init()
   }, [])
-
-  // Don't render children until mounted to prevent flash
-  if (!mounted) {
-    return <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="text-white text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
-        <p className="text-sm">Loading...</p>
-      </div>
-    </div>
-  }
 
   return (
     <LocationContext.Provider value={{ ...loc, setLoc: setLocState as any, loading, radius, setRadius, useMyLocation }}>
