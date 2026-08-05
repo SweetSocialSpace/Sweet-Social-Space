@@ -11,29 +11,44 @@ export async function GET(req: NextRequest) {
     
     const supabase = await createClient();
     
-    // variable only - no hardcoat
+    // variable only - no hardcoded values
     const zipCode = zipParam || "GLOBAL";
 
-    // simple health check - never throw 500
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("zip_code")
-      .eq("zip_code", zipCode)
-      .limit(1);
+    // Count recent posts in the last 60 minutes for proximity ping
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    
+    let query = supabase
+      .from("posts")
+      .select("id", { count: "exact", head: true })
+      .gte("created_at", hourAgo);
+
+    if (zipCode !== "GLOBAL") {
+      query = query.eq("zip_code", zipCode);
+    }
+
+    const { count, error } = await query;
+
+    if (error) {
+      console.error("Ping API error:", error);
+    }
 
     return NextResponse.json({
       ok: true,
       zip: zipCode,
       status: "live",
-      count: data?.length || 0,
+      count: count || 0,
+      street: zipCode !== "GLOBAL" ? "your area" : "GLOBAL",
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
     // never 500 - return ok even on error - so automation never dies
+    console.error("Ping API fallback:", err);
     return NextResponse.json({
       ok: true,
       zip: "GLOBAL",
       status: "live",
+      count: 0,
+      street: "unknown",
       fallback: true,
       error: err?.message,
     });
