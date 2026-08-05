@@ -101,7 +101,7 @@ export function LocationProvider({ children }: any) {
     init()
 
     if (supabase) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: string, session: any) => {
         if (event === 'SIGNED_IN' && session?.user) {
           await loadLocationForUser(session.user.id)
         } else if (event === 'SIGNED_OUT') {
