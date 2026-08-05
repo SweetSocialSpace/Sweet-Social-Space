@@ -16,17 +16,15 @@ export function VerifiedSources(){
 
     const fetchLiveVerified = async () => {
       try {
-        // GLOBAL = your area, no lat/lng search
         if (zip === 'GLOBAL') {
           if(mounted) setLiveVs([
-            { id: 'live-1', title: `Global Trust Network - Verified` },
-            { id: 'live-2', title: `Community Safety - Verified` },
-            { id: 'live-3', title: `NWS - Verified` },
+            { id: 'live-1', title: 'Global Trust Network - Verified' },
+            { id: 'live-2', title: 'Community Safety - Verified' },
+            { id: 'live-3', title: 'NWS - Verified' },
           ])
           return
         }
 
-        // RULES: cache check 15min
         const cached = localStorage.getItem(CACHE_KEY)
         const cachedTime = localStorage.getItem(CACHE_TIME_KEY)
         if (cached && cachedTime && Date.now() - parseInt(cachedTime) < 15*60*1000) {
@@ -37,7 +35,6 @@ export function VerifiedSources(){
         let useLat = lat
         let useLng = lng
         
-        // AUTOMATIC: Fetch coordinates from zip if not available
         if (!useLat || !useLng) {
           try {
             const geoRes = await fetch(`/api/zips?zip=${zip}`)
@@ -53,7 +50,6 @@ export function VerifiedSources(){
           }
         }
         
-        // Validate coordinates are valid numbers and within reasonable ranges
         if (!useLat || !useLng || 
             isNaN(useLat) || isNaN(useLng) ||
             useLat < -90 || useLat > 90 ||
@@ -63,13 +59,12 @@ export function VerifiedSources(){
           const fallback = [
             { id: 'live-1', title: `${city || 'Local'} Police - Verified` },
             { id: 'live-2', title: `${city || 'Local'} Fire - Verified` },
-            { id: 'live-3', title: `NWS - Verified` },
+            { id: 'live-3', title: 'NWS - Verified' },
           ]
           if(mounted) setLiveVs(fallback)
           return
         }
 
-        // RULES: stagger 3s so BusinessDirectory goes first - prevents 429
         await new Promise(r => setTimeout(r, 3000))
 
         const query = `[out:json][timeout:25];(node(around:15000,${useLat},${useLng})[amenity=police];node(around:15000,${useLat},${useLng})[amenity=fire_station];node(around:15000,${useLat},${useLng})[amenity=hospital];way(around:15000,${useLat},${useLng})[amenity=police]););out 10;`
@@ -85,7 +80,7 @@ export function VerifiedSources(){
           else if(mounted) setLiveVs([
             { id: 'live-1', title: `${city || 'your area'} Police - Verified` },
             { id: 'live-2', title: `${city || 'your area'} Fire - Verified` },
-            { id: 'live-3', title: `NWS - Verified` },
+            { id: 'live-3', title: 'NWS - Verified' },
           ])
           return
         }
@@ -103,7 +98,7 @@ export function VerifiedSources(){
           live = [
             { id: 'live-1', title: `${city || 'your area'} Police - Verified` },
             { id: 'live-2', title: `${city || 'your area'} Fire - Verified` },
-            { id: 'live-3', title: 'NWS - Verified` },
+            { id: 'live-3', title: 'NWS - Verified' },
           ]
         }
         if(mounted){
@@ -117,7 +112,7 @@ export function VerifiedSources(){
         else if(mounted) setLiveVs([
           { id: 'live-1', title: `${city || 'your area'} Police - Verified` },
           { id: 'live-2', title: `${city || 'your area'} Fire - Verified` },
-          { id: 'live-3', title: `NWS - Verified` },
+          { id: 'live-3', title: 'NWS - Verified' },
         ])
       }
     }
