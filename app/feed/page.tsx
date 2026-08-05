@@ -74,7 +74,6 @@ function FeedContent() {
     { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' },
   ]
 
-  // FIX GLITCH - useCallback stable, no infinite loop
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius, latLonOverride?: {lat:number, lon:number}|null) => {
     const z = zipToUse || nearZip || locationZip
     if (!z) return
@@ -141,18 +140,16 @@ function FeedContent() {
         fetchPosts(locationZip)
       }
     })()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // FIX GLITCH - only fetch when radius changes, not when userLatLon changes infinitely
   useEffect(()=>{
     if (nearZip && userLatLon) fetchPosts(nearZip, radius, userLatLon)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [radius])
 
-const handleLivePosted = (newPost:any) => {
-  setPosts(prev=>[newPost,...prev])
-}
+  const handleLivePosted = (newPost:any) => {
+    setPosts(prev=>[newPost,...prev])
+  }
+  
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
     const { error } = await supabase.from('posts').delete().eq('id', postId)
@@ -219,7 +216,7 @@ const handleLivePosted = (newPost:any) => {
             ))}
           </div>
 
-            <div className="space-y-3 mt-2">
+          <div className="space-y-3 mt-2">
             {filtered.length===0 && <WelcomePost />}
             {filtered.map((p:any)=>(
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
@@ -248,7 +245,7 @@ const handleLivePosted = (newPost:any) => {
             ))}
           </div>
           
-          {/* JoinLive modal - OUTSIDE the map loop */}
+          {/* JoinLive modal */}
           {joinLivePost && (
             <JoinLive 
               roomName={joinLivePost.livekit_room} 
@@ -256,21 +253,6 @@ const handleLivePosted = (newPost:any) => {
               onClose={() => setJoinLivePost(null)} 
             />
           )}
-    userName={currentProfile?.username || 'User'} 
-    onClose={() => setJoinLivePost(null)} 
-  />
-)}
-        <video src={url} controls playsInline preload="metadata" className="mt-3 w-full rounded-xl bg-black max-h-" />
-      ) : (
-        <img src={url} alt="" className="mt-3 w-full rounded-xl" />
-      );
-    })()}
-    <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
-    {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
-  </div>
-))}
-            ))}
-          </div>
         </div>
 
         <div className="space-y-4 xl:sticky xl:top-20">
