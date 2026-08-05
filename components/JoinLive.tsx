@@ -47,7 +47,7 @@ export default function JoinLive({ roomName, userName, onClose }: { roomName: st
       <div className="bg-neutral-900 rounded-2xl w-full max-w-4xl p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
           <span className="text-white font-bold text-lg">
-            {userName} is LIVE
+            🔴 {userName} is LIVE
           </span>
           <button onClick={onClose} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
         </div>
