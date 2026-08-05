@@ -86,6 +86,12 @@ export default function GoLive(props: any) {
     setOpen(false)
   }
 
+  // Handle disconnection gracefully - don't show error for normal disconnects
+  const handleDisconnect = () => {
+    console.log('LiveKit disconnected normally')
+    endLive()
+  }
+
   if (!open) {
     return <button type="button" onClick={() => setOpen(true)} className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold">Go Live</button>
   }
@@ -124,7 +130,7 @@ export default function GoLive(props: any) {
                 token={token}
                 serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
                 connect={true}
-                onDisconnected={() => endLive()}
+                onDisconnected={handleDisconnect}
                 video={true}
                 audio={true}
               >
