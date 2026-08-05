@@ -19,9 +19,8 @@ const nextConfig = {
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https://fonts.gstatic.com",
               "media-src 'self' blob: https://*.supabase.co https://*.elevenlabs.io",
-                       // FIXED 28th - added ipapi.co + nominatim + vercel live for GLOBAL detection
-              // FIXED - added LiveKit for Go Live feature
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://ipapi.co https://overpass-api.de https://api.weather.gov https://api.openweathermap.org https://date.nager.at https://*.openstreetmap.org https://nominatim.openstreetmap.org https://api.elevenlabs.io https://*.elevenlabs.io https://api.stripe.com https://vercel.live https://*.vercel.app https://*.livekit.cloud wss://*.livekit.cloud"   
+              // FIXED - added information highway APIs for automated content
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://ipapi.co https://overpass-api.de https://api.weather.gov https://api.openweathermap.org https://date.nager.at https://*.openstreetmap.org https://nominatim.openstreetmap.org https://api.elevenlabs.io https://*.elevenlabs.io https://api.stripe.com https://vercel.live https://*.vercel.app https://*.livekit.cloud wss://*.livekit.cloud https://*.facebook.com https://*.craigslist.org https://*.eventbriteapi.com https://api.meetup.com https://*.seatgeek.com https://api.zippopotam.us https://geocoding-api.open-meteo.com https://api.bigdatacloud.net https://earthquake.usgs.gov https://api.seatgeek.com https://www.eventbriteapi.com https://api.eventbrite.com"   
             ].join("; ")
           }
         ],
