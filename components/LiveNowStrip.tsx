@@ -32,7 +32,7 @@ export default function LiveNowStrip() {
           table: 'posts',
           filter: 'tag=eq.live'
         },
-        (payload) => {
+        (payload: any) => {
           setLivePosts(prev => [payload.new, ...prev].slice(0, 10))
         }
       )
@@ -43,7 +43,7 @@ export default function LiveNowStrip() {
           schema: 'public',
           table: 'posts'
         },
-        (payload) => {
+        (payload: any) => {
           setLivePosts(prev => prev.filter(p => p.id !== payload.old.id))
         }
       )
