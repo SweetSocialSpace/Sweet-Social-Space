@@ -51,8 +51,13 @@ export function BusinessDirectory(){
           }
         }
         
-        // Only try Overpass API if we have coordinates now
-        if (!useLat || !useLng) {
+        // Validate coordinates are valid numbers and within reasonable ranges
+        if (!useLat || !useLng || 
+            isNaN(useLat) || isNaN(useLng) ||
+            useLat < -90 || useLat > 90 ||
+            useLng < -180 || useLng > 180 ||
+            useLat === 0 || useLng === 0) {
+          console.log('BusinessDirectory: Invalid coordinates, skipping Overpass API')
           setLoading(false)
           return
         }
@@ -76,7 +81,7 @@ export function BusinessDirectory(){
           return
         }
         
-        if (res.status === 429 || res.status === 504 || !res.ok) {
+        if (res.status === 429 || res.status === 504 || res.status === 400 || !res.ok) {
           console.log('Overpass API returned error status (non-critical):', res.status)
           if(mounted) setLoading(false)
           return
