@@ -11,10 +11,13 @@ export function VerifiedSources(){
   useEffect(()=>{
     if (!zip) return
     let mounted = true
+    let fetching = false
     const CACHE_KEY = `verified_${zip}_v1`
     const CACHE_TIME_KEY = `verified_${zip}_v1_time`
 
     const fetchLiveVerified = async () => {
+      if (!mounted || fetching) return
+      fetching = true
       try {
         if (zip === 'GLOBAL') {
           if(mounted) setLiveVs([
@@ -114,6 +117,8 @@ export function VerifiedSources(){
           { id: 'live-2', title: `${city || 'your area'} Fire - Verified` },
           { id: 'live-3', title: 'NWS - Verified' },
         ])
+      } finally {
+        fetching = false
       }
     }
 
