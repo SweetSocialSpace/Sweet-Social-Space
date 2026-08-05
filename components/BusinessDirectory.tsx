@@ -32,14 +32,32 @@ export function BusinessDirectory(){
           return
         }
 
-        const useLat = lat
-        const useLng = lng
+        let useLat = lat
+        let useLng = lng
+        
+        // AUTOMATIC: Fetch coordinates from zip if not available
         if (!useLat || !useLng) {
-          setLoading(false)
-          return // RULES: no fallback to 37.7749 hardcoded SF - wait for real location
+          try {
+            const geoRes = await fetch(`/api/zips?zip=${zip}`)
+            if (geoRes.ok) {
+              const geoData = await geoRes.json()
+              if (geoData.lat && geoData.lon) {
+                useLat = parseFloat(geoData.lat)
+                useLng = parseFloat(geoData.lon)
+              }
+            }
+          } catch (e) {
+            console.log('BusinessDirectory: Failed to get coordinates from zip (non-critical):', e)
+          }
         }
         
-        const query = `[out:json][timeout:25];(node(around:10000,${useLat},${useLng})[shop];way(around:10000,${useLat},${useLng})[shop];node(around:10000,${useLat},${useLng})[amenity=restaurant];);out 10;`
+        // Only try Overpass API if we have coordinates now
+        if (!useLat || !useLng) {
+          setLoading(false)
+          return
+        }
+        
+        const query = `[out:json][timeout:25];(node(around:10000,${useLat},${useLng})[shop];way(around:10000,${useLat},${useLng})[shop];node(around:10000,${useLat},${useLng})[amenity=restaurant]););out 10;`
         let res
         try {
           // Add timeout to prevent hanging
