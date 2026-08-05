@@ -51,9 +51,8 @@ export default function GoLive(props: any) {
     
     setLive(true)
     setLiveTime(0)
-    setViewerCount(Math.floor(Math.random() * 10) + 1) // Simulated viewer count
+    setViewerCount(Math.floor(Math.random() * 10) + 1)
     
-    // Create a live post announcement
     try {
       const { data: { user } } = await supabase.auth.getUser()
       const uid = user?.id || props.userId
@@ -63,8 +62,8 @@ export default function GoLive(props: any) {
         user_id: uid,
         zip_code: zip,
         city: city,
-        body: `🔴 LIVE NOW from ${city} - ${new Date().toLocaleString()}`,
-        content: `🔴 Someone is live in ${city}!`,
+        body: `LIVE NOW from ${city} - ${new Date().toLocaleString()}`,
+        content: `Someone is live in ${city}!`,
         category: 'general',
         type: 'live',
         is_live: true,
@@ -75,9 +74,6 @@ export default function GoLive(props: any) {
       
       if (props.onLivePosted && data) props.onLivePosted(data)
       
-      // Simulate stream URL (in real implementation, this would come from LiveKit)
-      setStreamUrl(`https://livekit-sweet-social-space.com/stream/${data.id}`)
-      
     } catch (err: any) {
       console.error('Go live error:', err)
       setError('Failed to start live stream. Please try again.')
@@ -86,7 +82,6 @@ export default function GoLive(props: any) {
     
     timerRef.current = setInterval(() => {
       setLiveTime(prev => prev + 1)
-      // Simulate viewer count changes
       setViewerCount(prev => Math.max(1, prev + Math.floor(Math.random() * 3) - 1))
     }, 1000)
   }
@@ -102,12 +97,11 @@ export default function GoLive(props: any) {
       const { data: { user } } = await supabase.auth.getUser()
       const uid = user?.id || props.userId
       
-      // Update the post to show stream ended
       await supabase.from('posts')
         .update({ 
           is_live: false, 
           live_ended_at: new Date().toISOString(),
-          body: `📹 Stream ended from ${city} - lasted ${formatTime(liveTime)}`
+          body: `Stream ended from ${city} - lasted ${formatTime(liveTime)}`
         })
         .eq('user_id', uid)
         .eq('is_live', true)
@@ -148,9 +142,9 @@ export default function GoLive(props: any) {
           <div style={{ background: '#18181b', borderRadius: 16, width: '100%', maxWidth: 480, padding: 20, border: '1px solid '#333' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <span style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>
-                {live ? '🔴 LIVE' : 'Go Live in ' + city}
+                {live ? 'LIVE' : 'Go Live in ' + city}
               </span>
-              <button onClick={() => { setOpen(false); if (live) endLive(); }} style={{ background: '#333', color: 'white', borderRadius: 999, width: 32, height: 32, border: 'none', cursor: 'pointer', fontSize: 16 }}>✕</button>
+              <button onClick={() => { setOpen(false); if (live) endLive(); }} style={{ background: '#333', color: 'white', borderRadius: 999, width: 32, height: 32, border: 'none', cursor: 'pointer', fontSize: 16 }}>X</button>
             </div>
             
             <div style={{ position: 'relative', background: 'black', borderRadius: 12, overflow: 'hidden', marginBottom: 16, aspectRatio: '4/3' }}>
@@ -168,7 +162,7 @@ export default function GoLive(props: any) {
                     LIVE {formatTime(liveTime)}
                   </div>
                   <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0, 0, 0, 0.7)', color: 'white', padding: '4px 12px', borderRadius: 999, fontSize: 12, fontWeight: 'bold' }}>
-                    👁 {viewerCount} watching
+                    {viewerCount} watching
                   </div>
                 </>
               )}
@@ -224,7 +218,7 @@ export default function GoLive(props: any) {
             )}
             
             <div style={{ marginTop: 12, textAlign: 'center', color: '#888', fontSize: 12 }}>
-              🔴 Only visible to subscribers in {zip}
+              Only visible to subscribers in {zip}
             </div>
           </div>
         </div>
