@@ -14,14 +14,15 @@ export function BusinessDirectory(){
   useEffect(()=>{
     if (!zip) return
     let mounted = true
+    let fetching = false
     const CACHE_KEY = `biz_${zip}_v1`
     const CACHE_TIME_KEY = `biz_${zip}_v1_time`
 
     const fetchLiveBusinesses = async () => {
-      if (!mounted) return
+      if (!mounted || fetching) return
+      fetching = true
       setLoading(true)
       try {
-        // RULES: cache 15min per zip - no hammering Overpass
         const cached = localStorage.getItem(CACHE_KEY)
         const cachedTime = localStorage.getItem(CACHE_TIME_KEY)
         if (cached && cachedTime && Date.now() - parseInt(cachedTime) < 15*60*1000) {
@@ -35,7 +36,6 @@ export function BusinessDirectory(){
         let useLat = lat
         let useLng = lng
         
-        // AUTOMATIC: Fetch coordinates from zip if not available
         if (!useLat || !useLng) {
           try {
             const geoRes = await fetch(`/api/zips?zip=${zip}`)
@@ -51,7 +51,6 @@ export function BusinessDirectory(){
           }
         }
         
-        // Validate coordinates are valid numbers and within reasonable ranges
         if (!useLat || !useLng || 
             isNaN(useLat) || isNaN(useLng) ||
             useLat < -90 || useLat > 90 ||
@@ -65,9 +64,8 @@ export function BusinessDirectory(){
         const query = `[out:json][timeout:25];(node(around:10000,${useLat},${useLng})[shop];way(around:10000,${useLat},${useLng})[shop];node(around:10000,${useLat},${useLng})[amenity=restaurant]););out 10;`
         let res
         try {
-          // Add timeout to prevent hanging
           const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+          const timeoutId = setTimeout(() => controller.abort(), 10000)
           res = await fetch('https://overpass-api.de/api/interpreter', { 
             method: 'POST', 
             body: query, 
@@ -96,11 +94,11 @@ export function BusinessDirectory(){
         }
       } catch (e){
         console.log('Business directory error (non-critical):', e)
-        // fallback to cache on any error
         const cached = localStorage.getItem(CACHE_KEY)
         if (cached && mounted) setLiveBiz(JSON.parse(cached))
       } finally {
         if(mounted) setLoading(false)
+        fetching = false
       }
     }
 
@@ -118,7 +116,6 @@ export function BusinessDirectory(){
       }
     }
     load()
-    // RULES: no aggressive polling - 20min is okay with cache, but cache prevents API hit
     const id = setInterval(()=>{ 
       if(mounted) {
         try { load() } catch {} 
