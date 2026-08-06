@@ -11,7 +11,7 @@ function MyVideo() {
   return <VideoTrack trackRef={trackRef} className="w-full aspect-video rounded-xl bg-black object-cover" />
 }
 
-export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnded }: { userId?: string, zipCode: string, city: string, onLivePosted: (p:any)=>void, onLiveEnded: (id:string)=>void }) {
+export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnded }: { userId?: string, zipCode: string, city: string, onLivePosted: (p:any)=>void, onLiveEnded: (id:string, videoUrl?: string)=>void }) {
   const [open, setOpen] = useState(false)
   const [token, setToken] = useState('')
   const [roomName, setRoomName] = useState('')
