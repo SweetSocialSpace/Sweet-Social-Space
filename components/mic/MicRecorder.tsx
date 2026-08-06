@@ -30,14 +30,15 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
       return
     }
 
-    const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+       const SR: any = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (SR) {
       try {
         const rec = new SR()
         recognitionRef.current = rec
         rec.continuous = true
         rec.interimResults = true
-        rec.lang = 'en-US'
+        const userLang = navigator.language || 'en-US'
+        rec.lang = userLang
         lastFinalRef.current = ''
 
         rec.onstart = () => setListening(true)
