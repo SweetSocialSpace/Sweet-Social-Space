@@ -26,21 +26,13 @@ class ErrorBoundary extends React.Component<{children:React.ReactNode, name:stri
   render(){ return this.state.hasError? null : this.props.children as any }
 }
 
-function milesBetween(lat1:number, lon1:number, lat2:number, lon2:number){
-  const R=3959
-  const dLat=(lat2-lat1)*Math.PI/180
-  const dLon=(lon2-lon1)*Math.PI/180
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))
-}
-
 function FeedContent() {
   const [filter, setFilter] = useState('all')
   const supabase = createClient()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
-  const { zip: locationZip, city: locationCity } = useLocation()
+  const { zip: locationZip } = useLocation()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
   const [nearZip, setNearZip] = useState<string>('')
@@ -74,23 +66,11 @@ function FeedContent() {
     { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' },
   ]
 
-  const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius, latLonOverride?: {lat:number, lon:number}|null) => {
-    // FIX: Only get posts for THIS zip and hide old live posts that cause red banner
+  const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
-    if (zipToUse) {
-      query = query.or(`zip_code.eq.${zipToUse},zip_code.eq.GLOBAL`)
-    }
+    if (zipToUse) query = query.or(`zip_code.eq.${zipToUse},zip_code.eq.GLOBAL`)
     const { data } = await query
-    if (!data) return
-    // Filter out expired live posts (older than 2 hours)
-    const cleaned = data.filter((p:any) => {
-      if (p.tag === 'live' && p.livekit_room) {
-        const age = Date.now() - new Date(p.created_at).getTime()
-        return age < 2*60*60*1000 // 2 hours max
-      }
-      return true
-    })
-    setPosts(cleaned)
+    if (data) setPosts(data)
   }, [supabase, radius])
 
   useEffect(() => {
@@ -99,15 +79,7 @@ function FeedContent() {
       if (!user) {
         if (locationZip) {
           setNearZip(locationZip)
-          const geo = await fetch(`/api/zips?zip=${locationZip}`).then(r=>r.json()).catch(()=>null)
-          if (geo?.lat) {
-            const ll = { lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) }
-            setUserLatLon(ll)
-            if (geo.city) setRealCityFromZip(`${geo.city}, ${geo.state||'CA'}`)
-            fetchPosts(locationZip, 5, ll)
-          } else {
-            fetchPosts(locationZip)
-          }
+          fetchPosts(locationZip)
         }
         return
       }
@@ -116,21 +88,9 @@ function FeedContent() {
       if(profile){
         setCurrentProfile(profile)
         const zipVal = profile.zip_code || profile.zip
-        if(zipVal) {
-          setNearZip(zipVal)
-          const geo = await fetch(`/api/zips?zip=${zipVal}`).then(r=>r.json()).catch(()=>null)
-          if (geo?.lat) {
-            const ll = { lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) }
-            setUserLatLon(ll)
-            if (geo.city) setRealCityFromZip(`${geo.city}${geo.state? ', ' + geo.state : ''}`)
-            fetchPosts(zipVal, radius, ll)
-          } else {
-            fetchPosts(zipVal)
-          }
-        } else if (locationZip) {
-          setNearZip(locationZip)
-          fetchPosts(locationZip)
-        }
+        if(zipVal) setNearZip(zipVal)
+        else if (locationZip) setNearZip(locationZip)
+        fetchPosts(zipVal || locationZip, radius)
         if(!profile.username) router.push('/profile?required=1')
       } else if (locationZip) {
         setNearZip(locationZip)
@@ -139,12 +99,11 @@ function FeedContent() {
     })()
   }, [])
 
-  useEffect(()=>{
-    if (nearZip && userLatLon) fetchPosts(nearZip, radius, userLatLon)
-  }, [radius])
+  useEffect(()=>{ if (nearZip) fetchPosts(nearZip, radius) }, [radius])
 
-  const handleLivePosted = (newPost:any) => {
-    setPosts(prev=>[newPost,...prev])
+  const handleLivePosted = (newPost:any) => setPosts(prev=>[newPost,...prev])
+  const handleLiveEnded = (endedId: string) => {
+    setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended'} : p))
   }
 
   const deletePost = async (postId: string) => {
@@ -183,27 +142,16 @@ function FeedContent() {
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-white/60 text-xs font-bold">Near</span>
-            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">
-              {isGlobal? displayCity : displayZip}
-            </span>
-            <select
-              value={radius}
-              onChange={(e)=>handleRadiusChange(parseInt(e.target.value))}
-              className="bg-white/10 text-white rounded-full px-3 py-1 text-xs font-bold border border-white/20"
-            >
-              <option value={5}>5 mi</option>
-              <option value={10}>10 mi</option>
-              <option value={15}>15 mi</option>
-              <option value={20}>20 mi</option>
+            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">{isGlobal? displayCity : displayZip}</span>
+            <select value={radius} onChange={(e)=>handleRadiusChange(parseInt(e.target.value))} className="bg-white/10 text-white rounded-full px-3 py-1 text-xs font-bold border border-white/20">
+              <option value={5}>5 mi</option><option value={10}>10 mi</option><option value={15}>15 mi</option><option value={20}>20 mi</option>
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
-              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={displayCity} onLivePosted={handleLivePosted} />
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city={displayCity} onLivePosted={handleLivePosted} onLiveEnded={handleLiveEnded} />
             </div>
           </div>
-
-          {/* REMOVED LiveNowStrip - this was the red banner you said should not exist */}
 
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
           <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
@@ -219,36 +167,27 @@ function FeedContent() {
             {filtered.map((p:any)=>(
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
-              {p.tag === 'live' && p.tag!== 'live_ended' && p.livekit_room && (
-                  <button
-                    onClick={() => setJoinLivePost(p)}
-                    className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm border-none cursor-pointer w-full"
-                  >
-                    Join Live Stream
-                  </button>
+
+                {/* LIVE */}
+                {p.tag === 'live' && p.livekit_room && (
+                  <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 Join Live Stream</button>
                 )}
-                {(p.video_url || p.media_url) && (() => {
-                  const url = p.video_url || p.media_url;
-                  const isVideo = p.type === 'live' || p.type === 'golive' || p.media_type === 'video' || url.endsWith('.webm') || url.endsWith('.mp4') || url.includes('golive');
-                  return isVideo? (
-                    <video src={url} controls playsInline preload="metadata" className="mt-3 w-full rounded-xl bg-black max-h-" />
-                  ) : (
-                    <img src={url} alt="" className="mt-3 w-full rounded-xl" />
-                  );
-                })()}
+
+                {/* ENDED */}
+                {p.tag === 'live_ended' && (
+                  <div className="mt-3">
+                    <div className="text-xs text-gray-500 bg-gray-100 rounded-full px-3 py-1 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
+                    {(p.video_url || p.media_url) && <video src={p.video_url || p.media_url} controls playsInline className="mt-2 w-full rounded-xl bg-black" />}
+                  </div>
+                )}
+
                 <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
                 {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
               </div>
             ))}
           </div>
 
-          {joinLivePost && (
-            <JoinLive
-              roomName={joinLivePost.livekit_room}
-              userName={currentProfile?.username || 'User'}
-              onClose={() => setJoinLivePost(null)}
-            />
-          )}
+          {joinLivePost && <JoinLive roomName={joinLivePost.livekit_room} userName={currentProfile?.username || 'User'} onClose={() => setJoinLivePost(null)} />}
         </div>
 
         <div className="space-y-4 xl:sticky xl:top-20">
