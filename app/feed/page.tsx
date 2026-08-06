@@ -75,10 +75,23 @@ function FeedContent() {
   ]
 
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius, latLonOverride?: {lat:number, lon:number}|null) => {
-    const { data } = await supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
+    // FIX: Only get posts for THIS zip and hide old live posts that cause red banner
+    let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
+    if (zipToUse) {
+      query = query.or(`zip_code.eq.${zipToUse},zip_code.eq.GLOBAL`)
+    }
+    const { data } = await query
     if (!data) return
-    setPosts(data)
-  }, [supabase])
+    // Filter out expired live posts (older than 2 hours)
+    const cleaned = data.filter((p:any) => {
+      if (p.tag === 'live' && p.livekit_room) {
+        const age = Date.now() - new Date(p.created_at).getTime()
+        return age < 2*60*60*1000 // 2 hours max
+      }
+      return true
+    })
+    setPosts(cleaned)
+  }, [supabase, radius])
 
   useEffect(() => {
     (async()=>{
@@ -109,7 +122,7 @@ function FeedContent() {
           if (geo?.lat) {
             const ll = { lat: parseFloat(geo.lat), lon: parseFloat(geo.lon) }
             setUserLatLon(ll)
-            if (geo.city) setRealCityFromZip(`${geo.city}${geo.state ? ', ' + geo.state : ''}`)
+            if (geo.city) setRealCityFromZip(`${geo.city}${geo.state? ', ' + geo.state : ''}`)
             fetchPosts(zipVal, radius, ll)
           } else {
             fetchPosts(zipVal)
@@ -133,7 +146,7 @@ function FeedContent() {
   const handleLivePosted = (newPost:any) => {
     setPosts(prev=>[newPost,...prev])
   }
-  
+
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
     const { error } = await supabase.from('posts').delete().eq('id', postId)
@@ -190,7 +203,8 @@ function FeedContent() {
             </div>
           </div>
 
-          <div className="mt-2"><Safe loader={() => import('@/components/LiveNowStrip')} name="LiveNowStrip" /></div>
+          {/* REMOVED LiveNowStrip - this was the red banner you said should not exist */}
+
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
           <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
 
@@ -205,13 +219,12 @@ function FeedContent() {
             {filtered.map((p:any)=>(
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
-                {/* Live stream join button */}
-              {p.tag === 'live' && p.tag !== 'live_ended' && p.livekit_room && (
-                  <button 
+              {p.tag === 'live' && p.tag!== 'live_ended' && p.livekit_room && (
+                  <button
                     onClick={() => setJoinLivePost(p)}
                     className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm border-none cursor-pointer w-full"
                   >
-                    🔴 Join Live Stream
+                    Join Live Stream
                   </button>
                 )}
                 {(p.video_url || p.media_url) && (() => {
@@ -228,13 +241,12 @@ function FeedContent() {
               </div>
             ))}
           </div>
-          
-          {/* JoinLive modal */}
+
           {joinLivePost && (
-            <JoinLive 
-              roomName={joinLivePost.livekit_room} 
-              userName={currentProfile?.username || 'User'} 
-              onClose={() => setJoinLivePost(null)} 
+            <JoinLive
+              roomName={joinLivePost.livekit_room}
+              userName={currentProfile?.username || 'User'}
+              onClose={() => setJoinLivePost(null)}
             />
           )}
         </div>
