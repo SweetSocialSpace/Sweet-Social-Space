@@ -7,7 +7,7 @@ import {
   useLocalParticipant,
   useRoomContext,
 } from '@livekit/components-react'
-import { Track } from 'livekit-client'
+import { Track, RoomEvent } from 'livekit-client'
 
 // Host-only view — shows ONLY the broadcaster's camera (not viewers)
 function HostBroadcastView() {
@@ -21,50 +21,46 @@ function HostBroadcastView() {
     if (!videoEl || !localParticipant || !room) return
 
     let isAttached = false
-    let timeoutId: NodeJS.Timeout
 
-    const attachCamera = () => {
+    const tryAttachCamera = () => {
       if (isAttached) return
 
-      const publication = localParticipant.videoTrackPublications[0]
-      if (!publication || !publication.track) {
-        // Track not ready yet, retry
-        timeoutId = setTimeout(attachCamera, 100)
-        return
-      }
-
       try {
-        publication.track.attach(videoEl)
-        isAttached = true
-        setHasCamera(true)
-      } catch (err) {
-        console.error('Error attaching camera:', err)
+        // Get the camera track publication from local participant
+        const cameraPublication = localParticipant.getTrackPublication(Track.Source.Camera)
+        
+        if (cameraPublication?.track) {
+          // Attach the track to the video element
+          cameraPublication.track.attach(videoEl)
+          isAttached = true
+          setHasCamera(true)
+        }
+      } catch (error) {
+        console.error('Error attaching camera track:', error)
       }
     }
 
-    // Start trying to attach
-    attachCamera()
+    // Try immediately
+    tryAttachCamera()
 
-    // Also listen for when track is published
-    const handleTrackSubscribed = (track: any) => {
-      if (track.source === Track.Source.Camera) {
-        attachCamera()
-      }
+    // Listen for when local tracks are published
+    const handleLocalTrackPublished = () => {
+      tryAttachCamera()
     }
 
-    room.on('trackSubscribed', handleTrackSubscribed)
+    localParticipant.on('trackPublished', handleLocalTrackPublished)
 
     return () => {
-      clearTimeout(timeoutId)
-      room.off('trackSubscribed', handleTrackSubscribed)
+      localParticipant.off('trackPublished', handleLocalTrackPublished)
+      
       if (isAttached && videoEl) {
         try {
-          const publication = localParticipant.videoTrackPublications[0]
-          if (publication?.track) {
-            publication.track.detach(videoEl)
+          const cameraPublication = localParticipant.getTrackPublication(Track.Source.Camera)
+          if (cameraPublication?.track) {
+            cameraPublication.track.detach(videoEl)
           }
-        } catch (err) {
-          console.error('Error detaching camera:', err)
+        } catch (error) {
+          console.error('Error detaching camera:', error)
         }
       }
     }
