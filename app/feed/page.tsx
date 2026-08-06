@@ -12,13 +12,9 @@ import JoinLive from '@/components/JoinLive'
 import React from 'react'
 
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
-  const Comp = dynamic(
-    () => loader().then((m:any)=> m.default || m[name] || m).catch(()=> ({ default: () => null })),
-    { ssr: false, loading: () => null }
-  )
+  const Comp = dynamic(() => loader().then((m:any)=> m.default || m[name] || m).catch(()=> ({ default: () => null })), { ssr: false, loading: () => null })
   return <ErrorBoundary name={name}><Comp /></ErrorBoundary>
 }
-
 class ErrorBoundary extends React.Component<{children:React.ReactNode, name:string},{hasError:boolean}>{
   state = {hasError:false}
   static getDerivedStateFromError(){ return {hasError:true} }
@@ -38,33 +34,17 @@ function FeedContent() {
   const [nearZip, setNearZip] = useState<string>('')
   const [radius, setRadius] = useState<number>(5)
   const [joinLivePost, setJoinLivePost] = useState<any>(null)
-  const [userLatLon, setUserLatLon] = useState<{lat:number, lon:number} | null>(null)
-  const [realCityFromZip, setRealCityFromZip] = useState<string>('')
 
   useEffect(() => {
-    const f = searchParams.get('filter');
-    if (f) setFilter(f)
+    const f = searchParams.get('filter'); if (f) setFilter(f)
     const savedRadius = localStorage.getItem('feed_radius')
     if (savedRadius) setRadius(parseInt(savedRadius))
   }, [searchParams])
 
-  const handleFilter = (id: string) => {
-    setFilter(id)
-    router.push(id === 'all'? '/feed' : `/feed?filter=${id}`)
-  }
+  const handleFilter = (id: string) => { setFilter(id); router.push(id === 'all'? '/feed' : `/feed?filter=${id}`) }
+  const handleRadiusChange = (newRadius: number) => { setRadius(newRadius); localStorage.setItem('feed_radius', String(newRadius)) }
 
-  const handleRadiusChange = (newRadius: number) => {
-    setRadius(newRadius)
-    localStorage.setItem('feed_radius', String(newRadius))
-  }
-
-  const FILTERS = [
-    { id: 'all', label: 'All' }, { id: 'faith', label: 'Faith' },
-    { id: 'general', label: 'General' }, { id: 'safety', label: 'Safety' },
-    { id: 'for_sale', label: 'For Sale' }, { id: 'free', label: 'Free' },
-    { id: 'lost_pet', label: 'Lost Pet' }, { id: 'event', label: 'Event' },
-    { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' },
-  ]
+  const FILTERS = [{ id: 'all', label: 'All' }, { id: 'faith', label: 'Faith' }, { id: 'general', label: 'General' }, { id: 'safety', label: 'Safety' }, { id: 'for_sale', label: 'For Sale' }, { id: 'free', label: 'Free' }, { id: 'lost_pet', label: 'Lost Pet' }, { id: 'event', label: 'Event' }, { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' }]
 
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
@@ -76,35 +56,23 @@ function FeedContent() {
   useEffect(() => {
     (async()=>{
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        if (locationZip) {
-          setNearZip(locationZip)
-          fetchPosts(locationZip)
-        }
-        return
-      }
+      if (!user) { if (locationZip) { setNearZip(locationZip); fetchPosts(locationZip) } return }
       setCurrentUserId(user.id)
       const { data: profile } = await supabase.from('profiles').select('*').or(`user_id.eq.${user.id},id.eq.${user.id}`).single()
       if(profile){
         setCurrentProfile(profile)
         const zipVal = profile.zip_code || profile.zip
-        if(zipVal) setNearZip(zipVal)
-        else if (locationZip) setNearZip(locationZip)
+        if(zipVal) setNearZip(zipVal); else if (locationZip) setNearZip(locationZip)
         fetchPosts(zipVal || locationZip, radius)
         if(!profile.username) router.push('/profile?required=1')
-      } else if (locationZip) {
-        setNearZip(locationZip)
-        fetchPosts(locationZip)
-      }
+      } else if (locationZip) { setNearZip(locationZip); fetchPosts(locationZip) }
     })()
   }, [])
 
   useEffect(()=>{ if (nearZip) fetchPosts(nearZip, radius) }, [radius])
 
   const handleLivePosted = (newPost:any) => setPosts(prev=>[newPost,...prev])
-  const handleLiveEnded = (endedId: string) => {
-    setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended'} : p))
-  }
+  const handleLiveEnded = (endedId: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended'} : p))
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
@@ -112,14 +80,11 @@ function FeedContent() {
     if (!error) setPosts(prev => prev.filter((p:any) => p.id!== postId))
   }
 
-  const filtered = filter==='all'? posts : posts.filter((p:any)=> {
-    const cat = (p.category||p.tag||'').toLowerCase().replace(/\s*&\s*/g,'_').replace(/\s+/g,'_')
-    return cat===filter || cat.includes(filter)
-  })
+  const filtered = filter==='all'? posts : posts.filter((p:any)=> { const cat = (p.category||p.tag||'').toLowerCase().replace(/\s*&\s*/g,'_').replace(/\s+/g,'_'); return cat===filter || cat.includes(filter) })
 
   const authorName = currentProfile?.username || currentProfile?.display_name || 'there'
   const displayZip = nearZip || locationZip || ''
-  const displayCity = realCityFromZip || currentProfile?.city || 'your area'
+  const displayCity = currentProfile?.city || 'your area'
   const isGlobal =!displayZip || displayZip === 'GLOBAL'
 
   return (
@@ -157,9 +122,7 @@ function FeedContent() {
           <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
 
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
-            {FILTERS.map(f=>(
-              <button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>
-            ))}
+            {FILTERS.map(f=>(<button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>))}
           </div>
 
           <div className="space-y-3 mt-2">
@@ -168,17 +131,12 @@ function FeedContent() {
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
 
-                {/* LIVE */}
                 {p.tag === 'live' && p.livekit_room && (
                   <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 Join Live Stream</button>
                 )}
 
-                {/* ENDED */}
                 {p.tag === 'live_ended' && (
-                  <div className="mt-3">
-                    <div className="text-xs text-gray-500 bg-gray-100 rounded-full px-3 py-1 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
-                    {(p.video_url || p.media_url) && <video src={p.video_url || p.media_url} controls playsInline className="mt-2 w-full rounded-xl bg-black" />}
-                  </div>
+                  <div className="mt-3 text-xs text-white bg-gray-800 rounded-full px-3 py-2 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
                 )}
 
                 <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
