@@ -63,12 +63,19 @@ export default function GoLive(props: any) {
   }
 
   const endLive = async () => {
-    try {
-      if (postId) await fetch('/api/livekit/end', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ postId }) })
-    } finally {
-      setStreaming(false); setToken(''); setPostId(null)
+  try {
+    if (postId) {
+      await fetch('/api/livekit/end', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId }),
+      })
+      props.onLiveEnded?.(postId)
     }
+  } finally {
+    setStreaming(false); setToken(''); setPostId(null)
   }
+}
 
   if (!streaming) return <button onClick={goLive} className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold">Go Live</button>
 
