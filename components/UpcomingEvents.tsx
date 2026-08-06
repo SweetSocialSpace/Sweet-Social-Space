@@ -14,9 +14,10 @@ export function UpcomingEvents(){
     if (!zip) return
     let mounted = true
     const fetchLiveEvents = async () => {
-      try {
-        // GLOBAL: try country_code, fallback US - never crash
-        const cc = String((country_code || 'US')).toUpperCase()
+            try {
+        // GLOBAL: try country_code, fallback to empty string - never crash
+        const cc = String((country_code || '')).toUpperCase()
+        if (!cc) return // Skip holiday lookup if no country code
         const res = await fetch(`https://date.nager.at/api/v3/NextPublicHolidays/${encodeURIComponent(cc)}`)
         if (!res.ok) return
         const json = await res.json()
