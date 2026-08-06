@@ -32,8 +32,8 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
 
    // Remove zip code from city string if it exists
 const cleanCityOnly = cleanCity.replace(/^[\d,]+,\s*/, '').replace(/^[0-9]+,\s*/, '')
-const bodyText = cleanCityOnly? `LIVE NOW from ${cleanZip}, ${cleanCityOnly} - ${new Date().toLocaleString()}` : `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
-
+const bodyText = `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
+    
     const { data: post } = await supabase.from('posts').insert({
       user_id: userId,
       body: bodyText,
@@ -81,7 +81,7 @@ const bodyText = cleanCityOnly? `LIVE NOW from ${cleanZip}, ${cleanCityOnly} - $
 
     // Update post to mark as ended
    const cleanCityOnly = city.replace(/^[\d,]+,\s*/, '').replace(/^[0-9]+,\s*/, '')
-const wasBody = cleanCityOnly? `Was Live from ${zipCode}, ${cleanCityOnly} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+   const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
     await supabase.from('posts').update({ 
       tag: 'live_ended', 
       body: wasBody 
