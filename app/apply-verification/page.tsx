@@ -58,11 +58,11 @@ export default function ApplyVerificationPage() {
               <div className="mt-6 bg-green-600 text-white p-4 rounded-xl font-bold">✓ Request submitted for {city || zip}! We'll review and verify your organization in {zip} area.</div>
             ) : (
               <>
-                <input value={org} onChange={e=>setOrg(e.target.value)} placeholder="Organization name (e.g. Austin Police, Denver Fire)" className="mt-6 w-full p-3 rounded-xl text-black font-medium" />
+                                <input value={org} onChange={e=>setOrg(e.target.value)} placeholder="Organization name (e.g. Local Police, Fire Department)" className="mt-6 w-full p-3 rounded-xl text-black font-medium" />
                 <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Official email (.gov preferred)" className="mt-3 w-full p-3 rounded-xl text-black" />
-                <select value={type} onChange={e=>setType(e.target.value)} className="mt-3 w-full p-3 rounded-xl text-black font-medium">
+                                <select value={type} onChange={e=>setType(e.target.value)} className="mt-3 w-full p-3 rounded-xl text-black font-medium">
                   <option>Police / Fire / Government</option>
-                  <option>NWS / Emergency Management</option>
+                  <option>Emergency Management</option>
                   <option>School / Hospital</option>
                   <option>Local Business</option>
                   <option>Media / News</option>
