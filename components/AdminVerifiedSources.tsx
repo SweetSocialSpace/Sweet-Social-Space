@@ -285,6 +285,7 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
   const [emoji, setEmoji] = useState('')
   const [city, setCity] = useState('')
   const [stateCode, setStateCode] = useState('')
+  const [countryCode, setCountryCode] = useState('')
   const [website, setWebsite] = useState('')
   const [description, setDescription] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -292,11 +293,11 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
 
   useEffect(() => { if (!slugTouched) setSlug(slugify(name)) }, [name, slugTouched])
 
-  async function submit(e: React.FormEvent) {
+    async function submit(e: React.FormEvent) {
     e.preventDefault()
     setErr(null)
-    if (!name.trim() ||!city.trim() ||!stateCode.trim()) {
-      setErr('Name, city, and state are required.')
+    if (!name.trim() ||!city.trim() ||!stateCode.trim() ||!countryCode.trim()) {
+      setErr('Name, city, state, and country are required.')
       return
     }
     setSubmitting(true)
@@ -313,14 +314,14 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
           contact_email: null,
           city: city.trim(),
           state_code: stateCode.trim().toUpperCase(),
-          country_code: 'US',
+          country_code: countryCode.trim().toUpperCase(),
           latitude: geo.lat,
           longitude: geo.lng,
           status: 'approved',
         } as any,
       })
       setName(''); setSlug(''); setSlugTouched(false); setEmoji('')
-      setCity(''); setStateCode(''); setWebsite(''); setDescription('')
+      setCity(''); setStateCode(''); setCountryCode(''); setWebsite(''); setDescription('')
       setOpen(false)
       onCreated()
     } catch (e: any) {
@@ -341,7 +342,7 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
   return (
     <form onSubmit={submit} className="space-y-3 rounded-2xl border border-border bg-card p-4">
       <h3 className="text-sm font-semibold">New verified source</h3>
-      <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name *" required className={cls} />
         <input value={slug} onChange={(e) => { setSlugTouched(true); setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')) }} placeholder="slug" className={cls} />
         <select value={kind} onChange={(e) => setKind(e.target.value as Kind)} className={cls}>
@@ -349,8 +350,9 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
         </select>
         <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={4} placeholder="Emoji (🏛)" className={cls} />
         <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City *" required className={cls} />
-        <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder="State (CA) *" required className={cls} />
-        <input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://website" className={`${cls} sm:col-span-2`} />
+        <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder="State/Province (CA) *" required className={cls} />
+        <input value={countryCode} onChange={(e) => setCountryCode(e.target.value.toUpperCase().slice(0, 2))} placeholder="Country Code (US) *" required className={cls} />
+        <input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://website" className={cls} />
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" rows={2} className={`${cls} sm:col-span-2`} />
       </div>
       {err && <p className="text-sm text-destructive">{err}</p>}
@@ -375,6 +377,7 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
   const [contactPhone, setContactPhone] = useState(row.contact_phone?? '')
   const [city, setCity] = useState(row.city?? '')
   const [stateCode, setStateCode] = useState(row.state_code?? '')
+  const [countryCode, setCountryCode] = useState(row.country_code?? '')
   const [latitude, setLatitude] = useState<string>(row.latitude?.toString()?? '')
   const [longitude, setLongitude] = useState<string>(row.longitude?.toString()?? '')
   const [saving, setSaving] = useState(false)
@@ -389,7 +392,7 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
       if ((lat!== null && Number.isNaN(lat)) || (lng!== null && Number.isNaN(lng))) {
         throw new Error('Latitude and longitude must be numeric.')
       }
-      await adminUpdateVerifiedSource({
+            await adminUpdateVerifiedSource({
         data: {
           id: row.id,
           name: name.trim(),
@@ -402,6 +405,7 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
           contact_phone: contactPhone.trim() || null,
           city: city.trim() || null,
           state_code: stateCode.trim().toUpperCase() || null,
+          country_code: countryCode.trim().toUpperCase() || null,
           latitude: lat,
           longitude: lng,
         } as any,
@@ -436,9 +440,10 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
           <input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://website" className={cls} />
           <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="Contact name" className={cls} />
           <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="Contact email" className={cls} />
-          <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="Contact phone" className={cls} />
+                    <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="Contact phone" className={cls} />
           <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className={cls} />
-          <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder="State (CA)" className={cls} />
+          <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder="State/Province (CA)" className={cls} />
+          <input value={countryCode} onChange={(e) => setCountryCode(e.target.value.toUpperCase().slice(0, 2))} placeholder="Country Code (US)" className={cls} />
           <div className="flex gap-2 sm:col-span-2">
             <input value={latitude} onChange={(e) => setLatitude(e.target.value)} placeholder="Latitude" className={cls} />
             <input value={longitude} onChange={(e) => setLongitude(e.target.value)} placeholder="Longitude" className={cls} />
