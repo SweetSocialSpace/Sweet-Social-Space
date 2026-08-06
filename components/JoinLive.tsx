@@ -95,16 +95,6 @@ function HostStreamView() {
   )
 }
 
-  return (
-    <div className="relative w-full h-full">
-      <VideoTrack
-        trackRef={hostCamera}
-        className="w-full h-full object-cover"
-      />
-    </div>
-  )
-}
-
 export default function JoinLive({
   roomName,
   userName,
