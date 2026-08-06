@@ -72,7 +72,7 @@ function FeedContent() {
   useEffect(()=>{ if (nearZip) fetchPosts(nearZip, radius) }, [radius])
 
   const handleLivePosted = (newPost:any) => setPosts(prev=>[newPost,...prev])
-  const handleLiveEnded = (endedId: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live')} : p))
+  const handleLiveEnded = (endedId: string, videoUrl?: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live'), video_url: videoUrl, media_url: videoUrl, media_urls: videoUrl ? [videoUrl] : undefined} : p))
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
