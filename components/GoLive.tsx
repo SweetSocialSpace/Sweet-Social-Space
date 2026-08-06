@@ -140,7 +140,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
       console.error('Error ending LiveKit room:', error)
     }
 
-    if (postId) onLiveEnded(postId)
+   if (postId) onLiveEnded(postId, videoUrl)
     setOpen(false); setToken(''); setRoomName(''); setPostId(''); chunksRef.current = []; setIsEnding(false)
   }
 
