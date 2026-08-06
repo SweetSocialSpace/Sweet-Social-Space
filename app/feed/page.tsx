@@ -134,7 +134,7 @@ function FeedContent() {
                 <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                   <p className="text-black whitespace-pre-wrap break-words leading-6">{displayBody}</p>
                   {p.tag === 'live' && p.livekit_room && <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 Join Live Stream</button>}
-                   {isEnded && (
+                  {isEnded && (
                     <>
                       {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
                         <video 
@@ -158,22 +158,19 @@ function FeedContent() {
 
         <div className="space-y-4 xl:sticky xl:top-20">
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
-          <Safe loader={() => import('@/app/components/TheDrop')} name="TheDrop" />
-          <Safe loader={() => import('@/components/KarmaLeaderboard')} name="KarmaLeaderboard" />
-          <Safe loader={() => import('@/components/proximity-ping/ProximityPing')} name="ProximityPing" />
-          <Safe loader={() => import('@/components/street-heat/StreetHeat')} name="StreetHeat" />
-          <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
           <Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" />
-          <Safe loader={() => import('@/components/own-this-block/OwnThisBlock')} name="OwnThisBlock" />
-          <Safe loader={() => import('@/components/UpcomingEvents')} name="UpcomingEvents" />
-          <Safe loader={() => import('@/components/VerifiedSources')} name="VerifiedSources" />
+          <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
+          <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
         </div>
       </div>
-      <GlobalFooter />
     </>
   )
 }
 
 export default function FeedPage() {
-  return <Suspense fallback={<div className="text-white p-10 text-center">Loading feed...</div>}><FeedContent /></Suspense>
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-neutral-900 flex items-center justify-center text-white">Loading...</div>}>
+      <FeedContent />
+    </Suspense>
+  )
 }
