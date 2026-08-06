@@ -18,6 +18,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   const [postId, setPostId] = useState<string>('')
   const [isEnding, setIsEnding] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string>('')
   const chunksRef = useRef<Blob[]>([])
   const supabase = createClient()
 
@@ -94,6 +95,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
                 const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}` 
                 
                 const { error: updateError } = await supabase.from('posts').update({ 
+                  setUploadedVideoUrl(videoUrl)
                   media_url: videoUrl, 
                   video_url: videoUrl, 
                   tag: 'live_ended', 
@@ -137,9 +139,9 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
         body: JSON.stringify({ postId, roomName }) 
       }) 
     } catch (error) {
-      console.error('Error ending LiveKit room:', error)
+     if (postId) onLiveEnded(postId, uploadedVideoUrl)
     }
-
+setUploadedVideoUrl('')
    if (postId) onLiveEnded(postId, videoUrl)
     setOpen(false); setToken(''); setRoomName(''); setPostId(''); chunksRef.current = []; setIsEnding(false)
   }
