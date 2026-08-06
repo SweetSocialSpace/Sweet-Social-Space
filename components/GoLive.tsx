@@ -4,11 +4,9 @@ import { createClient } from '@/lib/supabase/client'
 import {
   LiveKitRoom,
   RoomAudioRenderer,
-  useRoomContext,
 } from '@livekit/components-react'
 
 function HostBroadcastView() {
-  const room = useRoomContext()
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const [hasCamera, setHasCamera] = useState(false)
@@ -17,41 +15,50 @@ function HostBroadcastView() {
     if (!videoRef.current) return
 
     let mounted = true
-    const setupLocalPreview = async () => {
+
+    const setupCamera = async () => {
       try {
-        const s = await navigator.mediaDevices.getUserMedia({
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
           video: { width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: true,
         })
+
         if (!mounted) {
-          s.getTracks().forEach((t) => t.stop())
+          mediaStream.getTracks().forEach((track) => track.stop())
           return
         }
-        streamRef.current = s
+
+        streamRef.current = mediaStream
         if (videoRef.current) {
-          videoRef.current.srcObject = s
+          videoRef.current.srcObject = mediaStream
           setHasCamera(true)
         }
       } catch (err) {
-        console.error('Preview getUserMedia failed:', err)
+        console.error('Camera setup failed:', err)
       }
     }
 
-    setupLocalPreview()
+    setupCamera()
 
     return () => {
       mounted = false
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop())
+        streamRef.current.getTracks().forEach((track) => track.stop())
         streamRef.current = null
       }
     }
-  }, [room])
+  }, [])
 
   return (
     <div className="relative w-full h-full bg-black">
       {hasCamera ? (
-        <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className="w-full h-full object-cover"
+        />
       ) : (
         <div className="flex items-center justify-center h-full">
           <p className="text-white">Starting camera...</p>
@@ -66,7 +73,6 @@ export default function GoLive(props: any) {
   const [streaming, setStreaming] = useState(false)
   const [error, setError] = useState('')
   const [token, setToken] = useState('')
-  const [roomName, setRoomName] = useState('')
   const [postId, setPostId] = useState<string | null>(null)
 
   const supabase = createClient()
@@ -75,21 +81,24 @@ export default function GoLive(props: any) {
 
   const goLive = async () => {
     try {
-      // prompt camera/mic permission
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      // stop preview tracks now; LiveKitRoom will publish
-      stream.getTracks().forEach((t) => t.stop())
+      // Request camera/mic permission
+      const permissionStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      })
+      permissionStream.getTracks().forEach((track) => track.stop())
 
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser()
-      const uid = user?.id || props.userId
-      if (!uid) {
+      if (!user) {
         setError('Please login first')
         return
       }
 
+      const uid = user.id
       const newRoomName = `live-${zip || 'GLOBAL'}-${Date.now()}`
-      setRoomName(newRoomName)
 
+      // Get LiveKit token
       const tokenRes = await fetch('/api/livekit/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,15 +110,15 @@ export default function GoLive(props: any) {
       })
 
       if (!tokenRes.ok) {
-        const err = await tokenRes.json().catch(() => null)
-        setError(err?.error || 'Failed to get token')
+        const data = await tokenRes.json()
+        setError(data.error || 'Failed to get token')
         return
       }
 
       const tokenData = await tokenRes.json()
-      setToken(tokenData.token)
 
-      const payload: any = {
+      // Create post in database
+      const postPayload = {
         body: `LIVE NOW from ${city || 'your area'} - ${new Date().toLocaleString()}`,
         tag: 'live',
         category: 'general',
@@ -118,22 +127,34 @@ export default function GoLive(props: any) {
         livekit_room: newRoomName,
       }
 
-      const { data, error } = await supabase.from('posts').insert(payload).select().single()
-      if (error) {
-        console.error('Database insert error:', error)
-        setError('Database error: ' + error.message)
+      const { data: postData, error: postError } = await supabase
+        .from('posts')
+        .insert(postPayload)
+        .select()
+        .single()
+
+      if (postError) {
+        console.error('Post creation error:', postError)
+        setError('Failed to create post: ' + postError.message)
         return
       }
 
-      if (data) {
-        setPostId(data.id)
-        setStreaming(true)
-        if (props.onLivePosted) props.onLivePosted(data)
+      if (!postData) {
+        setError('Failed to create post')
+        return
+      }
+
+      setPostId(postData.id)
+      setToken(tokenData.token)
+      setStreaming(true)
+
+      if (props.onLivePosted) {
+        props.onLivePosted(postData)
       }
     } catch (err: any) {
       console.error('Go live error:', err)
       if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
-        setError('Camera/microphone permission denied. Please allow access in your browser settings.')
+        setError('Camera/microphone permission denied. Please allow access in browser settings.')
       } else {
         setError('Failed to start live stream: ' + (err?.message || String(err)))
       }
@@ -142,18 +163,27 @@ export default function GoLive(props: any) {
   }
 
   const endLive = async () => {
-    try {
-      if (postId) {
-        await supabase.from('posts').update({ tag: 'live_ended', ended_at: new Date().toISOString() }).eq('id', postId)
+    if (postId) {
+      try {
+        const res = await fetch('/api/livekit/end', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ postId }),
+        })
+
+        if (!res.ok) {
+          const data = await res.json()
+          console.error('End live error:', data.error)
+        }
+      } catch (err) {
+        console.error('End live fetch error:', err)
       }
-    } catch (err) {
-      console.error('Error ending live:', err)
-    } finally {
-      setStreaming(false)
-      setToken('')
-      setPostId(null)
-      setError('')
     }
+
+    setStreaming(false)
+    setToken('')
+    setPostId(null)
+    setError('')
   }
 
   const handleDisconnect = () => {
@@ -177,22 +207,38 @@ export default function GoLive(props: any) {
       <div className="bg-neutral-900 rounded-2xl w-full max-w-4xl p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
           <span className="text-white font-bold text-lg">🔴 LIVE in {city}</span>
-          <button onClick={endLive} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base font-bold">
+          <button
+            onClick={endLive}
+            className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base font-bold"
+          >
             X
           </button>
         </div>
 
-        {error && <div className="bg-red-900/20 border border-red-600 text-red-400 p-3 rounded-lg mb-4 text-sm">{error}</div>}
+        {error && (
+          <div className="bg-red-900/20 border border-red-600 text-red-400 p-3 rounded-lg mb-4 text-sm">
+            {error}
+          </div>
+        )}
 
         <div className="aspect-video bg-black rounded-xl overflow-hidden">
           {token && (
-            <LiveKitRoom token={token} serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL} connect={true} onDisconnected={handleDisconnect} video={true} audio={true}>
+            <LiveKitRoom
+              token={token}
+              serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+              connect={true}
+              onDisconnected={handleDisconnect}
+              video={true}
+              audio={true}
+            >
               <HostBroadcastView />
             </LiveKitRoom>
           )}
         </div>
 
-        <div className="mt-3 text-center text-neutral-500 text-xs">You are broadcasting live</div>
+        <div className="mt-3 text-center text-neutral-500 text-xs">
+          You are broadcasting live
+        </div>
       </div>
     </div>
   )
