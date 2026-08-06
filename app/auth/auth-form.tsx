@@ -22,12 +22,12 @@ export default function AuthForm() {
       const safeZip = (zip && zip.toUpperCase()!=='YOUR BLOCK' && zip.trim()!=='' )? zip : 'GLOBAL'
       const safeCity = city || ''
 
-      const { data, error } = isSignUp
+            const { data, error } = isSignUp
        ? await supabase.auth.signUp({
             email: email.trim(),
             password,
             options: {
-              data: { zip_code: safeZip, zip: safeZip, city: safeCity, country: country || 'US' }
+              data: { zip_code: safeZip, zip: safeZip, city: safeCity, country: country || '' }
             }
           })
         : await supabase.auth.signInWithPassword({ email: email.trim(), password })
