@@ -20,20 +20,15 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   const supabase = createClient()
 
   const startLive = async () => {
-    // Use exactly what the feed gives us - which is the user's zip, whatever it is in the world
     const cleanZip = zipCode || 'GLOBAL'
-    const cleanCity = city || ''
-
     const rName = `live-${Date.now()}`
     setRoomName(rName)
     const res = await fetch('/api/livekit/token', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ roomName: rName, participantName: userId||'host', role: 'host' }) })
     const data = await res.json()
     setToken(data.token)
 
-   // Remove zip code from city string if it exists
-const cleanCityOnly = cleanCity.replace(/^[\d,]+,\s*/, '').replace(/^[0-9]+,\s*/, '')
-const bodyText = `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
-    
+    const bodyText = `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
+
     const { data: post } = await supabase.from('posts').insert({
       user_id: userId,
       body: bodyText,
@@ -45,7 +40,7 @@ const bodyText = `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
     if (post) { setPostId(post.id); onLivePosted(post) }
     setOpen(true)
 
-    // Start LiveKit egress recording (server-side, no 50MB limit)
+    // Start LiveKit egress recording
     setTimeout(async () => {
       try {
         const egressRes = await fetch('/api/livekit/egress/start', { 
@@ -80,8 +75,7 @@ const bodyText = `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
     }
 
     // Update post to mark as ended
-   const cleanCityOnly = city.replace(/^[\d,]+,\s*/, '').replace(/^[0-9]+,\s*/, '')
-   const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+    const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
     await supabase.from('posts').update({ 
       tag: 'live_ended', 
       body: wasBody 
@@ -108,7 +102,7 @@ const bodyText = `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
       <div className="bg-neutral-900 rounded-2xl w-full max-w-2xl p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-white font-bold">🔴 Live - {zipCode} {city? `, ${city}` : ''}</span>
+          <span className="text-white font-bold">🔴 Live - {zipCode}</span>
           <button onClick={endLive} className="bg-red-600 text-white px-6 py-2 rounded-full font-bold text-sm">End Live - Save Replay</button>
         </div>
         {token && <LiveKitRoom token={token} serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL} connect audio video><MyVideo /></LiveKitRoom>}
