@@ -26,19 +26,19 @@ function HostBroadcastView() {
       if (isAttached) return
 
       try {
-        const videoPubs = localParticipant.videoTrackPublications
-        if (videoPubs.length > 0) {
-          const publication = videoPubs[0]
-          if (publication.track) {
-            publication.track.attach(videoEl)
-            isAttached = true
-            setHasCamera(true)
-            return
-          }
-        }
-      } catch (error) {
-        console.error('Camera attach error:', error)
-      }
+  const videoPubs = Array.from(localParticipant.videoTrackPublications.values())
+  if (videoPubs.length > 0) {
+    const publication = videoPubs[0]
+    if (publication.track) {
+      publication.track.attach(videoEl)
+      isAttached = true
+      setHasCamera(true)
+      return
+    }
+  }
+} catch (error) {
+  console.error('Camera attach error:', error)
+}
 
       if (!isAttached) {
         attachTimeout = setTimeout(attachCamera, 100)
@@ -60,10 +60,10 @@ function HostBroadcastView() {
       room.off(RoomEvent.TrackSubscribed, handleTrackSubscribed)
       if (isAttached && videoEl) {
         try {
-          const videoPubs = localParticipant.videoTrackPublications
-          if (videoPubs.length > 0) {
-            videoPubs[0].track?.detach(videoEl)
-          }
+         const videoPubs = Array.from(localParticipant.videoTrackPublications.values())
+if (videoPubs.length > 0) {
+  videoPubs[0].track?.detach(videoEl)
+}
         } catch (error) {
           console.error('Camera detach error:', error)
         }
