@@ -134,18 +134,18 @@ function FeedContent() {
                 <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                   <p className="text-black whitespace-pre-wrap break-words leading-6">{displayBody}</p>
                   {p.tag === 'live' && p.livekit_room && <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 Join Live Stream</button>}
-                  {isEnded && (
-  <>
-    {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
-      <video 
-        controls 
-        className="mt-3 w-full rounded-xl"
-        src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])}
-      />
-    )}
-    <div className="mt-3 text-xs text-white bg-gray-800 rounded-full px-3 py-2 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
-  </>
-)}
+                   {isEnded && (
+                    <>
+                      {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
+                        <video 
+                          controls 
+                          className="mt-3 w-full rounded-xl"
+                          src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])}
+                        />
+                      )}
+                      <div className="mt-3 text-xs text-white bg-gray-800 rounded-full px-3 py-2 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
+                    </>
+                  )}
                   <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
                   {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
                 </div>
