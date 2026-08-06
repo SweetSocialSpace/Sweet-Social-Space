@@ -117,19 +117,10 @@ export function useLocationScope() {
     } finally { setPrompting(false) }
   }, [setManualLocation, zip])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (state.latitude!= null && state.longitude!= null) return
-    const askedKey = 'sss.geo-auto-asked.v1'
-    if (window.localStorage.getItem(askedKey)) return
-    window.localStorage.setItem(askedKey, '1')
-    setState((prev) => {
-      const next = {...prev, scope: '5mi' as ScopeKind }
-      saveToStorage(next)
-      return next
-    })
-    requestGeolocation()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+    // DISABLED - No automatic GPS detection per user request
+    // Platform should only use zip codes, not automatic GPS detection
+    console.log('Automatic GPS detection disabled - using zip codes only')
   }, [])
 
   const filter: LocationFilter = {
