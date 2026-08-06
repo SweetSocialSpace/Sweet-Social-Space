@@ -114,7 +114,13 @@ function FeedContent() {
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
-             <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city="" onLivePosted={handleLivePosted} onLiveEnded={(id, url) => handleLiveEnded(id, url)} />
+            <GoLive 
+  userId={currentUserId || undefined} 
+  zipCode={nearZip || 'GLOBAL'} 
+  city="" 
+  onLivePosted={handleLivePosted} 
+  onLiveEnded={handleLiveEnded} 
+/>
             </div>
           </div>
 
