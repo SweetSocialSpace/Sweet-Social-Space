@@ -53,8 +53,11 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
     }, 1000)
   }
 
-  const endLive = async () => {
+    const endLive = async () => {
+    console.log('endLive called, recorder state:', mediaRecorderRef.current?.state)
+    
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      console.log('Stopping recorder...')
       await new Promise<void>(resolve => {
         mediaRecorderRef.current!.onstop = async () => {
           try {
@@ -69,6 +72,11 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
                 upsert: true, 
                 contentType: 'video/webm' 
               })
+              
+              console.log('Upload result:', uploadError ? 'FAILED' : 'SUCCESS')
+              if (uploadError) {
+                console.error('Upload error details:', uploadError)
+              }
               
               if (!uploadError) {
                 const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName)
