@@ -78,13 +78,13 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
               const fileName = `${roomName}-${Date.now()}.webm`
               console.log('Uploading video:', fileName)
               
-              const { error: uploadError } = await supabase.storage.from('live-replays').upload(fileName, blob, { 
+              const { error: uploadError } = await supabase.storage.from('videos').upload(fileName, blob, { 
                 upsert: true, 
                 contentType: 'video/webm' 
               })
               
               if (!uploadError) {
-                const { data: urlData } = supabase.storage.from('live-replays').getPublicUrl(fileName)
+                const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName)
                 const videoUrl = urlData.publicUrl
                 console.log('Video uploaded successfully:', videoUrl)
                 
