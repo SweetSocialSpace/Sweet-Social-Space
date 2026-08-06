@@ -4,22 +4,37 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function POST(req: NextRequest) {
   try {
-    const { egressId, postId } = await req.json()
+    const { egressId, postId, roomName } = await req.json()
+    
+    // Stop LiveKit egress if configured
     if (process.env.LIVEKIT_API_KEY && process.env.LIVEKIT_API_SECRET && process.env.LIVEKIT_URL && egressId) {
       try {
         const egressClient = new EgressClient(process.env.LIVEKIT_URL, process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET)
         await egressClient.stopEgress(egressId)
-      } catch {}
+        console.log('LiveKit egress stopped:', egressId)
+      } catch (error) {
+        console.error('Error stopping LiveKit egress:', error)
+      }
     }
-    // Save video URL to post so it can be watched later
+    
+    // Update post to mark as ended - video URL will be set by client-side recording
     if (postId) {
       const supabase = createClient()
-      const videoUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/live-replays/live-replays/${req.json?.toString() || ''}`
-      // For now just mark as ended, video will appear after processing
-      await supabase.from('posts').update({ tag: 'live_ended' }).eq('id', postId)
+      try {
+        // Mark as ended - client will upload video and update with URL
+        await supabase.from('posts').update({ 
+          tag: 'live_ended',
+          // The video URL will be updated by the client after upload
+        }).eq('id', postId)
+        console.log('Post marked as ended:', postId)
+      } catch (error) {
+        console.error('Error updating post:', error)
+      }
     }
+    
     return NextResponse.json({ ok: true })
   } catch (err: any) {
-    return NextResponse.json({ ok: true })
+    console.error('Error in egress stop:', err)
+    return NextResponse.json({ ok: true, error: err.message })
   }
 }
