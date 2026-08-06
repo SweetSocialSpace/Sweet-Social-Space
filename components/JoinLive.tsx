@@ -1,14 +1,12 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   LiveKitRoom,
   RoomAudioRenderer,
-  VideoTrack,
-  useTracks,
   useRoomContext,
 } from '@livekit/components-react'
-import { Track } from 'livekit-client'
+import { Track, RoomEvent } from 'livekit-client'
 
 // Force viewer's mic and camera OFF the moment they connect
 function ViewerOnlyEnforcer() {
@@ -41,20 +39,61 @@ function ViewerOnlyEnforcer() {
 
 // Shows ONLY the host's video (the person who is broadcasting)
 function HostStreamView() {
-  const tracks = useTracks(
-    [{ source: Track.Source.Camera, withPlaceholder: false }],
-    { onlySubscribed: true }
-  )
+  const room = useRoomContext()
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [hasVideo, setHasVideo] = useState(false)
 
-  const hostCamera = tracks.find((t) => !t.participant.isLocal)
+  useEffect(() => {
+    const videoEl = videoRef.current
+    if (!videoEl || !room) return
 
-  if (!hostCamera) {
+    const attachHostVideo = () => {
+      for (const participant of room.remoteParticipants.values()) {
+        const publication = participant.getTrackPublication(Track.Source.Camera)
+        if (publication?.track) {
+          publication.track.attach(videoEl)
+          setHasVideo(true)
+          return
+        }
+      }
+    }
+
+    attachHostVideo()
+
+    const onTrackSubscribed = () => {
+      attachHostVideo()
+    }
+
+    room.on(RoomEvent.TrackSubscribed, onTrackSubscribed)
+
+    return () => {
+      room.off(RoomEvent.TrackSubscribed, onTrackSubscribed)
+      for (const participant of room.remoteParticipants.values()) {
+        const publication = participant.getTrackPublication(Track.Source.Camera)
+        publication?.track?.detach(videoEl)
+      }
+    }
+  }, [room])
+
+  if (!hasVideo) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-white">Waiting for stream to start...</p>
       </div>
     )
   }
+
+  return (
+    <div className="relative w-full h-full">
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        className="w-full h-full object-cover"
+      />
+    </div>
+  )
+}
 
   return (
     <div className="relative w-full h-full">
