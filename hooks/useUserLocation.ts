@@ -91,18 +91,11 @@ export function useUserLocation(userId: string | undefined) {
     }catch(e:any){try{setError(e?.message||"Couldn't get location.")}catch{}}finally{try{setPrompting(false)}catch{}}
   },[saveLocation])
 
-  useEffect(()=>{
-    try{
-      if(!ready) return
-      if(loc.latitude!==null&&loc.longitude!==null) return
-      if(prompting) return
-      if(typeof window==='undefined') return
-      let hasTried=null;try{hasTried=sessionStorage.getItem('auto-geo-tried')}catch{}
-      if(hasTried) return
-      try{sessionStorage.setItem('auto-geo-tried','1')}catch{}
-      requestGeolocation()
-    }catch{}
-  },[ready,loc.latitude,loc.longitude,prompting,requestGeolocation])
+    useEffect(()=>{
+    // DISABLED - No automatic GPS detection per user request
+    // Platform should only use zip codes, not automatic GPS detection
+    console.log('Automatic GPS detection disabled - using zip codes only')
+  },[])
 
   return {loc,ready,prompting,error,requestGeolocation,saveLocation}
 }
