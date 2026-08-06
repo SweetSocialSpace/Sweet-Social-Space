@@ -206,7 +206,7 @@ function FeedContent() {
               <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <p className="text-black whitespace-pre-wrap break-words leading-6">{p.body || p.content}</p>
                 {/* Live stream join button */}
-                {p.tag === 'live' && p.livekit_room && (
+               {p.tag === 'live' && p.livekit_room && p.status === 'live' && (
                   <button 
                     onClick={() => setJoinLivePost(p)}
                     className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm border-none cursor-pointer w-full"
