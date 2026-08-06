@@ -48,14 +48,21 @@ function HostStreamView() {
     if (!videoEl || !room) return
 
     const attachHostVideo = () => {
-      for (const participant of room.remoteParticipants.values()) {
-        const publication = participant.getTrackPublication(Track.Source.Camera)
-        if (publication?.track) {
-          publication.track.attach(videoEl)
-          setHasVideo(true)
-          return
-        }
-      }
+     for (const participant of Array.from(room.remoteParticipants.values())) {
+
+const publication = participant.getTrackPublication(Track.Source.Camera)
+
+if (publication?.track) {
+
+publication.track.attach(videoEl)
+
+setHasVideo(true)
+
+return
+
+}
+
+}
     }
 
     attachHostVideo()
