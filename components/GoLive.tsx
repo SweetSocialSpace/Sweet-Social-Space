@@ -56,37 +56,88 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
     }, 1000)
   }
 
-  const endLive = async () => {
+    const endLive = async () => {
+    // First try to stop LiveKit egress recording
+    try {
+      await fetch('/api/livekit/egress/stop', { 
+        method:'POST', 
+        headers:{'Content-Type':'application/json'}, 
+        body: JSON.stringify({ postId, roomName }) 
+      })
+    } catch {}
+
+    // Then handle local recording as backup
     if (mediaRecorderRef.current && mediaRecorderRef.current.state!== 'inactive') {
       await new Promise<void>(resolve => {
         mediaRecorderRef.current!.onstop = async () => {
           try {
             const blob = new Blob(chunksRef.current, { type: 'video/webm' })
+            console.log('Recording size:', blob.size, 'bytes')
+            
             if (blob.size > 1000 && postId) {
-              const fileName = `${roomName}.webm`
-              const { error } = await supabase.storage.from('live-replays').upload(fileName, blob, { upsert: true, contentType: 'video/webm' })
-              if (!error) {
-                const { data } = supabase.storage.from('live-replays').getPublicUrl(fileName)
+              const fileName = `${roomName}-${Date.now()}.webm`
+              console.log('Uploading video:', fileName)
+              
+              const { error: uploadError } = await supabase.storage.from('live-replays').upload(fileName, blob, { 
+                upsert: true, 
+                contentType: 'video/webm' 
+              })
+              
+              if (!uploadError) {
+                const { data: urlData } = supabase.storage.from('live-replays').getPublicUrl(fileName)
+                const videoUrl = urlData.publicUrl
+                console.log('Video uploaded successfully:', videoUrl)
+                
                 const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
-                await supabase.from('posts').update({ media_url: data.publicUrl, video_url: data.publicUrl, tag: 'live_ended', body: wasBody }).eq('id', postId)
+                
+                // Update post with video URL and mark as ended
+                const { error: updateError } = await supabase.from('posts').update({ 
+                  media_url: videoUrl, 
+                  video_url: videoUrl, 
+                  tag: 'live_ended', 
+                  body: wasBody,
+                  media_urls: [videoUrl]
+                }).eq('id', postId)
+                
+                if (updateError) {
+                  console.error('Error updating post:', updateError)
+                } else {
+                  console.log('Post updated successfully with video')
+                }
               } else {
+                console.error('Error uploading video:', uploadError)
+                // Still mark as ended even if video upload fails
                 const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
                 await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
               }
             } else if (postId) {
+              console.log('Video too small or no post ID')
               const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
               await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
             }
-          } catch {}
+          } catch (error) {
+            console.error('Error in recording stop handler:', error)
+          }
           resolve()
         }
         mediaRecorderRef.current!.stop()
         mediaRecorderRef.current!.stream.getTracks().forEach(t=>t.stop())
       })
     } else if (postId) {
+      console.log('No active recorder, just marking as ended')
       const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
       await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
-      try { await fetch('/api/livekit/end', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ postId, roomName }) }) } catch {}
+    }
+
+    // End the LiveKit room
+    try { 
+      await fetch('/api/livekit/end', { 
+        method:'POST', 
+        headers:{'Content-Type':'application/json'}, 
+        body: JSON.stringify({ postId, roomName }) 
+      }) 
+    } catch (error) {
+      console.error('Error ending LiveKit room:', error)
     }
 
     if (postId) onLiveEnded(postId)
