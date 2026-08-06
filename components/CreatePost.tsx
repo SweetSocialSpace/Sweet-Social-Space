@@ -43,14 +43,15 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   useEffect(()=>{ return ()=> { try { stopMic() } catch {} } },[])
 
-  const toggleMic = async () => {
+    const toggleMic = async () => {
     if(listening){ try { stopMic(); if(finalRef.current) setBody(makeLegible(finalRef.current)) } catch {}; return }
     killedRef.current = false
     const SR: any = typeof window!== 'undefined'? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition : null
-    if(SR && SR.available){ try{ const status = await SR.available({ langs: ["en-US"], processLocally: true }); if(status === "unavailable"){ startRecordingFallback(); return } }catch{} }
+    const userLang = typeof window!== 'undefined' ? navigator.language || 'en-US' : 'en-US'
+    if(SR && SR.available){ try{ const status = await SR.available({ langs: [userLang], processLocally: true }); if(status === "unavailable"){ startRecordingFallback(); return } }catch{} }
     if(SR){
       try{
-        const rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = 'en-US'; recRef.current = rec; finalRef.current = body? body + ' ' : ''
+        const rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = userLang; recRef.current = rec; finalRef.current = body? body + ' ' : ''
         rec.onstart = () => { if(!killedRef.current) setListening(true) }
         rec.onend = () => { setListening(false); if(!killedRef.current && finalRef.current) setBody(makeLegible(finalRef.current)) }
         rec.onresult = (e:any)=>{ if(killedRef.current) return; let interim = ''; for(let i=e.resultIndex; i<e.results.length; i++){ const t = e.results[i][0].transcript; if(!t) continue; if(e.results[i].isFinal){ const clean = t.trim(); if(clean &&!finalRef.current.toLowerCase().endsWith(clean.toLowerCase())){ finalRef.current = (finalRef.current + ' ' + clean).trim() + ' ' } } else { interim = t.trim() } }; const display = (finalRef.current + ' ' + interim).trim(); if(display) setBody(display) }
