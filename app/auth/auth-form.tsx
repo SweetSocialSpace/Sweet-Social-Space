@@ -34,18 +34,13 @@ export default function AuthForm() {
 
       if (error) throw error
 
-      if (isSignUp && data?.user) {
+            if (isSignUp && data?.user) {
         try {
+          // NO IP fallback - pure zip code based as requested
           let finalZip = safeZip
           let finalCity = safeCity
-          if (safeZip === 'GLOBAL') {
-            try {
-              const ip = await fetch('https://ipapi.co/json/').then(r=>r.json()).catch(()=>null)
-              if (ip?.postal) { finalZip = ip.postal; finalCity = ip.city || '' }
-            } catch {}
-          }
           
-                    await supabase.from('profiles').upsert({
+          await supabase.from('profiles').upsert({
             id: data.user.id,
             user_id: data.user.id,
             zip_code: finalZip,
