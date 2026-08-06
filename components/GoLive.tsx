@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LiveKitRoom, VideoTrack, useTracks } from '@livekit/components-react'
 import { Track } from 'livekit-client'
@@ -7,7 +7,7 @@ import { Track } from 'livekit-client'
 function MyVideo() {
   const tracks = useTracks([Track.Source.Camera])
   const trackRef = tracks[0]
-  if (!trackRef) return <div className="aspect-video bg-black rounded-xl flex items-center justify-center text-white">Camera off</div>
+  if (!trackRef) return <div className="aspect-video bg-black rounded-xl flex items-center justify-center text-white">Starting camera...</div>
   return <VideoTrack trackRef={trackRef} className="w-full aspect-video rounded-xl bg-black object-cover" />
 }
 
@@ -16,33 +16,81 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   const [token, setToken] = useState('')
   const [roomName, setRoomName] = useState('')
   const [postId, setPostId] = useState<string>('')
-  const [egressId, setEgressId] = useState<string>('')
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
   const supabase = createClient()
 
   const startLive = async () => {
-    const rName = `live-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    // Use exactly what the feed gives us - which is the user's zip, whatever it is in the world
+    const cleanZip = zipCode || 'GLOBAL'
+    const cleanCity = city || ''
+
+    const rName = `live-${Date.now()}`
     setRoomName(rName)
     const res = await fetch('/api/livekit/token', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ roomName: rName, participantName: userId||'host', role: 'host' }) })
     const data = await res.json()
     setToken(data.token)
-    const { data: post } = await supabase.from('posts').insert({ user_id: userId, body: `LIVE NOW from ${city} - ${new Date().toLocaleString()}`, tag: 'live', zip_code: zipCode, livekit_room: rName }).select().single()
+
+    const bodyText = cleanCity? `LIVE NOW from ${cleanZip}, ${cleanCity} - ${new Date().toLocaleString()}` : `LIVE NOW from ${cleanZip} - ${new Date().toLocaleString()}`
+
+    const { data: post } = await supabase.from('posts').insert({
+      user_id: userId,
+      body: bodyText,
+      tag: 'live',
+      zip_code: cleanZip,
+      livekit_room: rName
+    }).select().single()
+
     if (post) { setPostId(post.id); onLivePosted(post) }
-    // Start recording to bucket
-    try {
-      const eg = await fetch('/api/livekit/egress/start', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ roomName: rName, postId: post?.id }) })
-      const egData = await eg.json()
-      if (egData.egressId) setEgressId(egData.egressId)
-    } catch {}
     setOpen(true)
+
+    setTimeout(async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' })
+        chunksRef.current = []
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+        recorder.start(1000)
+        mediaRecorderRef.current = recorder
+      } catch {}
+    }, 1000)
   }
 
   const endLive = async () => {
-    try {
-      if (egressId) await fetch('/api/livekit/egress/stop', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ egressId, postId, roomName }) })
-      await fetch('/api/livekit/end', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ postId, roomName }) })
-      if (postId) onLiveEnded(postId)
-    } catch {}
-    setOpen(false); setToken(''); setRoomName(''); setPostId(''); setEgressId('')
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state!== 'inactive') {
+      await new Promise<void>(resolve => {
+        mediaRecorderRef.current!.onstop = async () => {
+          try {
+            const blob = new Blob(chunksRef.current, { type: 'video/webm' })
+            if (blob.size > 1000 && postId) {
+              const fileName = `${roomName}.webm`
+              const { error } = await supabase.storage.from('live-replays').upload(fileName, blob, { upsert: true, contentType: 'video/webm' })
+              if (!error) {
+                const { data } = supabase.storage.from('live-replays').getPublicUrl(fileName)
+                const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+                await supabase.from('posts').update({ media_url: data.publicUrl, video_url: data.publicUrl, tag: 'live_ended', body: wasBody }).eq('id', postId)
+              } else {
+                const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+                await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
+              }
+            } else if (postId) {
+              const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+              await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
+            }
+          } catch {}
+          resolve()
+        }
+        mediaRecorderRef.current!.stop()
+        mediaRecorderRef.current!.stream.getTracks().forEach(t=>t.stop())
+      })
+    } else if (postId) {
+      const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+      await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
+      try { await fetch('/api/livekit/end', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ postId, roomName }) }) } catch {}
+    }
+
+    if (postId) onLiveEnded(postId)
+    setOpen(false); setToken(''); setRoomName(''); setPostId(''); chunksRef.current = []
   }
 
   if (!open) return <button onClick={startLive} className="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs">Go Live</button>
@@ -50,9 +98,12 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
       <div className="bg-neutral-900 rounded-2xl w-full max-w-2xl p-5 border border-neutral-700">
-        <div className="flex justify-between items-center mb-4"><span className="text-white font-bold">🔴 Live - {city}</span><button onClick={endLive} className="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-sm">End Live</button></div>
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-white font-bold">🔴 Live - {zipCode} {city? `, ${city}` : ''}</span>
+          <button onClick={endLive} className="bg-red-600 text-white px-6 py-2 rounded-full font-bold text-sm">End Live - Save Replay</button>
+        </div>
         {token && <LiveKitRoom token={token} serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL} connect audio video><MyVideo /></LiveKitRoom>}
-        <div className="text-xs text-neutral-400 mt-3">Recording to replays - viewers can watch later. Click End Live and it will become Was Live with replay.</div>
+        <div className="text-xs text-white/60 mt-3">Live in {zipCode} - worldwide - video will be saved for replay.</div>
       </div>
     </div>
   )
