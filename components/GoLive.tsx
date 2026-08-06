@@ -4,53 +4,40 @@ import { createClient } from '@/lib/supabase/client'
 import {
   LiveKitRoom,
   RoomAudioRenderer,
+  useLocalParticipant,
 } from '@livekit/components-react'
+import { Track } from 'livekit-client'
 
+// Host-only view — shows ONLY the broadcaster's camera (not viewers)
 function HostBroadcastView() {
-  const videoRef = useRef<HTMLVideoElement | null>(null)
-  const streamRef = useRef<MediaStream | null>(null)
+  const { localParticipant } = useLocalParticipant()
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [hasCamera, setHasCamera] = useState(false)
 
   useEffect(() => {
-    if (!videoRef.current) return
+    const videoEl = videoRef.current
+    if (!videoEl || !localParticipant) return
 
-    let mounted = true
-
-    const setupCamera = async () => {
-      try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: true,
-        })
-
-        if (!mounted) {
-          mediaStream.getTracks().forEach((track) => track.stop())
-          return
-        }
-
-        streamRef.current = mediaStream
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream
-          setHasCamera(true)
-        }
-      } catch (err) {
-        console.error('Camera setup failed:', err)
+    const attachCamera = () => {
+      const publication = localParticipant.getTrackPublication(Track.Source.Camera)
+      if (publication?.track) {
+        publication.track.attach(videoEl)
+        setHasCamera(true)
       }
     }
 
-    setupCamera()
+    attachCamera()
+    localParticipant.on('localTrackPublished', attachCamera)
 
     return () => {
-      mounted = false
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop())
-        streamRef.current = null
-      }
+      localParticipant.off('localTrackPublished', attachCamera)
+      const publication = localParticipant.getTrackPublication(Track.Source.Camera)
+      publication?.track?.detach(videoEl)
     }
-  }, [])
+  }, [localParticipant])
 
   return (
-    <div className="relative w-full h-full bg-black">
+    <div className="relative w-full h-full">
       {hasCamera ? (
         <video
           ref={videoRef}
@@ -70,10 +57,11 @@ function HostBroadcastView() {
 }
 
 export default function GoLive(props: any) {
+  const [open, setOpen] = useState(false)
   const [streaming, setStreaming] = useState(false)
   const [error, setError] = useState('')
   const [token, setToken] = useState('')
-  const [postId, setPostId] = useState<string | null>(null)
+  const [roomName, setRoomName] = useState('')
 
   const supabase = createClient()
   const zip = props.zipCode
@@ -81,24 +69,19 @@ export default function GoLive(props: any) {
 
   const goLive = async () => {
     try {
-      // Request camera/mic permission
-      const permissionStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      })
-      permissionStream.getTracks().forEach((track) => track.stop())
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      stream.getTracks().forEach((track) => track.stop())
 
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
+      const uid = user?.id || props.userId
+      if (!uid) {
         setError('Please login first')
         return
       }
 
-      const uid = user.id
-      const newRoomName = `live-${zip || 'GLOBAL'}-${Date.now()}`
+      const newRoomName = `live-${zip}-${Date.now()}`
+      setRoomName(newRoomName)
 
-      // Get LiveKit token
       const tokenRes = await fetch('/api/livekit/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -110,91 +93,60 @@ export default function GoLive(props: any) {
       })
 
       if (!tokenRes.ok) {
-        const data = await tokenRes.json()
-        setError(data.error || 'Failed to get token')
+        const errorData = await tokenRes.json()
+        setError(errorData.error || 'Failed to get token')
         return
       }
 
       const tokenData = await tokenRes.json()
+      setToken(tokenData.token)
+      setStreaming(true)
 
-      // Create post in database
-      const postPayload = {
-        body: `LIVE NOW from ${city || 'your area'} - ${new Date().toLocaleString()}`,
+      const payload: any = {
+        body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
         tag: 'live',
         category: 'general',
         zip_code: zip || 'GLOBAL',
         user_id: uid,
         livekit_room: newRoomName,
       }
+      const { data, error } = await supabase.from('posts').insert(payload).select().single()
 
-      const { data: postData, error: postError } = await supabase
-        .from('posts')
-        .insert(postPayload)
-        .select()
-        .single()
-
-      if (postError) {
-        console.error('Post creation error:', postError)
-        setError('Failed to create post: ' + postError.message)
+      if (error) {
+        console.error('Database insert error:', error)
+        setError('Database error: ' + error.message + ' (Code: ' + error.code + ')')
+        setStreaming(false)
         return
       }
 
-      if (!postData) {
-        setError('Failed to create post')
-        return
-      }
-
-      setPostId(postData.id)
-      setToken(tokenData.token)
-      setStreaming(true)
-
-      if (props.onLivePosted) {
-        props.onLivePosted(postData)
-      }
+      if (props.onLivePosted && data) props.onLivePosted(data)
     } catch (err: any) {
       console.error('Go live error:', err)
-      if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
-        setError('Camera/microphone permission denied. Please allow access in browser settings.')
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setError('Camera/microphone permission denied. Please allow access in your browser settings.')
       } else {
-        setError('Failed to start live stream: ' + (err?.message || String(err)))
+        setError('Failed to start live stream: ' + err.message)
       }
       setStreaming(false)
     }
   }
 
   const endLive = async () => {
-    if (postId) {
-      try {
-        const res = await fetch('/api/livekit/end', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ postId }),
-        })
-
-        if (!res.ok) {
-          const data = await res.json()
-          console.error('End live error:', data.error)
-        }
-      } catch (err) {
-        console.error('End live fetch error:', err)
-      }
-    }
-
     setStreaming(false)
     setToken('')
-    setPostId(null)
-    setError('')
+    setOpen(false)
   }
 
   const handleDisconnect = () => {
+    console.log('LiveKit disconnected normally')
     endLive()
   }
 
-  if (!streaming) {
+  if (!open) {
     return (
       <button
         type="button"
-        onClick={goLive}
+        onClick={() => setOpen(true)}
         className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold"
       >
         Go Live
@@ -206,10 +158,12 @@ export default function GoLive(props: any) {
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-5">
       <div className="bg-neutral-900 rounded-2xl w-full max-w-4xl p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-white font-bold text-lg">🔴 LIVE in {city}</span>
+          <span className="text-white font-bold text-lg">
+            {streaming ? '🔴 LIVE' : 'Go Live in ' + city}
+          </span>
           <button
-            onClick={endLive}
-            className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base font-bold"
+            onClick={() => { setOpen(false); if (streaming) endLive() }}
+            className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base"
           >
             X
           </button>
@@ -221,23 +175,36 @@ export default function GoLive(props: any) {
           </div>
         )}
 
-        <div className="aspect-video bg-black rounded-xl overflow-hidden">
-          {token && (
-            <LiveKitRoom
-              token={token}
-              serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-              connect={true}
-              onDisconnected={handleDisconnect}
-              video={true}
-              audio={true}
+        {!streaming ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="text-6xl mb-4">📹</div>
+            <p className="text-neutral-400 mb-6">Ready to start live streaming</p>
+            <button
+              onClick={goLive}
+              className="bg-red-600 text-white px-8 py-4 rounded-full font-bold text-lg border-none cursor-pointer"
             >
-              <HostBroadcastView />
-            </LiveKitRoom>
-          )}
-        </div>
+              Start Live Stream
+            </button>
+          </div>
+        ) : (
+          <div className="aspect-video bg-black rounded-xl overflow-hidden">
+            {token && (
+              <LiveKitRoom
+                token={token}
+                serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+                connect={true}
+                onDisconnected={handleDisconnect}
+                video={true}
+                audio={true}
+              >
+                <HostBroadcastView />
+              </LiveKitRoom>
+            )}
+          </div>
+        )}
 
         <div className="mt-3 text-center text-neutral-500 text-xs">
-          You are broadcasting live
+          You are broadcasting — viewers can watch but cannot use their camera or mic
         </div>
       </div>
     </div>
