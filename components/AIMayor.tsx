@@ -17,9 +17,10 @@ export default function AIMayor() {
     return 'Good night'
   }
 
-  const generateIntelligentBrief = (weather: any, pulse: any, emergency: any) => {
+    const generateIntelligentBrief = (weather: any, pulse: any, emergency: any) => {
     const greeting = getTimeGreeting()
-    const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+    const userLocale = typeof window !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
+    const date = new Date().toLocaleDateString(userLocale, { weekday: 'long', month: 'short', day: 'numeric' })
     const temp = weather?.temp ? Math.round(weather.temp) : null
     const postCount = pulse?.count || 0
     const hasAlert = emergency?.alert || emergency?.noaa || emergency?.quake
@@ -100,9 +101,10 @@ export default function AIMayor() {
         }
       } catch (error) {
         console.log('AIMayor error:', error)
-        if (mounted) {
+                if (mounted) {
           const greeting = getTimeGreeting()
-          const date = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+          const userLocale = typeof window !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
+          const date = new Date().toLocaleDateString(userLocale, { weekday: 'long', month: 'short', day: 'numeric' })
           setBrief(`${greeting} ${effectiveCity} • ${date} • 🤖 AI Mayor is monitoring your area`)
           setLoading(false)
         }
