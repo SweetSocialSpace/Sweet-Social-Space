@@ -1,24 +1,54 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
-import { useTracks } from '@livekit/components-react'
+import {
+  LiveKitRoom,
+  RoomAudioRenderer,
+  VideoTrack,
+  useTracks,
+  useRoomContext,
+} from '@livekit/components-react'
+import { Track } from 'livekit-client'
 
-function ParticipantView() {
-  const tracks = useTracks([], { onlySubscribed: false })
-  const remoteTracks = tracks.filter(track => track.participant.isLocal === false)
-  const videoRef = useRef<HTMLVideoElement>(null)
+// Force viewer's mic and camera OFF the moment they connect
+function ViewerOnlyEnforcer() {
+  const room = useRoomContext()
 
   useEffect(() => {
-    if (videoRef.current && remoteTracks.length > 0) {
-      const cameraTrack = remoteTracks.find(t => t.source === 'camera')
-      if (cameraTrack && cameraTrack.publication.track) {
-        cameraTrack.publication.track.attach(videoRef.current)
-      }
-    }
-  }, [remoteTracks])
+    if (!room?.localParticipant) return
 
-  if (remoteTracks.length === 0) {
+    const disablePublishing = async () => {
+      await room.localParticipant.setMicrophoneEnabled(false)
+      await room.localParticipant.setCameraEnabled(false)
+
+      room.localParticipant.trackPublications.forEach((pub) => {
+        if (pub.track) {
+          room.localParticipant.unpublishTrack(pub.track)
+        }
+      })
+    }
+
+    disablePublishing()
+
+    room.on('connected', disablePublishing)
+    return () => {
+      room.off('connected', disablePublishing)
+    }
+  }, [room])
+
+  return null
+}
+
+// Shows ONLY the host's video (the person who is broadcasting)
+function HostStreamView() {
+  const tracks = useTracks(
+    [{ source: Track.Source.Camera, withPlaceholder: false }],
+    { onlySubscribed: true }
+  )
+
+  const hostCamera = tracks.find((t) => !t.participant.isLocal)
+
+  if (!hostCamera) {
     return (
       <div className="flex items-center justify-center h-full">
         <p className="text-white">Waiting for stream to start...</p>
@@ -28,37 +58,43 @@ function ParticipantView() {
 
   return (
     <div className="relative w-full h-full">
-      <video
-        ref={videoRef}
+      <VideoTrack
+        trackRef={hostCamera}
         className="w-full h-full object-cover"
-        autoPlay
-        playsInline
       />
     </div>
   )
 }
 
-export default function JoinLive({ roomName, userName, onClose }: { roomName: string, userName: string, onClose: () => void }) {
+export default function JoinLive({
+  roomName,
+  userName,
+  onClose,
+}: {
+  roomName: string
+  userName: string
+  onClose: () => void
+}) {
   const [token, setToken] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
-  
+
   const supabase = createClient()
 
   useEffect(() => {
     const joinStream = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser()
-        const uid = user?.id || 'viewer'
-        
+        const uid = user?.id || 'viewer-' + Date.now()
+
         const tokenRes = await fetch('/api/livekit/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             roomName: roomName,
             participantName: uid,
-            role: 'viewer'
-          })
+            role: 'viewer',
+          }),
         })
 
         if (!tokenRes.ok) {
@@ -88,15 +124,20 @@ export default function JoinLive({ roomName, userName, onClose }: { roomName: st
           <span className="text-white font-bold text-lg">
             🔴 {userName} is LIVE
           </span>
-          <button onClick={onClose} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
+          <button
+            onClick={onClose}
+            className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base"
+          >
+            X
+          </button>
         </div>
-        
+
         {error && (
           <div className="bg-red-900/20 border border-red-600 text-red-400 p-3 rounded-lg mb-4 text-sm">
             {error}
           </div>
         )}
-        
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="text-6xl mb-4 animate-pulse">🔴</div>
@@ -112,11 +153,16 @@ export default function JoinLive({ roomName, userName, onClose }: { roomName: st
               audio={false}
               video={false}
             >
-              <ParticipantView />
+              <ViewerOnlyEnforcer />
+              <HostStreamView />
               <RoomAudioRenderer />
             </LiveKitRoom>
           </div>
         ) : null}
+
+        <div className="mt-3 text-center text-neutral-500 text-xs">
+          Watch only — your camera and microphone are not shared
+        </div>
       </div>
     </div>
   )
