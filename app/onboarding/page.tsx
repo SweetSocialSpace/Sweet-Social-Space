@@ -35,7 +35,7 @@ export default function Onboarding() {
       let finalCity = city || ''
       // No IP fallback - pure zip code based as requested
 
-      const { error } = await supabase.from('profiles').upsert({
+            const { error } = await supabase.from('profiles').upsert({
         id: user.id,
         user_id: user.id,
         username: username.trim(),
@@ -43,7 +43,7 @@ export default function Onboarding() {
         zip_code: safeZip,
         zip: safeZip,
         city: finalCity,
-        country: country || 'US',
+        country: country || '',
         body: `${username} - ${safeZip} ${finalCity}`,
         email: user.email || ''
       } as any, { onConflict: 'id' })
