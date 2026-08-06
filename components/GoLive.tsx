@@ -94,14 +94,15 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
                 
                 const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}` 
                 
-                const { error: updateError } = await supabase.from('posts').update({ 
-                  setUploadedVideoUrl(videoUrl)
+               const { error: updateError } = await supabase.from('posts').update({ 
                   media_url: videoUrl, 
                   video_url: videoUrl, 
                   tag: 'live_ended', 
                   body: wasBody,
                   media_urls: [videoUrl]
                 }).eq('id', postId)
+                
+                setUploadedVideoUrl(videoUrl)
                 
                 if (updateError) {
                   console.error('Error updating post:', updateError)
