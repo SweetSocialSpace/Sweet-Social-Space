@@ -45,13 +45,13 @@ export default function AuthForm() {
             } catch {}
           }
           
-          await supabase.from('profiles').upsert({
+                    await supabase.from('profiles').upsert({
             id: data.user.id,
             user_id: data.user.id,
             zip_code: finalZip,
             zip: finalZip,
             city: finalCity,
-            country: country || 'US',
+            country: country || '',
             email: email.trim()
           } as any, { onConflict: 'id' })
         } catch {}
