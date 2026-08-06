@@ -44,16 +44,10 @@ export function LocationProvider({ children }: any) {
     if (l.zip !== 'GLOBAL') localStorage.setItem('feed_near_zip', l.zip)
   }
 
-  const useMyLocation = async () => {
-    setLoading(true)
-    try {
-      const pos = await new Promise<GeolocationPosition>((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:8000}))
-      const { latitude, longitude } = pos.coords
-      const r = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`).then(x=>x.json()).catch(()=>null)
-      if(r?.zip){
-        setLoc({ zip: r.zip, city: cleanCity(r.city), country: r.country || '', lat: latitude, lng: longitude })
-      }
-    } catch {}
+    const useMyLocation = async () => {
+    // DISABLED - No GPS/IP location detection per user request
+    // Platform should only use zip codes, not automatic GPS detection
+    console.log('GPS location detection disabled - using zip codes only')
     setLoading(false)
   }
 
