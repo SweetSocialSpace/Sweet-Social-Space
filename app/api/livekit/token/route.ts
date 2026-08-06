@@ -22,15 +22,28 @@ export async function POST(req: NextRequest) {
       identity: participantName,
     })
 
-    // Viewer: can only subscribe (watch), cannot publish (camera/mic)
-    // Host: can both subscribe and publish
     const isHost = role === 'host'
-    at.addGrant({
-      room: roomName,
-      roomJoin: true,
-      canPublish: isHost,
-      canSubscribe: true,
-    })
+
+    if (isHost) {
+      // HOST = broadcaster only (can publish camera + mic)
+      at.addGrant({
+        room: roomName,
+        roomJoin: true,
+        canPublish: true,
+        canSubscribe: true,
+        canPublishData: true,
+      })
+    } else {
+      // VIEWER = watch only (NO camera, NO mic, NO publishing)
+      at.addGrant({
+        room: roomName,
+        roomJoin: true,
+        canPublish: false,
+        canSubscribe: true,
+        canPublishData: false,
+        hidden: true, // viewers don't show up as broadcasters
+      })
+    }
 
     const token = await at.toJwt()
 
