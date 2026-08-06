@@ -1,29 +1,49 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   LiveKitRoom,
   RoomAudioRenderer,
-  VideoTrack,
-  useTracks,
+  useLocalParticipant,
 } from '@livekit/components-react'
 import { Track } from 'livekit-client'
 
 // Host-only view — shows ONLY the broadcaster's camera (not viewers)
 function HostBroadcastView() {
-  const tracks = useTracks(
-    [{ source: Track.Source.Camera, withPlaceholder: false }],
-    { onlySubscribed: false }
-  )
-  const localCamera = tracks.find(
-    (t) => t.participant.isLocal && t.source === Track.Source.Camera
-  )
+  const { localParticipant } = useLocalParticipant()
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [hasCamera, setHasCamera] = useState(false)
+
+  useEffect(() => {
+    const videoEl = videoRef.current
+    if (!videoEl || !localParticipant) return
+
+    const attachCamera = () => {
+      const publication = localParticipant.getTrackPublication(Track.Source.Camera)
+      if (publication?.track) {
+        publication.track.attach(videoEl)
+        setHasCamera(true)
+      }
+    }
+
+    attachCamera()
+    localParticipant.on('localTrackPublished', attachCamera)
+
+    return () => {
+      localParticipant.off('localTrackPublished', attachCamera)
+      const publication = localParticipant.getTrackPublication(Track.Source.Camera)
+      publication?.track?.detach(videoEl)
+    }
+  }, [localParticipant])
 
   return (
     <div className="relative w-full h-full">
-      {localCamera ? (
-        <VideoTrack
-          trackRef={localCamera}
+      {hasCamera ? (
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
           className="w-full h-full object-cover"
         />
       ) : (
