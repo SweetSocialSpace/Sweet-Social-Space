@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LiveKitRoom, VideoTrack, useTracks } from '@livekit/components-react'
 import { Track } from 'livekit-client'
@@ -16,7 +16,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   const [token, setToken] = useState('')
   const [roomName, setRoomName] = useState('')
   const [postId, setPostId] = useState<string>('')
-  
+  const [egressId, setEgressId] = useState('')
   const supabase = createClient()
 
   const startLive = async () => {
@@ -43,7 +43,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
     if (post) { setPostId(post.id); onLivePosted(post) }
     setOpen(true)
 
-       // Start LiveKit egress recording (server-side, no 50MB limit)
+    // Start LiveKit egress recording (server-side, no 50MB limit)
     setTimeout(async () => {
       try {
         const egressRes = await fetch('/api/livekit/egress/start', { 
@@ -54,8 +54,13 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
         const egressData = await egressRes.json()
         if (egressData.egressId) {
           console.log('LiveKit egress started:', egressData.egressId)
-          // Store egressId to stop it later
-           const [egressId, setEgressId] = useState('')
+          setEgressId(egressData.egressId)
+        }
+      } catch (error) {
+        console.error('Error starting egress:', error)
+      }
+    }, 2000)
+  }
 
   const endLive = async () => {
     // Stop LiveKit egress recording
@@ -92,32 +97,6 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
 
     if (postId) onLiveEnded(postId)
     setOpen(false); setToken(''); setRoomName(''); setPostId(''); setEgressId('')
-  }
-          }
-          resolve()
-        }
-        mediaRecorderRef.current!.stop()
-        mediaRecorderRef.current!.stream.getTracks().forEach(t=>t.stop())
-      })
-    } else if (postId) {
-      console.log('No active recorder, just marking as ended')
-      const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
-      await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
-    }
-
-    // End the LiveKit room
-    try { 
-      await fetch('/api/livekit/end', { 
-        method:'POST', 
-        headers:{'Content-Type':'application/json'}, 
-        body: JSON.stringify({ postId, roomName }) 
-      }) 
-    } catch (error) {
-      console.error('Error ending LiveKit room:', error)
-    }
-
-    if (postId) onLiveEnded(postId)
-    setOpen(false); setToken(''); setRoomName(''); setPostId(''); chunksRef.current = []
   }
 
   if (!open) return <button onClick={startLive} className="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs">Go Live</button>
