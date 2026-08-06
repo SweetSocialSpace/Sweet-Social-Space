@@ -17,7 +17,7 @@ const PAGES: Record<string, LegalContent> = {
         <h2>1. What We Are</h2>
         <p>Hyperlocal private network - your block within 10 miles of YOU wherever you are GLOBAL.</p>
         <h2>2. Eligibility</h2>
-        <p>13+ (16+ EU). One account. Zip for proximity. IP via ipapi.co/json first, profile second, GLOBAL failsafe third. Supabase RLS.</p>
+        <p>13+ (16+ EU). One account. Zip for proximity. Zip code based location - no IP tracking. Supabase RLS.</p>
         <h2>3. Your Content</h2>
         <p>You own it. License to display to neighbors within 10 miles. Delete anytime.</p>
         <h2>4. Rules</h2>
@@ -35,7 +35,7 @@ const PAGES: Record<string, LegalContent> = {
   content: (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <p><strong>We built Sweet Social Space to be private - your block, not the world.</strong> We only ask for what we need to put you near neighbors within 10 miles of YOU.</p>
-      <p><strong>What We Collect:</strong> Email to log you in, username you choose, zip and city for proximity. Your IP is checked via ipapi.co/json ONLY to detect GLOBAL vs local - we do not store it, we do not track it across the web.</p>
+      <p><strong>What We Collect:</strong> Email to log you in, username you choose, zip and city for proximity. No IP tracking - purely zip code based location.</p>
       <p><strong>What We NEVER Do:</strong> No selling your data. Ever. No Facebook Pixel. No Google trackers. No ad networks watching your feed. Your feed is chronological by zip_code, not by algorithm selling your attention. Supabase Row Level Security means even we can't read what we shouldn't.</p>
       <p><strong>Your Rights:</strong> You own you. View, correct, or delete your info anytime via Profile. Request export or deletion at privacy@sweetsocialspace.com - we respond within 48 hours. No dark patterns.</p>
       <p><strong>Why We Care:</strong> Independent - No Big Tech. We live on your block too. Speak Freely Love Neighbor means your porch talk stays on your porch - within 10 miles, SSL SECURED, TLS 1.3 via Vercel, not sold to the world.</p>
