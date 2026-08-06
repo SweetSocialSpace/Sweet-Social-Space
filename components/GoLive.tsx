@@ -7,7 +7,7 @@ import {
   useLocalParticipant,
   useRoomContext,
 } from '@livekit/components-react'
-import { Track } from 'livekit-client'
+import { Track, RoomEvent } from 'livekit-client'
 
 function HostBroadcastView() {
   const room = useRoomContext()
@@ -20,42 +20,52 @@ function HostBroadcastView() {
     if (!videoEl || !localParticipant || !room) return
 
     let isAttached = false
+    let attachTimeout: NodeJS.Timeout
 
-    const tryAttachCamera = () => {
+    const attachCamera = () => {
       if (isAttached) return
 
       try {
-        const cameraPublication = localParticipant.getTrackPublication(Track.Source.Camera)
-        
-        if (cameraPublication?.track) {
-          cameraPublication.track.attach(videoEl)
-          isAttached = true
-          setHasCamera(true)
+        const videoPubs = localParticipant.videoTrackPublications
+        if (videoPubs.length > 0) {
+          const publication = videoPubs[0]
+          if (publication.track) {
+            publication.track.attach(videoEl)
+            isAttached = true
+            setHasCamera(true)
+            return
+          }
         }
       } catch (error) {
-        console.error('Error attaching camera track:', error)
+        console.error('Camera attach error:', error)
+      }
+
+      if (!isAttached) {
+        attachTimeout = setTimeout(attachCamera, 100)
       }
     }
 
-    tryAttachCamera()
+    attachCamera()
 
-    const handleLocalTrackPublished = () => {
-      tryAttachCamera()
+    const handleTrackSubscribed = (track: any) => {
+      if (track.source === Track.Source.Camera) {
+        attachCamera()
+      }
     }
 
-    localParticipant.on('trackPublished', handleLocalTrackPublished)
+    room.on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
 
     return () => {
-      localParticipant.off('trackPublished', handleLocalTrackPublished)
-      
+      clearTimeout(attachTimeout)
+      room.off(RoomEvent.TrackSubscribed, handleTrackSubscribed)
       if (isAttached && videoEl) {
         try {
-          const cameraPublication = localParticipant.getTrackPublication(Track.Source.Camera)
-          if (cameraPublication?.track) {
-            cameraPublication.track.detach(videoEl)
+          const videoPubs = localParticipant.videoTrackPublications
+          if (videoPubs.length > 0) {
+            videoPubs[0].track?.detach(videoEl)
           }
         } catch (error) {
-          console.error('Error detaching camera:', error)
+          console.error('Camera detach error:', error)
         }
       }
     }
@@ -133,7 +143,6 @@ export default function GoLive(props: any) {
         zip_code: zip || 'GLOBAL',
         user_id: uid,
         livekit_room: newRoomName,
-        status: 'live',
       }
       const { data, error } = await supabase.from('posts').insert(payload).select().single()
 
@@ -161,11 +170,9 @@ export default function GoLive(props: any) {
 
   const endLive = async () => {
     try {
-      // Mark post as ended
       if (postId) {
         await supabase.from('posts').update({
-          status: 'ended',
-          ended_at: new Date().toISOString(),
+          tag: 'live_ended'
         }).eq('id', postId)
       }
     } catch (err) {
@@ -179,7 +186,6 @@ export default function GoLive(props: any) {
   }
 
   const handleDisconnect = () => {
-    console.log('LiveKit disconnected')
     endLive()
   }
 
