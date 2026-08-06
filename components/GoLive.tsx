@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LiveKitRoom, VideoTrack, useTracks } from '@livekit/components-react'
 import { Track } from 'livekit-client'
@@ -16,7 +16,8 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   const [token, setToken] = useState('')
   const [roomName, setRoomName] = useState('')
   const [postId, setPostId] = useState<string>('')
-  const [egressId, setEgressId] = useState('')
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
   const supabase = createClient()
 
   const startLive = async () => {
@@ -40,53 +41,79 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
     if (post) { setPostId(post.id); onLivePosted(post) }
     setOpen(true)
 
-       // Start LiveKit egress recording
     setTimeout(async () => {
       try {
-        console.log('Attempting to start egress for room:', rName)
-        const egressRes = await fetch('/api/livekit/egress/start', { 
-          method:'POST', 
-          headers:{'Content-Type':'application/json'}, 
-          body: JSON.stringify({ roomName: rName }) 
-        })
-        console.log('Egress API response status:', egressRes.status)
-        const egressData = await egressRes.json()
-        console.log('Egress API response data:', egressData)
-        if (egressData.egressId) {
-          console.log('LiveKit egress started:', egressData.egressId)
-          setEgressId(egressData.egressId)
-        } else {
-          console.error('Egress API returned no egressId:', egressData)
-        }
-      } catch (error) {
-        console.error('Error starting egress:', error)
-      }
-    }, 2000)
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' })
+        chunksRef.current = []
+        recorder.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+        recorder.start(1000)
+        mediaRecorderRef.current = recorder
+      } catch {}
+    }, 1000)
   }
 
   const endLive = async () => {
-    // Stop LiveKit egress recording
-    if (egressId) {
-      try {
-        await fetch('/api/livekit/egress/stop', { 
-          method:'POST', 
-          headers:{'Content-Type':'application/json'}, 
-          body: JSON.stringify({ egressId, postId, roomName }) 
-        })
-        console.log('LiveKit egress stopped:', egressId)
-      } catch (error) {
-        console.error('Error stopping egress:', error)
-      }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      await new Promise<void>(resolve => {
+        mediaRecorderRef.current!.onstop = async () => {
+          try {
+            const blob = new Blob(chunksRef.current, { type: 'video/webm' })
+            console.log('Recording size:', blob.size, 'bytes')
+            
+            if (blob.size > 1000 && postId) {
+              const fileName = `${roomName}-${Date.now()}.webm`
+              console.log('Uploading video:', fileName)
+              
+              const { error: uploadError } = await supabase.storage.from('videos').upload(fileName, blob, { 
+                upsert: true, 
+                contentType: 'video/webm' 
+              })
+              
+              if (!uploadError) {
+                const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName)
+                const videoUrl = urlData.publicUrl
+                console.log('Video uploaded successfully:', videoUrl)
+                
+                const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+                
+                const { error: updateError } = await supabase.from('posts').update({ 
+                  media_url: videoUrl, 
+                  video_url: videoUrl, 
+                  tag: 'live_ended', 
+                  body: wasBody,
+                  media_urls: [videoUrl]
+                }).eq('id', postId)
+                
+                if (updateError) {
+                  console.error('Error updating post:', updateError)
+                } else {
+                  console.log('Post updated successfully with video')
+                }
+              } else {
+                console.error('Error uploading video:', uploadError)
+                const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+                await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
+              }
+            } else if (postId) {
+              console.log('Video too small or no post ID')
+              const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+              await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
+            }
+          } catch (error) {
+            console.error('Error in recording stop handler:', error)
+          }
+          resolve()
+        }
+        mediaRecorderRef.current!.stop()
+        mediaRecorderRef.current!.stream.getTracks().forEach(t=>t.stop())
+      })
+    } else if (postId) {
+      console.log('No active recorder, just marking as ended')
+      const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+      await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
     }
 
-    // Update post to mark as ended
-    const wasBody = `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
-    await supabase.from('posts').update({ 
-      tag: 'live_ended', 
-      body: wasBody 
-    }).eq('id', postId)
-
-    // End the LiveKit room
     try { 
       await fetch('/api/livekit/end', { 
         method:'POST', 
@@ -98,7 +125,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
     }
 
     if (postId) onLiveEnded(postId)
-    setOpen(false); setToken(''); setRoomName(''); setPostId(''); setEgressId('')
+    setOpen(false); setToken(''); setRoomName(''); setPostId(''); chunksRef.current = []
   }
 
   if (!open) return <button onClick={startLive} className="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs">Go Live</button>
