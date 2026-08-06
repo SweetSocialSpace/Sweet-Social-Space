@@ -8,18 +8,10 @@ export default function AddBusiness(){
   const [locating, setLocating] = useState(true)
   const supabase = createClient()
 
-  // Get USER location - no more 37.3369 hardcoded
+    // DISABLED - No automatic GPS detection per user request
+  // Platform should only use zip codes, not automatic GPS detection
   useEffect(()=>{
-    if(navigator.geolocation){
-      navigator.geolocation.getCurrentPosition(pos=>{
-        setForm(f=>({...f, lat: pos.coords.latitude.toString(), lng: pos.coords.longitude.toString()}))
-        setLocating(false)
-      }, ()=>{
-        setLocating(false)
-      })
-    } else {
-      setLocating(false)
-    }
+    setLocating(false)
   },[])
 
   const save = async () => {
