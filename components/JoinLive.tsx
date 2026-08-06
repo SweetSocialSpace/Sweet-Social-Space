@@ -75,10 +75,13 @@ return
 
     return () => {
       room.off(RoomEvent.TrackSubscribed, onTrackSubscribed)
-      for (const participant of room.remoteParticipants.values()) {
-        const publication = participant.getTrackPublication(Track.Source.Camera)
-        publication?.track?.detach(videoEl)
-      }
+     for (const participant of Array.from(room.remoteParticipants.values())) {
+
+const publication = participant.getTrackPublication(Track.Source.Camera)
+
+publication?.track?.detach(videoEl)
+
+} 
     }
   }, [room])
 
