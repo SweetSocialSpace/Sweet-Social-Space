@@ -1,5 +1,5 @@
 export const BLOCK_CONFIG = {
-  DEFAULT_COUNTRY: 'US',
+  DEFAULT_COUNTRY: '',
   FALLBACK_CITY: '',
   STORAGE_KEYS: {
     ZIP: 'user_zip',
