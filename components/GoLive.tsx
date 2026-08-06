@@ -12,7 +12,7 @@ import { Track } from 'livekit-client'
 // Host-only view — shows ONLY the broadcaster's camera (not viewers)
 function HostBroadcastView() {
   const tracks = useTracks(
-    [{ source: Track.Source.Camera, withPlaceholder: true }],
+    [{ source: Track.Source.Camera, withPlaceholder: false }],
     { onlySubscribed: false }
   )
   const localCamera = tracks.find(
