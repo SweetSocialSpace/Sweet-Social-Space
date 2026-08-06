@@ -21,49 +21,57 @@ function HostBroadcastView() {
     if (!videoEl || !localParticipant || !room) return
 
     let isAttached = false
+    let timeoutId: NodeJS.Timeout
 
     const attachCamera = () => {
       if (isAttached) return
-      
+
+      const publication = localParticipant.videoTrackPublications[0]
+      if (!publication || !publication.track) {
+        // Track not ready yet, retry
+        timeoutId = setTimeout(attachCamera, 100)
+        return
+      }
+
       try {
-        const publication = localParticipant.getTrackPublication(Track.Source.Camera)
-        if (publication?.track) {
-          publication.track.attach(videoEl)
-          isAttached = true
-          setHasCamera(true)
-        }
+        publication.track.attach(videoEl)
+        isAttached = true
+        setHasCamera(true)
       } catch (err) {
         console.error('Error attaching camera:', err)
       }
     }
 
-    // Try to attach immediately
+    // Start trying to attach
     attachCamera()
 
-    // Listen for camera track publications
-    const handleTrackPublished = (publication: any) => {
-      if (publication.source === Track.Source.Camera) {
+    // Also listen for when track is published
+    const handleTrackSubscribed = (track: any) => {
+      if (track.source === Track.Source.Camera) {
         attachCamera()
       }
     }
 
-    localParticipant.on('trackPublished', handleTrackPublished)
+    room.on('trackSubscribed', handleTrackSubscribed)
 
     return () => {
-      localParticipant.off('trackPublished', handleTrackPublished)
-      try {
-        const publication = localParticipant.getTrackPublication(Track.Source.Camera)
-        if (publication?.track && videoEl) {
-          publication.track.detach(videoEl)
+      clearTimeout(timeoutId)
+      room.off('trackSubscribed', handleTrackSubscribed)
+      if (isAttached && videoEl) {
+        try {
+          const publication = localParticipant.videoTrackPublications[0]
+          if (publication?.track) {
+            publication.track.detach(videoEl)
+          }
+        } catch (err) {
+          console.error('Error detaching camera:', err)
         }
-      } catch (err) {
-        console.error('Error detaching camera:', err)
       }
     }
   }, [localParticipant, room])
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-black">
       {hasCamera ? (
         <video
           ref={videoRef}
@@ -83,7 +91,6 @@ function HostBroadcastView() {
 }
 
 export default function GoLive(props: any) {
-  const [open, setOpen] = useState(false)
   const [streaming, setStreaming] = useState(false)
   const [error, setError] = useState('')
   const [token, setToken] = useState('')
@@ -161,7 +168,7 @@ export default function GoLive(props: any) {
   const endLive = async () => {
     setStreaming(false)
     setToken('')
-    setOpen(false)
+    setError('')
   }
 
   const handleDisconnect = () => {
@@ -169,11 +176,11 @@ export default function GoLive(props: any) {
     endLive()
   }
 
-  if (!open) {
+  if (!streaming) {
     return (
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={goLive}
         className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold"
       >
         Go Live
@@ -186,11 +193,11 @@ export default function GoLive(props: any) {
       <div className="bg-neutral-900 rounded-2xl w-full max-w-4xl p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
           <span className="text-white font-bold text-lg">
-            {streaming ? '🔴 LIVE' : 'Go Live in ' + city}
+            🔴 LIVE in {city}
           </span>
           <button
-            onClick={() => { setOpen(false); if (streaming) endLive() }}
-            className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base"
+            onClick={endLive}
+            className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base font-bold"
           >
             X
           </button>
@@ -202,33 +209,20 @@ export default function GoLive(props: any) {
           </div>
         )}
 
-        {!streaming ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="text-6xl mb-4">📹</div>
-            <p className="text-neutral-400 mb-6">Ready to start live streaming</p>
-            <button
-              onClick={goLive}
-              className="bg-red-600 text-white px-8 py-4 rounded-full font-bold text-lg border-none cursor-pointer"
+        <div className="aspect-video bg-black rounded-xl overflow-hidden">
+          {token && (
+            <LiveKitRoom
+              token={token}
+              serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+              connect={true}
+              onDisconnected={handleDisconnect}
+              video={true}
+              audio={true}
             >
-              Start Live Stream
-            </button>
-          </div>
-        ) : (
-          <div className="aspect-video bg-black rounded-xl overflow-hidden">
-            {token && (
-              <LiveKitRoom
-                token={token}
-                serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
-                connect={true}
-                onDisconnected={handleDisconnect}
-                video={true}
-                audio={true}
-              >
-                <HostBroadcastView />
-              </LiveKitRoom>
-            )}
-          </div>
-        )}
+              <HostBroadcastView />
+            </LiveKitRoom>
+          )}
+        </div>
 
         <div className="mt-3 text-center text-neutral-500 text-xs">
           You are broadcasting — viewers can watch but cannot use their camera or mic
