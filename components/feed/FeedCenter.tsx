@@ -85,10 +85,28 @@ export default function FeedCenter() {
         </button>
       </div>
 
-      <div className="space-y-4">
+            <div className="space-y-4">
         {posts.map(p=>(
           <div key={p.id} className="bg-white rounded-2xl p-5">
             <p className="text-black whitespace-pre-wrap text-sm break-words leading-relaxed">{p.body}</p>
+            
+            {/* Display video if available (for recorded live streams) */}
+            {(p.video_url || p.media_url) && (
+              <div className="mt-4">
+                <video 
+                  controls 
+                  className="w-full rounded-xl border border-gray-200"
+                  poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%23f3f4f6' width='100' height='100'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%239ca3af' font-size='20'%3E▶%3C/text%3E%3C/svg%3E"
+                >
+                  <source src={p.video_url || p.media_url} type="video/webm" />
+                  Your browser does not support the video tag.
+                </video>
+                <div className="mt-2 text-xs font-black text-blue-600 bg-blue-50 inline-block px-2 py-1 rounded">
+                  📹 Recorded Live Stream
+                </div>
+              </div>
+            )}
+            
             <div className="mt-2 text-xs font-black text-black/50">#{p.tag} • {p.zip_code}</div>
           </div>
         ))}
