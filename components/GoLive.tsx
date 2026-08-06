@@ -4,72 +4,44 @@ import { createClient } from '@/lib/supabase/client'
 import {
   LiveKitRoom,
   RoomAudioRenderer,
-  useLocalParticipant,
   useRoomContext,
 } from '@livekit/components-react'
-import { Track, RoomEvent } from 'livekit-client'
 
 function HostBroadcastView() {
   const room = useRoomContext()
-  const { localParticipant } = useLocalParticipant()
   const videoRef = useRef<HTMLVideoElement>(null)
+  const streamRef = useRef<MediaStream | null>(null)
   const [hasCamera, setHasCamera] = useState(false)
 
   useEffect(() => {
-    const videoEl = videoRef.current
-    if (!videoEl || !localParticipant || !room) return
+    if (!room || !videoRef.current) return
 
-    let isAttached = false
-    let attachTimeout: NodeJS.Timeout
-
-    const attachCamera = () => {
-      if (isAttached) return
-
+    const setupLocalStream = async () => {
       try {
-  const videoPubs = Array.from(localParticipant.videoTrackPublications.values())
-  if (videoPubs.length > 0) {
-    const publication = videoPubs[0]
-    if (publication.track) {
-      publication.track.attach(videoEl)
-      isAttached = true
-      setHasCamera(true)
-      return
-    }
-  }
-} catch (error) {
-  console.error('Camera attach error:', error)
-}
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: true,
+        })
 
-      if (!isAttached) {
-        attachTimeout = setTimeout(attachCamera, 100)
+        streamRef.current = stream
+        const videoEl = videoRef.current
+        if (videoEl) {
+          videoEl.srcObject = stream
+          setHasCamera(true)
+        }
+      } catch (error) {
+        console.error('Error getting camera stream:', error)
       }
     }
 
-    attachCamera()
-
-    const handleTrackSubscribed = (track: any) => {
-      if (track.source === Track.Source.Camera) {
-        attachCamera()
-      }
-    }
-
-    room.on(RoomEvent.TrackSubscribed, handleTrackSubscribed)
+    setupLocalStream()
 
     return () => {
-      clearTimeout(attachTimeout)
-      room.off(RoomEvent.TrackSubscribed, handleTrackSubscribed)
-      if (isAttached && videoEl) {
-        try {
-         const videoPubs = Array.from(localParticipant.videoTrackPublications.values())
-if (videoPubs.length > 0) {
-  videoPubs[0].track?.detach(videoEl)
-}
-        } catch (error) {
-          console.error('Camera detach error:', error)
-        }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop())
       }
     }
-  }, [localParticipant, room])
+  }, [room])
 
   return (
     <div className="relative w-full h-full bg-black">
@@ -104,7 +76,10 @@ export default function GoLive(props: any) {
 
   const goLive = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      })
       stream.getTracks().forEach((track) => track.stop())
 
       const { data: { user } } = await supabase.auth.getUser()
@@ -172,7 +147,7 @@ export default function GoLive(props: any) {
     try {
       if (postId) {
         await supabase.from('posts').update({
-          tag: 'live_ended'
+          tag: 'live_ended',
         }).eq('id', postId)
       }
     } catch (err) {
