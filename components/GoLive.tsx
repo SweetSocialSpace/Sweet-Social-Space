@@ -16,8 +16,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   const [token, setToken] = useState('')
   const [roomName, setRoomName] = useState('')
   const [postId, setPostId] = useState<string>('')
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
+  
   const supabase = createClient()
 
   const startLive = async () => {
@@ -44,79 +43,56 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
     if (post) { setPostId(post.id); onLivePosted(post) }
     setOpen(true)
 
+       // Start LiveKit egress recording (server-side, no 50MB limit)
     setTimeout(async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' })
-        chunksRef.current = []
-        recorder.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
-        recorder.start(1000)
-        mediaRecorderRef.current = recorder
-      } catch {}
-    }, 1000)
-  }
+        const egressRes = await fetch('/api/livekit/egress/start', { 
+          method:'POST', 
+          headers:{'Content-Type':'application/json'}, 
+          body: JSON.stringify({ roomName: rName }) 
+        })
+        const egressData = await egressRes.json()
+        if (egressData.egressId) {
+          console.log('LiveKit egress started:', egressData.egressId)
+          // Store egressId to stop it later
+           const [egressId, setEgressId] = useState('')
 
-    const endLive = async () => {
-    // First try to stop LiveKit egress recording
-    try {
-      await fetch('/api/livekit/egress/stop', { 
+  const endLive = async () => {
+    // Stop LiveKit egress recording
+    if (egressId) {
+      try {
+        await fetch('/api/livekit/egress/stop', { 
+          method:'POST', 
+          headers:{'Content-Type':'application/json'}, 
+          body: JSON.stringify({ egressId, postId, roomName }) 
+        })
+        console.log('LiveKit egress stopped:', egressId)
+      } catch (error) {
+        console.error('Error stopping egress:', error)
+      }
+    }
+
+    // Update post to mark as ended
+    const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
+    await supabase.from('posts').update({ 
+      tag: 'live_ended', 
+      body: wasBody 
+    }).eq('id', postId)
+
+    // End the LiveKit room
+    try { 
+      await fetch('/api/livekit/end', { 
         method:'POST', 
         headers:{'Content-Type':'application/json'}, 
         body: JSON.stringify({ postId, roomName }) 
-      })
-    } catch {}
+      }) 
+    } catch (error) {
+      console.error('Error ending LiveKit room:', error)
+    }
 
-    // Then handle local recording as backup
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state!== 'inactive') {
-      await new Promise<void>(resolve => {
-        mediaRecorderRef.current!.onstop = async () => {
-          try {
-            const blob = new Blob(chunksRef.current, { type: 'video/webm' })
-            console.log('Recording size:', blob.size, 'bytes')
-            
-            if (blob.size > 1000 && postId) {
-              const fileName = `${roomName}-${Date.now()}.webm`
-              console.log('Uploading video:', fileName)
-              
-              const { error: uploadError } = await supabase.storage.from('videos').upload(fileName, blob, { 
-                upsert: true, 
-                contentType: 'video/webm' 
-              })
-              
-              if (!uploadError) {
-                const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName)
-                const videoUrl = urlData.publicUrl
-                console.log('Video uploaded successfully:', videoUrl)
-                
-                const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
-                
-                // Update post with video URL and mark as ended
-                const { error: updateError } = await supabase.from('posts').update({ 
-                  media_url: videoUrl, 
-                  video_url: videoUrl, 
-                  tag: 'live_ended', 
-                  body: wasBody,
-                  media_urls: [videoUrl]
-                }).eq('id', postId)
-                
-                if (updateError) {
-                  console.error('Error updating post:', updateError)
-                } else {
-                  console.log('Post updated successfully with video')
-                }
-              } else {
-                console.error('Error uploading video:', uploadError)
-                // Still mark as ended even if video upload fails
-                const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
-                await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
-              }
-            } else if (postId) {
-              console.log('Video too small or no post ID')
-              const wasBody = city? `Was Live from ${zipCode}, ${city} - ${new Date().toLocaleString()}` : `Was Live from ${zipCode} - ${new Date().toLocaleString()}`
-              await supabase.from('posts').update({ tag: 'live_ended', body: wasBody }).eq('id', postId)
-            }
-          } catch (error) {
-            console.error('Error in recording stop handler:', error)
+    if (postId) onLiveEnded(postId)
+    setOpen(false); setToken(''); setRoomName(''); setPostId(''); setEgressId('')
+  }
           }
           resolve()
         }
