@@ -5,36 +5,62 @@ import {
   LiveKitRoom,
   RoomAudioRenderer,
   useLocalParticipant,
+  useRoomContext,
 } from '@livekit/components-react'
 import { Track } from 'livekit-client'
 
 // Host-only view — shows ONLY the broadcaster's camera (not viewers)
 function HostBroadcastView() {
+  const room = useRoomContext()
   const { localParticipant } = useLocalParticipant()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [hasCamera, setHasCamera] = useState(false)
 
   useEffect(() => {
     const videoEl = videoRef.current
-    if (!videoEl || !localParticipant) return
+    if (!videoEl || !localParticipant || !room) return
+
+    let isAttached = false
 
     const attachCamera = () => {
-      const publication = localParticipant.getTrackPublication(Track.Source.Camera)
-      if (publication?.track) {
-        publication.track.attach(videoEl)
-        setHasCamera(true)
+      if (isAttached) return
+      
+      try {
+        const publication = localParticipant.getTrackPublication(Track.Source.Camera)
+        if (publication?.track) {
+          publication.track.attach(videoEl)
+          isAttached = true
+          setHasCamera(true)
+        }
+      } catch (err) {
+        console.error('Error attaching camera:', err)
       }
     }
 
+    // Try to attach immediately
     attachCamera()
-    localParticipant.on('localTrackPublished', attachCamera)
+
+    // Listen for camera track publications
+    const handleTrackPublished = (publication: any) => {
+      if (publication.source === Track.Source.Camera) {
+        attachCamera()
+      }
+    }
+
+    localParticipant.on('trackPublished', handleTrackPublished)
 
     return () => {
-      localParticipant.off('localTrackPublished', attachCamera)
-      const publication = localParticipant.getTrackPublication(Track.Source.Camera)
-      publication?.track?.detach(videoEl)
+      localParticipant.off('trackPublished', handleTrackPublished)
+      try {
+        const publication = localParticipant.getTrackPublication(Track.Source.Camera)
+        if (publication?.track && videoEl) {
+          publication.track.detach(videoEl)
+        }
+      } catch (err) {
+        console.error('Error detaching camera:', err)
+      }
     }
-  }, [localParticipant])
+  }, [localParticipant, room])
 
   return (
     <div className="relative w-full h-full">
@@ -69,6 +95,7 @@ export default function GoLive(props: any) {
 
   const goLive = async () => {
     try {
+      // Request camera/mic permission
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       stream.getTracks().forEach((track) => track.stop())
 
