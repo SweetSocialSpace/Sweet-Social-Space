@@ -54,7 +54,7 @@ const PAGES: Record<string, LegalContent> = {
             <div>
         <p>1. SSL Secured - https://sweetsocialspace.com TLS 1.3 Vercel</p>
         <p>2. Domain - sweetsocialspace.com only DNS Vercel iad1</p>
-        <p>3. GLOBAL Test - Incognito /feed shows GLOBAL not hardwired IP ipapi.co/json first</p>
+        <p>3. GLOBAL Test - Incognito /feed shows GLOBAL not hardwired - zip code based only</p>
         <p>4. Verified Sources - Near GLOBAL Fire Station 3, 63 verified fire_station Events LIVE</p>
         <p>5. Privacy - Private 10 miles of YOU wherever you are No tracking RLS</p>
         <p>6. Independent - No Big Tech No robots Speak Freely Love Neighbor</p>
@@ -69,7 +69,7 @@ const PAGES: Record<string, LegalContent> = {
         <p>1. YOUR BLOCK FIRST - Private within 10 miles of YOU GLOBAL</p>
         <p>2. NO SHADOWBANS FOR FAITH - SPEAK FREELY LOVE YOUR NEIGHBOR</p>
         <p>3. NO ROBOTS - Chronological by zip_code no bots</p>
-        <p>4. GLOBAL DETECTION - IP ipapi.co/json first GLOBAL not hardwired</p>
+        <p>4. GLOBAL DETECTION - Zip code based only, no IP detection</p>
         <p>5. VERIFIED SOURCES LIVE - Latest Alerts GLOBAL WeatherBar Fire Station 3, 63</p>
         <p>6. SSL SECURED - Full TLS Vercel RLS Supabase</p>
         <p>7. INDEPENDENT - Not Big Tech Vertebrae independent</p>
@@ -91,7 +91,7 @@ const PAGES: Record<string, LegalContent> = {
 <p><strong>DMCA / Copyright</strong><br/>If you believe content infringes your copyright, email legal@sweetsocialspace.com with: (1) description of work, (2) URL on site, (3) your contact, (4) good faith statement, (5) signature. We respond within 48 hours and remove verified infringement.</p>
 <p><strong>Governing Law</strong><br/>Disputes shall be resolved through good faith negotiations. If unresolved, disputes may be resolved through binding arbitration in a mutually agreed jurisdiction, respecting applicable international laws and regulations.</p>
 <p><strong>Contact</strong><br/>Legal: legal@sweetsocialspace.com<br/>Support: support@sweetsocialspace.com<br/>Security: security@sweetsocialspace.com</p>
-<p><strong>Platform</strong><br/>Sweet Social Space • GLOBAL • SSL SECURED • IP detection via ipapi.co/json • Supabase RLS • Vercel iad1 • Independent - No Big Tech.</p>
+<p><strong>Platform</strong><br/>Sweet Social Space • GLOBAL • SSL SECURED • Zip code based only • Supabase RLS • Vercel iad1 • Independent - No Big Tech.</p>
 </div>
 },
 }
