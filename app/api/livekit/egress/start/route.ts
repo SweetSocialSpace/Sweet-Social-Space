@@ -11,14 +11,14 @@ export async function POST(req: NextRequest) {
 
     const fileOutput = new EncodedFileOutput({
       fileType: EncodedFileType.MP4,
-     filepath: `videos/${roomName}.mp4`,
+      filepath: `videos/${roomName}.mp4`,
       output: {
         case: 's3',
         value: {
-          accessKey: process.env.S3_ACCESS_KEY || process.env.AWS_ACCESS_KEY_ID || '',
-          secret: process.env.S3_SECRET || process.env.AWS_SECRET_ACCESS_KEY || '',
-         bucket: process.env.S3_BUCKET || 'videos',
-          region: process.env.S3_REGION || 'us-east-1',
+          accessKey: process.env.S3_ACCESS_KEY || '',
+          secret: process.env.S3_SECRET || '',
+          bucket: process.env.S3_BUCKET || 'videos',
+          region: process.env.S3_REGION || 'us-east-2',
           endpoint: process.env.S3_ENDPOINT || `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/s3`,
           forcePathStyle: true,
         }
