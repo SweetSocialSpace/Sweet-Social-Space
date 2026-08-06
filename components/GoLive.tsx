@@ -7,9 +7,8 @@ import {
   useLocalParticipant,
   useRoomContext,
 } from '@livekit/components-react'
-import { Track, RoomEvent } from 'livekit-client'
+import { Track } from 'livekit-client'
 
-// Host-only view — shows ONLY the broadcaster's camera (not viewers)
 function HostBroadcastView() {
   const room = useRoomContext()
   const { localParticipant } = useLocalParticipant()
@@ -26,11 +25,9 @@ function HostBroadcastView() {
       if (isAttached) return
 
       try {
-        // Get the camera track publication from local participant
         const cameraPublication = localParticipant.getTrackPublication(Track.Source.Camera)
         
         if (cameraPublication?.track) {
-          // Attach the track to the video element
           cameraPublication.track.attach(videoEl)
           isAttached = true
           setHasCamera(true)
@@ -40,10 +37,8 @@ function HostBroadcastView() {
       }
     }
 
-    // Try immediately
     tryAttachCamera()
 
-    // Listen for when local tracks are published
     const handleLocalTrackPublished = () => {
       tryAttachCamera()
     }
@@ -91,6 +86,7 @@ export default function GoLive(props: any) {
   const [error, setError] = useState('')
   const [token, setToken] = useState('')
   const [roomName, setRoomName] = useState('')
+  const [postId, setPostId] = useState<string | null>(null)
 
   const supabase = createClient()
   const zip = props.zipCode
@@ -98,7 +94,6 @@ export default function GoLive(props: any) {
 
   const goLive = async () => {
     try {
-      // Request camera/mic permission
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       stream.getTracks().forEach((track) => track.stop())
 
@@ -130,7 +125,6 @@ export default function GoLive(props: any) {
 
       const tokenData = await tokenRes.json()
       setToken(tokenData.token)
-      setStreaming(true)
 
       const payload: any = {
         body: 'LIVE NOW from ' + city + ' - ' + new Date().toLocaleString(),
@@ -139,17 +133,21 @@ export default function GoLive(props: any) {
         zip_code: zip || 'GLOBAL',
         user_id: uid,
         livekit_room: newRoomName,
+        status: 'live',
       }
       const { data, error } = await supabase.from('posts').insert(payload).select().single()
 
       if (error) {
         console.error('Database insert error:', error)
-        setError('Database error: ' + error.message + ' (Code: ' + error.code + ')')
-        setStreaming(false)
+        setError('Database error: ' + error.message)
         return
       }
 
-      if (props.onLivePosted && data) props.onLivePosted(data)
+      if (data) {
+        setPostId(data.id)
+        setStreaming(true)
+        if (props.onLivePosted) props.onLivePosted(data)
+      }
     } catch (err: any) {
       console.error('Go live error:', err)
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
@@ -162,13 +160,26 @@ export default function GoLive(props: any) {
   }
 
   const endLive = async () => {
+    try {
+      // Mark post as ended
+      if (postId) {
+        await supabase.from('posts').update({
+          status: 'ended',
+          ended_at: new Date().toISOString(),
+        }).eq('id', postId)
+      }
+    } catch (err) {
+      console.error('Error ending live:', err)
+    }
+
     setStreaming(false)
     setToken('')
     setError('')
+    setPostId(null)
   }
 
   const handleDisconnect = () => {
-    console.log('LiveKit disconnected normally')
+    console.log('LiveKit disconnected')
     endLive()
   }
 
@@ -221,7 +232,7 @@ export default function GoLive(props: any) {
         </div>
 
         <div className="mt-3 text-center text-neutral-500 text-xs">
-          You are broadcasting — viewers can watch but cannot use their camera or mic
+          You are broadcasting live
         </div>
       </div>
     </div>
