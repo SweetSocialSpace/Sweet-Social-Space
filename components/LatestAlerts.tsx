@@ -21,37 +21,9 @@ export function LatestAlerts(){
         const {data}= await supabase.from('alerts').select('*').eq('is_active', true).eq('zip_code', zip).order('created_at',{ascending:false}).limit(5)
         if(mounted && data && data.length > 0){ setAlerts(data as any); setLoading(false); return }
         
-        // NWS live fallback - AUTOMATIC: get coordinates from zip if not available
-        try {
-          let pointLat = lat
-          let pointLng = lng
-          
-          // AUTOMATIC: Fetch coordinates from zip if not available
-          if (!pointLat || !pointLng) {
-            try {
-              const geoRes = await fetch(`/api/zips?zip=${zip}`)
-              if (geoRes.ok) {
-                const geoData = await geoRes.json()
-                if (geoData.lat && geoData.lon) {
-                  pointLat = parseFloat(geoData.lat)
-                  pointLng = parseFloat(geoData.lon)
-                }
-              }
-            } catch (e) {
-              console.log('LatestAlerts: Failed to get coordinates from zip (non-critical):', e)
-            }
-          }
-          
-          // Only try NWS API if we have coordinates now
-          if (pointLat && pointLng) {
-            const res = await fetch(`https://api.weather.gov/alerts/active?point=${pointLat},${pointLng}`, { headers: { 'Accept': 'application/geo+json' } })
-            const json = await res.json()
-            if(mounted && json.features && json.features.length > 0){
-              const live: Alert[] = json.features.slice(0,5).map((f:any, i:number)=>({ id: f.id || `live-${i}`, title: f.properties?.event || 'Live Alert', body: f.properties?.headline || f.properties?.description?.slice(0,120), severity: f.properties?.severity, created_at: f.properties?.sent || new Date().toISOString() }))
-              setAlerts(live)
-            }
-          }
-        } catch {}
+                // Global weather alert fallback - skip US-only NWS API for global compatibility
+        // Note: For global weather alerts, consider integrating a global weather alert service
+        // Current implementation uses database alerts only for global compatibility
         if(mounted) setLoading(false)
       } catch { if(mounted) setLoading(false) }
     }
