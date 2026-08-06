@@ -40,18 +40,23 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
     if (post) { setPostId(post.id); onLivePosted(post) }
     setOpen(true)
 
-    // Start LiveKit egress recording
+       // Start LiveKit egress recording
     setTimeout(async () => {
       try {
+        console.log('Attempting to start egress for room:', rName)
         const egressRes = await fetch('/api/livekit/egress/start', { 
           method:'POST', 
           headers:{'Content-Type':'application/json'}, 
           body: JSON.stringify({ roomName: rName }) 
         })
+        console.log('Egress API response status:', egressRes.status)
         const egressData = await egressRes.json()
+        console.log('Egress API response data:', egressData)
         if (egressData.egressId) {
           console.log('LiveKit egress started:', egressData.egressId)
           setEgressId(egressData.egressId)
+        } else {
+          console.error('Egress API returned no egressId:', egressData)
         }
       } catch (error) {
         console.error('Error starting egress:', error)
