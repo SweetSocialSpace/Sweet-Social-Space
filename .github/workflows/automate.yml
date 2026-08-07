@@ -1,5 +1,4 @@
 # name: Free Automation - GLOBAL - All Components Live
-
 on:
   schedule:
     - cron: '*/10 * * * *'
