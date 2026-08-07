@@ -1,3 +1,10 @@
+function CardShell({ minH, loading, children }) {
+  return (
+    <div style={{ minHeight: minH }} className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 overflow-hidden">
+      {loading? <div className="h-full w-full bg-white/10 animate-pulse rounded-xl min-h-" /> : <div className="animate-in fade-in duration-300">{children}</div>}
+    </div>
+  )
+}
 'use client'
 import GlobalFooter from '@/components/GlobalFooter'
 import { useState, useEffect, Suspense, useCallback } from 'react'
