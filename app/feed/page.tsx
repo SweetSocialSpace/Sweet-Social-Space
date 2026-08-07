@@ -13,7 +13,7 @@ import React from 'react'
 function CardShell({ minH, loading, children }: { minH: string, loading?: boolean, children: React.ReactNode }) {
   return (
     <div style={{ minHeight: minH }} className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 overflow-hidden">
-      {loading? <div className="h-full w-full bg-white/10 animate-pulse rounded-xl min-h-[60px]" /> : <div className="animate-in fade-in duration-300">{children}</div>}
+      {loading? <div className="h-full w-full bg-white/10 animate-pulse rounded-xl min-h-" /> : <div className="animate-in fade-in duration-300">{children}</div>}
     </div>
   )
 }
