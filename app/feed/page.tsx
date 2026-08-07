@@ -178,11 +178,17 @@ function FeedContent() {
           <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
           </div>
       </div>
-    
+            </div>
+      </div>
+
+      <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
+
     </>
   )
 }
-<Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
+    </>
+  )
+}
 export default function FeedPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-neutral-900 flex items-center justify-center text-white">Loading...</div>}>
