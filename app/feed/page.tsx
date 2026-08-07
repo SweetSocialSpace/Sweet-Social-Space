@@ -10,10 +10,10 @@ import GoLive from '@/components/GoLive'
 import JoinLive from '@/components/JoinLive'
 import React from 'react'
 
-function CardShell({ minH, loading, children }: { minH: string, loading?: boolean, children: React.ReactNode }) {
+function CardShell({ minH, children }: { minH: string, children: React.ReactNode }) {
   return (
-    <div style={{ height: minH, contain: 'layout style' as any }} className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 overflow-hidden will-change-auto">
-      {loading ? <div className="h-full w-full bg-white/10 animate-pulse rounded-xl min-h-[60px]" /> : <div className="animate-in fade-in duration-300 h-full">{children}</div>}
+    <div style={{ minHeight: minH }} className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 h-auto overflow-visible">
+      <div className="animate-in fade-in duration-300">{children}</div>
     </div>
   )
 }
@@ -97,21 +97,21 @@ function FeedContent() {
   return (
     <>
       <Safe loader={() => import('@/components/PermissionsGate')} name="PermissionsGate" />
-      <div style={{ height: '64px', contain: 'layout' as any }}><Header /></div>
+      <Header />
       <div className="max-w-[1920px] mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
         <div className="space-y-4 xl:sticky xl:top-20">
-          <CardShell minH="220px"><Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/AIMayor')} name="AIMayor" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/LiveMap')} name="LiveMap" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/trust-meter/TrustMeter')} name="TrustMeter" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/WeatherBar')} name="WeatherBar" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/PinnedAutomatedAlert')} name="PinnedAutomatedAlert" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/EmergencyAlerts')} name="EmergencyAlerts" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" /></CardShell>
-          <CardShell minH="220px"><Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" /></CardShell>
+          <CardShell minH="90px"><Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" /></CardShell>
+          <CardShell minH="110px"><Safe loader={() => import('@/components/AIMayor')} name="AIMayor" /></CardShell>
+          <CardShell minH="100px"><Safe loader={() => import('@/components/LiveMap')} name="LiveMap" /></CardShell>
+          <CardShell minH="70px"><Safe loader={() => import('@/components/trust-meter/TrustMeter')} name="TrustMeter" /></CardShell>
+          <CardShell minH="85px"><Safe loader={() => import('@/components/WeatherBar')} name="WeatherBar" /></CardShell>
+          <CardShell minH="85px"><Safe loader={() => import('@/components/PinnedAutomatedAlert')} name="PinnedAutomatedAlert" /></CardShell>
+          <CardShell minH="90px"><Safe loader={() => import('@/components/EmergencyAlerts')} name="EmergencyAlerts" /></CardShell>
+          <CardShell minH="95px"><Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" /></CardShell>
+          <CardShell minH="180px"><Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" /></CardShell>
         </div>
 
-        <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0" style={{ contain: 'layout' as any }}>
+        <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-white/60 text-xs font-bold">Near</span>
             <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">{isGlobal? displayCity : displayZip}</span>
@@ -160,9 +160,9 @@ function FeedContent() {
         </div>
 
         <div className="space-y-4 xl:sticky xl:top-20">
-          <CardShell minH="350px"><Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" /></CardShell>
-          <CardShell minH="350px"><Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" /></CardShell>
-          <CardShell minH="350px"><Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" /></CardShell>
+          <CardShell minH="280px"><Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" /></CardShell>
+          <CardShell minH="320px"><Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" /></CardShell>
+          <CardShell minH="320px"><Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" /></CardShell>
         </div>
       </div>
       <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
