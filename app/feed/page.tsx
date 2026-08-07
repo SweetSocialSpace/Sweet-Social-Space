@@ -176,9 +176,11 @@ function FeedContent() {
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" />
           <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
-          <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
-        </div>
+          </div>
       </div>
+      
+      <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
+      
     </>
   )
 }
