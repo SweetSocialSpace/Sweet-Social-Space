@@ -39,7 +39,7 @@ export default function GlobalFooter() {
         <div>
           <h4 className="font-black text-white uppercase tracking-widest mb-3">Platform</h4>
           <p className="text-white/40 text-xs leading-relaxed">
-            GLOBAL • LIVE • VERTEBRAE • INDEPENDENT • FAILSAFE • SSL SECURED • 100% VERIFIED • PRIVATE TO 10 MILES OF YOU
+            GLOBAL • LIVE • INDEPENDENT • FAILSAFE • SSL SECURED • 100% VERIFIED • PRIVATE TO 10 MILES OF YOU
           </p>
           <p className="mt-3 text-white/20 text-xs">© 2026 Sweet Social Space</p>
         </div>
