@@ -166,6 +166,7 @@ function FeedContent() {
         </div>
       </div>
 
+      </footer>
       {/* FOOTER NOW AT BOTTOM - NOT IN SIDE COLUMN */}
       <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
 
