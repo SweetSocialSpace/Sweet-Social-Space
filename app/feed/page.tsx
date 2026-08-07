@@ -1,5 +1,4 @@
 'use client'
-import GlobalFooter from '@/components/GlobalFooter'
 import { useState, useEffect, Suspense, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -10,6 +9,14 @@ import WelcomePost from '@/app/components/WelcomePost'
 import GoLive from '@/components/GoLive'
 import JoinLive from '@/components/JoinLive'
 import React from 'react'
+
+function CardShell({ minH, loading, children }: { minH: string, loading?: boolean, children: React.ReactNode }) {
+  return (
+    <div style={{ minHeight: minH }} className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 overflow-hidden">
+      {loading? <div className="h-full w-full bg-white/10 animate-pulse rounded-xl min-h-" /> : <div className="animate-in fade-in duration-300">{children}</div>}
+    </div>
+  )
+}
 
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
   const Comp = dynamic(() => loader().then((m:any)=> m.default || m[name] || m).catch(()=> ({ default: () => null })), { ssr: false, loading: () => null })
@@ -72,7 +79,7 @@ function FeedContent() {
   useEffect(()=>{ if (nearZip) fetchPosts(nearZip, radius) }, [radius])
 
   const handleLivePosted = (newPost:any) => setPosts(prev=>[newPost,...prev])
-  const handleLiveEnded = (endedId: string, videoUrl?: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live'), video_url: videoUrl, media_url: videoUrl, media_urls: videoUrl ? [videoUrl] : undefined} : p))
+  const handleLiveEnded = (endedId: string, videoUrl?: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live'), video_url: videoUrl, media_url: videoUrl, media_urls: videoUrl? [videoUrl] : undefined} : p))
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
@@ -93,15 +100,15 @@ function FeedContent() {
       <Header />
       <div className="max-w- mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
         <div className="space-y-4 xl:sticky xl:top-20">
-          <Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" />
-          <Safe loader={() => import('@/components/AIMayor')} name="AIMayor" />
-          <Safe loader={() => import('@/components/LiveMap')} name="LiveMap" />
-          <Safe loader={() => import('@/components/trust-meter/TrustMeter')} name="TrustMeter" />
-          <Safe loader={() => import('@/components/WeatherBar')} name="WeatherBar" />
-          <Safe loader={() => import('@/components/PinnedAutomatedAlert')} name="PinnedAutomatedAlert" />
-          <Safe loader={() => import('@/components/EmergencyAlerts')} name="EmergencyAlerts" />
-          <Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" />
-          <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
+          <CardShell minH="110px"><Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" /></CardShell>
+          <CardShell minH="140px"><Safe loader={() => import('@/components/AIMayor')} name="AIMayor" /></CardShell>
+          <CardShell minH="120px"><Safe loader={() => import('@/components/LiveMap')} name="LiveMap" /></CardShell>
+          <CardShell minH="90px"><Safe loader={() => import('@/components/trust-meter/TrustMeter')} name="TrustMeter" /></CardShell>
+          <CardShell minH="110px"><Safe loader={() => import('@/components/WeatherBar')} name="WeatherBar" /></CardShell>
+          <CardShell minH="100px"><Safe loader={() => import('@/components/PinnedAutomatedAlert')} name="PinnedAutomatedAlert" /></CardShell>
+          <CardShell minH="100px"><Safe loader={() => import('@/components/EmergencyAlerts')} name="EmergencyAlerts" /></CardShell>
+          <CardShell minH="120px"><Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" /></CardShell>
+          <CardShell minH="120px"><Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" /></CardShell>
         </div>
 
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
@@ -114,13 +121,7 @@ function FeedContent() {
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
-            <GoLive 
-  userId={currentUserId || undefined} 
-  zipCode={nearZip || 'GLOBAL'} 
-  city="" 
-  onLivePosted={handleLivePosted} 
-  onLiveEnded={handleLiveEnded} 
-/>
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city="" onLivePosted={handleLivePosted} onLiveEnded={handleLiveEnded} />
             </div>
           </div>
 
@@ -143,11 +144,7 @@ function FeedContent() {
                   {isEnded && (
                     <>
                       {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
-                        <video 
-                          controls 
-                          className="mt-3 w-full rounded-xl"
-                          src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])}
-                        />
+                        <video controls className="mt-3 w-full rounded-xl" src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])} />
                       )}
                       <div className="mt-3 text-xs text-white bg-gray-800 rounded-full px-3 py-2 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
                     </>
@@ -166,9 +163,11 @@ function FeedContent() {
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" />
           <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
-          <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
         </div>
       </div>
+
+      {/* FOOTER NOW AT BOTTOM - NOT IN SIDE COLUMN */}
+      <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
     </>
   )
 }
