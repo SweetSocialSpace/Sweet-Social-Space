@@ -42,22 +42,90 @@ const PAGES: Record<string, LegalContent> = {
     </div>
   ),
 },
-  security: {
-    title: 'Security',
-    updated: 'July 28, 2026',
-    content: <p>SSL Secured https only TLS 1.3 via Vercel. Supabase Auth RLS encrypted at rest. Report security@sweetsocialspace.com</p>,
-  },
-  verification: {
-    title: 'Verification',
+    security: {
+    title: 'Security Policy',
     updated: 'July 28, 2026',
     content: (
-            <div>
-        <p>1. SSL Secured - https://sweetsocialspace.com TLS 1.3 Vercel</p>
-        <p>2. Domain - sweetsocialspace.com only DNS Vercel iad1</p>
-        <p>3. GLOBAL Test - Incognito /feed shows GLOBAL not hardwired - zip code based only</p>
-        <p>4. Verified Sources - Near GLOBAL Fire Station 3, 63 verified fire_station Events LIVE</p>
-        <p>5. Privacy - Private 10 miles of YOU wherever you are No tracking RLS</p>
-        <p>6. Independent - No Big Tech No robots Speak Freely Love Neighbor</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <h2>Supported Versions</h2>
+        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid #ccc' }}>
+              <th style={{ padding: '8px', textAlign: 'left' }}>Version</th>
+              <th style={{ padding: '8px', textAlign: 'left' }}>Supported</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style={{ borderBottom: '1px solid #eee' }}>
+              <td style={{ padding: '8px' }}>1.0.x</td>
+              <td style={{ padding: '8px' }}>✅</td>
+            </tr>
+            <tr style={{ borderBottom: '1px solid #eee' }}>
+              <td style={{ padding: '8px' }}>&​lt; 1.0</td>
+              <td style={{ padding: '8px' }}>❌</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Reporting a Vulnerability</h2>
+        <p>If you discover a security vulnerability in Sweet Social Space, please report it responsibly.</p>
+        
+        <h3>How to Report</h3>
+        <p><strong>Email:</strong> security@sweetsocialspace.com</p>
+        <p>Please include:</p>
+        <ul>
+          <li>A description of the vulnerability</li>
+          <li>Steps to reproduce the issue</li>
+          <li>Potential impact on users</li>
+          <li>Any suggested fixes (if known)</li>
+        </ul>
+
+        <h3>What to Expect</h3>
+        <ul>
+          <li><strong>Response Time:</strong> We will acknowledge your report within 48 hours</li>
+          <li><strong>Updates:</strong> We will provide regular updates on the remediation progress</li>
+          <li><strong>Resolution:</strong> We aim to resolve critical vulnerabilities within 7 days, moderate within 14 days</li>
+          <li><strong>Disclosure:</strong> We will coordinate disclosure timing with you to ensure users are protected before public announcement</li>
+        </ul>
+
+        <h3>Security Considerations</h3>
+        <p>As a local-first social platform, we prioritize:</p>
+        <ul>
+          <li><strong>Location Privacy:</strong> User location data is protected and only used for neighborhood content filtering</li>
+          <li><strong>Data Minimization:</strong> We collect only necessary information for local social features</li>
+          <li><strong>Anonymous Options:</strong> Users can participate anonymously when desired</li>
+          <li><strong>Secure Authentication:</strong> Using Supabase Auth with email magic links</li>
+          <li><strong>Encrypted Storage:</strong> Sensitive data is encrypted at rest and in transit</li>
+        </ul>
+
+        <h3>Accepted vs Declined</h3>
+        <p><strong>Accepted vulnerabilities include:</strong></p>
+        <ul>
+          <li>Authentication bypasses</li>
+          <li>Data exposure (personal info, location data)</li>
+          <li>Privilege escalation</li>
+          <li>SQL injection or API abuses</li>
+          <li>Cross-site scripting (XSS)</li>
+          <li>Location tracking vulnerabilities</li>
+        </ul>
+
+        <p><strong>Lower priority (may be declined):</strong></p>
+        <ul>
+          <li>UI/UX issues without security impact</li>
+          <li>Performance optimizations</li>
+          <li>Feature requests</li>
+          <li>Third-party dependency issues (we'll address through normal updates)</li>
+        </ul>
+
+        <h3>Recognition</h3>
+        <p>We appreciate responsible disclosure and will:</p>
+        <ul>
+          <li>Credit you in our security advisories (if desired)</li>
+          <li>Send Sweet Social Space merchandise as thanks</li>
+          <li>Invite you to our security contributor program</li>
+        </ul>
+
+        <p>Thank you for helping keep Sweet Social Space safe for local communities everywhere.</p>
       </div>
     ),
   },
