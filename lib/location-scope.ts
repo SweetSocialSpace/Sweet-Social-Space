@@ -1,5 +1,5 @@
 // Shared helpers for location-scoped filtering. Pure JS, safe on client+server.
-// GLOBAL HOUSE - works for any zip on earth, no hard-coded geography - KISS
+// UNIVERSAL HOUSE - works for any zip on earth, no hard-coded geography - KISS
 
 export type ScopeKind = "5mi" | "10mi" | "15mi" | "20mi";
 
@@ -40,7 +40,7 @@ export function milesBetween(lat1: number, lng1: number, lat2: number, lng2: num
   }
 }
 
-// Bounding box - for Supabase query - global
+// Bounding box - for Supabase query - universal
 export function bboxForRadius(lat: number, lng: number, miles: number) {
   try {
     if (typeof lat !== 'number' || typeof lng !== 'number' || isNaN(lat) || isNaN(lng)) {
@@ -59,7 +59,7 @@ export function bboxForRadius(lat: number, lng: number, miles: number) {
   }
 }
 
-// Filter rows by scope - GLOBAL - KISS - only radius
+// Filter rows by scope - UNIVERSAL - KISS - only radius
 export function applyScope<T extends { latitude?: number | null; longitude?: number | null }>(
   rows: T[],
   filter: LocationFilter,
@@ -79,7 +79,7 @@ export function applyScope<T extends { latitude?: number | null; longitude?: num
   }
 }
 
-// Validator - GLOBAL DEFAULT - KISS - defaults to 5mi - inviting
+// Validator - UNIVERSAL DEFAULT - KISS - defaults to 5mi - inviting
 export function normalizeScopeInput(d: Partial<LocationFilter> | undefined): LocationFilter {
   try {
     const allowed: ScopeKind[] = ["5mi", "10mi", "15mi", "20mi"];
