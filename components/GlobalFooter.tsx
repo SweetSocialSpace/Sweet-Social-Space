@@ -8,7 +8,7 @@ export default function GlobalFooter() {
           <h4 className="font-black text-white uppercase tracking-widest mb-3">Verify</h4>
           <ul className="space-y-2 text-white/60">
             <li><Link href="/verification" className="hover:text-white">Verification </Link></li>
-            <li><Link href="/security" className="hover:text-white">Security • SSL Secured</Link></li>
+            <Link href="/security" className="hover:underline">Security Policy</Link>
             <li><Link href="/trust" className="hover:text-white">Trust Meter •</Link></li>
           </ul>
         </div>
