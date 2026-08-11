@@ -15,7 +15,7 @@ const PAGES: Record<string, LegalContent> = {
       <div>
         <p><strong>Welcome to Sweet Social Space. By using sweetsocialspace.com you agree to these Terms of Service.</strong></p>
         <h2>1. What We Are</h2>
-        <p>Hyperlocal private network - your block within 10 miles of YOU wherever you are GLOBAL.</p>
+        <p>Hyperlocal private network - your block within 10 miles of YOU wherever you are Local.</p>
         <h2>2. Eligibility</h2>
         <p>13+ (16+ EU). One account. Zip for proximity. Zip code based location - no IP tracking. Supabase RLS.</p>
         <h2>3. Your Content</h2>
@@ -72,14 +72,14 @@ const PAGES: Record<string, LegalContent> = {
         <p>4. GLOBAL DETECTION - Zip code based only, no IP detection</p>
         <p>5. VERIFIED SOURCES LIVE - Latest Alerts GLOBAL WeatherBar Fire Station 3, 63</p>
         <p>6. SSL SECURED - Full TLS Vercel RLS Supabase</p>
-        <p>7. INDEPENDENT - Not Big Tech Vertebrae independent</p>
+        <p>7. INDEPENDENT - Not Big Tech independent</p>
       </div>
     ),
   },
   about: {
     title: 'About',
     updated: 'July 28, 2026',
-    content: <p>Your block not the world. 10 miles of YOU wherever you are GLOBAL. Independent No Big Tech Speak Freely Love Neighbor.</p>,
+    content: <p>Your Neighborhood not the world. 5,10,15,20 miles of YOU wherever you are local . Independent No Big Tech Speak Freely Love Neighbor.</p>,
   },
   contact: {
     title: 'Contact Us',
