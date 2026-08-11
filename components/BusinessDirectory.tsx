@@ -2,11 +2,14 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
+import { useLocationScope } from '@/hooks/useLocationScope'
+import { applyScope, bboxForRadius } from '@/lib/location-scope'
 
-type Biz = { id: string; name: string; category: string | null }
+type Biz = { id: string; name: string; category: string | null; latitude?: number | null; longitude?: number | null }
 
 export function BusinessDirectory(){
   const { zip, city } = useLocation()
+  const { filter } = useLocationScope()
   const [biz, setBiz] = useState<Biz[]>([])
   const [liveBiz, setLiveBiz] = useState<Biz[]>([])
   const [loading, setLoading] = useState(false)
@@ -59,9 +62,35 @@ export function BusinessDirectory(){
     const load = async () => {
       try {
         const supabase = createClient() as any
-        const {data} = await supabase.from('businesses').select('id,name,category').eq('zip_code', zip).order('verified',{ascending:false}).limit(4)
-        if(mounted && data && data.length > 0){ 
-          setBiz(data as any) 
+        let data: any[] = []
+        
+        // Use radius-based filtering if user has coordinates
+        if (filter.lat != null && filter.lng != null) {
+          const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
+          const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
+          
+          const { data: bizData } = await supabase
+            .from('businesses')
+            .select('id,name,category,latitude,longitude')
+            .gte('latitude', bbox.minLat)
+            .lte('latitude', bbox.maxLat)
+            .gte('longitude', bbox.minLng)
+            .lte('longitude', bbox.maxLng)
+            .order('verified',{ascending:false})
+            .limit(10)
+          
+          if (bizData) {
+            // Apply precise radius filtering
+            data = applyScope(bizData, filter)
+          }
+        } else {
+          // Fallback to zip-based filtering if no coordinates
+          const { data: bizData } = await supabase.from('businesses').select('id,name,category').eq('zip_code', zip).order('verified',{ascending:false}).limit(4)
+          data = bizData || []
+        }
+        
+        if(mounted && data.length > 0){ 
+          setBiz(data) 
         } else { 
           fetchLiveBusinesses() 
         }
@@ -79,7 +108,7 @@ export function BusinessDirectory(){
     }, 20*60*1000)
     
     return ()=>{ mounted = false; try { clearInterval(id) } catch {} }
-  },[zip, city])
+  },[zip, city, filter])
 
   const display = biz.length > 0 ? biz : liveBiz
   const displayArea = zip === 'GLOBAL' || !zip ? (city || 'your area') : zip
@@ -89,7 +118,7 @@ export function BusinessDirectory(){
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
       <p className="font-bold">Local Businesses</p>
-      <p className="text-xs text-white/50 mt-1">Near {displayArea} - Live</p>
+      <p className="text-xs text-white/50 mt-1">Near {displayArea}</p>
       {loading ? <p className="text-sm mt-3 text-white/60">Loading...</p> : 
       display.length===0? <p className="text-sm mt-3 text-white/60">No businesses yet</p> : 
       (<div className="mt-3 space-y-2">{display.map(b=>(<div key={b.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex justify-between"><span className="truncate">{b.name}</span><span className="text-white/40">{b.category||''}</span></div>))}</div>)}
