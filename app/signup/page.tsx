@@ -101,7 +101,7 @@ export default function SignupPage() {
             <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Your email address *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Create a password *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <div className="pt-2 border-t border-white/10">
-              <p className="text-xs font-black tracking-widest text-white/50 mb-2 uppercase">Where are you? (Required — Global)</p>
+             <p className="text-xs font-black tracking-widest text-white/50 mb-2 uppercase">Where are you? (Required)</p>
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-3">
                 <p className="text-xs text-blue-200 font-semibold">🔒 Your Privacy Protected</p>
                 <p className="text-xs text-white/70 mt-1">We use your zip code (not GPS tracking) to show you posts, weather, and alerts near you. Your exact address is never shared.</p>
