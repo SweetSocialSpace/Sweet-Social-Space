@@ -82,7 +82,7 @@ export default function SignupPage() {
         <div className="text-left">
           <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">Facebook shows you the world.<br/>We show you your area.</h1>
           <p className="mt-6 text-lg text-white/90 font-semibold">Your neighbor has a free couch. Another needs a job. Someone nearby just posted an update.</p>
-          <p className="mt-4 text-base text-white/70">Sweet Social Space is personalized to your area within {radius} miles of YOU — wherever you are in the world. GLOBAL feed, local focus.</p>
+         <p className="mt-4 text-base text-white/70">Sweet Social Space is personalized to your area within {radius} miles of YOU — wherever you are in the world. Local feed, local focus.</p>
           <div className="mt-4 bg-white/10 border border-white/20 rounded-xl p-4">
             <p className="text-sm font-bold text-white">📍 Why we need your location:</p>
             <ul className="text-sm text-white/80 mt-2 space-y-1">
