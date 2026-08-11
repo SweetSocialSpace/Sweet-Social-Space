@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Block Map • GLOBAL • Sweet Social Space',
-  description: 'Live block map - global independent vertebrae - auto-detected'
+  title: 'Neighborhood Map • Sweet Social Space',
+  description: 'Live block map  - auto-detected'
 }
 
 export default function BlockMapLayout({ children }: { children: React.ReactNode }) {
@@ -15,7 +15,7 @@ export default function BlockMapLayout({ children }: { children: React.ReactNode
       </div>
       <div className="fixed bottom-2 left-2 right-2 flex justify-center pointer-events-none">
         <div className="text-white/20 text- uppercase tracking-widest bg-black/50 backdrop-blur px-3 py-1 rounded-full border border-white/10">
-          BLOCK MAP • GLOBAL • LIVE • AUTO-DETECTED • VERTEBRAE • INDEPENDENT • FAILSAFE • NEVER SHOWS YOUR BLOCK
+          BLOCK MAP • AUTO-DETECTED • INDEPENDENT • FAILSAFE •
         </div>
       </div>
     </div>
