@@ -19,7 +19,7 @@ export default function AuthForm() {
     setLoading(true)
     setError(null)
     try {
-      const safeZip = (zip && zip.toUpperCase()!=='YOUR NEIGHBORS' && zip.trim()!=='' )? zip :
+     const safeZip = (zip && zip.toUpperCase() !== 'YOUR NEIGHBORS' && zip.trim() !== '') ? zip : ''
       const safeCity = city || ''
 
             const { data, error } = isSignUp
