@@ -142,7 +142,7 @@ export default function ProfilePage(){
       <div className="w-full max-w-2xl bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden">
         <div className="p-4 flex items-center justify-between border-b border-white/10 shrink-0">
           <button onClick={()=> window.location.href='/feed'} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
-          <h1 className="text-lg font-black text-white truncate">@{profile.username || 'yourname'} • {profile.zip || 'GLOBAL'}</h1>
+          <h1 className="text-lg font-black text-white truncate">@{profile.username || 'yourname'} • {profile.zip || 'your area'}</h1>
           <div className="w-16"></div>
         </div>
 
