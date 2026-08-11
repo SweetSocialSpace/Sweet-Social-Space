@@ -2,9 +2,12 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
+import { useLocationScope } from '@/hooks/useLocationScope'
+import { applyScope, bboxForRadius } from '@/lib/location-scope'
 
 export default function KarmaLeaderboard() {
   const { zip: contextZip } = useLocation()
+  const { filter } = useLocationScope()
   const zip = contextZip && contextZip!== 'GLOBAL'? contextZip : 'GLOBAL'
   const [leaders, setLeaders] = useState<any[]>([])
 
@@ -14,17 +17,41 @@ export default function KarmaLeaderboard() {
     const load = async () => {
       try {
         const supabase = createClient() as any
-        // FIX: remove karma_points if column doesn't exist - use only id, display_name
-        // Variable zip per subscriber - GLOBAL never hardcoded
-        const { data, error } = await supabase
-        .from('profiles')
-        .select('id, display_name')
-        .eq('zip_code', zip)
-        .limit(5)
-        if (error) {
-          console.log('Karma leaderboard error:', error.message)
-          return
+        let data: any[] = []
+        
+        // Use radius-based filtering if user has coordinates
+        if (filter.lat != null && filter.lng != null) {
+          const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
+          const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
+          
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('id, display_name, latitude, longitude')
+            .gte('latitude', bbox.minLat)
+            .lte('latitude', bbox.maxLat)
+            .gte('longitude', bbox.minLng)
+            .lte('longitude', bbox.maxLng)
+            .limit(20)
+          
+          if (profileData) {
+            // Apply precise radius filtering
+            data = applyScope(profileData, filter)
+          }
+        } else {
+          // Fallback to zip-based filtering if no coordinates
+          const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('id, display_name')
+          .eq('zip_code', zip)
+          .limit(5)
+          
+          if (error) {
+            console.log('Karma leaderboard error:', error.message)
+            return
+          }
+          data = profileData || []
         }
+        
         if (mounted && data) setLeaders(data)
       } catch (e) {
         console.log('Karma error', e)
@@ -32,7 +59,7 @@ export default function KarmaLeaderboard() {
     }
     load()
     return () => { mounted = false }
-  }, [zip])
+  }, [zip, filter])
 
   if (zip === 'GLOBAL') return null
 
