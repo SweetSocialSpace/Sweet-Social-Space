@@ -7,9 +7,9 @@ export default function GlobalFooter() {
         <div>
           <h4 className="font-black text-white uppercase tracking-widest mb-3">Verify</h4>
           <ul className="space-y-2 text-white/60">
-            <li><Link href="/verification" className="hover:text-white">Verification • GLOBAL</Link></li>
+            <li><Link href="/verification" className="hover:text-white">Verification </Link></li>
             <li><Link href="/security" className="hover:text-white">Security • SSL Secured</Link></li>
-            <li><Link href="/trust" className="hover:text-white">Trust Meter • LIVE</Link></li>
+            <li><Link href="/trust" className="hover:text-white">Trust Meter •</Link></li>
           </ul>
         </div>
         <div>
@@ -25,21 +25,21 @@ export default function GlobalFooter() {
           <ul className="space-y-2 text-white/60">
             <li><Link href="/guarantees" className="hover:text-white">Our Guarantees</Link></li>
             <li><Link href="/faith" className="hover:text-white">Faith Policy</Link></li>
-            <li><Link href="/failsafe" className="hover:text-white">Failsafe • Vertebrae</Link></li>
+            <li><Link href="/failsafe" className="hover:text-white">Failsafe •</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="font-black text-white uppercase tracking-widest mb-3">Contact</h4>
           <ul className="space-y-2 text-white/60">
             <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
-            <li><Link href="/about" className="hover:text-white">About • GLOBAL</Link></li>
-            <li><Link href="/support" className="hover:text-white">Support • LIVE</Link></li>
+            <li><Link href="/about" className="hover:text-white">About •</Link></li>
+            <li><Link href="/support" className="hover:text-white">Support •</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="font-black text-white uppercase tracking-widest mb-3">Platform</h4>
           <p className="text-white/40 text-xs leading-relaxed">
-            GLOBAL • LIVE • INDEPENDENT • FAILSAFE • SSL SECURED • 100% VERIFIED • PRIVATE TO 10 MILES OF YOU
+           INDEPENDENT • FAILSAFE • SSL SECURED • 100% VERIFIED • We care about your privacy 
           </p>
           <p className="mt-3 text-white/20 text-xs">© 2026 Sweet Social Space</p>
         </div>
