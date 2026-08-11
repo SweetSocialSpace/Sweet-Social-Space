@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
+import { useLocationScope } from '@/hooks/useLocationScope'
+import { applyScope, bboxForRadius } from '@/lib/location-scope'
 import MicRecorder from '@/components/mic/MicRecorder'
 import LocationScopeBar from '@/components/LocationScopeBar'
 import LiveNowStrip from '@/components/LiveNowStrip'
@@ -12,13 +14,12 @@ const TAGS = ["General","Alert","Recommendation","Free stuff","Hot take","Lost &
 export default function FeedCenter() {
   const supabase = createClient()
   const { zip: userZip } = useLocation()
+  const { filter, setScope, scope } = useLocationScope()
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState<typeof TAGS[number]>('General')
   const [posts, setPosts] = useState<any[]>([])
   const [zip, setZip] = useState('')
-  const [radius, setRadius] = useState(10)
   const [isPosting, setIsPosting] = useState(false)
-
 
   useEffect(() => {
     if (userZip &&!zip) setZip(userZip)
@@ -26,15 +27,39 @@ export default function FeedCenter() {
 
   const load = async () => {
     if (!zip) return
-    const { data } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('zip_code', zip) 
-    .order('created_at',{ascending:false})
-    .limit(100)
-    if(data) setPosts(data)
+    
+    // Use radius-based filtering if user has coordinates
+    if (filter.lat != null && filter.lng != null) {
+      const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
+      const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
+      
+      const { data } = await supabase
+        .from('posts')
+        .select('*')
+        .gte('latitude', bbox.minLat)
+        .lte('latitude', bbox.maxLat)
+        .gte('longitude', bbox.minLng)
+        .lte('longitude', bbox.maxLng)
+        .order('created_at',{ascending:false})
+        .limit(100)
+      
+      if (data) {
+        // Apply precise radius filtering
+        const filtered = applyScope(data, filter)
+        setPosts(filtered)
+      }
+    } else {
+      // Fallback to zip-based filtering if no coordinates
+      const { data } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('zip_code', zip) 
+        .order('created_at',{ascending:false})
+        .limit(100)
+      if(data) setPosts(data)
+    }
   }
-  useEffect(()=>{ if (zip) load() }, [zip])
+  useEffect(()=>{ load() }, [zip, filter.scope, filter.lat, filter.lng])
 
   const submit = async ()=>{
     ;(window as any).__stopMic?.()
@@ -43,12 +68,22 @@ export default function FeedCenter() {
     try {
       const { data:{ user } } = await supabase.auth.getUser()
       if(!user) return
-      await supabase.from('posts').insert({
+      
+      // Get user's coordinates from location scope for location-based posting
+      const postData: any = {
         user_id: user.id,
         body: draft.trim(),
         tag,
         zip_code: zip 
-      })
+      }
+      
+      // Add coordinates if available for radius-based filtering
+      if (filter.lat != null && filter.lng != null) {
+        postData.latitude = filter.lat
+        postData.longitude = filter.lng
+      }
+      
+      await supabase.from('posts').insert(postData)
       setDraft('')
       await load()
     } finally {
@@ -58,7 +93,7 @@ export default function FeedCenter() {
 
   return (
     <div className="space-y-4">
-      <LocationScopeBar radius={radius} setRadius={setRadius} />
+      <LocationScopeBar />
       <LiveNowStrip />
 
       <div className="bg-white rounded-2xl p-6 shadow-xl">
@@ -85,7 +120,7 @@ export default function FeedCenter() {
         </button>
       </div>
 
-            <div className="space-y-4">
+          <div className="space-y-4">
         {posts.map(p=>(
           <div key={p.id} className="bg-white rounded-2xl p-5">
             <p className="text-black whitespace-pre-wrap text-sm break-words leading-relaxed">{p.body}</p>
