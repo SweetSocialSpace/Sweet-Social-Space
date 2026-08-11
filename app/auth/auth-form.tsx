@@ -19,7 +19,7 @@ export default function AuthForm() {
     setLoading(true)
     setError(null)
     try {
-      const safeZip = (zip && zip.toUpperCase()!=='YOUR BLOCK' && zip.trim()!=='' )? zip : 'GLOBAL'
+      const safeZip = (zip && zip.toUpperCase()!=='YOUR NEIGHBORS' && zip.trim()!=='' )? zip :
       const safeCity = city || ''
 
             const { data, error } = isSignUp
@@ -59,7 +59,7 @@ export default function AuthForm() {
 
   return (
     <form onSubmit={handleAuth} className="space-y-4">
-      <div className="text-white/30 text- uppercase tracking-widest text-center">GLOBAL • {zip} • {city} • Auto-detected • Vertebrae</div>
+      <div className="text-white/30 text- uppercase tracking-widest text-center"> • {zip} • {city} • Auto-detected •</div>
       <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 rounded bg-gray-800 text-white border border-gray-700" required />
       <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 rounded bg-gray-800 text-white border border-gray-700" required />
       {error && <p className="text-red-500 text-sm">{error}</p>}
