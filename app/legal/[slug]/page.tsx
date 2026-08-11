@@ -15,15 +15,15 @@ const PAGES: Record<string, LegalContent> = {
       <div>
         <p><strong>Welcome to Sweet Social Space. By using sweetsocialspace.com you agree to these Terms of Service.</strong></p>
         <h2>1. What We Are</h2>
-        <p>Hyperlocal private network - your block within 10 miles of YOU wherever you are Local.</p>
+        <p>Hyperlocal private network - your block within 5-20 miles of YOU wherever you are.</p>
         <h2>2. Eligibility</h2>
         <p>13+ (16+ EU). One account. Zip for proximity. Zip code based location - no IP tracking. Supabase RLS.</p>
         <h2>3. Your Content</h2>
-        <p>You own it. License to display to neighbors within 10 miles. Delete anytime.</p>
+        <p>You own it. License to display to neighbors within your chosen radius. Delete anytime.</p>
         <h2>4. Rules</h2>
         <p>Speak Freely Love Neighbor. No harassment, no illegal, no spam bots. No shadowbans for faith.</p>
         <h2>5. Privacy</h2>
-        <p>Minimal email zip city. No selling. No Pixel. Private 10 miles of YOU.</p>
+        <p>Minimal email zip city. No selling. No Pixel. Private 5-20 miles of YOU.</p>
         <h2>6. Contact</h2>
         <p>support@sweetsocialspace.com</p>
       </div>
@@ -34,15 +34,15 @@ const PAGES: Record<string, LegalContent> = {
   updated: 'July 28, 2026',
   content: (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <p><strong>We built Sweet Social Space to be private - your block, not the world.</strong> We only ask for what we need to put you near neighbors within 10 miles of YOU.</p>
+      <p><strong>We built Sweet Social Space to be private - your block, not the world.</strong> We only ask for what we need to put you near neighbors within 5-20 miles of YOU.</p>
       <p><strong>What We Collect:</strong> Email to log you in, username you choose, zip and city for proximity. No IP tracking - purely zip code based location.</p>
-      <p><strong>What We NEVER Do:</strong> No selling your data. Ever. No Facebook Pixel. No Google trackers. No ad networks watching your feed. Your feed is chronological by zip_code, not by algorithm selling your attention. Supabase Row Level Security means even we can't read what we shouldn't.</p>
+      <p><strong>What We NEVER Do:</strong> No selling your data. Ever. No Facebook Pixel. No Google trackers. No ad networks watching your feed. Your feed is chronological by zip_code and radius, not by algorithm selling your attention. Supabase Row Level Security means even we can't read what we shouldn't.</p>
       <p><strong>Your Rights:</strong> You own you. View, correct, or delete your info anytime via Profile. Request export or deletion at privacy@sweetsocialspace.com - we respond within 48 hours. No dark patterns.</p>
-      <p><strong>Why We Care:</strong> Independent - No Big Tech. We live on your block too. Speak Freely Love Neighbor means your porch talk stays on your porch - within 10 miles, SSL SECURED, TLS 1.3 via Vercel, not sold to the world.</p>
+      <p><strong>Why We Care:</strong> Independent - No Big Tech. We live on your block too. Speak Freely Love Neighbor means your porch talk stays on your porch - within 5-20 miles, SSL SECURED, TLS 1.3 via Vercel, not sold to the world.</p>
     </div>
   ),
 },
-    security: {
+  security: {
     title: 'Security Policy',
     updated: 'July 28, 2026',
     content: (
@@ -129,16 +129,30 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
+  verification: {
+    title: 'Verification',
+    updated: 'July 28, 2026',
+    content: (
+            <div>
+        <p>1. SSL Secured - https://sweetsocialspace.com TLS 1.3 Vercel</p>
+        <p>2. Domain - sweetsocialspace.com only DNS Vercel iad1</p>
+        <p>3. LOCAL Test - Incognito /feed shows your local area - zip code based only</p>
+        <p>4. Verified Sources - Local Fire Stations, verified local businesses, Events near you</p>
+        <p>5. Privacy - Private 5-20 miles of YOU wherever you are No tracking RLS</p>
+        <p>6. Independent - No Big Tech No robots Speak Freely Love Neighbor</p>
+      </div>
+    ),
+  },
   guarantees: {
     title: 'Our Guarantees',
     updated: 'July 28, 2026',
     content: (
       <div>
-        <p>1. YOUR BLOCK FIRST - Private within 10 miles of YOU GLOBAL</p>
+        <p>1. YOUR BLOCK FIRST - Private within 5-20 miles of YOU</p>
         <p>2. NO SHADOWBANS FOR FAITH - SPEAK FREELY LOVE YOUR NEIGHBOR</p>
-        <p>3. NO ROBOTS - Chronological by zip_code no bots</p>
-        <p>4. GLOBAL DETECTION - Zip code based only, no IP detection</p>
-        <p>5. VERIFIED SOURCES LIVE - Latest Alerts GLOBAL WeatherBar Fire Station 3, 63</p>
+        <p>3. NO ROBOTS - Chronological by zip_code and radius, no bots</p>
+        <p>4. LOCAL DETECTION - Zip code based only, no IP detection</p>
+        <p>5. VERIFIED SOURCES LIVE - Latest Alerts, local weather, Fire Stations, verified businesses</p>
         <p>6. SSL SECURED - Full TLS Vercel RLS Supabase</p>
         <p>7. INDEPENDENT - Not Big Tech independent</p>
       </div>
@@ -147,7 +161,7 @@ const PAGES: Record<string, LegalContent> = {
   about: {
     title: 'About',
     updated: 'July 28, 2026',
-    content: <p>Your Neighborhood not the world. 5,10,15,20 miles of YOU wherever you are local . Independent No Big Tech Speak Freely Love Neighbor.</p>,
+    content: <p>Your Neighborhood not the world. 5,10,15,20 miles of YOU wherever you are local. Independent No Big Tech Speak Freely Love Neighbor.</p>,
   },
   contact: {
     title: 'Contact Us',
@@ -159,9 +173,8 @@ const PAGES: Record<string, LegalContent> = {
 <p><strong>DMCA / Copyright</strong><br/>If you believe content infringes your copyright, email legal@sweetsocialspace.com with: (1) description of work, (2) URL on site, (3) your contact, (4) good faith statement, (5) signature. We respond within 48 hours and remove verified infringement.</p>
 <p><strong>Governing Law</strong><br/>Disputes shall be resolved through good faith negotiations. If unresolved, disputes may be resolved through binding arbitration in a mutually agreed jurisdiction, respecting applicable international laws and regulations.</p>
 <p><strong>Contact</strong><br/>Legal: legal@sweetsocialspace.com<br/>Support: support@sweetsocialspace.com<br/>Security: security@sweetsocialspace.com</p>
-<p><strong>Platform</strong><br/>Sweet Social Space • GLOBAL • SSL SECURED • Zip code based only • Supabase RLS • Vercel iad1 • Independent - No Big Tech.</p>
-</div>
-},
+<p><strong>Platform</strong><br/>Sweet Social Space • Works Anywhere • SSL SECURED • Zip code based only • Supabase RLS • Vercel iad1 • Independent - No Big Tech.</p>
+</div>},
 }
 
 const ALIASES: Record<string, string> = {
