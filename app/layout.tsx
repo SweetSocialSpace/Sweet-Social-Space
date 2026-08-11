@@ -4,7 +4,7 @@ import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
   title: 'Sweet Social Space • Your Neighborhood',
-  description: 'Facebook shows you the world. We show you your Neighborhood -5,10,15,20 miles of YOU  - Neighbors First- independent,We care about your "PRIVACY"
+  description: "Facebook shows you the world. We show you your Neighborhood - 5,10,15,20 miles of YOU - Neighbors First - independent, We care about your 'PRIVACY'",
   manifest: '/manifest.json'
 }
 
