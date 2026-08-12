@@ -35,7 +35,6 @@ const nextConfig = {
       { source: '/security', destination: '/legal/security', permanent: true },
       { source: '/verification', destination: '/legal/verification', permanent: true },
       { source: '/guarantees', destination: '/legal/guarantees', permanent: true },
-      { source: '/about', destination: '/legal/about', permanent: true },
       { source: '/legal', destination: '/legal/legal', permanent: false },
     ]
   },
