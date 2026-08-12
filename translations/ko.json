@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "위치 설정",
     "locating": "위치 파악 중..."
+  },
+    "filters": {
+    "all": "전체",
+    "faith": "신앙",
+    "general": "일반",
+    "safety": "안전",
+    "forSale": "판매",
+    "free": "무료",
+    "lostPet": "분실된 반려동물",
+    "event": "이벤트",
+    "help": "도움",
+    "recommend": "추천"
   }
 }
