@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profiel",
+    "settings": "Instellingen",
+    "signOut": "Uitloggen"
+  },
+  "feed": {
+    "whatsHappening": "Wat er gebeurt in",
+    "postAs": "POST ALS",
+    "in": "IN",
+    "loading": "Laden..."
+  },
+  "common": {
+    "backToFeed": "Terug naar Feed",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "error": "Fout",
+    "loading": "Laden..."
+  },
+  "weather": {
+    "weather": "Weer",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Locatie instellen",
+    "locating": "Locatie bepalen..."
+  }
+}
