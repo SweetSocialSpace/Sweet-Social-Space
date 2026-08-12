@@ -9,7 +9,7 @@ const PRICE_CENTS = 2900
 
 export default function ClaimBusinessPage() {
   const { zip: contextZip, city } = useLocation()
-  const zip = (contextZip && contextZip.toUpperCase()!=='YOUR BLOCK' && contextZip.trim()!==''? contextZip : 'GLOBAL')
+  const zip = (contextZip && contextZip.toUpperCase()!=='YOUR BLOCK' && contextZip.trim()!==''? contextZip : contextZip || 'your area')
   const [business, setBusiness] = useState('')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -18,7 +18,7 @@ export default function ClaimBusinessPage() {
     if (!business.trim() ||!email.trim()) return
     setLoading(true)
     try {
-      const safeZip = zip === 'GLOBAL'? 'GLOBAL' : zip
+      const safeZip = !zip || zip === 'your area' ? 'your area' : zip
       const res = await fetch('/api/business/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -38,7 +38,7 @@ export default function ClaimBusinessPage() {
     <div className="min-h-screen bg-black text-white p-6 max-w-2xl mx-auto">
       <div className="mt-6 flex items-center justify-between">
         <Link href="/feed" className="text-white/60 hover:text-white text-sm">
-          ← Back to {zip==='GLOBAL'? 'Feed' : `${zip} • ${city}`}
+          ← Back to {(!zip || zip === 'your area')? 'Feed' : `${zip} • ${city}`}
         </Link>
         <Link href="/feed" className="text-white/40 hover:text-white text-sm">
           Not now
@@ -46,7 +46,7 @@ export default function ClaimBusinessPage() {
       </div>
 
       <h1 className="text-3xl font-black mt-8 tracking-tight">Claim Your Business on Sweet Social Space</h1>
-      <p className="text-white/60 mt-2">Own your block in {zip==='GLOBAL'? (city || 'your city') : `${city} ${zip}`} - {PRICE_DISPLAY} - Verified badge + post as business</p>
+      <p className="text-white/60 mt-2">Own your block in {(!zip || zip === 'your area')? (city || 'your city') : `${city} ${zip}`} - {PRICE_DISPLAY} - Verified badge + post as business</p>
 
       <div className="mt-8 space-y-4 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-pink-600/10 pointer-events-none" />
@@ -64,21 +64,21 @@ export default function ClaimBusinessPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 rounded-xl bg-black border border-white/20 focus:border-purple-500 outline-none"
           />
-          <div className="text- text-white/30 uppercase tracking-widest">Zip: {zip} • {city} • GLOBAL • Auto-detected • VERTEBRAE • Independent</div>
+          <div className="text- text-white/30 uppercase tracking-widest">Zip: {zip || 'your area'} • {city || 'your city'} • Auto-detected • Independent</div>
 
           <button
             onClick={handleClaim}
             disabled={loading ||!business.trim() ||!email.trim()}
             className="w-full bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-xl font-black disabled:opacity-50 hover:scale-[1.01] transition-all"
           >
-            {loading? 'Creating Stripe Checkout...' : `Claim for ${PRICE_DISPLAY} → ${zip}`}
+            {loading? 'Creating Stripe Checkout...' : `Claim for ${PRICE_DISPLAY} → ${zip || 'your area'}`}
           </button>
 
           <Link href="/feed" className="block text-center text-sm text-white/40 hover:text-white/70 mt-2">
             Cancel and return to feed
           </Link>
 
-          <p className="text-xs text-white/30 text-center">Powered by Stripe - Cancel anytime • GLOBAL • {zip} • FAILSAFE</p>
+          <p className="text-xs text-white/30 text-center">Powered by Stripe - Cancel anytime • {zip || 'your area'} • FAILSAFE</p>
         </div>
       </div>
     </div>
