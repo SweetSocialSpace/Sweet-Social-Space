@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Perfil",
+    "settings": "Configurações",
+    "signOut": "Sair"
+  },
+  "feed": {
+    "whatsHappening": "O que está acontecendo em",
+    "postAs": "PUBLICAR COMO",
+    "in": "EM",
+    "loading": "Carregando..."
+  },
+  "common": {
+    "backToFeed": "Voltar ao Feed",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "error": "Erro",
+    "loading": "Carregando..."
+  },
+  "weather": {
+    "weather": "Clima",
+    "live": "AO VIVO"
+  },
+  "location": {
+    "setLocation": "Definir localização",
+    "locating": "Localizando..."
+  }
+}
