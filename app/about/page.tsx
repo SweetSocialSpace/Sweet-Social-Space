@@ -5,6 +5,11 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-black text-white p-6 max-w-4xl mx-auto">
       <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <Link href="/feed" className="text-white/60 hover:text-white text-sm">
+            ← Back to Feed
+          </Link>
+        </div>
         <h1 className="text-3xl font-black mb-2">About Sweet Social Space</h1>
         <p className="text-white/60">Your neighborhood, not the world</p>
       </div>
@@ -143,7 +148,7 @@ export default function AboutPage() {
 
         {/* Contact */}
         <div className="text-center text-white/40 text-sm">
-          <p>Built for sweetsocialspace.com</p>
+          <p>sweetsocialspace.com</p>
           <p className="mt-2">Questions? <Link href="/contact" className="text-white/60 hover:underline">Contact Us</Link></p>
         </div>
       </div>
