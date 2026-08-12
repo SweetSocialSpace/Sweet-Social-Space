@@ -1,7 +1,17 @@
 import './globals.css'
 import { LocationProvider } from '@/lib/location-context'
-import { LanguageProvider } from '@/lib/language-context'
 import type { Metadata, Viewport } from 'next'
+import { LanguageProvider } from './context/LanguageContext'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
+    </html>
+  )
+}
 
 export const metadata: Metadata = {
   title: 'Sweet Social Space • Your Neighborhood',
