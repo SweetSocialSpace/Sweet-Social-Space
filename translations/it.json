@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "Imposta posizione",
     "locating": "Localizzazione..."
+  },
+    "filters": {
+    "all": "Tutti",
+    "faith": "Fede",
+    "general": "Generale",
+    "safety": "Sicurezza",
+    "forSale": "In Vendita",
+    "free": "Gratuito",
+    "lostPet": "Animale Smarrito",
+    "event": "Evento",
+    "help": "Aiuto",
+    "recommend": "Raccomanda"
   }
 }
