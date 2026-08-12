@@ -129,7 +129,7 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
-  verification: {
+    verification: {
     title: 'Verification',
     updated: 'July 28, 2026',
     content: (
@@ -143,7 +143,7 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
-  guarantees: {
+   guarantees: {
     title: 'Our Guarantees',
     updated: 'July 28, 2026',
     content: (
@@ -175,8 +175,6 @@ const PAGES: Record<string, LegalContent> = {
 <p><strong>Contact</strong><br/>Legal: legal@sweetsocialspace.com<br/>Support: support@sweetsocialspace.com<br/>Security: security@sweetsocialspace.com</p>
 <p><strong>Platform</strong><br/>Sweet Social Space • Works Anywhere • SSL SECURED • Zip code based only • Supabase RLS • Vercel iad1 • Independent - No Big Tech.</p>
 </div>},
-}
-
 const ALIASES: Record<string, string> = {
   guarantee: 'guarantees',
   term: 'terms',
