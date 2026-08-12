@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "피드",
+    "profile": "프로필",
+    "settings": "설정",
+    "signOut": "로그아웃"
+  },
+  "feed": {
+    "whatsHappening": "에서 무슨 일이 일어나고 있나",
+    "postAs": "로 게시",
+    "in": "에서",
+    "loading": "로딩 중..."
+  },
+  "common": {
+    "backToFeed": "피드로 돌아가기",
+    "save": "저장",
+    "cancel": "취소",
+    "error": "오류",
+    "loading": "로딩 중..."
+  },
+  "weather": {
+    "weather": "날씨",
+    "live": "라이브"
+  },
+  "location": {
+    "setLocation": "위치 설정",
+    "locating": "위치 파악 중..."
+  }
+}
