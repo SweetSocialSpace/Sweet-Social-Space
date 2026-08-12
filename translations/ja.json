@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "位置を設定",
     "locating": "位置情報を取得中..."
+  },
+    "filters": {
+    "all": "すべて",
+    "faith": "信仰",
+    "general": "一般",
+    "safety": "安全",
+    "forSale": "販売中",
+    "free": "無料",
+    "lostPet": "迷い犬",
+    "event": "イベント",
+    "help": "ヘルプ",
+    "recommend": "おすすめ"
   }
 }
