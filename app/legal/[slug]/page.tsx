@@ -158,11 +158,6 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
-  contact: {
-    title: 'Contact Us',
-    updated: 'August 11, 2026',
-    content: <p>Support support@sweetsocialspace.com Verification verification@sweetsocialspace.com Legal legal@sweetsocialspace.com</p>,
-  },
   legal: { title: 'Legal', updated: 'August 11, 2026', content:
 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 <p><strong>DMCA / Copyright</strong><br/>If you believe content infringes your copyright, email legal@sweetsocialspace.com with: (1) description of work, (2) URL on site, (3) your contact, (4) good faith statement, (5) signature. We respond within 48 hours and remove verified infringement.</p>
