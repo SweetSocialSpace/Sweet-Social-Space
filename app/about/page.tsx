@@ -143,7 +143,7 @@ export default function AboutPage() {
 
         {/* Contact */}
         <div className="text-center text-white/40 text-sm">
-          <p>Built for Harry S Sweet • sweetsocialspace.com</p>
+          <p>Built for sweetsocialspace.com</p>
           <p className="mt-2">Questions? <Link href="/contact" className="text-white/60 hover:underline">Contact Us</Link></p>
         </div>
       </div>
