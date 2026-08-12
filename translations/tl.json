@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "Itakda ang lokasyon",
     "locating": "Naka-locate..."
+  },
+    "filters": {
+    "all": "Lahat",
+    "faith": "Paniniwala",
+    "general": "Pangkalahatan",
+    "safety": "Kaligtasan",
+    "forSale": "Para Sa Benta",
+    "free": "Libre",
+    "lostPet": "Nawawalang Alagang Hayop",
+    "event": "Kaganapan",
+    "help": "Tulong",
+    "recommend": "Rekomenda"
   }
 }
