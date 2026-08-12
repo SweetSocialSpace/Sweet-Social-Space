@@ -1,25 +1,25 @@
 {
   "nav": {
     "feed": "Feed",
-    "about": "About",
-    "contact": "Contact",
-    "support": "Support"
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "support": "Soporte"
   },
   "footer": {
-    "verify": "Verify",
+    "verify": "Verificar",
     "legal": "Legal",
-    "guarantees": "Guarantees",
-    "contact": "Contact",
-    "platform": "Platform"
+    "guarantees": "Garantías",
+    "contact": "Contacto",
+    "platform": "Plataforma"
   },
   "feed": {
-    "whatsHappening": "What's happening in",
-    "postAs": "POST AS",
-    "in": "IN"
+    "whatsHappening": "Qué está pasando en",
+    "postAs": "PUBLICAR COMO",
+    "in": "EN"
   },
   "common": {
-    "backToFeed": "Back to Feed",
-    "loading": "Loading...",
+    "backToFeed": "Volver al Feed",
+    "loading": "Cargando...",
     "error": "Error"
   }
 }
