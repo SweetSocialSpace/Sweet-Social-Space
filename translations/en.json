@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profile",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "feed": {
+    "whatsHappening": "What's happening in",
+    "postAs": "POST AS",
+    "in": "IN",
+    "loading": "Loading..."
+  },
+  "common": {
+    "backToFeed": "Back to Feed",
+    "save": "Save",
+    "cancel": "Cancel",
+    "error": "Error",
+    "loading": "Loading..."
+  },
+  "weather": {
+    "weather": "Weather",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Set location",
+    "locating": "Locating..."
+  }
+}
