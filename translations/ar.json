@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "الخلاصة",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "signOut": "تسجيل الخروج"
+  },
+  "feed": {
+    "whatsHappening": "ما يحدث في",
+    "postAs": "نشر كـ",
+    "in": "في",
+    "loading": "جاري التحميل..."
+  },
+  "common": {
+    "backToFeed": "العودة إلى الخلاصة",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "error": "خطأ",
+    "loading": "جاري التحميل..."
+  },
+  "weather": {
+    "weather": "الطقس",
+    "live": "مباشر"
+  },
+  "location": {
+    "setLocation": "تعيين الموقع",
+    "locating": "جاري تحديد الموقع..."
+  }
+}
