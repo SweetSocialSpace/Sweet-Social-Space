@@ -10,7 +10,7 @@ type LegalContent = {
 const PAGES: Record<string, LegalContent> = {
   terms: {
     title: 'Terms of Service',
-    updated: 'July 28, 2026',
+    updated: 'August 11, 2026',
     content: (
       <div>
         <p><strong>Welcome to Sweet Social Space. By using sweetsocialspace.com you agree to these Terms of Service.</strong></p>
@@ -31,7 +31,7 @@ const PAGES: Record<string, LegalContent> = {
   },
   privacy: {
   title: 'Privacy Policy',
-  updated: 'July 28, 2026',
+  updated: 'August 11, 2026',
   content: (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       <p><strong>We built Sweet Social Space to be private - your block, not the world.</strong> We only ask for what we need to put you near neighbors within 5-20 miles of YOU.</p>
@@ -44,7 +44,7 @@ const PAGES: Record<string, LegalContent> = {
 },
   security: {
     title: 'Security Policy',
-    updated: 'July 28, 2026',
+    updated: 'August 11, 2026',
     content: (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <h2>Supported Versions</h2>
@@ -129,9 +129,9 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
-    verification: {
+  verification: {
     title: 'Verification',
-    updated: 'July 28, 2026',
+    updated: 'August 11, 2026',
     content: (
             <div>
         <p>1. SSL Secured - https://sweetsocialspace.com TLS 1.3 Vercel</p>
@@ -143,9 +143,9 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
-   guarantees: {
+  guarantees: {
     title: 'Our Guarantees',
-    updated: 'July 28, 2026',
+    updated: 'August 11, 2026',
     content: (
       <div>
         <p>1. YOUR BLOCK FIRST - Private within 5-20 miles of YOU</p>
@@ -160,21 +160,23 @@ const PAGES: Record<string, LegalContent> = {
   },
   about: {
     title: 'About',
-    updated: 'July 28, 2026',
+    updated: 'August 11, 2026',
     content: <p>Your Neighborhood not the world. 5,10,15,20 miles of YOU wherever you are local. Independent No Big Tech Speak Freely Love Neighbor.</p>,
   },
   contact: {
     title: 'Contact Us',
-    updated: 'July 28, 2026',
+    updated: 'August 11, 2026',
     content: <p>Support support@sweetsocialspace.com Verification verification@sweetsocialspace.com Legal legal@sweetsocialspace.com</p>,
   },
-    legal: { title: 'Legal', updated: 'July 28, 2026', content:
+  legal: { title: 'Legal', updated: 'August 11, 2026', content:
 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 <p><strong>DMCA / Copyright</strong><br/>If you believe content infringes your copyright, email legal@sweetsocialspace.com with: (1) description of work, (2) URL on site, (3) your contact, (4) good faith statement, (5) signature. We respond within 48 hours and remove verified infringement.</p>
 <p><strong>Governing Law</strong><br/>Disputes shall be resolved through good faith negotiations. If unresolved, disputes may be resolved through binding arbitration in a mutually agreed jurisdiction, respecting applicable international laws and regulations.</p>
 <p><strong>Contact</strong><br/>Legal: legal@sweetsocialspace.com<br/>Support: support@sweetsocialspace.com<br/>Security: security@sweetsocialspace.com</p>
 <p><strong>Platform</strong><br/>Sweet Social Space • Works Anywhere • SSL SECURED • Zip code based only • Supabase RLS • Vercel iad1 • Independent - No Big Tech.</p>
 </div>},
+}
+
 const ALIASES: Record<string, string> = {
   guarantee: 'guarantees',
   term: 'terms',
