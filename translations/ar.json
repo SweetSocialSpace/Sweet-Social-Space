@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "تعيين الموقع",
     "locating": "جاري تحديد الموقع..."
+  },
+    "filters": {
+    "all": "الكل",
+    "faith": "الإيمان",
+    "general": "عام",
+    "safety": "السلامة",
+    "forSale": "للبيع",
+    "free": "مجاني",
+    "lostPet": "حيوان مفقود",
+    "event": "حدث",
+    "help": "مساعدة",
+    "recommend": "توصية"
   }
 }
