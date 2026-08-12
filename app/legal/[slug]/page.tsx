@@ -158,11 +158,6 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
-  about: {
-    title: 'About',
-    updated: 'August 11, 2026',
-    content: <p>Your Neighborhood not the world. 5,10,15,20 miles of YOU wherever you are local. Independent No Big Tech Speak Freely Love Neighbor.</p>,
-  },
   contact: {
     title: 'Contact Us',
     updated: 'August 11, 2026',
