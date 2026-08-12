@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "フィード",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "signOut": "ログアウト"
+  },
+  "feed": {
+    "whatsHappening": "で何が起きている",
+    "postAs": "として投稿",
+    "in": "で",
+    "loading": "読み込み中..."
+  },
+  "common": {
+    "backToFeed": "フィードに戻る",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "error": "エラー",
+    "loading": "読み込み中..."
+  },
+  "weather": {
+    "weather": "天気",
+    "live": "ライブ"
+  },
+  "location": {
+    "setLocation": "位置を設定",
+    "locating": "位置情報を取得中..."
+  }
+}
