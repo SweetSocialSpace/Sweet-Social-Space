@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "设置位置",
     "locating": "定位中..."
+  },
+    "filters": {
+    "all": "全部",
+    "faith": "信仰",
+    "general": "一般",
+    "safety": "安全",
+    "forSale": "出售",
+    "free": "免费",
+    "lostPet": "丢失宠物",
+    "event": "活动",
+    "help": "帮助",
+    "recommend": "推荐"
   }
 }
