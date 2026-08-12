@@ -143,18 +143,18 @@ const PAGES: Record<string, LegalContent> = {
       </div>
     ),
   },
-  guarantees: {
+    guarantees: {
     title: 'Our Guarantees',
     updated: 'August 11, 2026',
     content: (
-      <div>
-        <p>1. YOUR BLOCK FIRST - Private within 5-20 miles of YOU</p>
-        <p>2. NO SHADOWBANS FOR FAITH - SPEAK FREELY LOVE YOUR NEIGHBOR</p>
-        <p>3. NO ROBOTS - Chronological by zip_code and radius, no bots</p>
-        <p>4. LOCAL DETECTION - Zip code based only, no IP detection</p>
-        <p>5. VERIFIED SOURCES LIVE - Latest Alerts, local weather, Fire Stations, verified businesses</p>
-        <p>6. SSL SECURED - Full TLS Vercel RLS Supabase</p>
-        <p>7. INDEPENDENT - Not Big Tech independent</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <p><strong>🏘️ Your Block First</strong><br/>All content is private within 5-20 miles of where you are. Your porch talk stays on your porch - not shared globally.</p>
+        <p><strong>🗣️ Speak Freely</strong><br/>No shadowbans for faith or controversial topics. Open dialogue is welcome. Love your neighbor.</p>
+        <p><strong>🤖 No Algorithms, No Bots</strong><br/>Your feed is chronological by zip code and radius. No bots, no algorithm manipulation, no ads selling your attention.</p>
+        <p><strong>📍 Zip Code Based Only</strong><br/>We use your zip code for location - no IP tracking, no GPS detection. Your privacy is protected.</p>
+        <p><strong>✅ Verified Sources Live</strong><br/>Real-time alerts from local fire departments, police, weather services, and verified businesses in your area.</p>
+        <p><strong>🔒 SSL Secured</strong><br/>Full TLS encryption via Vercel. Supabase Row Level Security protects your data at rest and in transit.</p>
+        <p><strong>🚫 Independent Platform</strong><br/>No Big Tech. No Facebook, no Google, no algorithm manipulation. Built for communities, not shareholders.</p>
       </div>
     ),
   },
