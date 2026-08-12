@@ -3,12 +3,14 @@ import { NextResponse } from 'next/server'
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const rawZip = (searchParams.get('zip') || '').trim()
-  if (!rawZip || rawZip.toUpperCase() === 'GLOBAL') {
-    return NextResponse.json({ city: 'your area', zip: rawZip, country: 'GLOBAL' })
+  const lang = searchParams.get('lang') || 'en'
+  
+  if (!rawZip || rawZip.toUpperCase() === 'YOUR NEIGHBORHOOD') {
+    return NextResponse.json({ city: 'your area', zip: rawZip, country: '' })
   }
   const zip = rawZip.replace(/\s+/g, '')
 
-  // Try global zip lookup - multiple countries, not US-specific
+  // Try zip lookup - supports many countries for local users worldwide
   const countryCodes = ['us','ca','gb','de','au','jp','fr','it','es','nl','in','br','mx','ch','at','be','dk','fi','gr','ie','no','pl','pt','se','tr','cz','hu','ro','sk','si','bg','hr','cy','ee','lv','lt','lu','mt','ru','ua','by','kz','uz','kz','kg','tj','tm','am','az','ge','il','jo','lb','sa','ae','qa','kw','bh','om','ye','ir','pk','af','lk','bd','np','in','mm','th','kh','la','vn','my','sg','id','ph','tw','hk','mo','kr','cn','mn','jp','kp','au','nz','fj','pg','sb','vu','nc','pf','ki','tv','nr','mh','fm','pw','mp','gu','as','mp','vi','pr','um','fm','mh','pw','tk','to','ws','nu','ck','pf','wf','as','nz','au']
   
   for (const code of countryCodes) {
@@ -27,9 +29,9 @@ export async function GET(req: Request) {
     } catch {}
   }
 
-  // Fallback to Open-Meteo geocoding if zip lookup fails
+  // Fallback to Open-Meteo geocoding if zip lookup fails - use selected language
   try {
-    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&count=1&language=en&format=json`, { cache: 'no-store' })
+    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${zip}&count=1&language=${lang}&format=json`, { cache: 'no-store' })
     if (r.ok) {
       const j = await r.json()
       const result = j.results?.[0]
@@ -45,9 +47,9 @@ export async function GET(req: Request) {
     }
   } catch {}
 
-  // Final fallback - return zip as city variable - works globally, no IP
+  // Final fallback - return zip as city for local use
   return NextResponse.json(
-    { zip, city: zip, country: 'GLOBAL', lat: 0, lon: 0 },
+    { zip, city: zip, country: '', lat: 0, lon: 0 },
     { headers: { 'Cache-Control': 'public, s-maxage=3600' } }
   )
 }
