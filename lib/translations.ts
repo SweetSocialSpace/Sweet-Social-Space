@@ -1,3 +1,4 @@
+'use client'
 import { useLanguage } from './language-context'
 
 type Translations = {
