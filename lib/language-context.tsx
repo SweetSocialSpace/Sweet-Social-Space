@@ -1,7 +1,13 @@
 'use client'
 import { createContext, useContext, useState, useEffect } from 'react'
 
-type Language = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'ru' | 'ar' | 'pt' | 'it' | 'nl'
+type Language = 
+  | 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'ru' | 'ar' | 'pt' 
+  | 'it' | 'nl' | 'tl' | 'hi' | 'bn' | 'id' | 'vi' | 'th' | 'sv' | 'pl' 
+  | 'tr' | 'uk' | 'el' | 'he' | 'ur' | 'fa' | 'ms' | 'ro' | 'cs' 
+  | 'hu' | 'fi' | 'no' | 'da' | 'bg' | 'hr' | 'sr' | 'sk' | 'sl' 
+  | 'et' | 'lv' | 'lt' | 'be' | 'ka' | 'hy' | 'az' | 'kk' | 'ky' 
+  | 'uz' | 'tg' | 'mn' | 'my' | 'km' | 'lo' | 'th' | 'ms' | 'id'
 
 const LANGUAGE_NAMES: Record<Language, string> = {
   en: 'English',
@@ -15,7 +21,49 @@ const LANGUAGE_NAMES: Record<Language, string> = {
   ar: 'العربية',
   pt: 'Português',
   it: 'Italiano',
-  nl: 'Nederlands'
+  nl: 'Nederlands',
+  tl: 'Filipino',
+  hi: 'हिन्दी',
+  bn: 'বাংলা',
+  id: 'Bahasa Indonesia',
+  vi: 'Tiếng Việt',
+  th: 'ไทย',
+  sv: 'Svenska',
+  pl: 'Polski',
+  tr: 'Türkçe',
+  uk: 'Українська',
+  el: 'Ελληνικά',
+  he: 'עברית',
+  ur: 'اردو',
+  fa: 'فارسی',
+  ms: 'Bahasa Melayu',
+  ro: 'Română',
+  cs: 'Čeština',
+  hu: 'Magyar',
+  fi: 'Suomi',
+  no: 'Norsk',
+  da: 'Dansk',
+  bg: 'Български',
+  hr: 'Hrvatski',
+  sr: 'Српски',
+  sk: 'Slovenčina',
+  sl: 'Slovenščina',
+  et: 'Eesti',
+  lv: 'Latviešu',
+  lt: 'Lietuvių',
+  be: 'Беларуская',
+  ka: 'ქართუული',
+  hy: 'Հաեներեն',
+  az: 'Azərbaycan',
+  kk: 'Қазақша',
+  ky: 'Кыргызча',
+  uz: 'O\'zbek',
+  tg: 'Тоҷикӣ',
+  mn: 'Монгол',
+  my: 'မြနမာ',
+  km: 'ខ្មែរ',
+  lo: 'ລາວ',
+  my: 'မြနမာ'
 }
 
 type CtxType = {
