@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "个人资料",
+    "settings": "设置",
+    "signOut": "退出登录"
+  },
+  "feed": {
+    "whatsHappening": "正在发生",
+    "postAs": "发布为",
+    "in": "在",
+    "loading": "加载中..."
+  },
+  "common": {
+    "backToFeed": "返回Feed",
+    "save": "保存",
+    "cancel": "取消",
+    "error": "错误",
+    "loading": "加载中..."
+  },
+  "weather": {
+    "weather": "天气",
+    "live": "直播"
+  },
+  "location": {
+    "setLocation": "设置位置",
+    "locating": "定位中..."
+  }
+}
