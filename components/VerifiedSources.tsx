@@ -19,7 +19,7 @@ export function VerifiedSources(){
       try {
         if (zip === 'GLOBAL') {
           if(mounted) setLiveVs([
-            { id: 'live-1', title: 'Global Trust Network - Verified' },
+            { id: 'live-1', title: 'Trust Network - Verified' },
             { id: 'live-2', title: 'Community Safety - Verified' },
             { id: 'live-3', title: 'NWS - Verified' },
           ])
