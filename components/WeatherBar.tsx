@@ -1,17 +1,18 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useLocation } from '@/lib/location-context'
+import { useLanguage } from '@/lib/language-context'
 
 export default function WeatherBar() {
   const { zip: globalZip, city: globalCity } = useLocation()
-  const zip = globalZip && globalZip!== 'GLOBAL'? globalZip : ''
+  const { language } = useLanguage()
+  const zip = globalZip && globalZip!== 'YOUR BLOCK'? globalZip : ''
   const [temp, setTemp] = useState<number | null>(null)
   const [desc, setDesc] = useState('')
   const [city, setCity] = useState('')
 
   useEffect(() => {
     if (!zip) {
-      // GLOBAL - no hardcoded city - use whatever location-context gives - or generic
       setCity(globalCity || '')
       setDesc('')
       setTemp(null)
@@ -20,7 +21,7 @@ export default function WeatherBar() {
     let cancelled = false
     async function load() {
       try {
-        const res = await fetch(`/api/weather?zip=${encodeURIComponent(zip)}`, { cache: 'no-store' }).catch(()=>null)
+        const res = await fetch(`/api/weather?zip=${encodeURIComponent(zip)}&lang=${language}`, { cache: 'no-store' }).catch(()=>null)
         if (!res ||!res.ok) return
         const data = await res.json()
         if (cancelled) return
@@ -36,7 +37,7 @@ export default function WeatherBar() {
     load()
     const id = setInterval(load, 300000)
     return () => { cancelled = true; clearInterval(id) }
-  }, [zip, globalCity])
+  }, [zip, globalCity, language])
 
   const displayCity = city || globalCity || (zip? zip : 'your area')
 
