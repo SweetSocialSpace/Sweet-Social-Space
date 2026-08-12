@@ -7,7 +7,7 @@ type Language =
   | 'tr' | 'uk' | 'el' | 'he' | 'ur' | 'fa' | 'ms' | 'ro' | 'cs' 
   | 'hu' | 'fi' | 'no' | 'da' | 'bg' | 'hr' | 'sr' | 'sk' | 'sl' 
   | 'et' | 'lv' | 'lt' | 'be' | 'ka' | 'hy' | 'az' | 'kk' | 'ky' 
-  | 'uz' | 'tg' | 'mn' | 'my' | 'km' | 'lo' | 'th' | 'ms' | 'id'
+  | 'uz' | 'tg' | 'mn' | 'km' | 'lo'
 
 const LANGUAGE_NAMES: Record<Language, string> = {
   en: 'English',
@@ -60,10 +60,8 @@ const LANGUAGE_NAMES: Record<Language, string> = {
   uz: 'O\'zbek',
   tg: 'Тоҷикӣ',
   mn: 'Монгол',
-  my: 'မြနမာ',
   km: 'ខ្មែរ',
-  lo: 'ລາວ',
-  my: 'မြနမာ'
+  lo: 'ລາວ'
 }
 
 type CtxType = {
