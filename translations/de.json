@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "Standort festlegen",
     "locating": "Lokalisierung..."
+  },
+    "filters": {
+    "all": "Alle",
+    "faith": "Glaube",
+    "general": "Allgemein",
+    "safety": "Sicherheit",
+    "forSale": "Zu Verkaufen",
+    "free": "Kostenlos",
+    "lostPet": "Haustier Verloren",
+    "event": "Veranstaltung",
+    "help": "Hilfe",
+    "recommend": "Empfehlen"
   }
 }
