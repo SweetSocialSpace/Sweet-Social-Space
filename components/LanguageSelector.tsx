@@ -43,7 +43,7 @@ export default function LanguageSelector() {
         { code: 'sk', name: 'Slovenčina' },
         { code: 'sl', name: 'Slovenščina' },
         { code: 'et', name: 'Eesti' },
-        code: 'lv', name: 'Latviešu' },
+        { code: 'lv', name: 'Latviešu' },
         { code: 'lt', name: 'Lietuvių' },
         { code: 'be', name: 'Беларуская' },
         { code: 'ro', name: 'Română' }
