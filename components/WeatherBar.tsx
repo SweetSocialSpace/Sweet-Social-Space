@@ -2,10 +2,12 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from '@/lib/location-context'
 import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export default function WeatherBar() {
   const { zip: globalZip, city: globalCity } = useLocation()
   const { language } = useLanguage()
+  const t = useTranslations()
   const zip = globalZip && globalZip!== 'YOUR BLOCK'? globalZip : ''
   const [temp, setTemp] = useState<number | null>(null)
   const [desc, setDesc] = useState('')
@@ -22,10 +24,10 @@ export default function WeatherBar() {
       const res = await fetch(`/api/weather?zip=${encodeURIComponent(zip)}&lang=${language}`, { cache: 'no-store' }).catch(()=>null)
       if (!res ||!res.ok) return
       const data = await res.json()
-      let t: any = data?.temp?? data?.main?.temp?? null
-      if (t!== null) {
-        if (t > 150) t = (t - 273.15) * 9/5 + 32
-        setTemp(Math.round(Number(t)))
+      let t_data: any = data?.temp?? data?.main?.temp?? null
+      if (t_data!== null) {
+        if (t_data > 150) t_data = (t_data - 273.15) * 9/5 + 32
+        setTemp(Math.round(Number(t_data)))
       }
       setDesc((data?.description || data?.weather?.[0]?.description || '').toLowerCase())
       setCity(data?.city || data?.name || globalCity || '')
@@ -43,8 +45,8 @@ export default function WeatherBar() {
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-white font-black text-xs tracking-widest">Weather</span>
-        <span className="text- bg-green-500 text-black px-2 py-0.5 rounded-full font-black">LIVE</span>
+        <span className="text-white font-black text-xs tracking-widest">{t.weather.weather}</span>
+        <span className="text- bg-green-500 text-black px-2 py-0.5 rounded-full font-black">{t.weather.live}</span>
       </div>
       <div className="flex items-center gap-3 mt-2">
         <div className="text-white text-3xl font-black">{temp!== null? `${temp}°F` : '--°F'}</div>
