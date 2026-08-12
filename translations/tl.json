@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profile",
+    "settings": "Mga Setting",
+    "signOut": "Mag-sign Out"
+  },
+  "feed": {
+    "whatsHappening": "Anong nangyayari sa",
+    "postAs": "I-POST BILANG",
+    "in": "SA",
+    "loading": "Naglo-load..."
+  },
+  "common": {
+    "backToFeed": "Bumalik sa Feed",
+    "save": "I-save",
+    "cancel": "Kanselahin",
+    "error": "Error",
+    "loading": "Naglo-load..."
+  },
+  "weather": {
+    "weather": "Panahon",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Itakda ang lokasyon",
+    "locating": "Naka-locate..."
+  }
+}
