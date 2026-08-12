@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "Set location",
     "locating": "Locating..."
+  },
+    "filters": {
+    "all": "All",
+    "faith": "Faith",
+    "general": "General",
+    "safety": "Safety",
+    "forSale": "For Sale",
+    "free": "Free",
+    "lostPet": "Lost Pet",
+    "event": "Event",
+    "help": "Help",
+    "recommend": "Recommend"
   }
 }
