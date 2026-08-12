@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "Definir localização",
     "locating": "Localizando..."
+  },
+    "filters": {
+    "all": "Todos",
+    "faith": "Fé",
+    "general": "Geral",
+    "safety": "Segurança",
+    "forSale": "À Venda",
+    "free": "Grátis",
+    "lostPet": "Animal Perdido",
+    "event": "Evento",
+    "help": "Ajuda",
+    "recommend": "Recomendar"
   }
 }
