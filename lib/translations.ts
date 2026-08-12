@@ -30,6 +30,7 @@ type Translations = {
   }
 }
 
+// Import all translation files
 const translations: Record<string, Translations> = {
   en: require('../translations/en.json'),
   es: require('../translations/es.json'),
