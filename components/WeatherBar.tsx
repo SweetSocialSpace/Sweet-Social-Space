@@ -11,32 +11,31 @@ export default function WeatherBar() {
   const [desc, setDesc] = useState('')
   const [city, setCity] = useState('')
 
-  useEffect(() => {
+  const load = async () => {
     if (!zip) {
       setCity(globalCity || '')
       setDesc('')
       setTemp(null)
       return
     }
-    let cancelled = false
-    async function load() {
-      try {
-        const res = await fetch(`/api/weather?zip=${encodeURIComponent(zip)}&lang=${language}`, { cache: 'no-store' }).catch(()=>null)
-        if (!res ||!res.ok) return
-        const data = await res.json()
-        if (cancelled) return
-        let t: any = data?.temp?? data?.main?.temp?? null
-        if (t!== null) {
-          if (t > 150) t = (t - 273.15) * 9/5 + 32
-          setTemp(Math.round(Number(t)))
-        }
-        setDesc((data?.description || data?.weather?.[0]?.description || '').toLowerCase())
-        setCity(data?.city || data?.name || globalCity || '')
-      } catch {}
-    }
+    try {
+      const res = await fetch(`/api/weather?zip=${encodeURIComponent(zip)}&lang=${language}`, { cache: 'no-store' }).catch(()=>null)
+      if (!res ||!res.ok) return
+      const data = await res.json()
+      let t: any = data?.temp?? data?.main?.temp?? null
+      if (t!== null) {
+        if (t > 150) t = (t - 273.15) * 9/5 + 32
+        setTemp(Math.round(Number(t)))
+      }
+      setDesc((data?.description || data?.weather?.[0]?.description || '').toLowerCase())
+      setCity(data?.city || data?.name || globalCity || '')
+    } catch {}
+  }
+
+  useEffect(() => {
     load()
     const id = setInterval(load, 300000)
-    return () => { cancelled = true; clearInterval(id) }
+    return () => clearInterval(id)
   }, [zip, globalCity, language])
 
   const displayCity = city || globalCity || (zip? zip : 'your area')
