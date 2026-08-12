@@ -1,3 +1,4 @@
+'use client'
 import './globals.css'
 import { LocationProvider } from '@/lib/location-context'
 import { LanguageProvider } from '@/lib/language-context'
