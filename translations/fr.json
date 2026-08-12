@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "Définir la localisation",
     "locating": "Localisation..."
+  },
+    "filters": {
+    "all": "Tous",
+    "faith": "Foi",
+    "general": "Général",
+    "safety": "Sécurité",
+    "forSale": "À Vendre",
+    "free": "Gratuit",
+    "lostPet": "Animal Perdu",
+    "event": "Événement",
+    "help": "Aide",
+    "recommend": "Recommander"
   }
 }
