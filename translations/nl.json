@@ -25,5 +25,17 @@
   "location": {
     "setLocation": "Locatie instellen",
     "locating": "Locatie bepalen..."
+  },
+    "filters": {
+    "all": "Alle",
+    "faith": "Geloof",
+    "general": "Algemeen",
+    "safety": "Veiligheid",
+    "forSale": "Te Koop",
+    "free": "Gratis",
+    "lostPet": "Dier Kwijt",
+    "event": "Evenement",
+    "help": "Hulp",
+    "recommend": "Aanbevelen"
   }
 }
