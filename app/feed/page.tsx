@@ -55,7 +55,7 @@ function FeedContent() {
 
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
-    if (zipToUse) query = query.or(`zip_code.eq.${zipToUse},zip_code.eq.GLOBAL`)
+    if (zipToUse) query = query.eq('zip_code', zipToUse)
     const { data } = await query
     if (data) setPosts(data)
   }, [supabase, radius])
@@ -92,7 +92,7 @@ function FeedContent() {
   const authorName = currentProfile?.username || currentProfile?.display_name || 'there'
   const displayZip = nearZip || locationZip || ''
   const displayCity = currentProfile?.city || 'your area'
-  const isGlobal =!displayZip || displayZip === 'GLOBAL'
+  const hasNoZip = !displayZip
 
   return (
     <>
@@ -114,19 +114,19 @@ function FeedContent() {
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-white/60 text-xs font-bold">Near</span>
-            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">{isGlobal? displayCity : displayZip}</span>
+            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">{hasNoZip? displayCity : displayZip}</span>
             <select value={radius} onChange={(e)=>handleRadiusChange(parseInt(e.target.value))} className="bg-white/10 text-white rounded-full px-3 py-1 text-xs font-bold border border-white/20">
               <option value={5}>5 mi</option><option value={10}>10 mi</option><option value={15}>15 mi</option><option value={20}>20 mi</option>
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
-              <GoLive userId={currentUserId || undefined} zipCode={nearZip || 'GLOBAL'} city="" onLivePosted={handleLivePosted} onLiveEnded={handleLiveEnded} />
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || displayZip || 'your area'} city="" onLivePosted={handleLivePosted} onLiveEnded={handleLiveEnded} />
             </div>
           </div>
 
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
-          <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
+          <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {hasNoZip? displayCity : displayZip} • {radius}mi</div>
 
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(<button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>))}
@@ -149,7 +149,7 @@ function FeedContent() {
                       <div className="mt-3 text-xs text-white bg-gray-800 rounded-full px-3 py-2 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
                     </>
                   )}
-                  <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
+                  <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
                   {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
                 </div>
               )
@@ -165,7 +165,7 @@ function FeedContent() {
           <CardShell minH="320px"><Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" /></CardShell>
         </div>
       </div>
-      <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
+      <Safe loader={() => import('@/components/LocalFooter')} name="LocalFooter" />
     </>
   )
 }
