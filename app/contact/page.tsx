@@ -5,6 +5,11 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-black text-white p-6 max-w-4xl mx-auto">
       <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <Link href="/feed" className="text-white/60 hover:text-white text-sm">
+            ← Back to Feed
+          </Link>
+        </div>
         <h1 className="text-3xl font-black mb-2">Contact Us</h1>
         <p className="text-white/60">Get in touch with the Sweet Social Space team</p>
       </div>
