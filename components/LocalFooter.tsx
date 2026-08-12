@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export default function GlobalFooter() {
+export default function LocalFooter() {
   return (
     <footer className="w-full bg-black/80 backdrop-blur border-t border-white/10 mt-10 py-8 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8 text-sm">
