@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "feed": "फीड",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "signOut": "साइन आउट"
+  },
+  "feed": {
+    "whatsHappening": "में क्या हो रहा है",
+    "postAs": "के रूप में पोस्ट करें",
+    "in": "में",
+    "loading": "लोड हो रहा है..."
+  },
+  "common": {
+    "backToFeed": "फीड पर वापस जाएं",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "error": "त्रुटि",
+    "loading": "लोड हो रहा है..."
+  },
+  "weather": {
+    "weather": "मौसम",
+    "live": "लाइव"
+  },
+  "location": {
+    "setLocation": "स्थान सेट करें",
+    "locating": "स्थान पता लगाया जा रहा है..."
+  }
+}
