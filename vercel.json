@@ -1,3 +1,9 @@
 {
   "crons": []
 }
+{
+  "buildCommand": "npm run build",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "nodeVersion": "24.x"
+}
