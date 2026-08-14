@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 // TODO: We'll port these files later from Lovable
 // import {
