@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Flöde",
+    "profile": "Profil",
+    "settings": "Inställningar",
+    "signOut": "Logga ut"
+  },
+  "feed": {
+    "whatsHappening": "Vad händer i",
+    "postAs": "POSTA SOM",
+    "in": "I",
+    "loading": "Laddar..."
+  },
+  "common": {
+    "backToFeed": "Tillbaka till flödet",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "error": "Fel",
+    "loading": "Laddar..."
+  },
+  "weather": {
+    "weather": "Väder",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Ange plats",
+    "locating": "Hittar plats..."
+  },
+  "filters": {
+    "all": "Alla",
+    "faith": "Tro",
+    "general": "Allmänt",
+    "safety": "Säkerhet",
+    "forSale": "Till salu",
+    "free": "Gratis",
+    "lostPet": "Borttappat djur",
+    "event": "Evenemang",
+    "help": "Hjälp",
+    "recommend": "Rekommendera"
+  }
+}
