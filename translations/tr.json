@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Akış",
+    "profile": "Profil",
+    "settings": "Ayarlar",
+    "signOut": "Çıkış yap"
+  },
+  "feed": {
+    "whatsHappening": "Neler oluyor",
+    "postAs": "OLARAK GÖNDER",
+    "in": "İN",
+    "loading": "Yükleniyor..."
+  },
+  "common": {
+    "backToFeed": "Akışa dön",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "error": "Hata",
+    "loading": "Yükleniyor..."
+  },
+  "weather": {
+    "weather": "Hava durumu",
+    "live": "CANLI"
+  },
+  "location": {
+    "setLocation": "Konum ayarla",
+    "locating": "Konum bulunuyor..."
+  },
+  "filters": {
+    "all": "Tümü",
+    "faith": "İnanç",
+    "general": "Genel",
+    "safety": "Güvenlik",
+    "forSale": "Satılık",
+    "free": "Ücretsiz",
+    "lostPet": "Kayıp evcil hayvan",
+    "event": "Etkinlik",
+    "help": "Yardım",
+    "recommend": "Öner"
+  }
+}
