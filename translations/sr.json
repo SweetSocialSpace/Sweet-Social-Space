@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Фид",
+    "profile": "Профил",
+    "settings": "Подешавања",
+    "signOut": "Одјава"
+  },
+  "feed": {
+    "whatsHappening": "Шта се дешава у",
+    "postAs": "ОБЈАВИ КАО",
+    "in": "У",
+    "loading": "Учитавање..."
+  },
+  "common": {
+    "backToFeed": "Повратак на фид",
+    "save": "Сачувај",
+    "cancel": "Откажи",
+    "error": "Грешка",
+    "loading": "Учитавање..."
+  },
+  "weather": {
+    "weather": "Време",
+    "live": "УЖИВО"
+  },
+  "location": {
+    "setLocation": "Постави локацију",
+    "locating": "Лоцирање..."
+  },
+  "filters": {
+    "all": "Све",
+    "faith": "Вера",
+    "general": "Опште",
+    "safety": "Безбедност",
+    "forSale": "На продају",
+    "free": "Бесплатно",
+    "lostPet": "Изгубљени љубимац",
+    "event": "Догађај",
+    "help": "Помоћ",
+    "recommend": "Препоручи"
+  }
+}
