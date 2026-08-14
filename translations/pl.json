@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Kanał",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "signOut": "Wyloguj się"
+  },
+  "feed": {
+    "whatsHappening": "Co się dzieje w",
+    "postAs": "OPUBLIKUJ JAKO",
+    "in": "W",
+    "loading": "Ładowanie..."
+  },
+  "common": {
+    "backToFeed": "Powrót do kanału",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "error": "Błąd",
+    "loading": "Ładowanie..."
+  },
+  "weather": {
+    "weather": "Pogoda",
+    "live": "NA ŻYWO"
+  },
+  "location": {
+    "setLocation": "Ustaw lokalizację",
+    "locating": "Lokalizowanie..."
+  },
+  "filters": {
+    "all": "Wszystkie",
+    "faith": "Wiara",
+    "general": "Ogólne",
+    "safety": "Bezpieczeństwo",
+    "forSale": "Na sprzedaż",
+    "free": "Za darmo",
+    "lostPet": "Zagubione zwierzę",
+    "event": "Wydarzenie",
+    "help": "Pomoc",
+    "recommend": "Poleć"
+  }
+}
