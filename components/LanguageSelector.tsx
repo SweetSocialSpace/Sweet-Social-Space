@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export default function LanguageSelector() {
   const { language, setLanguage, languageName } = useLanguage()
