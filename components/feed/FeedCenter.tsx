@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
 import { useLocationScope } from '@/hooks/useLocationScope'
