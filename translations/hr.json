@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Novosti",
+    "profile": "Profil",
+    "settings": "Postavke",
+    "signOut": "Odjava"
+  },
+  "feed": {
+    "whatsHappening": "Što se događa u",
+    "postAs": "OBJAVI KAO",
+    "in": "U",
+    "loading": "Učitavanje..."
+  },
+  "common": {
+    "backToFeed": "Povratak na novosti",
+    "save": "Spremi",
+    "cancel": "Otkaži",
+    "error": "Greška",
+    "loading": "Učitavanje..."
+  },
+  "weather": {
+    "weather": "Vrijeme",
+    "live": "UŽIVO"
+  },
+  "location": {
+    "setLocation": "Postavi lokaciju",
+    "locating": "Lociranje..."
+  },
+  "filters": {
+    "all": "Sve",
+    "faith": "Vjera",
+    "general": "Općenito",
+    "safety": "Sigurnost",
+    "forSale": "Na prodaju",
+    "free": "Besplatno",
+    "lostPet": "Izgubljeni ljubimac",
+    "event": "Događaj",
+    "help": "Pomoć",
+    "recommend": "Preporuči"
+  }
+}
