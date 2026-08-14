@@ -4,6 +4,11 @@ import { useLanguage } from '@/lib/language-context'
 export default function LanguageSelector() {
   const { language, setLanguage, languageName } = useLanguage()
 
+  const handleLanguageChange = (langCode: string) => {
+    console.log('Language changed to:', langCode) // Debug log
+    setLanguage(langCode as any)
+  }
+
   const languageGroups = [
     {
       name: 'Popular',
@@ -95,7 +100,11 @@ export default function LanguageSelector() {
             {group.languages.map((lang) => (
               <button
                 key={lang.code}
-                onClick={() => setLanguage(lang.code as any)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  handleLanguageChange(lang.code)
+                }}
                 className={`w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition ${
                   language === lang.code ? 'bg-white/20 text-white' : 'text-white/70'
                 }`}
