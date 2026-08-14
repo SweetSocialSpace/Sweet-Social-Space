@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
 import { useLocationScope } from '@/hooks/useLocationScope'
 import { applyScope, bboxForRadius } from '@/lib/location-scope'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export default function KarmaLeaderboard() {
   const { zip: contextZip } = useLocation()
