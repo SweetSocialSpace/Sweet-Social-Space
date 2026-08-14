@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
 import { useLocationScope } from '@/hooks/useLocationScope'
 import { applyScope, bboxForRadius } from '@/lib/location-scope'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 type Alert = { id: string; title?: string; body?: string; severity?: string; created_at: string; latitude?: number | null; longitude?: number | null }
 
