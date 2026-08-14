@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Ағын",
+    "profile": "Профиль",
+    "settings": "Параметрлер",
+    "signOut": "Шығу"
+  },
+  "feed": {
+    "whatsHappening": "Не болып жатыр",
+    "postAs": "РЕТІНДЕ ЖАРИЯЛАУ",
+    "in": "ЖЕРДЕ",
+    "loading": "Жүктелуде..."
+  },
+  "common": {
+    "backToFeed": "Ағынға оралу",
+    "save": "Сақтау",
+    "cancel": "Болдырмау",
+    "error": "Қате",
+    "loading": "Жүктелуде..."
+  },
+  "weather": {
+    "weather": "Ауа райы",
+    "live": "ТІКЕЛІ"
+  },
+  "location": {
+    "setLocation": "Орналасуды орнату",
+    "locating": "Орналасу анықталуда..."
+  },
+  "filters": {
+    "all": "Барлығы",
+    "faith": "Сенім",
+    "general": "Жалпы",
+    "safety": "Қауіпсіздік",
+    "forSale": "Сатылуда",
+    "free": "Тегін",
+    "lostPet": "Жоғалған үй жануары",
+    "event": "Оқиға",
+    "help": "Көмек",
+    "recommend": "Ұсыну"
+  }
+}
