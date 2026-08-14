@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export default function KarmaBadge({ userId }: { userId: string }) {
   const [karma, setKarma] = useState(0)
