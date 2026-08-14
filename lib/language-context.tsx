@@ -7,7 +7,7 @@ type Language =
   | 'tr' | 'uk' | 'el' | 'he' | 'ur' | 'fa' | 'ms' | 'ro' | 'cs' 
   | 'hu' | 'fi' | 'no' | 'da' | 'bg' | 'hr' | 'sr' | 'sk' | 'sl' 
   | 'et' | 'lv' | 'lt' | 'be' | 'ka' | 'hy' | 'az' | 'kk' | 'ky' 
-  | 'uz' | 'tg' | 'mn' | 'km' | 'lo'
+  | 'uz' | 'tg' | 'mn' | 'km' | 'lo' | 'my'
 
 const LANGUAGE_NAMES: Record<Language, string> = {
   en: 'English',
@@ -61,7 +61,8 @@ const LANGUAGE_NAMES: Record<Language, string> = {
   tg: 'Тоҷикӣ',
   mn: 'Монгол',
   km: 'ខ្មែរ',
-  lo: 'ລາວ'
+  lo: 'ລາວ',
+  my: 'မြနမာ'
 }
 
 type CtxType = {
@@ -81,18 +82,25 @@ export function LanguageProvider({ children }: any) {
 
   useEffect(() => {
     const saved = localStorage.getItem('sss_language') as Language
-    if (saved && LANGUAGE_NAMES[saved]) {
+    if (saved && LANGUAGE_NAMES[saved as Language]) {
       setLanguageState(saved)
     }
   }, [])
 
   const setLanguage = (lang: Language) => {
+    console.log('Setting language to:', lang) // Debug log
     setLanguageState(lang)
     localStorage.setItem('sss_language', lang)
+    // Force document language attribute update
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang
+    }
   }
 
+  const languageName = LANGUAGE_NAMES[language as Language] || 'English'
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, languageName: LANGUAGE_NAMES[language] }}>
+    <LanguageContext.Provider value={{ language, setLanguage, languageName }}>
       {children}
     </LanguageContext.Provider>
   )
