@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Ροή",
+    "profile": "Προφίλ",
+    "settings": "Ρυθμίσεις",
+    "signOut": "Αποσύνδεση"
+  },
+  "feed": {
+    "whatsHappening": "Τι συμβαίνει στο",
+    "postAs": "ΔΗΜΟΣΙΕΥΣΗ ΩΣ",
+    "in": "ΣΤΟ",
+    "loading": "Φόρτωση..."
+  },
+  "common": {
+    "backToFeed": "Επιστροφή στη ροή",
+    "save": "Αποθήκευση",
+    "cancel": "Ακύρωση",
+    "error": "Σφάλμα",
+    "loading": "Φόρτωση..."
+  },
+  "weather": {
+    "weather": "Καιρός",
+    "live": "ΖΩΝΤΑΝΑ"
+  },
+  "location": {
+    "setLocation": "Ορισμός τοποθεσίας",
+    "locating": "Εντοπισμός..."
+  },
+  "filters": {
+    "all": "Όλα",
+    "faith": "Πίστη",
+    "general": "Γενικά",
+    "safety": "Ασφάλεια",
+    "forSale": "Προς πώληση",
+    "free": "Δωρεάν",
+    "lostPet": "Χαμένο κατοικίδιο",
+    "event": "Εκδήλωση",
+    "help": "Βοήθεια",
+    "recommend": "Πρόταση"
+  }
+}
