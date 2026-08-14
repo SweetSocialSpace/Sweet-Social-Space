@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "មតិ",
+    "profile": "គណនី",
+    "settings": "ការកំណត់",
+    "signOut": "ចាកចេញ"
+  },
+  "feed": {
+    "whatsHappening": "តើមានអ្វីកើតឡើងនៅ",
+    "postAs": "បង្ហាញជា",
+    "in": "នៅ",
+    "loading": "កំពុងផ្ទុក..."
+  },
+  "common": {
+    "backToFeed": "ត្រឡប់ទៅមតិ",
+    "save": "រក្សាទុក",
+    "cancel": "បោះបង់",
+    "error": "កំហុស",
+    "loading": "កំពុងផ្ទុក..."
+  },
+  "weather": {
+    "weather": "អាកាសធាតុ",
+    "live": "ផ្ទាល់"
+  },
+  "location": {
+    "setLocation": "កំណត់ទីតាំង",
+    "locating": "កំពុងរកទីតាំង..."
+  },
+  "filters": {
+    "all": "ទាំងអស់",
+    "faith": "ជំនឿ",
+    "general": "ទូទៅ",
+    "safety": "សុវត្ថិភាព",
+    "forSale": "សម្រាប់លក់",
+    "free": "ឥតគិតថ្លៃ",
+    "lostPet": "សត្វចិញ្ចឹមបាត់បង់",
+    "event": "ព្រឹត្តិការណ៍",
+    "help": "ជំនួយ",
+    "recommend": "ណែនាំ"
+  }
+}
