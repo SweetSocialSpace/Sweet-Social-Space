@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profil",
+    "settings": "Nastavenia",
+    "signOut": "Odhlásiť sa"
+  },
+  "feed": {
+    "whatsHappening": "Čo sa deje v",
+    "postAs": "PUBLIKOVAŤ AKO",
+    "in": "V",
+    "loading": "Načítavanie..."
+  },
+  "common": {
+    "backToFeed": "Späť na Feed",
+    "save": "Uložiť",
+    "cancel": "Zrušiť",
+    "error": "Chyba",
+    "loading": "Načítavanie..."
+  },
+  "weather": {
+    "weather": "Počasie",
+    "live": "NAŽIVO"
+  },
+  "location": {
+    "setLocation": "Nastaviť polohu",
+    "locating": "Určovanie polohy..."
+  },
+  "filters": {
+    "all": "Všetko",
+    "faith": "Viera",
+    "general": "Všeobecné",
+    "safety": "Bezpečnosť",
+    "forSale": "Na predaj",
+    "free": "Zadarmo",
+    "lostPet": "Stratené zviera",
+    "event": "Udalosť",
+    "help": "Pomoc",
+    "recommend": "Odporučiť"
+  }
+}
