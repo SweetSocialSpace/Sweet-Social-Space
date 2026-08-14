@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Plūsma",
+    "profile": "Profils",
+    "settings": "Iestatījumi",
+    "signOut": "Iziet"
+  },
+  "feed": {
+    "whatsHappening": "Kas notiek",
+    "postAs": "PUBLICĒT KĀ",
+    "in": "I",
+    "loading": "Ielāde..."
+  },
+  "common": {
+    "backToFeed": "Atpakaļ uz plūsmu",
+    "save": "Saglabāt",
+    "cancel": "Atcelt",
+    "error": "Kļūda",
+    "loading": "Ielāde..."
+  },
+  "weather": {
+    "weather": "Laiks",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Uzstādīt atrašanās vietu",
+    "locating": "Atrašanās vietas noteikšana..."
+  },
+  "filters": {
+    "all": "Visi",
+    "faith": "Ticība",
+    "general": "Vispārīgi",
+    "safety": "Drošība",
+    "forSale": "Pārdošanā",
+    "free": "Bezmaksas",
+    "lostPet": "Pazudis mājdzīvnieks",
+    "event": "Notikums",
+    "help": "Palīdzība",
+    "recommend": "Ieteikt"
+  }
+}
