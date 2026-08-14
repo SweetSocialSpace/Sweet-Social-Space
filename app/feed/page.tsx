@@ -2,6 +2,7 @@
 import { useState, useEffect, Suspense, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useTranslations } from '@/lib/translations'
+import { useLanguage } from '@/lib/language-context'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useLocation } from '@/lib/location-context'
@@ -37,6 +38,7 @@ function FeedContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const { zip: locationZip } = useLocation()
+  const { language } = useLanguage()
   const t = useTranslations()
   console.log('Feed translations:', t, 'Language:', language)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
@@ -67,7 +69,6 @@ const FILTERS = [
   { id: 'recommend', label: t?.filters?.recommend || 'Recommend' }
 ]
   console.log('FILTERS:', FILTERS)
-  
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
     if (zipToUse) query = query.eq('zip_code', zipToUse)
