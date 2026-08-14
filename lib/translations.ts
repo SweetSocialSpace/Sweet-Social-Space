@@ -43,86 +43,61 @@ type Translations = {
   }
 }
 
-// Import all translation files dynamically
+// Import all translation files
 const translations: Record<string, Translations> = {
-  en: {} as Translations,
-  es: {} as Translations,
-  fr: {} as Translations,
-  de: {} as Translations,
-  zh: {} as Translations,
-  ja: {} as Translations,
-  ko: {} as Translations,
-  pt: {} as Translations,
-  ru: {} as Translations,
-  ar: {} as Translations,
-  hi: {} as Translations,
-  it: {} as Translations,
-  nl: {} as Translations,
-  tl: {} as Translations,
-  bn: {} as Translations,
-  id: {} as Translations,
-  vi: {} as Translations,
-  th: {} as Translations,
-  sv: {} as Translations,
-  pl: {} as Translations,
-  tr: {} as Translations,
-  uk: {} as Translations,
-  el: {} as Translations,
-  he: {} as Translations,
-  ur: {} as Translations,
-  fa: {} as Translations,
-  ms: {} as Translations,
-  ro: {} as Translations,
-  cs: {} as Translations,
-  hu: {} as Translations,
-  fi: {} as Translations,
-  no: {} as Translations,
-  da: {} as Translations,
-  bg: {} as Translations,
-  hr: {} as Translations,
-  sr: {} as Translations,
-  sk: {} as Translations,
-  sl: {} as Translations,
-  et: {} as Translations,
-  lv: {} as Translations,
-  lt: {} as Translations,
-  be: {} as Translations,
-  ka: {} as Translations,
-  hy: {} as Translations,
-  az: {} as Translations,
-  kk: {} as Translations,
-  ky: {} as Translations,
-  uz: {} as Translations,
-  tg: {} as Translations,
-  mn: {} as Translations,
-  km: {} as Translations,
-  lo: {} as Translations,
-  my: {} as Translations
-}
-
-// Load translations dynamically on client side
-if (typeof window !== 'undefined') {
-  const loadTranslations = async () => {
-    const langFiles = [
-      'en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'pt', 'ru', 'ar', 'hi', 'it', 'nl', 'tl',
-      'bn', 'id', 'vi', 'th', 'sv', 'pl', 'tr', 'uk', 'el', 'he', 'ur', 'fa', 'ms', 'ro',
-      'cs', 'hu', 'fi', 'no', 'da', 'bg', 'hr', 'sr', 'sk', 'sl', 'et', 'lv', 'lt', 'be',
-      'ka', 'hy', 'az', 'kk', 'ky', 'uz', 'tg', 'mn', 'km', 'lo', 'my'
-    ]
-    
-    for (const lang of langFiles) {
-      try {
-        const response = await fetch(`/translations/${lang}.json`)
-        if (response.ok) {
-          translations[lang] = await response.json()
-        }
-      } catch (error) {
-        console.error(`Failed to load translation for ${lang}:`, error)
-      }
-    }
-  }
-  
-  loadTranslations()
+  en: require('../translations/en.json'),
+  es: require('../translations/es.json'),
+  fr: require('../translations/fr.json'),
+  de: require('../translations/de.json'),
+  zh: require('../translations/zh.json'),
+  ja: require('../translations/ja.json'),
+  ko: require('../translations/ko.json'),
+  pt: require('../translations/pt.json'),
+  ru: require('../translations/ru.json'),
+  ar: require('../translations/ar.json'),
+  hi: require('../translations/hi.json'),
+  it: require('../translations/it.json'),
+  nl: require('../translations/nl.json'),
+  tl: require('../translations/tl.json'),
+  bn: require('../translations/bn.json'),
+  id: require('../translations/id.json'),
+  vi: require('../translations/vi.json'),
+  th: require('../translations/th.json'),
+  sv: require('../translations/sv.json'),
+  pl: require('../translations/pl.json'),
+  tr: require('../translations/tr.json'),
+  uk: require('../translations/uk.json'),
+  el: require('../translations/el.json'),
+  he: require('../translations/he.json'),
+  ur: require('../translations/ur.json'),
+  fa: require('../translations/fa.json'),
+  ms: require('../translations/ms.json'),
+  ro: require('../translations/ro.json'),
+  cs: require('../translations/cs.json'),
+  hu: require('../translations/hu.json'),
+  fi: require('../translations/fi.json'),
+  no: require('../translations/no.json'),
+  da: require('../translations/da.json'),
+  bg: require('../translations/bg.json'),
+  hr: require('../translations/hr.json'),
+  sr: require('../translations/sr.json'),
+  sk: require('../translations/sk.json'),
+  sl: require('../translations/sl.json'),
+  et: require('../translations/et.json'),
+  lv: require('../translations/lv.json'),
+  lt: require('../translations/lt.json'),
+  be: require('../translations/be.json'),
+  ka: require('../translations/ka.json'),
+  hy: require('../translations/hy.json'),
+  az: require('../translations/az.json'),
+  kk: require('../translations/kk.json'),
+  ky: require('../translations/ky.json'),
+  uz: require('../translations/uz.json'),
+  tg: require('../translations/tg.json'),
+  mn: require('../translations/mn.json'),
+  km: require('../translations/km.json'),
+  lo: require('../translations/lo.json'),
+  my: require('../translations/my.json')
 }
 
 export function useTranslations() {
