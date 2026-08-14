@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "فیڈ",
+    "profile": "پروفائل",
+    "settings": "ترتیبات",
+    "signOut": "باہر نکلنا"
+  },
+  "feed": {
+    "whatsHappening": "میں کیا ہو رہا ہے",
+    "postAs": "کے طور پر پوسٹ کریں",
+    "in": "میں",
+    "loading": "لوڈ ہو رہا ہے..."
+  },
+  "common": {
+    "backToFeed": "فیڈ پر واپس جائیں",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ کریں",
+    "error": "خرابی",
+    "loading": "لوڈ ہو رہا ہے..."
+  },
+  "weather": {
+    "weather": "موسم",
+    "live": "براہ راست"
+  },
+  "location": {
+    "setLocation": "مقام سیٹ کریں",
+    "locating": "مقام تلاش کیا جا رہا ہے..."
+  },
+  "filters": {
+    "all": "سب",
+    "faith": "ایمان",
+    "general": "عام",
+    "safety": "حفاظت",
+    "forSale": "فروخت کے لیے",
+    "free": "مفت",
+    "lostPet": "کھوئا ہوا پالتو جانور",
+    "event": "تقریب",
+    "help": "مدد",
+    "recommend": "تجویز"
+  }
+}
