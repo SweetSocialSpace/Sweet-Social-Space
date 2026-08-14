@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Hírfolyam",
+    "profile": "Profil",
+    "settings": "Beállítások",
+    "signOut": "Kijelentkezés"
+  },
+  "feed": {
+    "whatsHappening": "Mi történik",
+    "postAs": "KÜLDÉS MINT",
+    "in": "BEN",
+    "loading": "Betöltés..."
+  },
+  "common": {
+    "backToFeed": "Vissza a hírfolyamhoz",
+    "save": "Mentés",
+    "cancel": "Mégse",
+    "error": "Hiba",
+    "loading": "Betöltés..."
+  },
+  "weather": {
+    "weather": "Időjárás",
+    "live": "ÉLŐ"
+  },
+  "location": {
+    "setLocation": "Helyszín beállítása",
+    "locating": "Helyszín meghatározása..."
+  },
+  "filters": {
+    "all": "Összes",
+    "faith": "Hit",
+    "general": "Általános",
+    "safety": "Biztonság",
+    "forSale": "Eladó",
+    "free": "Ingyenes",
+    "lostPet": "Elveszett állat",
+    "event": "Esemény",
+    "help": "Segítség",
+    "recommend": "Ajánlás"
+  }
+}
