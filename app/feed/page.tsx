@@ -67,7 +67,7 @@ const FILTERS = useMemo(() => [
   { id: 'event', label: t?.filters?.event || 'Event' }, 
   { id: 'help', label: t?.filters?.help || 'Help' }, 
   { id: 'recommend', label: t?.filters?.recommend || 'Recommend' }
-], [t])
+], [t, language])
   console.log('FILTERS:', FILTERS)
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
