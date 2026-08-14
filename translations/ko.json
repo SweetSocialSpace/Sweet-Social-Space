@@ -26,7 +26,7 @@
     "setLocation": "위치 설정",
     "locating": "위치 파악 중..."
   },
-    "filters": {
+  "filters": {
     "all": "전체",
     "faith": "신앙",
     "general": "일반",
