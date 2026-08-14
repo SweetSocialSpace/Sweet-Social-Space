@@ -1,5 +1,6 @@
 'use client'
 import { useLanguage } from './language-context'
+import { useMemo } from 'react'
 
 type Translations = {
   nav: {
@@ -102,6 +103,9 @@ const translations: Record<string, Translations> = {
 
 export function useTranslations() {
   const { language } = useLanguage()
-  const t = translations[language] || translations.en
+  // Use useMemo to create a new reference when language changes, forcing re-render
+  const t = useMemo(() => {
+    return translations[language] || translations.en
+  }, [language])
   return t
 }
