@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export function AccountSettingsDialog({ onClose }: { onClose: () => void }) {
   const [busy, setBusy] = useState(false)
