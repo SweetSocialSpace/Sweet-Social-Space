@@ -1,0 +1,42 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "signOut": "Đăng xuất"
+  },
+  "feed": {
+    "whatsHappening": "Đang xảy ra gì ở",
+    "postAs": "ĐĂNG NHƯ",
+    "in": "Ở",
+    "loading": "Đang tải..."
+  },
+  "common": {
+    "backToFeed": "Quay lại Feed",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "error": "Lỗi",
+    "loading": "Đang tải..."
+  },
+  "weather": {
+    "weather": "Thời tiết",
+    "live": "TRỰC TIẾP"
+  },
+  "location": {
+    "setLocation": "Đặt vị trí",
+    "locating": "Đang định vị..."
+  },
+  "filters": {
+    "all": "Tất cả",
+    "faith": "Đức tin",
+    "general": "Chung",
+    "safety": "An toàn",
+    "forSale": "Để bán",
+    "free": "Miễn phí",
+    "lostPet": "Thú cưng bị lạc",
+    "event": "Sự kiện",
+    "help": "Trợ giúp",
+    "recommend": "Đề xuất"
+  }
+}
+
