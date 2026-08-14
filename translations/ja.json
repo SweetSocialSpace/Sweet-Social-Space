@@ -26,7 +26,7 @@
     "setLocation": "位置を設定",
     "locating": "位置情報を取得中..."
   },
-    "filters": {
+  "filters": {
     "all": "すべて",
     "faith": "信仰",
     "general": "一般",
