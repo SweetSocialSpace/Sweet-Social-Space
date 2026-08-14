@@ -26,7 +26,7 @@
     "setLocation": "Définir la localisation",
     "locating": "Localisation..."
   },
-    "filters": {
+  "filters": {
     "all": "Tous",
     "faith": "Foi",
     "general": "Général",
