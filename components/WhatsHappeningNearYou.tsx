@@ -33,7 +33,7 @@ export function WhatsHappeningNearYou(){
         if (extRes.ok) {
           const json = await extRes.json()
           if(mounted && json.events && json.events.length > 0) {
-            setEvents(prev => [...prev, ...json.events].slice(0,5))
+            setEvents((prev: EventItem[]) => [...prev, ...json.events].slice(0,5))
           }
         }
         
