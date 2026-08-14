@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Voog",
+    "profile": "Profiil",
+    "settings": "Sätted",
+    "signOut": "Logi välja"
+  },
+  "feed": {
+    "whatsHappening": "Mis juhtub",
+    "postAs": "POSTITA KUI",
+    "in": "KOHAS",
+    "loading": "Laadimine..."
+  },
+  "common": {
+    "backToFeed": "Tagasi voogu",
+    "save": "Salvesta",
+    "cancel": "Tühista",
+    "error": "Viga",
+    "loading": "Laadimine..."
+  },
+  "weather": {
+    "weather": "Ilm",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Määra asukoht",
+    "locating": "Asukoha määramine..."
+  },
+  "filters": {
+    "all": "Kõik",
+    "faith": "Usk",
+    "general": "Üldine",
+    "safety": "Turvalisus",
+    "forSale": "Müügis",
+    "free": "Tasuta",
+    "lostPet": "Kaotatud lemmikloom",
+    "event": "Sündmus",
+    "help": "Abi",
+    "recommend": "Soovita"
+  }
+}
