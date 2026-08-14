@@ -38,6 +38,7 @@ function FeedContent() {
   const [posts, setPosts] = useState<any[]>([])
   const { zip: locationZip } = useLocation()
   const t = useTranslations()
+  console.log('Feed translations:', t, 'Language:', language)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
   const [nearZip, setNearZip] = useState<string>('')
@@ -53,7 +54,7 @@ function FeedContent() {
   const handleFilter = (id: string) => { setFilter(id); router.push(id === 'all'? '/feed' : `/feed?filter=${id}`) }
   const handleRadiusChange = (newRadius: number) => { setRadius(newRadius); localStorage.setItem('feed_radius', String(newRadius)) }
 
-const FILTERS = useMemo(() => [
+const FILTERS = [
   { id: 'all', label: t?.filters?.all || 'All' }, 
   { id: 'faith', label: t?.filters?.faith || 'Faith' }, 
   { id: 'general', label: t?.filters?.general || 'General' }, 
@@ -64,7 +65,9 @@ const FILTERS = useMemo(() => [
   { id: 'event', label: t?.filters?.event || 'Event' }, 
   { id: 'help', label: t?.filters?.help || 'Help' }, 
   { id: 'recommend', label: t?.filters?.recommend || 'Recommend' }
-], [t])
+]
+  console.log('FILTERS:', FILTERS)
+  
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
     if (zipToUse) query = query.eq('zip_code', zipToUse)
