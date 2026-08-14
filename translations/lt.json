@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Srautas",
+    "profile": "Profilis",
+    "settings": "Nustatymai",
+    "signOut": "Atsijungti"
+  },
+  "feed": {
+    "whatsHappening": "Kas vyksta",
+    "postAs": "Skelbti kaip",
+    "in": "VIETOJE",
+    "loading": "Įkeliama..."
+  },
+  "common": {
+    "backToFeed": "Grįžti į srautą",
+    "save": "Išsaugoti",
+    "cancel": "Atšaukti",
+    "error": "Klaida",
+    "loading": "Įkeliama..."
+  },
+  "weather": {
+    "weather": "Orai",
+    "live": "GYVAI"
+  },
+  "location": {
+    "setLocation": "Nustatyti vietą",
+    "locating": "Vietos nustatymas..."
+  },
+  "filters": {
+    "all": "Visi",
+    "faith": "Tikėjimas",
+    "general": "Bendras",
+    "safety": "Saugumas",
+    "forSale": "Parduodama",
+    "free": "Nemokamai",
+    "lostPet": "Pamestas augintinis",
+    "event": "Renginys",
+    "help": "Pagalba",
+    "recommend": "Rekomenduoti"
+  }
+}
