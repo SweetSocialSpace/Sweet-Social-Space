@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Oqim",
+    "profile": "Profil",
+    "settings": "Sozlamalar",
+    "signOut": "Chiqish"
+  },
+  "feed": {
+    "whatsHappening": "Nima bo'lyapti",
+    "postAs": "SIFATIDA YUBORISH",
+    "in": "JOYDA",
+    "loading": "Yuklanmoqda..."
+  },
+  "common": {
+    "backToFeed": "Oqimga qaytish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "error": "Xato",
+    "loading": "Yuklanmoqda..."
+  },
+  "weather": {
+    "weather": "Ob-havo",
+    "live": "TO'G'RIDAN-TO'G'RI"
+  },
+  "location": {
+    "setLocation": "Joylashuvni o'rnatish",
+    "locating": "Joylashuvni aniqlash..."
+  },
+  "filters": {
+    "all": "Barchasi",
+    "faith": "Iymon",
+    "general": "Umumiy",
+    "safety": "Xavfsizlik",
+    "forSale": "Sotiladi",
+    "free": "Bepul",
+    "lostPet": "Yo'qolgan uy hayvoni",
+    "event": "Tadbir",
+    "help": "Yordam",
+    "recommend": "Tavsiya etish"
+  }
+}
