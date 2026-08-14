@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, Suspense, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from '@/lib/translations'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useLocation } from '@/lib/location-context'
@@ -36,6 +37,7 @@ function FeedContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const { zip: locationZip } = useLocation()
+  const t = useTranslations()
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
   const [nearZip, setNearZip] = useState<string>('')
@@ -51,14 +53,24 @@ function FeedContent() {
   const handleFilter = (id: string) => { setFilter(id); router.push(id === 'all'? '/feed' : `/feed?filter=${id}`) }
   const handleRadiusChange = (newRadius: number) => { setRadius(newRadius); localStorage.setItem('feed_radius', String(newRadius)) }
 
-  const FILTERS = [{ id: 'all', label: 'All' }, { id: 'faith', label: 'Faith' }, { id: 'general', label: 'General' }, { id: 'safety', label: 'Safety' }, { id: 'for_sale', label: 'For Sale' }, { id: 'free', label: 'Free' }, { id: 'lost_pet', label: 'Lost Pet' }, { id: 'event', label: 'Event' }, { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' }]
-
+ const FILTERS = [
+  { id: 'all', label: t?.filters?.all || 'All' }, 
+  { id: 'faith', label: t?.filters?.faith || 'Faith' }, 
+  { id: 'general', label: t?.filters?.general || 'General' }, 
+  { id: 'safety', label: t?.filters?.safety || 'Safety' }, 
+  { id: 'for_sale', label: t?.filters?.forSale || 'For Sale' }, 
+  { id: 'free', label: t?.filters?.free || 'Free' }, 
+  { id: 'lost_pet', label: t?.filters?.lostPet || 'Lost Pet' }, 
+  { id: 'event', label: t?.filters?.event || 'Event' }, 
+  { id: 'help', label: t?.filters?.help || 'Help' }, 
+  { id: 'recommend', label: t?.filters?.recommend || 'Recommend' }
+]
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
     if (zipToUse) query = query.eq('zip_code', zipToUse)
     const { data } = await query
     if (data) setPosts(data)
-  }, [supabase, radius])
+  }, [supabase, radius, t])
 
   useEffect(() => {
     (async()=>{
