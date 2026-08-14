@@ -1,44 +1,4 @@
-{{
-  "nav": {
-    "feed": "Axın",
-    "profile": "Profil",
-    "settings": "Tənzimləmələr",
-    "signOut": "Çıxış"
-  },
-  "feed": {
-    "whatsHappening": "Nə baş verir",
-    "postAs": "OLARAQ PAYLAŞ",
-    "in": "YERDƏ",
-    "loading": "Yüklənir..."
-  },
-  "common": {
-    "backToFeed": "Axına qayıt",
-    "save": "Yadda saxla",
-    "cancel": "Ləğv et",
-    "error": "Xəta",
-    "loading": "Yüklənir..."
-  },
-  "weather": {
-    "weather": "Hava",
-    "live": "CANLI"
-  },
-  "location": {
-    "setLocation": "Məkan təyin et",
-    "locating": "Məkan tapılır..."
-  },
-  "filters": {
-    "all": "Bütün",
-    "faith": "İnanç",
-    "general": "Ümumi",
-    "safety": "Təhlükəsizlik",
-    "forSale": "Satışda",
-    "free": "Pulsuz",
-    "lostPet": "İtkilmiş ev heyvanı",
-    "event": "Tədbir",
-    "help": "Kömək",
-    "recommend": "Tövsiyə et"
-  }
-}
+{
   "nav": {
     "feed": "Axın",
     "profile": "Profil",
