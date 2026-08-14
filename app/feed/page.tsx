@@ -56,7 +56,7 @@ function FeedContent() {
   const handleFilter = (id: string) => { setFilter(id); router.push(id === 'all'? '/feed' : `/feed?filter=${id}`) }
   const handleRadiusChange = (newRadius: number) => { setRadius(newRadius); localStorage.setItem('feed_radius', String(newRadius)) }
 
-const FILTERS = [
+const FILTERS = useMemo(() => [
   { id: 'all', label: t?.filters?.all || 'All' }, 
   { id: 'faith', label: t?.filters?.faith || 'Faith' }, 
   { id: 'general', label: t?.filters?.general || 'General' }, 
@@ -67,7 +67,7 @@ const FILTERS = [
   { id: 'event', label: t?.filters?.event || 'Event' }, 
   { id: 'help', label: t?.filters?.help || 'Help' }, 
   { id: 'recommend', label: t?.filters?.recommend || 'Recommend' }
-]
+], [t])
   console.log('FILTERS:', FILTERS)
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
