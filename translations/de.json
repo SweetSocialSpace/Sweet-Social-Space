@@ -26,7 +26,7 @@
     "setLocation": "Standort festlegen",
     "locating": "Lokalisierung..."
   },
-    "filters": {
+  "filters": {
     "all": "Alle",
     "faith": "Glaube",
     "general": "Allgemein",
