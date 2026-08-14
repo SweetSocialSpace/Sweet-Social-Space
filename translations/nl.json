@@ -26,7 +26,7 @@
     "setLocation": "Locatie instellen",
     "locating": "Locatie bepalen..."
   },
-    "filters": {
+  "filters": {
     "all": "Alle",
     "faith": "Geloof",
     "general": "Algemeen",
