@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Agım",
+    "profile": "Profil",
+    "settings": "Parametrler",
+    "signOut": "Çykış"
+  },
+  "feed": {
+    "whatsHappening": "Nä bolup jatat",
+    "postAs": "CATIN JARIYILAŇ",
+    "in": "JERDE",
+    "loading": "Jüktelüde..."
+  },
+  "common": {
+    "backToFeed": "Agımga qaytıŋ",
+    "save": "Saqtaw",
+    "cancel": "Jibirüw",
+    "error": "Qate",
+    "loading": "Jüktelüde..."
+  },
+  "weather": {
+    "weather": "Aba rayı",
+    "live": "TİKELEI"
+  },
+  "location": {
+    "setLocation": "Ornlaşunı ornattıŋ",
+    "locating": "Ornlaşu anyqtaluda..."
+  },
+  "filters": {
+    "all": "Barı",
+    "faith": "Senim",
+    "general": "Jalpy",
+    "safety": "Qauipsizdik",
+    "forSale": "Satıda",
+    "free": "Tegin",
+    "lostPet": "Joğalğan üy jaŋawarı",
+    "event": "Waqıya",
+    "help": "Kömek",
+    "recommend": "Usınıw"
+  }
+}
