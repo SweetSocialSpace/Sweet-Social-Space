@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 const VERSES = [
   { verse: "Love your neighbor as yourself.", ref: "Mark 12:31", prompt: "Who on your block can you show love to today?" },
