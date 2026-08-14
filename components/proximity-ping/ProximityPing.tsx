@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export default function ProximityPing() {
   const [ping, setPing] = useState<any>(null);
