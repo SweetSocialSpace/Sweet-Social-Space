@@ -1,11 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
+import { useTranslations } from '@/lib/translations'
 
 type EventItem = { id: string; title: string; venue?: string; icon?: string; source?: string }
 
 export function WhatsHappeningNearYou(){
   const { zip, city, lat, lng } = useLocation()
+  const t = useTranslations()
   const [events, setEvents] = useState<EventItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -52,16 +54,16 @@ export function WhatsHappeningNearYou(){
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📍 What's happening near you</p>
-      <p className="text-xs text-white/50 mt-1">Loading location...</p>
+      <p className="font-bold">📍 {t.feed.whatsHappening} near you</p>
+      <p className="text-xs text-white/50 mt-1">{t.location.locating}</p>
     </div>
   )
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📍 What's happening near you</p>
+      <p className="font-bold">📍 {t.feed.whatsHappening} near you</p>
       <p className="text-xs text-white/50 mt-1">Near {zip} {city? `• ${city}`:''} • Information Highway</p>
-      {loading? <p className="text-sm mt-3 text-white/60">Scanning event APIs...</p> : events.length===0? (
+      {loading? <p className="text-sm mt-3 text-white/60">{t.feed.loading}</p> : events.length===0? (
         <p className="text-sm mt-3 text-white/70">Checking {city || zip} events...</p>
       ):(
         <div className="mt-3 space-y-2.5">
