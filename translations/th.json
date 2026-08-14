@@ -1,0 +1,42 @@
+{
+  "nav": {
+    "feed": "ฟีด",
+    "profile": "โปรไฟล์",
+    "settings": "การตั้งค่า",
+    "signOut": "ออกจากระบบ"
+  },
+  "feed": {
+    "whatsHappening": "เกิดอะไรขึ้นที่",
+    "postAs": "โพสต์ในฐานะ",
+    "in": "ใน",
+    "loading": "กำลังโหลด..."
+  },
+  "common": {
+    "backToFeed": "กลับไปที่ฟีด",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "error": "ข้อผิดพลาด",
+    "loading": "กำลังโหลด..."
+  },
+  "weather": {
+    "weather": "สภาพอากาศ",
+    "live": "สด"
+  },
+  "location": {
+    "setLocation": "ตั้งค่าตำแหน่ง",
+    "locating": "กำลังระบุตำแหน่ง..."
+  },
+  "filters": {
+    "all": "ทั้งหมด",
+    "faith": "ศรัทธา",
+    "general": "ทั่วไป",
+    "safety": "ความปลอดภัย",
+    "forSale": "สำหรับขาย",
+    "free": "ฟรี",
+    "lostPet": "สัตว์เลี้ยงหาย",
+    "event": "กิจกรรม",
+    "help": "ช่วยเหลือ",
+    "recommend": "แนะนำ"
+  }
+}
+
