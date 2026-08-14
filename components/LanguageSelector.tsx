@@ -1,12 +1,15 @@
 'use client'
+import { useState } from 'react'
 import { useLanguage } from '@/lib/language-context'
 
 export default function LanguageSelector() {
   const { language, setLanguage, languageName } = useLanguage()
+  const [isOpen, setIsOpen] = useState(false)
 
   const handleLanguageChange = (langCode: string) => {
     console.log('Language changed to:', langCode) // Debug log
     setLanguage(langCode as any)
+    setIsOpen(false) // Close the dropdown after selection
   }
 
   const languageGroups = [
@@ -86,35 +89,42 @@ export default function LanguageSelector() {
   ]
 
   return (
-    <div className="relative group">
-      <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full text-white text-xs font-black transition">
+    <div className="relative">
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full text-white text-xs font-black transition"
+      >
         <span className="text-lg">🌐</span>
         <span>{languageName}</span>
       </button>
-      <div className="absolute top-full right-0 mt-2 bg-black border border-white/20 rounded-xl shadow-xl overflow-hidden hidden group-hover:block z-50 w-56 max-h-96 overflow-y-auto">
-        {languageGroups.map((group) => (
-          <div key={group.name}>
-            <div className="px-4 py-2 text-xs font-bold text-white/50 uppercase tracking-wider sticky top-0 bg-black">
-              {group.name}
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-2 bg-black border border-white/20 rounded-xl shadow-xl overflow-hidden z-50 w-56 max-h-96 overflow-y-auto">
+          <button 
+            onClick={() => setIsOpen(false)}
+            className="absolute top-2 right-2 text-white/50 hover:text-white text-xs"
+          >
+            ✕
+          </button>
+          {languageGroups.map((group) => (
+            <div key={group.name}>
+              <div className="px-4 py-2 text-xs font-bold text-white/50 uppercase tracking-wider sticky top-0 bg-black">
+                {group.name}
+              </div>
+              {group.languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition ${
+                    language === lang.code ? 'bg-white/20 text-white' : 'text-white/70'
+                  }`}
+                >
+                  {lang.name}
+                </button>
+              ))}
             </div>
-            {group.languages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  handleLanguageChange(lang.code)
-                }}
-                className={`w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition ${
-                  language === lang.code ? 'bg-white/20 text-white' : 'text-white/70'
-                }`}
-              >
-                {lang.name}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
