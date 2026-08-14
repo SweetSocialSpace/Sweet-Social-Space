@@ -1,5 +1,6 @@
 'use client'
-
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 import { useEffect, useState } from 'react'
 
 function detectPlatform(): 'ios' | 'android' | 'desktop' {
