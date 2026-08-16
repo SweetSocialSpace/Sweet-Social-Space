@@ -3,11 +3,13 @@
 import { useEffect, useRef } from 'react'
 import { useLanguage } from '@/lib/language-context'
 
-const TEXT_CACHE_PREFIX = 'sss_translation_v2:'
+const TEXT_CACHE_PREFIX = 'sss_translation_v3:'
 const MAX_TEXT_LENGTH = 4000
-const MAX_BATCH = 80
+const MAX_BATCH = 50
+
 const SKIP_TAGS = new Set([
-  'SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'SVG'
+  'SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'PRE', 'SVG',
+  'INPUT', 'TEXTAREA', 'SELECT', 'OPTION'
 ])
 
 const originalText = new WeakMap<Text, string>()
@@ -19,8 +21,7 @@ function cacheKey(language: string, text: string) {
 
 function readCache(language: string, text: string) {
   try {
-    const value = sessionStorage.getItem(cacheKey(language, text))
-    return value || null
+    return sessionStorage.getItem(cacheKey(language, text))
   } catch {
     return null
   }
@@ -37,91 +38,98 @@ function shouldSkipText(node: Text) {
   if (!parent) return true
   if (SKIP_TAGS.has(parent.tagName)) return true
   if (parent.closest('[data-sss-no-translate]')) return true
-  if (parent.closest('input, textarea, select, option')) return true
+  if (parent.closest('[contenteditable="true"]')) return true
+  if (parent.closest('[data-sss-live]')) return true
   return false
 }
 
-function collectTextNodes(root: Node) {
+function collectTextNodes(root: HTMLElement) {
   const nodes: Text[] = []
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
-
   let current: Node | null
+
   while ((current = walker.nextNode())) {
     const node = current as Text
     const raw = originalText.get(node) ?? node.nodeValue ?? ''
     const trimmed = raw.trim()
 
-    if (!trimmed) continue
-    if (trimmed.length > MAX_TEXT_LENGTH) continue
+    if (!trimmed || trimmed.length > MAX_TEXT_LENGTH) continue
     if (shouldSkipText(node)) continue
 
-    if (!originalText.has(node)) {
-      originalText.set(node, raw)
-    }
-
+    if (!originalText.has(node)) originalText.set(node, raw)
     nodes.push(node)
   }
 
   return nodes
 }
 
-function collectAttributes(root: Node) {
-  const elements = Array.from(
-    root instanceof HTMLElement
-      ? root.querySelectorAll<HTMLElement>('[placeholder], [title], [aria-label]')
-      : document.querySelectorAll<HTMLElement>('[placeholder], [title], [aria-label]')
-  )
-
-  return elements.filter(el => {
+function collectAttributes(root: HTMLElement) {
+  return Array.from(
+    root.querySelectorAll<HTMLElement>('[placeholder], [title], [aria-label]')
+  ).filter(el => {
     if (el.closest('[data-sss-no-translate]')) return false
-    if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return false
+    if (el.closest('[data-sss-live]')) return false
+    if (SKIP_TAGS.has(el.tagName)) return false
     return true
   })
 }
 
-async function translateBatch(
-  language: string,
-  texts: string[]
-): Promise<string[]> {
+async function translateBatch(language: string, texts: string[]) {
   const response = await fetch('/api/translate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      target: language,
-      texts
-    }),
+    body: JSON.stringify({ target: language, texts }),
     cache: 'no-store'
   })
 
-  if (!response.ok) throw new Error('Translation request failed')
+  const payload = await response.json().catch(() => null)
 
-  const payload = await response.json()
-  const results = payload?.translations
-
-  if (!Array.isArray(results)) {
-    throw new Error('Translation response was invalid')
+  if (!response.ok) {
+    throw new Error(payload?.error || 'Translation request failed')
   }
 
-  return results.map((item: any) => item?.text || '')
+  if (!Array.isArray(payload?.translations)) {
+    throw new Error('Invalid translation response')
+  }
+
+  return payload.translations.map((item: any) => item?.text || '')
+}
+
+async function translateWithFallback(language: string, texts: string[]) {
+  try {
+    return await translateBatch(language, texts)
+  } catch {
+    // If a large batch is rejected, retry each item so one bad string
+    // cannot prevent the rest of the interface from translating.
+    const results: string[] = []
+    for (const text of texts) {
+      try {
+        const one = await translateBatch(language, [text])
+        results.push(one[0] || '')
+      } catch {
+        results.push('')
+      }
+    }
+    return results
+  }
 }
 
 async function translatePage(language: string, root: HTMLElement) {
   if (language === 'en') return
 
   const nodes = collectTextNodes(root)
-  const attributes = collectAttributes(root)
-
   const pendingTexts: string[] = []
   const pendingNodes: Text[] = []
   const seen = new Set<string>()
 
   for (const node of nodes) {
-    const source = (originalText.get(node) ?? node.nodeValue ?? '').trim()
+    const raw = originalText.get(node) ?? node.nodeValue ?? ''
+    const source = raw.trim()
     if (!source || seen.has(source)) continue
 
     const cached = readCache(language, source)
     if (cached) {
-      node.nodeValue = (originalText.get(node) ?? node.nodeValue ?? '').replace(source, cached)
+      node.nodeValue = raw.replace(source, cached)
       continue
     }
 
@@ -133,22 +141,17 @@ async function translatePage(language: string, root: HTMLElement) {
   for (let i = 0; i < pendingTexts.length; i += MAX_BATCH) {
     const texts = pendingTexts.slice(i, i + MAX_BATCH)
     const batchNodes = pendingNodes.slice(i, i + MAX_BATCH)
+    const translated = await translateWithFallback(language, texts)
 
-    try {
-      const translated = await translateBatch(language, texts)
+    translated.forEach((value, index) => {
+      const source = texts[index]
+      const node = batchNodes[index]
+      if (!value || !node.isConnected) return
 
-      translated.forEach((value, index) => {
-        const source = texts[index]
-        const node = batchNodes[index]
-        if (!value || !node.isConnected) return
-
-        writeCache(language, source, value)
-        const raw = originalText.get(node) ?? node.nodeValue ?? ''
-        node.nodeValue = raw.replace(source, value)
-      })
-    } catch {
-      // Leave the original English text visible if translation fails.
-    }
+      writeCache(language, source, value)
+      const raw = originalText.get(node) ?? node.nodeValue ?? ''
+      node.nodeValue = raw.replace(source, value)
+    })
   }
 
   const attributeWork: Array<{
@@ -157,17 +160,18 @@ async function translatePage(language: string, root: HTMLElement) {
     source: string
   }> = []
 
-  for (const element of attributes) {
+  for (const element of collectAttributes(root)) {
     const saved = originalAttributes.get(element) ?? {}
     if (!originalAttributes.has(element)) originalAttributes.set(element, saved)
 
     for (const attribute of ['placeholder', 'title', 'aria-label'] as const) {
       const value = element.getAttribute(attribute)
       if (!value || value.length > MAX_TEXT_LENGTH) continue
-      if (!saved[attribute]) saved[attribute] = value
 
+      if (!saved[attribute]) saved[attribute] = value
       const source = saved[attribute]
       const cached = readCache(language, source)
+
       if (cached) {
         element.setAttribute(attribute, cached)
       } else {
@@ -178,30 +182,36 @@ async function translatePage(language: string, root: HTMLElement) {
 
   for (let i = 0; i < attributeWork.length; i += MAX_BATCH) {
     const batch = attributeWork.slice(i, i + MAX_BATCH)
-    try {
-      const translated = await translateBatch(
-        language,
-        batch.map(item => item.source)
-      )
+    const translated = await translateWithFallback(
+      language,
+      batch.map(item => item.source)
+    )
 
-      translated.forEach((value, index) => {
-        const item = batch[index]
-        if (!value) return
-        writeCache(language, item.source, value)
+    translated.forEach((value, index) => {
+      const item = batch[index]
+      if (!value) return
+      writeCache(language, item.source, value)
+      if (item.element.isConnected) {
         item.element.setAttribute(item.attribute, value)
-      })
-    } catch {}
+      }
+    })
   }
 }
 
 function restoreOriginals(root: HTMLElement) {
-  const nodes = collectTextNodes(root)
-  for (const node of nodes) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+  let current: Node | null
+
+  while ((current = walker.nextNode())) {
+    const node = current as Text
     const original = originalText.get(node)
     if (original !== undefined) node.nodeValue = original
   }
 
-  const elements = collectAttributes(root)
+  const elements = Array.from(
+    root.querySelectorAll<HTMLElement>('[placeholder], [title], [aria-label]')
+  )
+
   for (const element of elements) {
     const saved = originalAttributes.get(element)
     if (!saved) continue
@@ -217,6 +227,10 @@ function restoreOriginals(root: HTMLElement) {
 export default function GlobalLanguageTranslator() {
   const { language } = useLanguage()
   const languageRef = useRef(language)
+  const runningRef = useRef(false)
+  const pendingRef = useRef(false)
+  const observerRef = useRef<MutationObserver | null>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     languageRef.current = language
@@ -224,46 +238,63 @@ export default function GlobalLanguageTranslator() {
 
   useEffect(() => {
     const root = document.body
-    let timer: ReturnType<typeof setTimeout> | null = null
-    let running = false
-    let rerun = false
 
     const run = async () => {
-      if (running) {
-        rerun = true
+      if (runningRef.current) {
+        pendingRef.current = true
         return
       }
 
-      running = true
-      rerun = false
+      runningRef.current = true
+      pendingRef.current = false
 
-      restoreOriginals(root)
-      await translatePage(languageRef.current, root)
+      // Disconnect while we modify the DOM. Otherwise our own translated
+      // text creates a MutationObserver loop and can interfere with widgets.
+      observerRef.current?.disconnect()
 
-      running = false
+      try {
+        restoreOriginals(root)
+        await translatePage(languageRef.current, root)
+      } catch (error) {
+        console.error('[GlobalLanguageTranslator]', error)
+      } finally {
+        runningRef.current = false
 
-      if (rerun) {
-        rerun = false
-        if (timer) clearTimeout(timer)
-        timer = setTimeout(run, 100)
+        observerRef.current?.observe(root, {
+          childList: true,
+          subtree: true
+        })
+
+        if (pendingRef.current) {
+          pendingRef.current = false
+          schedule()
+        }
       }
     }
 
-    const observer = new MutationObserver(() => {
-      if (timer) clearTimeout(timer)
-      timer = setTimeout(run, 250)
+    const schedule = () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => {
+        void run()
+      }, 500)
+    }
+
+    observerRef.current = new MutationObserver(() => {
+      if (!runningRef.current) schedule()
+      else pendingRef.current = true
     })
 
-    observer.observe(root, {
+    observerRef.current.observe(root, {
       childList: true,
       subtree: true
     })
 
-    run()
+    void run()
 
     return () => {
-      observer.disconnect()
-      if (timer) clearTimeout(timer)
+      observerRef.current?.disconnect()
+      observerRef.current = null
+      if (timerRef.current) clearTimeout(timerRef.current)
       restoreOriginals(root)
     }
   }, [language])
