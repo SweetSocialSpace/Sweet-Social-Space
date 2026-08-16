@@ -1,12 +1,14 @@
 'use client'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import {LANGUAGE_NAMES,useLanguage} from '@/lib/language-context'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 export default function SignupPage() {
   const supabase = createClient()
   const router = useRouter()
+  const { language, setLanguage } = useLanguage()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
@@ -47,6 +49,7 @@ export default function SignupPage() {
             zip_code: zip.trim(), 
             city: city.trim(), 
             country: country.trim(),
+            preferred_language: language,
             radius_mi: radius,
             lat: null, // will be filled by /api/zips on backend
             lon: null
@@ -108,6 +111,23 @@ export default function SignupPage() {
               </div>
               <input type="text" value={zip} onChange={e=>{setZip(e.target.value); lookupZip(e.target.value)}} onBlur={e=>lookupZip(e.target.value)} placeholder="Zip / Postal Code *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
               <div className="grid grid-cols-2 gap-3 mt-3">
+                <div className="mt-3">
+  <label className="text-xs font-black tracking-widest text-white/50 uppercase">
+    Preferred language
+  </label>
+
+  <select
+    value={language}
+    onChange={(e) => setLanguage(e.target.value as any)}
+    className="w-full mt-1 p-3 rounded-xl bg-white text-black font-semibold"
+  >
+    {Object.entries(LANGUAGE_NAMES).map(([code, name]) => (
+      <option key={code} value={code}>
+        {name}
+      </option>
+    ))}
+  </select>
+</div>
                 <input type="text" value={city} onChange={e=>setCity(e.target.value)} placeholder="City *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
                 <input type="text" value={country} onChange={e=>setCountry(e.target.value)} placeholder="Country *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
               </div>
