@@ -155,7 +155,9 @@ const FILTERS = useMemo(() => [
               const displayBody = isEnded? (p.body||p.content||'').replace('LIVE NOW','Was Live') : (p.body||p.content)
               return (
                 <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
-                  <p className="text-black whitespace-pre-wrap break-words leading-6"> {displayBody}</p>
+                 <p className="text-black whitespace-pre-wrap break-words leading-6">
+  {displayBody}
+</p>
                   {p.tag === 'live' && p.livekit_room && <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 Join Live Stream</button>}
                   {isEnded && (
                     <>
