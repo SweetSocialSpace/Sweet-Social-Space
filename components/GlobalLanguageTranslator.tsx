@@ -187,7 +187,7 @@ async function translatePage(language: string, root: HTMLElement) {
       batch.map(item => item.source)
     )
 
-    translated.forEach((value, index) => {
+   translated.forEach((value: string, index: number) => {
       const item = batch[index]
       if (!value) return
       writeCache(language, item.source, value)
