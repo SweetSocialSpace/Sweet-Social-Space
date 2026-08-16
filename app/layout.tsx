@@ -2,6 +2,7 @@ import './globals.css'
 import { LocationProvider } from '@/lib/location-context'
 import type { Metadata, Viewport } from 'next'
 import { LanguageProvider } from '@/lib/language-context'
+import GlobalLanguageTranslator from '@/components/GlobalLanguageTranslator'
 
 export const metadata: Metadata = {
   title: 'Sweet Social Space • Your Neighborhood',
@@ -33,8 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="fixed inset-0 bg-black/40 -z-10 pointer-events-none" />
         <LocationProvider>
        <LanguageProvider>
-  <div className="relative z-10 min-h-screen">{children}</div>
-</LanguageProvider>
+          <GlobalLanguageTranslator />
+          <div className="relative z-10 min-h-screen">{children}</div>
+        </LanguageProvider>
         </LocationProvider>
       </body>
     </html>
