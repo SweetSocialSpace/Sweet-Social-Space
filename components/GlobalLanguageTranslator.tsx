@@ -143,7 +143,7 @@ async function translatePage(language: string, root: HTMLElement) {
     const batchNodes = pendingNodes.slice(i, i + MAX_BATCH)
     const translated = await translateWithFallback(language, texts)
 
-    translated.forEach((value, index) => {
+    translated.forEach((value: string, index: number) => {
       const source = texts[index]
       const node = batchNodes[index]
       if (!value || !node.isConnected) return
