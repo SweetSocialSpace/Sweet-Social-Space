@@ -13,7 +13,6 @@ export default function WeatherBar() {
   const [city, setCity] = useState('')
   
   const t = useTranslations()
-  console.log('WeatherBar language:', language, 'translations:', t)
 
   const load = async () => {
     if (!zip) {
@@ -31,7 +30,23 @@ export default function WeatherBar() {
         if (t_data > 150) t_data = (t_data - 273.15) * 9/5 + 32
         setTemp(Math.round(Number(t_data)))
       }
-      setDesc((data?.description || data?.weather?.[0]?.description || '').toLowerCase())
+      const rawDescription = (data?.description || data?.weather?.[0]?.description || '').toLowerCase()
+      if (rawDescription && language !== 'en') {
+        try {
+          const tr = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target: language, texts: [rawDescription] }),
+            cache: 'no-store'
+          })
+          const translated = await tr.json().catch(() => null)
+          setDesc(translated?.translations?.[0]?.text || rawDescription)
+        } catch {
+          setDesc(rawDescription)
+        }
+      } else {
+        setDesc(rawDescription)
+      }
       setCity(data?.city || data?.name || globalCity || '')
     } catch {}
   }
@@ -40,12 +55,12 @@ export default function WeatherBar() {
     load()
     const id = setInterval(load, 300000)
     return () => clearInterval(id)
-  }, [zip, globalCity, language, t])
+  }, [zip, globalCity, language])
 
   const displayCity = city || globalCity || (zip? zip : 'your area')
 
   return (
-    <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
+    <div data-sss-live className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center justify-between">
         <span className="text-white font-black text-xs tracking-widest">{t.weather.weather}</span>
 <span className="text- bg-green-500 text-black px-2 py-0.5 rounded-full font-black">{t.weather.live}</span>
