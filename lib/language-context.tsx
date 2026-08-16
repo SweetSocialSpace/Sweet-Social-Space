@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export type Language =
   | 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'ru' | 'ar' | 'pt'
@@ -68,6 +69,21 @@ export const LANGUAGE_NAMES: Record<Language, string> = {
 
 const RTL_LANGUAGES: Language[] = ['ar', 'he', 'fa', 'ur']
 
+export function isSupportedLanguage(
+  value: string | null | undefined
+): value is Language {
+  return !!value &&
+    Object.prototype.hasOwnProperty.call(LANGUAGE_NAMES, value)
+}
+
+function detectBrowserLanguage(): Language {
+  const code = (navigator.language || 'en')
+    .toLowerCase()
+    .split('-')[0]
+
+  return isSupportedLanguage(code) ? code : 'en'
+}
+
 type LanguageContextType = {
   language: Language
   setLanguage: (language: Language) => void
@@ -80,61 +96,133 @@ const LanguageContext = createContext<LanguageContextType>({
   languageName: 'English'
 })
 
-function getInitialLanguage(): Language {
-  if (typeof window === 'undefined') {
-    return 'en'
-  }
-
-  const savedLanguage = localStorage.getItem('sss_language')
-
-  if (
-    savedLanguage &&
-    Object.prototype.hasOwnProperty.call(
-      LANGUAGE_NAMES,
-      savedLanguage
-    )
-  ) {
-    return savedLanguage as Language
-  }
-
-  return 'en'
-}
-
 export function LanguageProvider({
   children
 }: {
   children: React.ReactNode
 }) {
-  const [language, setLanguageState] =
-    useState<Language>(getInitialLanguage)
+  const [language, setLanguageState] = useState<Language>('en')
+  const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
-    localStorage.setItem('sss_language', language)
+    let cancelled = false
 
-    document.documentElement.lang = language
+    const initializeLanguage = async () => {
+      /*
+       * 1. Explicit user choice wins.
+       */
+      const saved = localStorage.getItem('sss_language')
 
-    document.documentElement.dir =
-      RTL_LANGUAGES.includes(language) ? 'rtl' : 'ltr'
-  }, [language])
+      if (isSupportedLanguage(saved)) {
+        setLanguageState(saved)
+        setInitialized(true)
+        return
+      }
 
-  const setLanguage = (newLanguage: Language) => {
-    if (!LANGUAGE_NAMES[newLanguage]) {
-      console.warn(`Unsupported language: ${newLanguage}`)
-      return
+      /*
+       * 2. Existing subscriber preference.
+       */
+      try {
+        const supabase = createClient()
+
+        const {
+          data: { user }
+        } = await supabase.auth.getUser()
+
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('preferred_language')
+            .or(`user_id.eq.${user.id},id.eq.${user.id}`)
+            .maybeSingle()
+
+          if (isSupportedLanguage(profile?.preferred_language)) {
+            localStorage.setItem(
+              'sss_language',
+              profile.preferred_language
+            )
+
+            if (!cancelled) {
+              setLanguageState(profile.preferred_language)
+              setInitialized(true)
+            }
+
+            return
+          }
+        }
+      } catch {
+        // Fall through to browser detection.
+      }
+
+      /*
+       * 3. First-time visitor:
+       * automatically use their browser/device language.
+       */
+      const detected = detectBrowserLanguage()
+
+      localStorage.setItem('sss_language', detected)
+
+      if (!cancelled) {
+        setLanguageState(detected)
+        setInitialized(true)
+      }
     }
 
-    setLanguageState(newLanguage)
-  }
+    initializeLanguage()
 
-  const languageName =
-    LANGUAGE_NAMES[language] || LANGUAGE_NAMES.en
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!initialized) return
+
+    document.documentElement.lang = language
+    document.documentElement.dir =
+      RTL_LANGUAGES.includes(language) ? 'rtl' : 'ltr'
+  }, [language, initialized])
+
+  const setLanguage = (newLanguage: Language) => {
+    if (!isSupportedLanguage(newLanguage)) return
+
+    setLanguageState(newLanguage)
+    localStorage.setItem('sss_language', newLanguage)
+
+    /*
+     * Persist the subscriber's preferred language.
+     */
+    void (async () => {
+      try {
+        const supabase = createClient()
+
+        const {
+          data: { user }
+        } = await supabase.auth.getUser()
+
+        if (!user) return
+
+        await supabase
+          .from('profiles')
+          .update({
+            preferred_language: newLanguage
+          })
+          .or(`user_id.eq.${user.id},id.eq.${user.id}`)
+      } catch {
+        /*
+         * Local preference still works even if the profile
+         * update is temporarily unavailable.
+         */
+      }
+    })()
+  }
 
   return (
     <LanguageContext.Provider
       value={{
         language,
         setLanguage,
-        languageName
+        languageName: LANGUAGE_NAMES[language]
       }}
     >
       {children}
@@ -142,10 +230,4 @@ export function LanguageProvider({
   )
 }
 
-/**
- * Returns the currently selected platform language
- * and the function used to change it.
- */
-export function useLanguage() {
-  return useContext(LanguageContext)
-}
+export const useLanguage = () => useContext(LanguageContext)
