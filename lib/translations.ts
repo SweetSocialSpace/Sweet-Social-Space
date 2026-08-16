@@ -1,4 +1,5 @@
 'use client'
+
 import { useLanguage } from './language-context'
 import { useMemo } from 'react'
 
@@ -44,7 +45,6 @@ type Translations = {
   }
 }
 
-// Import all translation files
 const translations: Record<string, Translations> = {
   en: require('../translations/en.json'),
   es: require('../translations/es.json'),
@@ -101,18 +101,62 @@ const translations: Record<string, Translations> = {
   my: require('../translations/my.json')
 }
 
+function flattenTranslations(
+  value: unknown,
+  result: Record<string, string> = {}
+): Record<string, string> {
+  if (!value || typeof value !== 'object') {
+    return result
+  }
+
+  Object.entries(value as Record<string, unknown>).forEach(
+    ([key, child]) => {
+      if (typeof child === 'string') {
+        result[key] = child
+      } else {
+        flattenTranslations(child, result)
+      }
+    }
+  )
+
+  return result
+}
+
+/**
+ * Returns the currently selected translation dictionary.
+ */
 export function useTranslations() {
   const { language } = useLanguage()
-  const t = useMemo(() => {
+
+  return useMemo(() => {
     return translations[language] || translations.en
   }, [language])
-  return t
-}
-  export function translate(path: string, lang: string) {
-  const dictionary = translations[lang] || translations.en;
-
-  return path.split(".").reduce((obj: any, key) => {
-    return obj?.[key];
-  }, dictionary);
 }
 
+/**
+ * Returns a flat list of all known platform translations.
+ *
+ * This is used by the global interface translator so components
+ * that contain hard-coded platform labels can still participate
+ * in the selected language.
+ */
+export function getGlobalTranslations(language: string) {
+  const selected = translations[language] || translations.en
+  const english = translations.en
+
+  const selectedFlat = flattenTranslations(selected)
+  const englishFlat = flattenTranslations(english)
+
+  const result: Record<string, string> = {}
+
+  Object.keys(englishFlat).forEach((key) => {
+    const englishText = englishFlat[key]
+    const translatedText = selectedFlat[key]
+
+    if (englishText && translatedText) {
+      result[englishText] = translatedText
+    }
+  })
+
+  return result
+}
