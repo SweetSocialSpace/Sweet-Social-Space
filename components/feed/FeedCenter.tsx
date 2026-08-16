@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import TranslatedContent from '@/components/translation/TranslatedContent'
 import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 import { createClient } from '@/lib/supabase/client'
@@ -125,7 +126,10 @@ export default function FeedCenter() {
           <div className="space-y-4">
         {posts.map(p=>(
           <div key={p.id} className="bg-white rounded-2xl p-5">
-            <p className="text-black whitespace-pre-wrap text-sm break-words leading-relaxed">{p.body}</p>
+           <TranslatedContent
+  text={p.body}
+  className="text-black text-sm"
+/>
             
             {/* Display video if available (for recorded live streams) */}
             {(p.video_url || p.media_url) && (
