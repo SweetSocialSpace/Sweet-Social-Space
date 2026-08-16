@@ -5,7 +5,9 @@ const MAX_CHARS_PER_ITEM = 5000
 
 export async function POST(request: NextRequest) {
   try {
-    const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY
+    const apiKey =
+      process.env.GOOGLE_TRANSLATE_API_KEY ||
+      process.env.GOOGLE_TRANSLATION_API_KEY
 
     if (!apiKey) {
       return NextResponse.json(
@@ -21,10 +23,9 @@ export async function POST(request: NextRequest) {
         ? body.target.toLowerCase().split('-')[0]
         : ''
 
-    const texts =
-      Array.isArray(body?.texts)
-        ? body.texts
-        : []
+    const texts = Array.isArray(body?.texts)
+      ? body.texts
+      : []
 
     if (
       !target ||
@@ -55,14 +56,14 @@ export async function POST(request: NextRequest) {
       {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           q: cleaned,
           target,
-          format: 'text'
+          format: 'text',
         }),
-        cache: 'no-store'
+        cache: 'no-store',
       }
     )
 
@@ -73,7 +74,7 @@ export async function POST(request: NextRequest) {
         {
           error:
             payload?.error?.message ||
-            'Translation failed.'
+            'Translation failed.',
         },
         { status: 502 }
       )
@@ -86,10 +87,12 @@ export async function POST(request: NextRequest) {
       translations: translations.map((item: any) => ({
         text: item.translatedText,
         detectedSourceLanguage:
-          item.detectedSourceLanguage || null
-      }))
+          item.detectedSourceLanguage || null,
+      })),
     })
-  } catch {
+  } catch (error) {
+    console.error('Translation API error:', error)
+
     return NextResponse.json(
       { error: 'Translation service unavailable.' },
       { status: 500 }
