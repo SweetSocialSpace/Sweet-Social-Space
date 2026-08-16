@@ -108,3 +108,11 @@ export function useTranslations() {
   }, [language])
   return t
 }
+  export function translate(path: string, lang: string) {
+  const dictionary = translations[lang] || translations.en;
+
+  return path.split(".").reduce((obj: any, key) => {
+    return obj?.[key];
+  }, dictionary);
+}
+
