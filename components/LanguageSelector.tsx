@@ -30,7 +30,22 @@ export default function LanguageSelector() {
         <div className="absolute top-full right-0 mt-2 bg-black border border-white/20 rounded-xl shadow-xl overflow-hidden z-50 w-56 max-h-96 overflow-y-auto">
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
+           onClick={() => {
+  setLanguage(lang)
+  setIsOpen(false)
+
+  // Tell the translation system immediately.
+  window.dispatchEvent(
+    new CustomEvent(
+      'sss-language-changed',
+      {
+        detail: {
+          language: lang
+        }
+      }
+    )
+  )
+}}
             className="absolute top-2 right-2 text-white/50 hover:text-white text-xs"
             aria-label="Close language menu"
           >
