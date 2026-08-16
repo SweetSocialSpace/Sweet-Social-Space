@@ -1,4 +1,3 @@
-import GlobalLanguageTranslator from '@/components/GlobalLanguageTranslator'
 import './globals.css'
 import { LocationProvider } from '@/lib/location-context'
 import type { Metadata, Viewport } from 'next'
@@ -33,12 +32,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       >
         <div className="fixed inset-0 bg-black/40 -z-10 pointer-events-none" />
         <LocationProvider>
-         <LanguageProvider>
-  <GlobalLanguageTranslator />
-
-  <div className="relative z-10 min-h-screen">
-    {children}
-  </div>
+       <LanguageProvider>
+  <div className="relative z-10 min-h-screen">{children}</div>
 </LanguageProvider>
         </LocationProvider>
       </body>
