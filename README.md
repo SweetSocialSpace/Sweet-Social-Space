@@ -3,7 +3,7 @@
 Neighborhood-first community platform – own your code, own your speech.
 Works anywhere - any zip on earth.
 
-Built for Harry S Sweet – sweetsocialspace.com
+Built for sweetsocialspace.com
 Live: sweetsocialspace.com / feed
 
 ## What's in this house
