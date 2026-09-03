@@ -20,6 +20,7 @@ const SKIP_TAGS = new Set([
 ])
 
 const originalText = new WeakMap<Text, string>()
+const translatedText = new WeakMap<Text, string>()
 const originalAttributes = new WeakMap<
   HTMLElement,
   Record<string, string>
@@ -101,10 +102,22 @@ function collectTextNodes() {
       continue
     }
 
-    const raw =
-      originalText.get(node) ??
-      node.nodeValue ??
-      ''
+    const currentText = node.nodeValue ?? ''
+    const trackedOriginal = originalText.get(node)
+    const trackedTranslation = translatedText.get(node)
+
+    // Do not overwrite text that React changed between language runs.
+    if (
+      trackedOriginal !== undefined &&
+      currentText !== trackedOriginal &&
+      currentText !== trackedTranslation
+    ) {
+      originalText.delete(node)
+      translatedText.delete(node)
+      continue
+    }
+
+    const raw = trackedOriginal ?? currentText
 
     const source = raw.trim()
 
@@ -139,10 +152,14 @@ function restoreOriginalText() {
   ) {
     const node = current as Text
     const original = originalText.get(node)
+    const translated = translatedText.get(node)
 
-    if (original !== undefined) {
+    // React may have rendered a new language into this node already.
+    if (original !== undefined && translated !== undefined && node.nodeValue === translated) {
       node.nodeValue = original
     }
+
+    translatedText.delete(node)
   }
 }
 
@@ -379,11 +396,9 @@ async function translatePage(
       return
     }
 
-    node.nodeValue =
-      raw.replace(
-        source,
-        translated
-      )
+    const nextText = raw.replace(source, translated)
+    node.nodeValue = nextText
+    translatedText.set(node, nextText)
   })
 }
 
