@@ -26,9 +26,11 @@ export const LANGUAGE_NAMES: Record<Language, string> = {
 }
 
 const RTL_LANGUAGES: Language[] = ['ar', 'he', 'fa', 'ur']
+const LANGUAGE_STORAGE_KEY = 'sss_language'
+const EXPLICIT_LANGUAGE_STORAGE_KEY = 'sss_language_explicit'
 
-export function isSupportedLanguage(value: string | null | undefined): value is Language {
-  return !!value && Object.prototype.hasOwnProperty.call(LANGUAGE_NAMES, value)
+export function isSupportedLanguage(value: unknown): value is Language {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(LANGUAGE_NAMES, value)
 }
 
 function detectBrowserLanguage(): Language {
@@ -65,8 +67,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
     const initializeLanguage = async () => {
       // Explicit local choice wins.
-      const saved = localStorage.getItem('sss_language')
-      if (isSupportedLanguage(saved)) {
+      const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY)
+      const hasExplicitLocalChoice =
+        localStorage.getItem(EXPLICIT_LANGUAGE_STORAGE_KEY) === 'true'
+
+      if (hasExplicitLocalChoice && isSupportedLanguage(saved)) {
         setLanguageState(saved)
         setInitialized(true)
         return
@@ -77,11 +82,26 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         const metadataLanguage = user?.user_metadata?.preferred_language
+        let profileLanguage: unknown = null
 
-        if (isSupportedLanguage(metadataLanguage)) {
-          localStorage.setItem('sss_language', metadataLanguage)
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('preferred_language')
+            .or(`user_id.eq.${user.id},id.eq.${user.id}`)
+            .maybeSingle()
+          profileLanguage = profile?.preferred_language
+        }
+
+        const preferredLanguage = isSupportedLanguage(profileLanguage)
+          ? profileLanguage
+          : metadataLanguage
+
+        if (isSupportedLanguage(preferredLanguage)) {
+          localStorage.setItem(LANGUAGE_STORAGE_KEY, preferredLanguage)
+          localStorage.setItem(EXPLICIT_LANGUAGE_STORAGE_KEY, 'true')
           if (!cancelled) {
-            setLanguageState(metadataLanguage)
+            setLanguageState(preferredLanguage)
             setInitialized(true)
           }
           return
@@ -90,7 +110,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
       // First visit: automatically use the browser/device language.
       const detected = detectBrowserLanguage()
-      localStorage.setItem('sss_language', detected)
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, detected)
+      localStorage.removeItem(EXPLICIT_LANGUAGE_STORAGE_KEY)
 
       if (!cancelled) {
         setLanguageState(detected)
@@ -112,7 +133,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (!isSupportedLanguage(newLanguage)) return
 
     setLanguageState(newLanguage)
-    localStorage.setItem('sss_language', newLanguage)
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage)
+    localStorage.setItem(EXPLICIT_LANGUAGE_STORAGE_KEY, 'true')
 
     // Persist the subscriber preference in Supabase Auth metadata.
     void (async () => {
@@ -124,6 +146,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         await supabase.auth.updateUser({
           data: { preferred_language: newLanguage }
         })
+
+        await supabase
+          .from('profiles')
+          .update({ preferred_language: newLanguage })
+          .or(`user_id.eq.${user.id},id.eq.${user.id}`)
       } catch {}
     })()
   }
