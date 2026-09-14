@@ -29,20 +29,28 @@ const RTL_LANGUAGES: Language[] = ['ar', 'he', 'fa', 'ur']
 const LANGUAGE_STORAGE_KEY = 'sss_language'
 const EXPLICIT_LANGUAGE_STORAGE_KEY = 'sss_language_explicit'
 
+// FIX: Partial so build passes even with 10 translations
+const TRANSLATIONS: Record<string, Partial<Record<Language, string>>> = {
+  'Any zip on earth. Chronological. No algorithm.': { es: 'Cualquier código postal del mundo. Cronológico. Sin algoritmo.', fr: 'N’importe quel code postal sur terre. Chronologique. Sans algorithme.', de: 'Jede PLZ der Welt. Chronologisch. Kein Algorithmus.', pt: 'Qualquer CEP do mundo. Cronológico. Sem algoritmo.', ja: '地球上のどの郵便番号でも。時系列。アルゴリズムなし。', zh: '地球上任何邮编。按时间排序。无算法。', ar: 'أي رمز بريدي على وجه الأرض. زمني. بلا خوارزمية.' },
+  'No posts yet for': { en: 'No posts yet for', es: 'Aún no hay publicaciones para', fr: 'Pas encore de publications pour', de: 'Noch keine Beiträge für', pt: 'Ainda não há postagens para' },
+  'Be first. Own your block.': { en: 'Be first. Own your block.', es: 'Sé el primero. Sé dueño de tu cuadra.', fr: 'Soyez le premier. Possédez votre quartier.', de: 'Sei der Erste. Besitze deinen Block.' },
+  'Post in': { en: 'Post in', es: 'Publicar en', fr: 'Publier dans', de: 'Posten in' },
+  'Enter': { en: 'Enter', es: 'Entrar a', fr: 'Entrer dans', de: 'Betreten' },
+  'Feed': { en: 'Feed', es: 'Muro', fr: 'Fil', de: 'Feed' },
+  'Change Zip': { en: 'Change Zip', es: 'Cambiar Código', fr: 'Changer Code Postal', de: 'PLZ ändern' },
+  'Block:': { en: 'Block:', es: 'Cuadra:', fr: 'Quartier:', de: 'Block:' },
+}
+
 export function isSupportedLanguage(value: unknown): value is Language {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(LANGUAGE_NAMES, value)
 }
 
 function detectBrowserLanguage(): Language {
-  const languages = Array.isArray(navigator.languages)
-    ? navigator.languages
-    : [navigator.language]
-
+  const languages = Array.isArray(navigator.languages)? navigator.languages : [navigator.language]
   for (const value of languages) {
     const code = (value || '').toLowerCase().split('-')[0]
     if (isSupportedLanguage(code)) return code
   }
-
   return 'en'
 }
 
@@ -50,12 +58,14 @@ type LanguageContextType = {
   language: Language
   setLanguage: (language: Language) => void
   languageName: string
+  t: (key: string) => string
 }
 
 const LanguageContext = createContext<LanguageContextType>({
   language: 'en',
   setLanguage: () => {},
-  languageName: 'English'
+  languageName: 'English',
+  t: (k) => k
 })
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
@@ -64,61 +74,36 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let cancelled = false
-
     const initializeLanguage = async () => {
-      // Explicit local choice wins.
       const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY)
-      const hasExplicitLocalChoice =
-        localStorage.getItem(EXPLICIT_LANGUAGE_STORAGE_KEY) === 'true'
-
+      const hasExplicitLocalChoice = localStorage.getItem(EXPLICIT_LANGUAGE_STORAGE_KEY) === 'true'
       if (hasExplicitLocalChoice && isSupportedLanguage(saved)) {
         setLanguageState(saved)
         setInitialized(true)
         return
       }
-
-      // A signed-in subscriber's saved preference is next.
       try {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         const metadataLanguage = user?.user_metadata?.preferred_language
         let profileLanguage: unknown = null
-
         if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('preferred_language')
-            .or(`user_id.eq.${user.id},id.eq.${user.id}`)
-            .maybeSingle()
+          const { data: profile } = await supabase.from('profiles').select('preferred_language').or(`user_id.eq.${user.id},id.eq.${user.id}`).maybeSingle()
           profileLanguage = profile?.preferred_language
         }
-
-        const preferredLanguage = isSupportedLanguage(profileLanguage)
-          ? profileLanguage
-          : metadataLanguage
-
+        const preferredLanguage = isSupportedLanguage(profileLanguage)? profileLanguage : metadataLanguage
         if (isSupportedLanguage(preferredLanguage)) {
           localStorage.setItem(LANGUAGE_STORAGE_KEY, preferredLanguage)
           localStorage.setItem(EXPLICIT_LANGUAGE_STORAGE_KEY, 'true')
-          if (!cancelled) {
-            setLanguageState(preferredLanguage)
-            setInitialized(true)
-          }
+          if (!cancelled) { setLanguageState(preferredLanguage); setInitialized(true) }
           return
         }
       } catch {}
-
-      // First visit: automatically use the browser/device language.
       const detected = detectBrowserLanguage()
       localStorage.setItem(LANGUAGE_STORAGE_KEY, detected)
       localStorage.removeItem(EXPLICIT_LANGUAGE_STORAGE_KEY)
-
-      if (!cancelled) {
-        setLanguageState(detected)
-        setInitialized(true)
-      }
+      if (!cancelled) { setLanguageState(detected); setInitialized(true) }
     }
-
     initializeLanguage()
     return () => { cancelled = true }
   }, [])
@@ -126,41 +111,40 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!initialized) return
     document.documentElement.lang = language
-    document.documentElement.dir = RTL_LANGUAGES.includes(language) ? 'rtl' : 'ltr'
+    document.documentElement.dir = RTL_LANGUAGES.includes(language)? 'rtl' : 'ltr'
   }, [language, initialized])
 
   const setLanguage = (newLanguage: Language) => {
     if (!isSupportedLanguage(newLanguage)) return
-
     setLanguageState(newLanguage)
     localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage)
     localStorage.setItem(EXPLICIT_LANGUAGE_STORAGE_KEY, 'true')
-
-    // Persist the subscriber preference in Supabase Auth metadata.
     void (async () => {
       try {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
-
-        await supabase.auth.updateUser({
-          data: { preferred_language: newLanguage }
-        })
-
-        await supabase
-          .from('profiles')
-          .update({ preferred_language: newLanguage })
-          .or(`user_id.eq.${user.id},id.eq.${user.id}`)
+        await supabase.auth.updateUser({ data: { preferred_language: newLanguage } })
+        await supabase.from('profiles').update({ preferred_language: newLanguage }).or(`user_id.eq.${user.id},id.eq.${user.id}`)
       } catch {}
     })()
   }
 
+  const t = (key: string): string => {
+    const trimmed = key.trim()
+    if (!trimmed) return key
+    if (TRANSLATIONS[trimmed]?.[language]) return TRANSLATIONS[trimmed]![language]!
+    for (const dictKey of Object.keys(TRANSLATIONS)) {
+      if (trimmed.startsWith(dictKey)) {
+        const trans = TRANSLATIONS[dictKey][language] || dictKey
+        return trimmed.replace(dictKey, trans)
+      }
+    }
+    return key
+  }
+
   return (
-    <LanguageContext.Provider value={{
-      language,
-      setLanguage,
-      languageName: LANGUAGE_NAMES[language]
-    }}>
+    <LanguageContext.Provider value={{ language, setLanguage, languageName: LANGUAGE_NAMES[language], t }}>
       {children}
     </LanguageContext.Provider>
   )
