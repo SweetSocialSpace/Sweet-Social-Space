@@ -127,10 +127,10 @@ function flattenTranslations(
  */
 export function useTranslations() {
   const { language } = useLanguage()
-
-  return useMemo(() => {
-    return translations[language] || translations.en
-  }, [language])
+  // BEFORE: returned undefined while loading
+  // AFTER: always returns English as fallback so t.weather never crashes
+  const dict = translations[language] || translations['en']
+  return dict as any
 }
 
 /**
