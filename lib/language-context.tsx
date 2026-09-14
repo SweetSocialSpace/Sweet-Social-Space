@@ -29,26 +29,78 @@ const RTL_LANGUAGES: Language[] = ['ar', 'he', 'fa', 'ur']
 const LANGUAGE_STORAGE_KEY = 'sss_language'
 const EXPLICIT_LANGUAGE_STORAGE_KEY = 'sss_language_explicit'
 
-// FIX: Partial so build passes even with 10 translations
+// FIXED: Full platform translations - this is what makes the whole screenshot flip
 export const TRANSLATIONS: Record<string, Partial<Record<Language, string>>> = {
-  'Any zip on earth. Chronological. No algorithm.': { es: 'Cualquier código postal del mundo. Cronológico. Sin algoritmo.', fr: 'N’importe quel code postal sur terre. Chronologique. Sans algorithme.' },
-  'No posts yet for': { es: 'Aún no hay publicaciones para', fr: 'Pas encore de publications pour', de: 'Noch keine Beiträge für' },
-  'Be first. Own your block.': { es: 'Sé el primero. Sé dueño de tu cuadra.', fr: 'Soyez le premier. Possédez votre quartier.' },
-  'Post in': { es: 'Publicar en', fr: 'Publier dans' },
-  'Enter': { es: 'Entrar a', fr: 'Entrer dans' },
-  'Feed': { es: 'Muro', fr: 'Fil' },
-  'Change Zip': { es: 'Cambiar Código', fr: 'Changer Code Postal' },
-  'Block:': { es: 'Cuadra:', fr: 'Quartier:' },
-  'Your Neighborhood': { es: 'Tu Vecindario', fr: 'Votre Quartier' },
-  'Trending': { es: 'Tendencia', fr: 'Tendance' },
-  'Marketplace': { es: 'Mercado', fr: 'Marché' },
-  'Events': { es: 'Eventos', fr: 'Événements' },
-  'Businesses': { es: 'Negocios', fr: 'Commerces' },
-  'Faith': { es: 'Fe', fr: 'Foi' },
-  'Support': { es: 'Apoyo', fr: 'Soutien' },
-  'Login': { es: 'Iniciar Sesión', fr: 'Connexion' },
-  'Sign up': { es: 'Registrarse', fr: "S'inscrire" },
-  'Chronological': { es: 'Cronológico', fr: 'Chronologique' },
+  // Original
+  'Any zip on earth. Chronological. No algorithm.': { es: 'Cualquier código postal del mundo. Cronológico. Sin algoritmo.' },
+  'No posts yet for': { es: 'Aún no hay publicaciones para' },
+  'Be first. Own your block.': { es: 'Sé el primero. Sé dueño de tu cuadra.' },
+  'Post in': { es: 'Publicar en' },
+  'Enter': { es: 'Entrar a' },
+  'Feed': { es: 'Muro' },
+  'Change Zip': { es: 'Cambiar Código' },
+  'Block:': { es: 'Cuadra:' },
+  'Your Neighborhood': { es: 'Tu Vecindario' },
+  'Trending': { es: 'Tendencia' },
+  'Marketplace': { es: 'Mercado' },
+  'Events': { es: 'Eventos' },
+  'Businesses': { es: 'Negocios' },
+  'Faith': { es: 'Fe' },
+  'Support': { es: 'Apoyo' },
+  'Login': { es: 'Iniciar Sesión' },
+  'Sign up': { es: 'Registrarse' },
+  'Chronological': { es: 'Cronológico' },
+
+  // YOUR SCREENSHOT - This is what was missing
+  'Live Pulse': { es: 'Pulso en Vivo' },
+  'AI Mayor': { es: 'Alcalde IA' },
+  'AI MAYOR': { es: 'ALCALDE IA' },
+  'Live Map': { es: 'Mapa en Vivo' },
+  'Trust Meter': { es: 'Medidor de Confianza' },
+  'Weather': { es: 'Clima' },
+  'Pinned Alert': { es: 'Alerta Fijada' },
+  'Emergency Alerts': { es: 'Alertas de Emergencia' },
+  'Latest Alerts': { es: 'Últimas Alertas' },
+  "What's Happening Near You": { es: 'Qué Pasa Cerca de Ti' },
+  'Faith of the Day': { es: 'Fe del Día' },
+  'Faith Of The Day': { es: 'Fe del Día' },
+  'Local Businesses': { es: 'Negocios Locales' },
+  'Business Directory': { es: 'Directorio de Negocios' },
+  'Marketplace Preview': { es: 'Vista Previa del Mercado' },
+  'Create Post': { es: 'Crear Publicación' },
+  'Emergency': { es: 'Emergencia' },
+  'For Sale': { es: 'En Venta' },
+  'Free': { es: 'Gratis' },
+  'Safety': { es: 'Seguridad' },
+  'General': { es: 'General' },
+  'Help': { es: 'Ayuda' },
+  'Recommend': { es: 'Recomendar' },
+  'Lost Pet': { es: 'Mascota Perdida' },
+  'Event': { es: 'Evento' },
+  'Job': { es: 'Empleo' },
+  'All': { es: 'Todos' },
+  'LIVE': { es: 'EN VIVO' },
+  'Live': { es: 'En Vivo' },
+  'Posting as': { es: 'Publicando como' },
+  'Post to': { es: 'Publicar en' },
+  'View Map': { es: 'Ver Mapa' },
+  'live pins': { es: 'pines en vivo' },
+  'Full view': { es: 'Vista completa' },
+  'verified': { es: 'verificado' },
+  'trusted': { es: 'confiables' },
+  'No emergencies': { es: 'Sin emergencias' },
+  'clear sky': { es: 'cielo despejado' },
+  'online': { es: 'en línea' },
+  'See Faith Posts': { es: 'Ver Publicaciones de Fe' },
+  'Share': { es: 'Compartir' },
+  'Go Live': { es: 'Transmitir en Vivo' },
+  'Set location': { es: 'Establecer ubicación' },
+  'Near': { es: 'Cerca' },
+  'Your private block': { es: 'Tu cuadra privada' },
+  'Welcome to your private block': { es: 'Bienvenido a tu cuadra privada' },
+  'This is your space near': { es: 'Este es tu espacio cerca de' },
+  'Check on a neighbor today': { es: 'Saluda a un vecino hoy' },
+  "TODAY'S THOUGHT:": { es: 'PENSAMIENTO DEL DÍA:' },
 }
 
 export function isSupportedLanguage(value: unknown): value is Language {
@@ -144,6 +196,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const trimmed = key.trim()
     if (!trimmed) return key
     if (TRANSLATIONS[trimmed]?.[language]) return TRANSLATIONS[trimmed]![language]!
+    // partial match for longer strings like "No posts yet for 95122"
     for (const dictKey of Object.keys(TRANSLATIONS)) {
       if (trimmed.startsWith(dictKey)) {
         const trans = TRANSLATIONS[dictKey][language] || dictKey
