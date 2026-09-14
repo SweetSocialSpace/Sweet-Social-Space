@@ -1,571 +1,97 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { useLanguage } from '@/lib/language-context'
+import { useEffect } from 'react'
+import { useLanguage, LANGUAGE_NAMES, type Language } from '@/lib/language-context'
 
-const CACHE_PREFIX = 'sss_translation_v4:'
-const BATCH_SIZE = 20
-
-const SKIP_TAGS = new Set([
-  'SCRIPT',
-  'STYLE',
-  'NOSCRIPT',
-  'CODE',
-  'PRE',
-  'SVG',
-  'INPUT',
-  'TEXTAREA',
-  'SELECT',
-  'OPTION'
-])
-
-const originalText = new WeakMap<Text, string>()
-const translatedText = new WeakMap<Text, string>()
-const originalAttributes = new WeakMap<
-  HTMLElement,
-  Record<string, string>
->()
-
-function cacheKey(language: string, source: string) {
-  return `${CACHE_PREFIX}${language}:${source}`
+// CORE DICTIONARY - Add more as you go, this makes it write in their language
+const DICTIONARY: Record<string, Record<Language, string>> = {
+  'Any zip on earth. Chronological. No algorithm.': {
+    en: 'Any zip on earth. Chronological. No algorithm.',
+    es: 'Cualquier código postal del mundo. Cronológico. Sin algoritmo.',
+    fr: 'N’importe quel code postal sur terre. Chronologique. Sans algorithme.',
+    de: 'Jede Postleitzahl der Welt. Chronologisch. Kein Algorithmus.',
+    pt: 'Qualquer CEP do mundo. Cronológico. Sem algoritmo.',
+    hi: 'पृथ्वी पर कोई भी ज़िप. कालानुक्रमिक. कोई एल्गोरिदम नहीं.',
+    ar: 'أي رمز بريدي على وجه الأرض. زمني. بلا خوارزمية.',
+    zh: '地球上任何邮编。按时间排序。无算法。',
+    ja: '地球上のどの郵便番号でも。時系列。アルゴリズムなし。',
+    it: 'Qualsiasi CAP al mondo. Cronologico. Nessun algoritmo.',
+  },
+  'No posts yet for': {
+    en: 'No posts yet for',
+    es: 'Aún no hay publicaciones para',
+    fr: 'Pas encore de publications pour',
+    de: 'Noch keine Beiträge für',
+    pt: 'Ainda não há postagens para',
+    hi: 'के लिए अभी तक कोई पोस्ट नहीं',
+    ar: 'لا توجد منشورات بعد لـ',
+    zh: '还没有关于以下内容的帖子',
+    ja: 'まだ投稿がありません',
+  },
+  'Be first. Own your block.': {
+    en: 'Be first. Own your block.',
+    es: 'Sé el primero. Sé dueño de tu cuadra.',
+    fr: 'Soyez le premier. Possédez votre quartier.',
+    de: 'Sei der Erste. Besitze deinen Block.',
+    pt: 'Seja o primeiro. Seja dono do seu quarteirão.',
+    hi: 'पहले बनें। अपने ब्लॉक के मालिक बनें।',
+    ar: 'كن الأول. امتلك منطقتك.',
+    zh: '抢先发帖。拥有你的街区。',
+    ja: '最初になりましょう。あなたのブロックを所有しましょう。',
+  },
+  'Post in': {
+    en: 'Post in',
+    es: 'Publicar en',
+    fr: 'Publier dans',
+    de: 'Posten in',
+    pt: 'Postar em',
+    hi: 'में पोस्ट करें',
+    ar: 'انشر في',
+    zh: '发布于',
+    ja: '投稿する',
+  },
+  'Enter': { en: 'Enter', es: 'Entrar a', fr: 'Entrer dans', de: 'Betreten', pt: 'Entrar em', hi: 'प्रवेश करें', ar: 'ادخل', zh: '进入', ja: '入る' },
+  'Feed': { en: 'Feed', es: 'Muro', fr: 'Fil', de: 'Feed', pt: 'Feed', hi: 'फीड', ar: 'الخلاصة', zh: '动态', ja: 'フィード' },
+  'Change Zip': { en: 'Change Zip', es: 'Cambiar Código', fr: 'Changer Code Postal', de: 'PLZ ändern', pt: 'Mudar CEP', hi: 'ज़िप बदलें', ar: 'تغيير الرمز البريدي', zh: '更改邮编', ja: '郵便番号を変更' },
+  'Block:': { en: 'Block:', es: 'Cuadra:', fr: 'Quartier:', de: 'Block:', pt: 'Quarteirão:', hi: 'ब्लॉक:', ar: 'المنطقة:', zh: '街区:', ja: 'ブロック:' },
 }
 
-function getCache(language: string, source: string) {
-  try {
-    return sessionStorage.getItem(
-      cacheKey(language, source)
-    )
-  } catch {
-    return null
-  }
-}
-
-function setCache(
-  language: string,
-  source: string,
-  value: string
-) {
-  try {
-    sessionStorage.setItem(
-      cacheKey(language, source),
-      value
-    )
-  } catch {}
-}
-
-function shouldSkip(node: Text) {
-  const parent = node.parentElement
-
-  if (!parent) return true
-
-  if (SKIP_TAGS.has(parent.tagName)) {
-    return true
-  }
-
-  if (
-    parent.closest('[data-sss-no-translate]')
-  ) {
-    return true
-  }
-
-  if (
-    parent.closest('[contenteditable="true"]')
-  ) {
-    return true
-  }
-
-  if (
-    parent.closest('[data-sss-live]')
-  ) {
-    return true
-  }
-
-  return false
-}
-
-function collectTextNodes() {
-  const result: Text[] = []
-
-  const walker = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_TEXT
-  )
-
-  let current: Node | null
-
-  while (
-    (current = walker.nextNode())
-  ) {
-    const node = current as Text
-
-    if (shouldSkip(node)) {
-      continue
-    }
-
-    const currentText = node.nodeValue ?? ''
-    const trackedOriginal = originalText.get(node)
-    const trackedTranslation = translatedText.get(node)
-
-    // Do not overwrite text that React changed between language runs.
-    if (
-      trackedOriginal !== undefined &&
-      currentText !== trackedOriginal &&
-      currentText !== trackedTranslation
-    ) {
-      originalText.delete(node)
-      translatedText.delete(node)
-      continue
-    }
-
-    const raw = trackedOriginal ?? currentText
-
-    const source = raw.trim()
-
-    if (!source) {
-      continue
-    }
-
-    if (source.length > 3000) {
-      continue
-    }
-
-    if (!originalText.has(node)) {
-      originalText.set(node, raw)
-    }
-
-    result.push(node)
-  }
-
-  return result
-}
-
-function restoreOriginalText() {
-  const walker = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_TEXT
-  )
-
-  let current: Node | null
-
-  while (
-    (current = walker.nextNode())
-  ) {
-    const node = current as Text
-    const original = originalText.get(node)
-    const translated = translatedText.get(node)
-
-    // React may have rendered a new language into this node already.
-    if (original !== undefined && translated !== undefined && node.nodeValue === translated) {
-      node.nodeValue = original
-    }
-
-    translatedText.delete(node)
-  }
-}
-
-async function requestTranslations(
-  language: string,
-  texts: string[]
-): Promise<string[]> {
-  if (!texts.length) {
-    return []
-  }
-
-  const response = await fetch(
-    '/api/translate',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type':
-          'application/json'
-      },
-      body: JSON.stringify({
-        target: language,
-        texts
-      }),
-      cache: 'no-store'
-    }
-  )
-
-  const data =
-    await response.json()
-
-  if (!response.ok) {
-    throw new Error(
-      data?.error ||
-        'Translation request failed'
-    )
-  }
-
-  if (
-    !Array.isArray(
-      data?.translations
-    )
-  ) {
-    throw new Error(
-      'Invalid translation response'
-    )
-  }
-
-  return data.translations.map(
-    (
-      item: {
-        text?: string
-      }
-    ) =>
-      item?.text || ''
-  )
-}
-
-async function translatePage(
-  language: string
-) {
-  if (language === 'en') {
-    restoreOriginalText()
-    return
-  }
-
-  const nodes =
-    collectTextNodes()
-
-  /*
-   * Build a unique list of source strings.
-   */
-  const uniqueSources =
-    Array.from(
-      new Set(
-        nodes.map(node => {
-          const raw =
-            originalText.get(node) ??
-            node.nodeValue ??
-            ''
-
-          return raw.trim()
-        })
-      )
-    ).filter(Boolean)
-
-  const translatedMap =
-    new Map<string, string>()
-
-  /*
-   * Use cached translations first.
-   */
-  const missing: string[] = []
-
-  for (
-    const source of uniqueSources
-  ) {
-    const cached =
-      getCache(
-        language,
-        source
-      )
-
-    if (cached) {
-      translatedMap.set(
-        source,
-        cached
-      )
-    } else {
-      missing.push(source)
+function translateText(text: string, lang: Language): string {
+  const trimmed = text.trim()
+  if (!trimmed) return text
+  // Exact match
+  if (DICTIONARY[trimmed]?.[lang]) return text.replace(trimmed, DICTIONARY[trimmed][lang])
+  // Starts with
+  for (const key of Object.keys(DICTIONARY)) {
+    if (trimmed.startsWith(key) && DICTIONARY[key][lang]) {
+      return text.replace(key, DICTIONARY[key][lang])
     }
   }
-
-  /*
-   * Ask Google for anything we don't
-   * already have.
-   */
-  for (
-    let start = 0;
-    start < missing.length;
-    start += BATCH_SIZE
-  ) {
-    const batch =
-      missing.slice(
-        start,
-        start + BATCH_SIZE
-      )
-
-    try {
-      const translated =
-        await requestTranslations(
-          language,
-          batch
-        )
-
-      batch.forEach(
-        (
-          source,
-          index
-        ) => {
-          const value =
-            translated[index]
-
-          if (
-            value &&
-            value !== source
-          ) {
-            setCache(
-              language,
-              source,
-              value
-            )
-
-            translatedMap.set(
-              source,
-              value
-            )
-          }
-        }
-      )
-    } catch (error) {
-      console.error(
-        '[Sweet Social Space] Translation batch failed:',
-        error
-      )
-
-      /*
-       * Retry each individual string.
-       * One bad string must NEVER stop
-       * the rest of the platform.
-       */
-      for (
-        const source of batch
-      ) {
-        try {
-          const result =
-            await requestTranslations(
-              language,
-              [source]
-            )
-
-          const value =
-            result[0]
-
-          if (
-            value &&
-            value !== source
-          ) {
-            setCache(
-              language,
-              source,
-              value
-            )
-
-            translatedMap.set(
-              source,
-              value
-            )
-          }
-        } catch (singleError) {
-          console.error(
-            '[Sweet Social Space] Translation failed:',
-            singleError
-          )
-        }
-      }
-    }
-  }
-
-  /*
-   * IMPORTANT:
-   * Apply translations to EVERY occurrence,
-   * not just the first occurrence of a string.
-   */
-  nodes.forEach(node => {
-    if (!node.isConnected) {
-      return
-    }
-
-    const raw =
-      originalText.get(node) ??
-      node.nodeValue ??
-      ''
-
-    const source =
-      raw.trim()
-
-    const translated =
-      translatedMap.get(source)
-
-    if (
-      !translated ||
-      translated === source
-    ) {
-      return
-    }
-
-    const nextText = raw.replace(source, translated)
-    node.nodeValue = nextText
-    translatedText.set(node, nextText)
-  })
+  return text
 }
 
 export default function GlobalLanguageTranslator() {
-  const {
-    language
-  } = useLanguage()
-
-  const running =
-    useRef(false)
-
-  const rerun =
-    useRef(false)
-
-  const observer =
-    useRef<MutationObserver | null>(
-      null
-    )
-
-  const timer =
-    useRef<ReturnType<
-      typeof setTimeout
-    > | null>(null)
+  const { language } = useLanguage()
 
   useEffect(() => {
-    let cancelled = false
+    if (language === 'en') return // no need to translate
 
-    const schedule = () => {
-      if (timer.current) {
-        clearTimeout(timer.current)
-      }
-
-      timer.current =
-        setTimeout(
-          () => {
-            void run()
-          },
-          250
-        )
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+    const nodes: Text[] = []
+    let node: Text | null
+    while ((node = walker.nextNode() as Text | null)) {
+      if (node.parentElement?.tagName === 'SCRIPT' || node.parentElement?.tagName === 'STYLE') continue
+      if (node.textContent?.trim()) nodes.push(node)
     }
 
-    const run = async () => {
-      if (cancelled) {
-        return
-      }
+    nodes.forEach(n => {
+      const original = n.textContent || ''
+      const translated = translateText(original, language)
+      if (translated!== original) n.textContent = translated
+    })
 
-      if (running.current) {
-        rerun.current = true
-        return
-      }
-
-      running.current = true
-      rerun.current = false
-
-      /*
-       * Stop watching while we modify the DOM.
-       */
-      observer.current?.disconnect()
-
-      try {
-        /*
-         * Always restore the real source language
-         * before translating into the new language.
-         *
-         * This makes switching:
-         *
-         * English → Chinese → Spanish → English
-         *
-         * reliable.
-         */
-        restoreOriginalText()
-
-        await translatePage(
-          language
-        )
-      } catch (error) {
-        console.error(
-          '[Sweet Social Space] Global translation error:',
-          error
-        )
-      } finally {
-        running.current = false
-
-        if (cancelled) {
-          return
-        }
-
-        /*
-         * Watch for React-rendered content.
-         *
-         * This is important for:
-         * - feed posts
-         * - dialogs
-         * - menus
-         * - dynamically loaded components
-         * - lazy-loaded components
-         */
-        observer.current?.observe(
-          document.body,
-          {
-            childList: true,
-            subtree: true,
-            characterData: true
-          }
-        )
-
-        if (rerun.current) {
-          rerun.current = false
-          schedule()
-        }
-      }
-    }
-
-    observer.current =
-      new MutationObserver(
-        mutations => {
-          if (running.current) {
-            rerun.current = true
-            return
-          }
-
-          const relevant =
-            mutations.some(
-              mutation =>
-                mutation.type ===
-                  'childList' ||
-                mutation.type ===
-                  'characterData'
-            )
-
-          if (relevant) {
-            schedule()
-          }
-        }
-      )
-
-    observer.current.observe(
-      document.body,
-      {
-        childList: true,
-        subtree: true,
-        characterData: true
-      }
-    )
-
-    /*
-     * Run immediately.
-     *
-     * No refresh required.
-     */
-    void run()
-
-    return () => {
-      cancelled = true
-
-      observer.current?.disconnect()
-
-      observer.current = null
-
-      if (timer.current) {
-        clearTimeout(
-          timer.current
-        )
-      }
-
-      restoreOriginalText()
-    }
+    // Also update title
+    document.title = translateText(document.title, language)
   }, [language])
 
   return null
