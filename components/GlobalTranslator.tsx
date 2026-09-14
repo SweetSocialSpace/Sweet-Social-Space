@@ -1,9 +1,8 @@
 'use client'
 import { useEffect, useRef } from 'react'
 import { useLanguage } from '@/lib/language-context'
-import { getGlobalTranslations } from '@/lib/translations'
 
-const CACHE_KEY = 'sss_ui_translations'
+const CACHE_KEY = 'sss_ui_translations_v2'
 
 function getCache(): Record<string, Record<string, string>> {
   try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}') } catch { return {} }
@@ -17,47 +16,54 @@ function setCache(lang: string, original: string, translated: string) {
 
 export default function GlobalTranslator() {
   const { language } = useLanguage()
-  const originalMap = useRef<Map<Element, string>>(new Map())
+  const originals = useRef<Map<Node, string>>(new Map())
 
   useEffect(() => {
     if (typeof document === 'undefined') return
-
-    const restoreEnglish = () => {
-      originalMap.current.forEach((original, el) => {
-        if (el.textContent) el.textContent = original
-      })
-      originalMap.current.clear()
-    }
-
     if (language === 'en') {
-      restoreEnglish()
+      originals.current.forEach((orig, node) => {
+        if (node.textContent!== orig) node.textContent = orig
+      })
+      originals.current.clear()
       return
     }
 
-    const dict = getGlobalTranslations(language) // your es.json -> { "All": "Todos", "Weather": "Clima" }
+    let stopped = false
     const cache = getCache()[language] || {}
 
-    const translateNode = async (el: Element, text: string) => {
-      const trimmed = text.trim()
-      if (trimmed.length < 2 || trimmed.length > 80) return
-      if (/^\d+$/.test(trimmed)) return
-      if (el.closest('[data-no-translate]')) return
+    const shouldSkip = (parent: Element) => {
+      const tag = parent.tagName
+      if (['SCRIPT','STYLE','NOSCRIPT','CODE'].includes(tag)) return true
+      if (parent.closest('[data-no-translate]')) return true
+      if (parent.closest('textarea')) return true
+      return false
+    }
 
-      // 1. Use your es.json if we have it
-      if (dict[trimmed]) {
-        if (!originalMap.current.has(el)) originalMap.current.set(el, text)
-        el.textContent = el.textContent!.replace(trimmed, dict[trimmed])
-        return
-      }
+    const translateTextNode = async (node: Node) => {
+      const parent = node.parentElement
+      if (!parent) return
+      if (shouldSkip(parent)) return
 
-      // 2. Use cache
+      const raw = node.textContent || ''
+      const trimmed = raw.trim()
+      if (trimmed.length < 2) return
+      if (trimmed.length > 100) return
+      if (/^[\d\W]+$/.test(trimmed)) return
+      if (/^[0-9]/.test(trimmed) && trimmed.includes('mi')) return // skip "5 mi"
+
+      // already translated?
+      if (originals.current.has(node)) return
+
+      // use cache first
       if (cache[trimmed]) {
-        if (!originalMap.current.has(el)) originalMap.current.set(el, text)
-        el.textContent = el.textContent!.replace(trimmed, cache[trimmed])
+        originals.current.set(node, raw)
+        node.textContent = raw.replace(trimmed, cache[trimmed])
         return
       }
 
-      // 3. Call your MyMemory API for anything not in es.json
+      // Don't translate user posts - they have their own translator
+      if (parent.closest('[data-post-body]')) return
+
       try {
         const res = await fetch('/api/translate', {
           method: 'POST',
@@ -65,39 +71,36 @@ export default function GlobalTranslator() {
           body: JSON.stringify({ text: trimmed, targetLang: language })
         })
         const json = await res.json()
-        if (json.translated && json.translated!== trimmed) {
-          if (!originalMap.current.has(el)) originalMap.current.set(el, text)
-          el.textContent = el.textContent!.replace(trimmed, json.translated)
+        if (!stopped && json.translated && json.translated!== trimmed && json.translated.toLowerCase()!== trimmed.toLowerCase()) {
+          originals.current.set(node, raw)
+          node.textContent = raw.replace(trimmed, json.translated)
           setCache(language, trimmed, json.translated)
         }
       } catch {}
     }
 
-    const scan = () => {
+    const scanAll = async () => {
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
-      let node: Node | null
-      const toTranslate: { el: Element, text: string }[] = []
+      const nodes: Node[] = []
+      let n: Node | null
+      while ((n = walker.nextNode())) nodes.push(n)
 
-      while ((node = walker.nextNode())) {
-        const parent = node.parentElement
-        if (!parent) continue
-        if (['SCRIPT','STYLE','NOSCRIPT'].includes(parent.tagName)) continue
-        if (parent.closest('textarea,input')) continue
-        const text = node.textContent || ''
-        if (text.trim().length < 2) continue
-        toTranslate.push({ el: parent, text })
+      // Translate 5 at a time to not hit rate limit
+      for (let i = 0; i < nodes.length; i += 5) {
+        if (stopped) break
+        await Promise.all(nodes.slice(i, i + 5).map(translateTextNode))
+        await new Promise(r => setTimeout(r, 200)) // 200ms pause
       }
-
-      // Translate in small batches so we don't spam MyMemory
-      toTranslate.slice(0, 50).forEach(({ el, text }) => translateNode(el, text))
     }
 
-    // Run now + watch for new content (posts, popups)
-    const timeout = setTimeout(scan, 500)
-    const observer = new MutationObserver(() => scan())
+    const timeout = setTimeout(scanAll, 800)
+    const observer = new MutationObserver(() => {
+      setTimeout(scanAll, 500)
+    })
     observer.observe(document.body, { childList: true, subtree: true })
 
     return () => {
+      stopped = true
       clearTimeout(timeout)
       observer.disconnect()
     }
