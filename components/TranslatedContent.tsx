@@ -1,163 +1,31 @@
 'use client'
+import { useLanguage } from '@/lib/language-context'
+import { useEffect, useState } from 'react'
 
-import {
-  useEffect,
-  useState
-} from 'react'
+const cache = new Map<string, string>()
 
-import {
-  useLanguage
-} from '@/lib/language-context'
-
-type Props = {
-  text: string
-  className?: string
-}
-
-export default function TranslatedContent({
-  text,
-  className = ''
-}: Props) {
-  const {
-    language
-  } = useLanguage()
-
-  const [
-    translated,
-    setTranslated
-  ] = useState(text)
-
-  const [
-    showingOriginal,
-    setShowingOriginal
-  ] = useState(false)
-
-  const [
-    loading,
-    setLoading
-  ] = useState(false)
+export default function TranslatedContent({ text, className }: { text: string, className?: string }) {
+  const { language } = useLanguage()
+  const [out, setOut] = useState(text)
 
   useEffect(() => {
-    let cancelled = false
+    if (!text || language === 'en') { setOut(text); return }
+    const key = `${language}:${text}`
+    if (cache.has(key)) { setOut(cache.get(key)!); return }
 
-    setShowingOriginal(false)
-
-    if (
-      !text ||
-      language === 'en'
-    ) {
-      setTranslated(text)
-      return
-    }
-
-    const translate =
-      async () => {
-        setLoading(true)
-
-        try {
-          const response =
-            await fetch(
-              '/api/translate',
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type':
-                    'application/json'
-                },
-                body:
-                  JSON.stringify({
-                    target:
-                      language,
-                    texts: [text]
-                  }),
-                cache:
-                  'no-store'
-              }
-            )
-
-          const data =
-            await response
-              .json()
-              .catch(
-                () => null
-              )
-
-          const value =
-            data?.translations?.[0]
-              ?.text
-
-          if (
-            !cancelled &&
-            value
-          ) {
-            setTranslated(
-              value
-            )
-          } else if (
-            !cancelled
-          ) {
-            setTranslated(
-              text
-            )
-          }
-        } catch {
-          if (
-            !cancelled
-          ) {
-            setTranslated(
-              text
-            )
-          }
-        } finally {
-          if (
-            !cancelled
-          ) {
-            setLoading(
-              false
-            )
-          }
-        }
+    fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, target: language })
+    })
+   .then(r => r.json())
+   .then(d => {
+      if (d.translated) {
+        cache.set(key, d.translated)
+        setOut(d.translated)
       }
+    })
+  }, [text, language])
 
-    void translate()
-
-    return () => {
-      cancelled = true
-    }
-  }, [
-    text,
-    language
-  ])
-
-  const displayed =
-    showingOriginal
-      ? text
-      : translated
-
-  return (
-    <div className={className}>
-      <p className="whitespace-pre-wrap break-words leading-6">
-        {loading
-          ? text
-          : displayed}
-      </p>
-
-      {language !== 'en' &&
-        translated !== text && (
-          <button
-            type="button"
-            onClick={() =>
-              setShowingOriginal(
-                value => !value
-              )
-            }
-            className="mt-2 text-xs font-bold text-blue-600 hover:underline"
-          >
-            {showingOriginal
-              ? 'Translate'
-              : 'See original'}
-          </button>
-        )}
-    </div>
-  )
+  return <div className={className}>{out}</div>
 }
