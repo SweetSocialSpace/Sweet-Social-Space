@@ -1,51 +1,18 @@
 'use client'
-
 import { useLanguage } from './language-context'
 import { useMemo } from 'react'
 
 type Translations = {
-  nav: {
-    feed: string
-    profile: string
-    settings: string
-    signOut: string
-  }
-  feed: {
-    whatsHappening: string
-    postAs: string
-    in: string
-    loading: string
-  }
-  common: {
-    backToFeed: string
-    save: string
-    cancel: string
-    error: string
-    loading: string
-  }
-  weather: {
-    weather: string
-    live: string
-  }
-  location: {
-    setLocation: string
-    locating: string
-  }
-  filters: {
-    all: string
-    faith: string
-    general: string
-    safety: string
-    forSale: string
-    free: string
-    lostPet: string
-    event: string
-    help: string
-    recommend: string
-  }
+  nav: { feed: string; profile: string; settings: string; signOut: string }
+  feed: { whatsHappening: string; postAs: string; in: string; loading: string }
+  common: { backToFeed: string; save: string; cancel: string; error: string; loading: string }
+  weather: { weather: string; live: string }
+  location: { setLocation: string; locating: string }
+  filters: { all: string; faith: string; general: string; safety: string; forSale: string; free: string; lostPet: string; event: string; help: string; recommend: string }
+  cards?: any
 }
 
-const translations: Record<string, Translations> = {
+const translations: Record<string, any> = {
   en: require('../translations/en.json'),
   es: require('../translations/es.json'),
   fr: require('../translations/fr.json'),
@@ -101,62 +68,46 @@ const translations: Record<string, Translations> = {
   my: require('../translations/my.json')
 }
 
-function flattenTranslations(
-  value: unknown,
-  result: Record<string, string> = {}
-): Record<string, string> {
-  if (!value || typeof value !== 'object') {
-    return result
-  }
-
-  Object.entries(value as Record<string, unknown>).forEach(
-    ([key, child]) => {
-      if (typeof child === 'string') {
-        result[key] = child
-      } else {
-        flattenTranslations(child, result)
-      }
+function deepMerge(target: any, source: any) {
+  const out: any = {...target }
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object' &&!Array.isArray(source[key])) {
+      out[key] = deepMerge(target[key] || {}, source[key])
+    } else {
+      out[key] = source[key]
     }
-  )
+  }
+  return out
+}
 
+function flattenTranslations(value: unknown, result: Record<string, string> = {}) {
+  if (!value || typeof value!== 'object') return result
+  Object.entries(value as Record<string, unknown>).forEach(([key, child]) => {
+    if (typeof child === 'string') result[key] = child
+    else flattenTranslations(child, result)
+  })
   return result
 }
 
-/**
- * Returns the currently selected translation dictionary.
- */
 export function useTranslations() {
   const { language } = useLanguage()
-  // BEFORE: returned undefined while loading
-  // AFTER: always returns English as fallback so t.weather never crashes
-  const dict = translations[language] || translations['en']
-  return dict as any
+  // Merge English as fallback so t.weather never crashes even if es.json is missing keys
+  const english = translations['en']
+  const selected = translations[language] || english
+  const merged = deepMerge(english, selected)
+  return merged as Translations
 }
 
-/**
- * Returns a flat list of all known platform translations.
- *
- * This is used by the global interface translator so components
- * that contain hard-coded platform labels can still participate
- * in the selected language.
- */
 export function getGlobalTranslations(language: string) {
   const selected = translations[language] || translations.en
   const english = translations.en
-
   const selectedFlat = flattenTranslations(selected)
   const englishFlat = flattenTranslations(english)
-
   const result: Record<string, string> = {}
-
   Object.keys(englishFlat).forEach((key) => {
     const englishText = englishFlat[key]
     const translatedText = selectedFlat[key]
-
-    if (englishText && translatedText) {
-      result[englishText] = translatedText
-    }
+    if (englishText && translatedText) result[englishText] = translatedText
   })
-
   return result
 }
