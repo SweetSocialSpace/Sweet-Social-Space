@@ -1,19 +1,34 @@
 {
-  "nav": { "feed": "Muro", "profile": "Perfil" },
-  "filters": {
-    "all": "Todos", "faith": "Fe", "general": "General", "safety": "Seguridad",
-    "forSale": "En Venta", "free": "Gratis", "lostPet": "Mascota Perdida", "event": "Evento",
-    "help": "Ayuda", "recommend": "Recomendar", "job": "Empleo"
+  "nav": {
+    "feed": "Inicio",
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "signOut": "Cerrar sesión"
   },
-  "cards": {
+  "feed": {
+    "whatsHappening": "¿Qué está pasando?",
+    "postAs": "Publicando como",
+    "in": "en",
+    "loading": "Cargando"
+  },
+  "common": {
+    "backToFeed": "Volver al inicio",
+    "save": "Guardar",
+    "cancel": "Eliminar",
+    "error": "Error",
+    "loading": "Cargando"
+  },
+  "weather": {
+    "weather": "Clima",
+    "live": "EN VIVO"
+  },
+  "location": {
     "setLocation": "Establecer ubicación",
-    "faithOfTheDay": "Fe del Día",
-    "liveMap": "Mapa en Vivo",
-    "livePulse": "Pulso en Vivo",
-    "aiMayor": "Alcalde IA",
-    "trustMeter": "Medidor de Confianza",
-    "viewMap": "Ver Mapa",
-    "postTo": "Publicar en 95122 - Una Parada",
+    "locating": "Localizando..."
+  },
+  "filters": {
+    "all": "Todos",
+    "faith": "Fe",
     "general": "General",
     "safety": "Seguridad",
     "forSale": "En Venta",
@@ -21,24 +36,6 @@
     "lostPet": "Mascota Perdida",
     "event": "Evento",
     "help": "Ayuda",
-    "recommend": "Recomendar",
-    "job": "Empleo",
-    "tapMic": "Toca el micrófono - funciona en 95122 - cualquier teléfono",
-    "postingAs": "Publicando como",
-    "todaysThought": "PENSAMIENTO DEL DÍA:",
-    "checkNeighbor": "Saluda a un vecino hoy.",
-    "seeFaithPosts": "Ver Publicaciones de Fe →",
-    "share": "Compartir",
-    "localBusinesses": "Negocios Locales",
-    "near": "Cerca de 95122",
-    "livePins": "3 pines en vivo • Vista completa",
-    "noEmergencies": "Sin emergencias",
-    "clearSky": "cielo despejado",
-    "online": "2 en línea",
-    "verified": "100% verificado",
-    "trusted": "2/2 confiables",
-    "youFoundUs": "Nos encontraste. Bienvenido a tu cuadra privada.",
-    "yourSpace": "Este es tu espacio cerca de San Jose, CA — no todo el internet.",
-    "goLive": "Transmitir en Vivo"
+    "recommend": "Recomendar"
   }
 }
