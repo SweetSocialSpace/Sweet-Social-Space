@@ -30,15 +30,25 @@ const LANGUAGE_STORAGE_KEY = 'sss_language'
 const EXPLICIT_LANGUAGE_STORAGE_KEY = 'sss_language_explicit'
 
 // FIX: Partial so build passes even with 10 translations
-const TRANSLATIONS: Record<string, Partial<Record<Language, string>>> = {
-  'Any zip on earth. Chronological. No algorithm.': { es: 'Cualquier código postal del mundo. Cronológico. Sin algoritmo.', fr: 'N’importe quel code postal sur terre. Chronologique. Sans algorithme.', de: 'Jede PLZ der Welt. Chronologisch. Kein Algorithmus.', pt: 'Qualquer CEP do mundo. Cronológico. Sem algoritmo.', ja: '地球上のどの郵便番号でも。時系列。アルゴリズムなし。', zh: '地球上任何邮编。按时间排序。无算法。', ar: 'أي رمز بريدي على وجه الأرض. زمني. بلا خوارزمية.' },
-  'No posts yet for': { en: 'No posts yet for', es: 'Aún no hay publicaciones para', fr: 'Pas encore de publications pour', de: 'Noch keine Beiträge für', pt: 'Ainda não há postagens para' },
-  'Be first. Own your block.': { en: 'Be first. Own your block.', es: 'Sé el primero. Sé dueño de tu cuadra.', fr: 'Soyez le premier. Possédez votre quartier.', de: 'Sei der Erste. Besitze deinen Block.' },
-  'Post in': { en: 'Post in', es: 'Publicar en', fr: 'Publier dans', de: 'Posten in' },
-  'Enter': { en: 'Enter', es: 'Entrar a', fr: 'Entrer dans', de: 'Betreten' },
-  'Feed': { en: 'Feed', es: 'Muro', fr: 'Fil', de: 'Feed' },
-  'Change Zip': { en: 'Change Zip', es: 'Cambiar Código', fr: 'Changer Code Postal', de: 'PLZ ändern' },
-  'Block:': { en: 'Block:', es: 'Cuadra:', fr: 'Quartier:', de: 'Block:' },
+export const TRANSLATIONS: Record<string, Partial<Record<Language, string>>> = {
+  'Any zip on earth. Chronological. No algorithm.': { es: 'Cualquier código postal del mundo. Cronológico. Sin algoritmo.', fr: 'N’importe quel code postal sur terre. Chronologique. Sans algorithme.' },
+  'No posts yet for': { es: 'Aún no hay publicaciones para', fr: 'Pas encore de publications pour', de: 'Noch keine Beiträge für' },
+  'Be first. Own your block.': { es: 'Sé el primero. Sé dueño de tu cuadra.', fr: 'Soyez le premier. Possédez votre quartier.' },
+  'Post in': { es: 'Publicar en', fr: 'Publier dans' },
+  'Enter': { es: 'Entrar a', fr: 'Entrer dans' },
+  'Feed': { es: 'Muro', fr: 'Fil' },
+  'Change Zip': { es: 'Cambiar Código', fr: 'Changer Code Postal' },
+  'Block:': { es: 'Cuadra:', fr: 'Quartier:' },
+  'Your Neighborhood': { es: 'Tu Vecindario', fr: 'Votre Quartier' },
+  'Trending': { es: 'Tendencia', fr: 'Tendance' },
+  'Marketplace': { es: 'Mercado', fr: 'Marché' },
+  'Events': { es: 'Eventos', fr: 'Événements' },
+  'Businesses': { es: 'Negocios', fr: 'Commerces' },
+  'Faith': { es: 'Fe', fr: 'Foi' },
+  'Support': { es: 'Apoyo', fr: 'Soutien' },
+  'Login': { es: 'Iniciar Sesión', fr: 'Connexion' },
+  'Sign up': { es: 'Registrarse', fr: "S'inscrire" },
+  'Chronological': { es: 'Cronológico', fr: 'Chronologique' },
 }
 
 export function isSupportedLanguage(value: unknown): value is Language {
