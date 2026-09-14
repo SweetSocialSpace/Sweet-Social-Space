@@ -1,41 +1,33 @@
 {
-  "nav": {
-    "feed": "Feed",
-    "profile": "Perfil",
-    "settings": "Configuración",
-    "signOut": "Cerrar sesión"
-  },
-  "feed": {
-    "whatsHappening": "Qué está pasando en",
-    "postAs": "PUBLICAR COMO",
-    "in": "EN",
-    "loading": "Cargando..."
-  },
-  "common": {
-    "backToFeed": "Volver al Feed",
-    "save": "Guardar",
-    "cancel": "Cancelar",
-    "error": "Error",
-    "loading": "Cargando..."
-  },
-  "weather": {
-    "weather": "Clima",
-    "live": "EN VIVO"
-  },
-  "location": {
-    "setLocation": "Establecer ubicación",
-    "locating": "Localizando..."
-  },
-  "filters": {
-    "all": "Todos",
-    "faith": "Fe",
-    "general": "General",
-    "safety": "Seguridad",
-    "forSale": "En Venta",
-    "free": "Gratis",
-    "lostPet": "Mascota Perdida",
-    "event": "Evento",
-    "help": "Ayuda",
-    "recommend": "Recomendar"
+  "nav": { "feed": "Inicio", "profile": "Perfil", "settings": "Configuración / Eliminar", "signOut": "Cerrar sesión" },
+  "feed": { "whatsHappening": "Qué Pasa Cerca de Ti", "postAs": "Publicando como", "in": "en", "loading": "Cargando..." },
+  "common": { "backToFeed": "Volver al Inicio", "save": "Guardar", "cancel": "Cancelar", "delete": "Eliminar", "edit": "Editar", "error": "Error", "loading": "Cargando" },
+  "weather": { "weather": "Clima", "live": "EN VIVO", "clearSky": "cielo despejado", "online": "en línea", "noEmergencies": "Sin emergencias" },
+  "location": { "setLocation": "Establecer ubicación", "locating": "Localizando...", "near": "Cerca" },
+  "filters": { "all": "Todos", "faith": "Fe", "general": "General", "safety": "Seguridad", "forSale": "En Venta", "free": "Gratis", "lostPet": "Mascota Perdida", "event": "Evento", "help": "Ayuda", "recommend": "Recomendar", "job": "Empleo" },
+  "cards": {
+    "livePulse": "Pulso en Vivo",
+    "aiMayor": "Alcalde IA",
+    "liveMap": "Mapa en Vivo",
+    "trustMeter": "Medidor de Confianza",
+    "pinnedAlert": "Alerta Fijada",
+    "emergencyAlerts": "Alertas de Emergencia",
+    "latestAlerts": "Últimas Alertas",
+    "whatsHappeningNearYou": "Qué Pasa Cerca de Ti",
+    "faithOfTheDay": "Fe del Día",
+    "businessDirectory": "Negocios Locales",
+    "businessesNear": "Cerca de 95122",
+    "viewMap": "Ver Mapa",
+    "livePins": "pines en vivo",
+    "fullView": "Vista completa",
+    "verified": "verificado",
+    "trusted": "confiables",
+    "postTo": "Publicar en",
+    "tapMic": "Toca el micrófono - funciona en 95122",
+    "todaysThought": "PENSAMIENTO DEL DÍA:",
+    "seeFaithPosts": "Ver Publicaciones de Fe →",
+    "share": "Compartir",
+    "goLive": "Transmitir en Vivo",
+    "establishLocation": "Establecer ubicación"
   }
 }
