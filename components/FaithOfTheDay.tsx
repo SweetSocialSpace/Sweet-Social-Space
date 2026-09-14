@@ -10,7 +10,10 @@ const FALLBACK_VERSES: Record<string, {es: string, en: string}> = {
 }
 
 export default function FaithCard() {
-  const { language } = useLanguage()
+const { language } = useLanguage()
+useEffect(() => {
+  fetch(`/api/faith?lang=${language}`).then...
+}, [language])
   const [verse, setVerse] = useState(FALLBACK_VERSES["Psalms 46:10"].en)
   const [ref, setRef] = useState("Psalms 46:10")
 
