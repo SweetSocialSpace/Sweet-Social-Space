@@ -2,47 +2,56 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 export const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English', es: 'Español', ja: '日本語', fr: 'Français', de: 'Deutsch', pt: 'Português', zh: '中文', ko: '한국어',
+  en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', zh: '中文', ja: '日本語', ko: '한국어', tl: 'Tagalog', hi: 'हिन्दी', ar: 'العربية', pt: 'Português', ru: 'Русский',
+  it: 'Italiano', nl: 'Nederlands', sv: 'Svenska', pl: 'Polski', uk: 'Українська', el: 'Ελληνικά', tr: 'Türkçe', cs: 'Čeština', hu: 'Magyar', fi: 'Suomi', no: 'Norsk', da: 'Dansk', bg: 'Български', hr: 'Hrvatski', sr: 'Српски', sk: 'Slovenčina', sl: 'Slovenščina', et: 'Eesti', lv: 'Latviešu', lt: 'Lietuvių', be: 'Беларуская', ro: 'Română',
+  he: 'עברית', ur: 'اردو', fa: 'فارسی', id: 'Indonesia', vi: 'Tiếng Việt', th: 'ไทย', ms: 'Melayu', km: 'ខ្មែរ', lo: 'ລາວ', my: 'မြန်မာ', bn: 'বাংলা',
+  ka: 'ქართული', hy: 'Հայերեն', az: 'Azərbaycanca', kk: 'Қазақша', ky: 'Кыргызча', uz: 'Oʻzbekcha', tg: 'Тоҷикӣ', mn: 'Монгол',
 }
-export const LANGUAGES = Object.keys(LANGUAGE_NAMES)
 
-// THIS IS YOUR DICTIONARY - Every English word -> translated
+export const LANGUAGES = Object.keys(LANGUAGE_NAMES)
+export type Language = keyof typeof LANGUAGE_NAMES
+
 export const TRANSLATIONS: Record<string, Record<string, string>> = {
-  "Faith of the Day": { es: "Fe de Hoy", ja: "今日の信仰", fr: "Foi du Jour", de: "Glaube des Tages", pt: "Fé do Dia", zh: "今日信仰", ko: "오늘의 믿음" },
-  "Your Block Has A Feed": { es: "Tu Bloque Tiene Un Feed", ja: "あなたのブロックにフィードがあります", fr: "Votre Quartier a un Fil" },
-  "Sign Up": { es: "Registrarse", ja: "サインアップ", fr: "S'inscrire" },
-  "Log In": { es: "Iniciar Sesión", ja: "ログイン", fr: "Connexion" },
-  "Marketplace": { es: "Mercado", ja: "マーケットプレイス" },
-  "Emergency": { es: "Emergencia", ja: "緊急" },
-  "Weather": { es: "Clima", ja: "天気" },
-  // add every hard English phrase from your platform here
+  "Faith of the Day": { es: "Fe de Hoy", ja: "今日の信仰", fr: "Foi du Jour", tl: "Pananampalataya ng Araw" },
+  "Your Block Has A Feed": { es: "Tu Bloque Tiene Un Feed", ja: "あなたのブロックにフィードがあります" },
+  "Sign Up": { es: "Registrarse", ja: "サインアップ" },
+  "Log In": { es: "Iniciar Sesión", ja: "ログイン" },
 }
 
 const LanguageContext = createContext<any>(null)
 
 export function LanguageProvider({ children }: any) {
-  const [lang, setLang] = useState('en')
-  const [language, setLanguageState] = useState('en')
+  const [lang, setLang] = useState<Language>('en')
+  const [language, setLanguageState] = useState<Language>('en')
 
   useEffect(() => {
-    const browserLang = navigator.language.slice(0,2)
-    const saved = localStorage.getItem('sss_lang')
-    const finalLang = saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')
+    const browserLang = navigator.language.slice(0,2) as Language
+    const saved = localStorage.getItem('sss_lang') as Language | null
+    const finalLang: Language = saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')
     setLang(finalLang)
     setLanguageState(finalLang)
-    console.log("AUTO DETECTED LANGUAGE:", finalLang)
   }, [])
 
   const t = (key: string) => TRANSLATIONS[key]?.[language] || key
 
-  const setLanguage = (newLang: string) => {
+  const setLanguage = (newLang: Language) => {
     setLang(newLang)
     setLanguageState(newLang)
     localStorage.setItem('sss_lang', newLang)
   }
 
+  const languageName = LANGUAGE_NAMES[language] || 'English'
+
   return (
-    <LanguageContext.Provider value={{ lang, language, setLang: setLanguage, setLanguage, t, LANGUAGE_NAMES }}>
+    <LanguageContext.Provider value={{
+      lang,
+      language,
+      languageName, // THIS IS WHAT YOUR SELECTOR NEEDS
+      setLang: setLanguage,
+      setLanguage,
+      t,
+      LANGUAGE_NAMES
+    }}>
       {children}
     </LanguageContext.Provider>
   )
