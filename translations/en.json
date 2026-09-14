@@ -1,20 +1,34 @@
 {
-  "nav": { "feed": "Feed", "profile": "Profile", "settings": "Settings", "signOut": "Sign Out" },
-  "feed": { "whatsHappening": "What's happening?", "postAs": "Posting as", "in": "in", "loading": "Loading" },
-  "common": { "backToFeed": "Back to feed", "save": "Save", "cancel": "Delete", "error": "Error", "loading": "Loading" },
-  "weather": { "weather": "Weather", "live": "LIVE" },
-  "location": { "setLocation": "Set location", "locating": "Locating..." },
-  "filters": { "all": "All", "faith": "Faith", "general": "General", "safety": "Safety", "forSale": "For Sale", "free": "Free", "lostPet": "Lost Pet", "event": "Event", "help": "Help", "recommend": "Recommend" }
-}
-  "cards": {
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profile",
+    "settings": "Settings",
+    "signOut": "Sign Out"
+  },
+  "feed": {
+    "whatsHappening": "What's happening?",
+    "postAs": "Posting as",
+    "in": "in",
+    "loading": "Loading"
+  },
+  "common": {
+    "backToFeed": "Back to feed",
+    "save": "Save",
+    "cancel": "Delete",
+    "error": "Error",
+    "loading": "Loading"
+  },
+  "weather": {
+    "weather": "Weather",
+    "live": "LIVE"
+  },
+  "location": {
     "setLocation": "Set location",
-    "faithOfTheDay": "Faith of the Day",
-    "liveMap": "Live Map",
-    "livePulse": "Live Pulse",
-    "aiMayor": "AI Mayor",
-    "trustMeter": "Trust Meter",
-    "viewMap": "View Map",
-    "postTo": "Post to 95122 - One Stop",
+    "locating": "Locating..."
+  },
+  "filters": {
+    "all": "All",
+    "faith": "Faith",
     "general": "General",
     "safety": "Safety",
     "forSale": "For Sale",
@@ -22,24 +36,6 @@
     "lostPet": "Lost Pet",
     "event": "Event",
     "help": "Help",
-    "recommend": "Recommend",
-    "job": "Job",
-    "tapMic": "Tap mic - works in 95122 - any phone or computer",
-    "postingAs": "Posting as",
-    "todaysThought": "TODAY'S THOUGHT:",
-    "checkNeighbor": "Check on a neighbor today.",
-    "seeFaithPosts": "See Faith Posts →",
-    "share": "Share",
-    "localBusinesses": "Local Businesses",
-    "near": "Near 95122",
-    "livePins": "3 live pins • Full view",
-    "noEmergencies": "No emergencies",
-    "clearSky": "clear sky",
-    "online": "2 online",
-    "verified": "100% verified",
-    "trusted": "2/2 trusted",
-    "youFoundUs": "You found us. Welcome to your private block.",
-    "yourSpace": "This is your space near San Jose, CA — not the whole internet.",
-    "goLive": "Go Live"
+    "recommend": "Recommend"
   }
 }
