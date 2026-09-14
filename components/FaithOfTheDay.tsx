@@ -17,20 +17,25 @@ const VERSES = [
 ]
 
 export default function FaithOfTheDay() {
-  const { zip, city } = useLocation()
+  const { zip } = useLocation()
   const router = useRouter()
   const [today, setToday] = useState(VERSES[0])
+  const { language, t: tLang } = useLanguage()
+  const t = useTranslations()
 
   useEffect(() => {
     const dayIndex = new Date().getDate() % VERSES.length
     setToday(VERSES[dayIndex])
   }, [])
 
+  // translation helper that uses your TRANSLATIONS first, then falls back
+  const tr = (en: string) => tLang(en)!== en? tLang(en) : en
+
   if (!zip) {
     return (
       <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-black rounded-2xl p-5 border border-white/10">
-        <div className="text-xs font-black tracking-widest text-yellow-400">Faith of the Day</div>
-        <div className="text-white/60 text-xs mt-2">Finding your block...</div>
+        <div className="text-xs font-black tracking-widest text-yellow-400">{t.cards?.faithOfTheDay || tr('Faith of the Day')}</div>
+        <div className="text-white/60 text-xs mt-2">{tr('Finding your block...')}</div>
       </div>
     )
   }
@@ -39,13 +44,13 @@ export default function FaithOfTheDay() {
     <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-black rounded-2xl p-5 border border-white/10 shadow-xl relative overflow-hidden">
       <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-400/20 rounded-full blur-2xl" />
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-black tracking-widest text-yellow-400">Faith of the Day</span>
-        <span className="text- bg-white/10 text-white/60 px-2 py-1 rounded-full">LIVE</span>
+        <span className="text-xs font-black tracking-widest text-yellow-400">{t.cards?.faithOfTheDay || tr('Faith of the Day')}</span>
+        <span className="text- bg-white/10 text-white/60 px-2 py-1 rounded-full">{t.weather?.live || 'LIVE'}</span>
       </div>
       <div className="text-white font-black text-lg leading-tight">"{today.verse}"</div>
       <div className="text-yellow-400 font-black text-xs mt-2 tracking-widest">{today.ref}</div>
       <div className="mt-4 bg-white/10 rounded-xl p-3 border border-white/10">
-        <div className="text-white/60 text- font-black tracking-widest mb-1">TODAY'S THOUGHT:</div>
+        <div className="text-white/60 text- font-black tracking-widest mb-1">{t.cards?.todaysThought || tr("TODAY'S THOUGHT:")}</div>
         <div className="text-white text-sm font-bold leading-snug">{today.prompt}</div>
       </div>
       <div className="mt-4 flex gap-2">
@@ -53,7 +58,7 @@ export default function FaithOfTheDay() {
           onClick={()=> router.push(`/feed?filter=faith`)}
           className="flex-1 bg-white text-black text-xs font-black px-3 py-2 rounded-full text-center hover:bg-yellow-400 transition"
         >
-          See Faith Posts →
+          {t.cards?.seeFaithPosts || tr('See Faith Posts →')}
         </button>
         <button
           onClick={()=> {
@@ -63,7 +68,7 @@ export default function FaithOfTheDay() {
           }}
           className="bg-white/10 text-white text-xs font-black px-3 py-2 rounded-full border border-white/20"
         >
-          Share
+          {t.common?.save? tr('Share') : 'Share'}
         </button>
       </div>
     </div>
