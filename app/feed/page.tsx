@@ -143,4 +143,54 @@ function FeedContent() {
           </div>
 
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
-          <div className="mt-2 text-xs text-white/40 px-1">{t?.feed?.postAs || 'Posting as'} {authorName
+          <div className="mt-2 text-xs text-white/40 px-1">{t?.feed?.postAs || 'Posting as'} {authorName} • {hasNoZip? displayCity : displayZip} • {radius}mi</div>
+
+          <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
+            {FILTERS.map(f=>(<button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>))}
+          </div>
+
+          <div className="space-y-3 mt-2">
+            {filtered.length===0 && <WelcomePost />}
+            {filtered.map((p:any)=>{
+              const isEnded = p.tag === 'live_ended'
+              const displayBody = isEnded? (p.body||p.content||'').replace('LIVE NOW','Was Live') : (p.body||p.content)
+              return (
+                <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
+                <TranslatedContent text={displayBody || ''} className="text-black" />
+                  {p.tag === 'live' && p.livekit_room && <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 {t?.weather?.live || 'LIVE'}</button>}
+                  {isEnded && (
+                    <>
+                      {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
+                        <video controls className="mt-3 w-full rounded-xl" src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])} />
+                      )}
+                      <div className="mt-3 text-xs text-white bg-gray-800 rounded-full px-3 py-2 inline-block">{t?.common?.loading || 'Loading'} • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
+                    </>
+                  )}
+                  <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
+                  {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">{t?.common?.cancel || 'Delete'}</button>}
+                </div>
+              )
+            })}
+          </div>
+
+          {joinLivePost && <JoinLive roomName={joinLivePost.livekit_room} userName={currentProfile?.username || 'User'} onClose={() => setJoinLivePost(null)} />}
+        </div>
+
+        <div className="space-y-4 xl:sticky xl:top-20">
+          <CardShell minH="280px"><Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" /></CardShell>
+          <CardShell minH="320px"><Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" /></CardShell>
+          <CardShell minH="320px"><Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" /></CardShell>
+        </div>
+      </div>
+      <Safe loader={() => import('@/components/LocalFooter')} name="LocalFooter" />
+    </>
+  )
+}
+
+export default function FeedPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-neutral-900 flex items-center justify-center text-white">Loading...</div>}>
+      <FeedContent />
+    </Suspense>
+  )
+}
