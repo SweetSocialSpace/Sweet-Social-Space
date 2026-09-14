@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useLanguage, LANGUAGE_NAMES, type Language } from '@/lib/language-context'
 
 // CORE DICTIONARY - Add more as you go, this makes it write in their language
-const DICTIONARY: Record<string, Record<Language, string>> = {
+const DICTIONARY: Record<string, Partial<Record<Language, string>>> = {
   'Any zip on earth. Chronological. No algorithm.': {
     en: 'Any zip on earth. Chronological. No algorithm.',
     es: 'Cualquier código postal del mundo. Cronológico. Sin algoritmo.',
