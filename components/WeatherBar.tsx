@@ -62,8 +62,8 @@ export default function WeatherBar() {
   return (
     <div data-sss-live className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-white font-black text-xs tracking-widest">{t.weather.weather}</span>
-<span className="text- bg-green-500 text-black px-2 py-0.5 rounded-full font-black">{t.weather.live}</span>
+        <span className="text-white font-black text-xs tracking-widest">{t?.weather?.weather}</span>
+<span className="text- bg-green-500 text-black px-2 py-0.5 rounded-full font-black">{t?.weather?.live}</span>
       </div>
       <div className="flex items-center gap-3 mt-2">
         <div className="text-white text-3xl font-black">{temp!== null? `${temp}°F` : '--°F'}</div>
