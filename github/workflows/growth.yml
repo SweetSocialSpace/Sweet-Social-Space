@@ -1,0 +1,28 @@
+name: Neighbor Acquisition Agent
+on:
+  schedule:
+    - cron: '0 15 * * *' # daily 8am PT
+  workflow_dispatch:
+    inputs:
+      zip:
+        description: 'ZIP to target'
+        default: '95122'
+
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate invite pack
+        run: |
+          curl "https://sweetsocialspace.com/api/marketing-agent?zip=${{ inputs.zip || '95122' }}" > invite.json
+          cat invite.json
+      - name: Post to Supabase as system post
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          # This auto-posts a "Welcome to ZIP" post to your Neighborhood Feed
+          curl -X POST "$SUPABASE_URL/rest/v1/posts" \
+            -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"zip\": \"${{ inputs.zip || '95122' }}\", \"body\": \"$(jq -r .body invite.json)\", \"type\": \"ai_mayor\"}"
