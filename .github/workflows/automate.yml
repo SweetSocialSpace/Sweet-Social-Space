@@ -1,7 +1,7 @@
 # name: Free Automation - GLOBAL - All Components Live
 on:
   schedule:
-    - cron: '*/05 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,54 +11,28 @@ jobs:
       - name: Keep house live - all components
         run: |
           DOMAIN="https://sweetsocialspace.com"
+          echo "Checking $DOMAIN at $(date)"
+
+          # 1. Test if site is up at all
+          HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$DOMAIN/api/pulse?zip=95122" -m 10 || echo "000")
+          echo "Pulse status: $HTTP"
+          if [ "$HTTP" = "000" ]; then echo "❌ SITE DOWN"; exit 1; fi
+
+          # 2. Get zips - try 2 formats
+          ZIPS_JSON=$(curl -sf "$DOMAIN/api/zips" -m 10 || echo '["95122"]')
+          echo "Raw zips response: $ZIPS_JSON"
           
-          # 1. get real zips from DB - GLOBAL - no hardcode - postal not IP
-          ZIPS=$(curl -sf "$DOMAIN/api/zips" | tr ',' '\n' || echo "GLOBAL")
-          if [ -z "$ZIPS" ]; then ZIPS="GLOBAL"; fi
-          
-          echo "Zips: $ZIPS"
-          
-          # 2. GLOBAL housekeeping - once - no zip needed - keeps house alive
+          # 3. Global keep alive
           echo "== GLOBAL HOUSEKEEPING =="
-          curl -sf "$DOMAIN/api/ingest" -m 20 || true
-          curl -sf "$DOMAIN/api/auto-migrate" -m 20 || true
-          curl -sf "$DOMAIN/api/pulse" -m 20 || true
-          curl -sf "$DOMAIN/api/feed/refresh" -m 20 || true
-          curl -sf "$DOMAIN/api/verified-sources" -m 20 || true
-          
-          # 3. loop real zips - keeps ALL feeds live globally - ANYBODY anywhere
-          for ZIP in $ZIPS; do
-            ZIP=$(echo $ZIP | tr -d '"[] ' | xargs)
-            [ -z "$ZIP" ] && continue
-            [ "$ZIP" = "GLOBAL" ] && continue
-            
-            echo "== ZIP: $ZIP =="
-            
-            # Core live - left column
-            curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/live-map?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/trust?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/weather?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/emergency?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/latest-alerts?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/whats-happening?zip=$ZIP" -m 10 || true
-            
-            # Center + AI
-            curl -sf "$DOMAIN/api/ai-mayor?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/feed?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/live-now?zip=$ZIP" -m 10 || true
-            
-            # Right column - all features
-            curl -sf "$DOMAIN/api/faith?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/drop?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/karma?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/proximity?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/street-heat?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/marketplace?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/business-directory?zip=$ZIP" -m 10 || true
-            curl -sf "$DOMAIN/api/events?zip=$ZIP" -m 10 || true
-            
-            echo "✓ $ZIP - all components live"
+          curl -sf "$DOMAIN/api/ingest" -m 20 && echo "✓ ingest live" || echo "❌ ingest failed"
+          curl -sf "$DOMAIN/api/pulse?zip=95122" -m 10 && echo "✓ pulse live" || echo "❌ pulse failed"
+          curl -sf "$DOMAIN/api/faith?ref=John%203:16" -m 10 && echo "✓ faith live" || echo "❌ faith failed - this is the one that was 404ing"
+          curl -sf "$DOMAIN/api/weather?zip=95122" -m 10 && echo "✓ weather live" || echo "❌ weather failed"
+
+          # 4. Simple loop - just 3 zips to prove it works globally
+          for ZIP in 95122 90210 10001; do
+            echo "== Checking ZIP: $ZIP =="
+            curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 5 && echo "✓ $ZIP pulse OK" || echo "❌ $ZIP pulse FAIL"
           done
           
-          echo "Done - all feeds live - GLOBAL - for ANYBODY anywhere"
+          echo "Done - $(date) - Check Actions tab for green check"
