@@ -70,38 +70,3 @@ export const useLanguage = () => {
   }
   return ctx
 }
-
-  useEffect(() => {
-    const browserLang = navigator.language.slice(0,2) as Language
-    const saved = localStorage.getItem('sss_lang') as Language | null
-    const finalLang: Language = saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')
-    setLang(finalLang)
-    setLanguageState(finalLang)
-  }, [])
-
-  const t = (key: string) => TRANSLATIONS[key]?.[language] || key
-
-  const setLanguage = (newLang: Language) => {
-    setLang(newLang)
-    setLanguageState(newLang)
-    localStorage.setItem('sss_lang', newLang)
-  }
-
-  const languageName = LANGUAGE_NAMES[language] || 'English'
-
-  return (
-    <LanguageContext.Provider value={{
-      lang,
-      language,
-      languageName, // THIS IS WHAT YOUR SELECTOR NEEDS
-      setLang: setLanguage,
-      setLanguage,
-      t,
-      LANGUAGE_NAMES
-    }}>
-      {children}
-    </LanguageContext.Provider>
-  )
-}
-
-export const useLanguage = () => useContext(LanguageContext)
