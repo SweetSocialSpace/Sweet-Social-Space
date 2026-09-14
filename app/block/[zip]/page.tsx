@@ -5,7 +5,8 @@ export const dynamicParams = true
 
 export default async function BlockPage({ params }: { params: { zip: string } }) {
   const raw = params.zip || 'YOUR BLOCK'
-  const zip = decodeURIComponent(raw).trim()
+  const zipOnly = decodeURIComponent(raw).split(' ')[0].split('%20')[0].trim()
+  const zip = zipOnly
   const supabase = createClient()
 
   let posts: any[] = []
