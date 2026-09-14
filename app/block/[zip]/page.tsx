@@ -1,27 +1,41 @@
-// app/block/[zip]/page.tsx
-export async function generateMetadata({ params }: { params: { zip: string } }) {
-  return {
-    title: `${params.zip} Neighborhood Feed - Own Your Block | Sweet Social Space`,
-    description: `Join neighbors in ${params.zip}. No Nextdoor bans. Chronological feed, BlockMap, Faith Corner. Own your code, own your speech.`
-  }
+// app/block/[zip]/page.tsx - NO CREATOR FOCUS
+export default function BlockPage({ params }: { params: { zip: string } }) {
+  return (
+    <div className="max-w-2xl mx-auto p-6 text-center">
+      <h1 className="text-3xl font-bold">Block: {params.zip}</h1>
+      <p className="mt-2 text-gray-600">Built for global - any zip on earth. Enter your zip, see your block.</p>
+      
+      <div className="mt-8 grid gap-3 text-left p-5 border rounded-2xl">
+        <p>✓ Chronological feed by zip/radius — no algorithm</p>
+        <p>✓ BlockMap (Leaflet + Overpass) auto-loads your area</p>
+        <p>✓ LivePulse + AI Mayor — automated by zip</p>
+        <p>✓ Speak Freely / Vent Wall — anonymous-optional</p>
+        <p>✓ Faith Corner — prayer requests & encouragement</p>
+        <p>✓ OwnThisBlock — own your block with Stripe</p>
+      </div>
+
+      <a href={`/feed?zip=${params.zip}`} className="mt-8 inline-block bg-black text-white px-8 py-3 rounded-full">
+        Enter {params.zip} Feed →
+      </a>
+
+      <p className="mt-6 text-xs text-gray-400">
+        Open source. Supabase Auth. Next.js 14 + Tailwind. Fully yours.
+      </p>
+    </div>
+  )
 }
 
-export default function BlockPage({ params }: { params: { zip: string } }) {
-  const zip = params.zip
+// Also create /block/page.tsx for YOUR BLOCK fallback
+// app/block/page.tsx
+export default function YourBlockPage() {
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-3xl font-bold">Your Block: {zip}</h1>
-      <p className="mt-2">The feed your neighbors actually control.</p>
-      <div className="mt-6 p-4 border rounded-xl">
-        <p>✓ Chronological — no algorithm</p>
-        <p>✓ BlockMap live for {zip}</p>
-        <p>✓ Faith Corner + Vent Wall</p>
-        <p>✓ You own your data</p>
-      </div>
-      <a href={`/feed?zip=${zip}`} className="mt-6 inline-block bg-black text-white px-6 py-3 rounded-full">
-        Join {zip} Feed →
-      </a>
-      <p className="mt-4 text-sm text-gray-500">Built for global - any zip on earth. Your code: github.com/SweetSocialSpace/Sweet-Social-Space</p>
+    <div className="max-w-2xl mx-auto p-6 text-center">
+      <h1 className="text-3xl font-bold">YOUR BLOCK</h1>
+      <p>Enter any zip on earth. Your neighborhood, your feed.</p>
+      <form action="/feed" className="mt-6 flex gap-2 justify-center">
+        <input name="zip" placeholder="Enter zip" className="border px-4 py-2 rounded-full" />
+        <button className="bg-black text-white px-6 rounded-full">Go</button>
+      </form>
     </div>
   )
 }
