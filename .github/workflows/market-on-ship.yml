@@ -1,0 +1,29 @@
+#.github/workflows/market-on-ship.yml
+name: Market On Ship
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'components/**']
+
+jobs:
+  market:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Get what changed
+        id: diff
+        run: echo "changes=$(git diff HEAD~1 --stat)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Run Sweet Marketing Agent
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CHANGES: ${{ steps.diff.outputs.changes }}
+        run: |
+          mvn -f marketing-agent/pom.xml compile exec:java \
+            -Dexec.mainClass="com.sweetsocialspace.marketing.MarketingAgentApplication" \
+            -Dexec.args="--changes '$CHANGES'"
