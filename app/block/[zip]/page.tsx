@@ -24,18 +24,3 @@ export default function BlockPage({ params }: { params: { zip: string } }) {
     </div>
   )
 }
-
-// Also create /block/page.tsx for YOUR BLOCK fallback
-// app/block/page.tsx
-export default function YourBlockPage() {
-  return (
-    <div className="max-w-2xl mx-auto p-6 text-center">
-      <h1 className="text-3xl font-bold">YOUR BLOCK</h1>
-      <p>Enter any zip on earth. Your neighborhood, your feed.</p>
-      <form action="/feed" className="mt-6 flex gap-2 justify-center">
-        <input name="zip" placeholder="Enter zip" className="border px-4 py-2 rounded-full" />
-        <button className="bg-black text-white px-6 rounded-full">Go</button>
-      </form>
-    </div>
-  )
-}
