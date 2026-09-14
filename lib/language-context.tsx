@@ -2,30 +2,10 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 export const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  es: 'Español',
-  ja: '日本語',
-  fr: 'Français',
-  de: 'Deutsch',
-  pt: 'Português',
-  zh: '中文',
-  ko: '한국어',
-  ar: 'العربية',
-  hi: 'हिन्दी',
+  en: 'English', es: 'Español', ja: '日本語', fr: 'Français', de: 'Deutsch', pt: 'Português', zh: '中文', ko: '한국어',
 }
 
 export const LANGUAGES = Object.keys(LANGUAGE_NAMES)
-
-const translations: Record<string, Record<string, string>> = {
-  en: { "Faith of the Day": "Faith of the Day", "Your Block Has A Feed": "Your Block Has A Feed", "Sign Up": "Sign Up" },
-  es: { "Faith of the Day": "Fe de Hoy", "Your Block Has A Feed": "Tu Bloque Tiene Un Feed", "Sign Up": "Registrarse" },
-  ja: { "Faith of the Day": "今日の信仰", "Your Block Has A Feed": "あなたのブロックにフィードがあります", "Sign Up": "サインアップ" },
-  fr: { "Faith of the Day": "Foi du Jour", "Your Block Has A Feed": "Votre Quartier a un Fil", "Sign Up": "S'inscrire" },
-  de: { "Faith of the Day": "Glaube des Tages", "Your Block Has A Feed": "Dein Block hat einen Feed", "Sign Up": "Anmelden" },
-  pt: { "Faith of the Day": "Fé do Dia", "Your Block Has A Feed": "Seu Bloco Tem Um Feed", "Sign Up": "Inscrever-se" },
-  zh: { "Faith of the Day": "今日信仰", "Your Block Has A Feed": "你的街区有动态", "Sign Up": "注册" },
-  ko: { "Faith of the Day": "오늘의 믿음", "Your Block Has A Feed": "당신의 블록에 피드가 있습니다", "Sign Up": "가입하기" },
-}
 
 const LanguageContext = createContext<any>(null)
 
@@ -35,14 +15,12 @@ export function LanguageProvider({ children }: any) {
   useEffect(() => {
     const browserLang = navigator.language.slice(0,2)
     const saved = localStorage.getItem('sss_lang')
-    const finalLang = saved || (translations[browserLang]? browserLang : 'en')
+    const finalLang = saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')
     setLang(finalLang)
-    console.log("AUTO DETECTED LANGUAGE:", finalLang, "browser:", navigator.language)
+    console.log("AUTO DETECTED LANGUAGE:", finalLang)
   }, [])
 
-  const t = (key: string): string => {
-    return translations[lang]?.[key] || translations['en']?.[key] || key
-  }
+  const t = (key: string) => key // for now, just returns the key - we add real translations next
 
   const setLanguage = (newLang: string) => {
     setLang(newLang)
