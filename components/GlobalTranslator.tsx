@@ -8,21 +8,36 @@ export default function GlobalTranslator() {
 
   useEffect(() => {
     if (language === 'en') {
-      originals.current.forEach((orig, node) => node.textContent = orig)
-      originals.current.clear()
+      originals.current.forEach((orig, node) => {
+        if (node.textContent) node.textContent = orig
+      })
       return
     }
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
     let node: Text | null
     while (node = walker.nextNode() as Text) {
-      const text = node.textContent?.trim()
-      if (!text) continue
-      if (TRANSLATIONS[text]?.[language]) {
-        if (!originals.current.has(node)) originals.current.set(node, node.textContent!)
-        node.textContent = node.textContent!.replace(text, TRANSLATIONS[text][language]!)
+      const raw = node.textContent?.trim()
+      if (!raw || raw.length < 3) continue
+      if (node.parentElement?.closest('[data-sss-no-translate]')) continue
+      if (!originals.current.has(node)) originals.current.set(node, node.textContent!)
+
+      if (TRANSLATIONS[raw]?.[language]) {
+        node.textContent = node.textContent!.replace(raw, TRANSLATIONS[raw][language]!)
+      } else {
+        // async translate unknown text - your whole platform fix
+        const n = node
+        const originalText = raw
+        fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: originalText, targetLang: language })
+        }).then(r=>r.json()).then(d=>{
+          if (d.translated && d.translated!== originalText) {
+            n.textContent = n.textContent!.replace(originalText, d.translated)
+          }
+        })
       }
     }
   }, [language])
-
   return null
 }
