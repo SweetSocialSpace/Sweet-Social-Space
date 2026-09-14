@@ -18,11 +18,58 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
   "Log In": { es: "Iniciar Sesión", ja: "ログイン" },
 }
 
-const LanguageContext = createContext<any>(null)
+const LanguageContext = createContext<any>({
+  lang: 'en',
+  language: 'en',
+  languageName: 'English',
+  setLang: () => {},
+  setLanguage: () => {},
+  t: (k: string) => k,
+})
 
 export function LanguageProvider({ children }: any) {
   const [lang, setLang] = useState<Language>('en')
   const [language, setLanguageState] = useState<Language>('en')
+
+  useEffect(() => {
+    const browserLang = navigator.language.slice(0,2) as Language
+    const saved = localStorage.getItem('sss_lang') as Language | null
+    const finalLang: Language = saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')
+    setLang(finalLang)
+    setLanguageState(finalLang)
+  }, [])
+
+  const t = (key: string) => TRANSLATIONS[key]?.[language] || key
+
+  const setLanguage = (newLang: Language) => {
+    setLang(newLang)
+    setLanguageState(newLang)
+    if (typeof window!== 'undefined') localStorage.setItem('sss_lang', newLang)
+  }
+
+  const languageName = LANGUAGE_NAMES[language] || 'English'
+
+  return (
+    <LanguageContext.Provider value={{ lang, language, languageName, setLang: setLanguage, setLanguage, t, LANGUAGE_NAMES }}>
+      {children}
+    </LanguageContext.Provider>
+  )
+}
+
+export const useLanguage = () => {
+  const ctx = useContext(LanguageContext)
+  if (!ctx) {
+    return {
+      lang: 'en',
+      language: 'en',
+      languageName: 'English',
+      setLang: () => {},
+      setLanguage: () => {},
+      t: (k: string) => k,
+    }
+  }
+  return ctx
+}
 
   useEffect(() => {
     const browserLang = navigator.language.slice(0,2) as Language
