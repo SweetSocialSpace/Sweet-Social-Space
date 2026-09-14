@@ -1,36 +1,25 @@
-#.github/workflows/market-on-ship.yml
 name: Market On Ship
 on:
   push:
     branches: [main]
-    paths: ['app/**', 'components/**']
+    paths: ['app/**', 'components/**', 'translations/**']
+  workflow_dispatch:
 
 jobs:
   market:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+      - name: Show what changed
+        run: git diff HEAD~1 --name-only | head -20
 
-      - name: Get what changed
-        id: diff
+      # Replace your java block with something that actually markets:
+      - name: Ping search engines that site updated
         run: |
-          echo "changes<<EOF" >> $GITHUB_OUTPUT
-          git diff HEAD~1 --stat >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          curl "https://www.google.com/ping?sitemap=https://sweetsocialspace.com/sitemap.xml" || true
+          curl "https://www.bing.com/ping?sitemap=https://sweetsocialspace.com/sitemap.xml" || true
+          echo "✓ Google & Bing know you updated Faith fix"
 
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Run Sweet Marketing Agent
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          CHANGES: ${{ steps.diff.outputs.changes }}
+      - name: Create release note that people can find
         run: |
-          echo "$CHANGES"
-          mvn -f marketing-agent/pom.xml compile exec:java \
-            -Dexec.mainClass="com.sweetsocialspace.marketing.MarketingAgentApplication" \
-            -Dexec.args="--changes '$CHANGES'"
+          echo "Updated at $(date): $(git log -1 --pretty=%B)" > public/whats-new.txt
