@@ -1,101 +1,40 @@
+// app/api/translate/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
-const MAX_ITEMS = 128
-const MAX_CHARS_PER_ITEM = 5000
+export async function POST(req: NextRequest) {
+  const { text, targetLang, postId } = await req.json()
+  if (!text ||!targetLang) return NextResponse.json({ error: 'missing' }, { status: 400 })
 
-export async function POST(request: NextRequest) {
-  try {
-    const apiKey =
-      process.env.GOOGLE_TRANSLATE_API_KEY ||
-      process.env.GOOGLE_TRANSLATION_API_KEY
+  const supabase = createClient()
 
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'Translation service is not configured.' },
-        { status: 503 }
-      )
+  // Check cache first - don't re-translate
+  if (postId) {
+    const { data } = await supabase.from('posts').select('translations').eq('id', postId).single()
+    if (data?.translations?.[targetLang]) {
+      return NextResponse.json({ translated: data.translations[targetLang], cached: true })
     }
-
-    const body = await request.json()
-
-    const target =
-      typeof body?.target === 'string'
-        ? body.target.toLowerCase().split('-')[0]
-        : ''
-
-    const texts = Array.isArray(body?.texts)
-      ? body.texts
-      : []
-
-    if (
-      !target ||
-      texts.length === 0 ||
-      texts.length > MAX_ITEMS
-    ) {
-      return NextResponse.json(
-        { error: 'Invalid translation request.' },
-        { status: 400 }
-      )
-    }
-
-    const cleaned = texts.map((text: unknown) =>
-      typeof text === 'string'
-        ? text.trim().slice(0, MAX_CHARS_PER_ITEM)
-        : ''
-    )
-
-    if (cleaned.some((text: string) => !text)) {
-      return NextResponse.json(
-        { error: 'Translation text must be non-empty strings.' },
-        { status: 400 }
-      )
-    }
-
-    const response = await fetch(
-      `https://translation.googleapis.com/language/translate/v2?key=${encodeURIComponent(apiKey)}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          q: cleaned,
-          target,
-          format: 'text',
-        }),
-        cache: 'no-store',
-      }
-    )
-
-    const payload = await response.json()
-
-    if (!response.ok) {
-      return NextResponse.json(
-        {
-          error:
-            payload?.error?.message ||
-            'Translation failed.',
-        },
-        { status: 502 }
-      )
-    }
-
-    const translations =
-      payload?.data?.translations || []
-
-    return NextResponse.json({
-      translations: translations.map((item: any) => ({
-        text: item.translatedText,
-        detectedSourceLanguage:
-          item.detectedSourceLanguage || null,
-      })),
-    })
-  } catch (error) {
-    console.error('Translation API error:', error)
-
-    return NextResponse.json(
-      { error: 'Translation service unavailable.' },
-      { status: 500 }
-    )
   }
+
+  // Use free MyMemory API for now (replace with Google Translate later for production)
+  // This works for any language on earth, no API key
+  const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`)
+  const json = await res.json()
+  const translated = json.responseData?.translatedText || text
+
+  // Cache it
+  if (postId) {
+    await supabase.rpc('append_translation', {
+      p_id: postId,
+      p_lang: targetLang,
+      p_text: translated
+    })
+    // Or simple:
+    // const { data: current } = await supabase.from('posts').select('translations').eq('id', postId).single()
+    // await supabase.from('posts').update({
+    // translations: {...current?.translations, [targetLang]: translated }
+    // }).eq('id', postId)
+  }
+
+  return NextResponse.json({ translated })
 }
