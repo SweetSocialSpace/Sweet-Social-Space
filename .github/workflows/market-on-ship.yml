@@ -12,18 +12,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
+
       - name: Get what changed
         id: diff
-        run: echo "changes=$(git diff HEAD~1 --stat)" >> $GITHUB_OUTPUT
+        run: |
+          echo "changes<<EOF" >> $GITHUB_OUTPUT
+          git diff HEAD~1 --stat >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Run Sweet Marketing Agent
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           CHANGES: ${{ steps.diff.outputs.changes }}
         run: |
+          echo "$CHANGES"
           mvn -f marketing-agent/pom.xml compile exec:java \
             -Dexec.mainClass="com.sweetsocialspace.marketing.MarketingAgentApplication" \
             -Dexec.args="--changes '$CHANGES'"
