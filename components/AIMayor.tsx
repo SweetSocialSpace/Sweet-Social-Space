@@ -7,7 +7,7 @@ export default function AIMayor() {
   const { zip, city, lat, lng } = useLocation()
   const t = useTranslations() as any
   const effectiveZip = zip && zip !== 'LOCAL' ? zip : 'LOCAL'
-  const effectiveCity = city || (effectiveZip === 'LOCAL' ? 'your area' : effectiveZip)
+  const effectiveCity = city || (effectiveZip === 'LOCAL' ? (t?.common?.yourArea || 'your area') : effectiveZip)
   const [brief, setBrief] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -60,7 +60,6 @@ export default function AIMayor() {
   }
 
   useEffect(() => {
-    // set initial waking message
     setBrief(format(t.aiMayor?.wakingUp || 'AI Mayor is waking up in {city}...', {city: effectiveCity}))
   }, [t, effectiveCity])
 
