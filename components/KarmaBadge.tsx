@@ -1,10 +1,10 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 export default function KarmaBadge({ userId }: { userId: string }) {
+  const t = useTranslations() as any
   const [karma, setKarma] = useState(0)
 
   useEffect(() => {
@@ -20,5 +20,5 @@ export default function KarmaBadge({ userId }: { userId: string }) {
     load()
   }, [userId])
 
-  return <span className="text- font-black bg-yellow-500 text-black px-2 py-1 rounded-full">🔥 {karma} KARMA</span>
+  return <span className="text-xs font-black bg-yellow-500 text-black px-2 py-1 rounded-full">🔥 {karma} {t?.karma?.label || 'KARMA'}</span>
 }
