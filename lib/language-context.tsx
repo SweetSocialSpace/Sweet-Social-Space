@@ -1,5 +1,6 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export const LANGUAGE_NAMES: Record<string, string> = {
   en: 'English', es: 'Español', fr: 'Français', de: 'Deutsch', zh: '中文', ja: '日本語', ko: '한국어', tl: 'Tagalog', hi: 'हिन्दी', ar: 'العربية', pt: 'Português', ru: 'Русский',
@@ -11,20 +12,12 @@ export const LANGUAGE_NAMES: Record<string, string> = {
 export const LANGUAGES = Object.keys(LANGUAGE_NAMES)
 export type Language = keyof typeof LANGUAGE_NAMES
 
-export const TRANSLATIONS: Record<string, Record<string, string>> = {
-  "Faith of the Day": { es: "Fe de Hoy", ja: "今日の信仰", fr: "Foi du Jour", tl: "Pananampalataya ng Araw" },
-  "Your Block Has A Feed": { es: "Tu Bloque Tiene Un Feed", ja: "あなたのブロックにフィードがあります" },
-  "Sign Up": { es: "Registrarse", ja: "サインアップ" },
-  "Log In": { es: "Iniciar Sesión", ja: "ログイン" },
-}
-
 const LanguageContext = createContext<any>({
   lang: 'en',
   language: 'en',
   languageName: 'English',
   setLang: () => {},
   setLanguage: () => {},
-  t: (k: string) => k,
 })
 
 export function LanguageProvider({ children }: any) {
@@ -32,25 +25,36 @@ export function LanguageProvider({ children }: any) {
   const [language, setLanguageState] = useState<Language>('en')
 
   useEffect(() => {
-    const browserLang = navigator.language.slice(0,2) as Language
+    const cookieLang = document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
     const saved = localStorage.getItem('sss_lang') as Language | null
-    const finalLang: Language = saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')
+    const browserLang = navigator.language.slice(0,2) as Language
+    const finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')) as Language
     setLang(finalLang)
     setLanguageState(finalLang)
+    document.documentElement.lang = finalLang
   }, [])
 
-  const t = (key: string) => TRANSLATIONS[key]?.[language] || key
-
-  const setLanguage = (newLang: Language) => {
+  const setLanguage = async (newLang: Language) => {
     setLang(newLang)
     setLanguageState(newLang)
-    if (typeof window!== 'undefined') localStorage.setItem('sss_lang', newLang)
+    if (typeof window!== 'undefined') {
+      localStorage.setItem('sss_lang', newLang)
+      document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`
+      document.documentElement.lang = newLang
+    }
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await supabase.from('profiles').update({ language: newLang }).eq('id', user.id)
+      }
+    } catch {}
   }
 
   const languageName = LANGUAGE_NAMES[language] || 'English'
 
   return (
-    <LanguageContext.Provider value={{ lang, language, languageName, setLang: setLanguage, setLanguage, t, LANGUAGE_NAMES }}>
+    <LanguageContext.Provider value={{ lang, language, languageName, setLang: setLanguage, setLanguage, LANGUAGE_NAMES }}>
       {children}
     </LanguageContext.Provider>
   )
@@ -65,7 +69,6 @@ export const useLanguage = () => {
       languageName: 'English',
       setLang: () => {},
       setLanguage: () => {},
-      t: (k: string) => k,
     }
   }
   return ctx
