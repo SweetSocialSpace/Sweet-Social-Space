@@ -1,13 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from '@/lib/translations'
 
 export default function LiveNowStrip() {
+  const t = useTranslations() as any
   const [livePosts, setLivePosts] = useState<any[]>([])
   const supabase = createClient()
 
   useEffect(() => {
-    // Fetch live posts
     const fetchLivePosts = async () => {
       const { data } = await supabase
         .from('posts')
@@ -21,7 +22,6 @@ export default function LiveNowStrip() {
 
     fetchLivePosts()
 
-    // Set up real-time subscription for new live posts
     const channel = supabase
       .channel('live-posts')
       .on(
@@ -59,15 +59,15 @@ export default function LiveNowStrip() {
   return (
     <div className="bg-gradient-to-r from-red-600 to-red-500 rounded-xl p-4 mb-4">
       <div className="flex items-center gap-2 mb-3">
-        <span className="bg-white text-red-600 px-2 py-0.5 rounded-full text-xs font-bold animate-pulse">LIVE</span>
-        <span className="text-white font-bold text-sm">Live Now</span>
+        <span className="bg-white text-red-600 px-2 py-0.5 rounded-full text-xs font-bold animate-pulse">{t?.live?.live || 'LIVE'}</span>
+        <span className="text-white font-bold text-sm">{t?.live?.liveNow || 'Live Now'}</span>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-2">
         {livePosts.map((post) => (
           <div key={post.id} className="bg-white/10 backdrop-blur rounded-lg p-3 min-w-[200px] flex-shrink-0">
             <p className="text-white text-xs line-clamp-2 mb-2">{post.body}</p>
             <div className="flex items-center gap-2">
-              <span className="bg-red-500 text-white px-2 py-0.5 rounded text-xs font-bold animate-pulse">● LIVE</span>
+              <span className="bg-red-500 text-white px-2 py-0.5 rounded text-xs font-bold animate-pulse">● {t?.live?.live || 'LIVE'}</span>
               <span className="text-white/70 text-xs">
                 {new Date(post.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
