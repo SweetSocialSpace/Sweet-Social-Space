@@ -1,5 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useTranslations } from '@/lib/translations'
+import { useLanguage as useLanguageContext } from '@/lib/language-context'
 
 const DICT = {
   en: {
@@ -38,33 +40,56 @@ const DICT = {
 }
 
 export function useLanguage() {
-  const [lang, setLang] = useState('en')
+  const tHook = useTranslations() as any
+  const langCtx = (() => { try { return useLanguageContext() } catch { return null as any } })()
+  const [lang, setLangState] = useState(() => {
+    try { return langCtx?.language || (typeof window !== 'undefined' ? localStorage.getItem('sss_lang') : null) || 'en' } catch { return 'en' }
+  })
 
   useEffect(() => {
-    const saved = localStorage.getItem('sss_lang') || 'en'
-    setLang(saved)
-    document.documentElement.lang = saved
-  }, [])
-
-  const t = (key, vars={}) => {
     try {
+      const saved = langCtx?.language || localStorage.getItem('sss_lang') || 'en'
+      setLangState(saved)
+      document.documentElement.lang = saved
+    } catch {}
+  }, [langCtx?.language])
+
+  const t = (key: string, vars: Record<string,string|number> = {}) => {
+    try {
+      // Prefer new translation system if key exists there
       const keys = key.split('.')
-      let val = DICT[lang] || DICT['en']
-      for(const k of keys) val = val?.[k]
-      let str = val || DICT['en'][keys[0]] || key
-      Object.keys(vars).forEach(v => str = str.replace(`{${v}}`, vars[v]))
+      let fromHook: any = tHook
+      let found = true
+      for (const k of keys) {
+        if (fromHook && typeof fromHook === 'object' && k in fromHook) fromHook = fromHook[k]
+        else { found = false; break }
+      }
+      if (found && typeof fromHook === 'string') {
+        let str = fromHook
+        Object.keys(vars).forEach(v => str = str.replace(`{${v}}`, String(vars[v])))
+        return str
+      }
+      // Fallback to legacy DICT
+      const dictLang = DICT[lang as keyof typeof DICT] || DICT['en']
+      let val: any = dictLang
+      for(const k of keys) val = (val as any)?.[k]
+      let str = (val as string) || (DICT['en'] as any)[keys[0]] || key
+      Object.keys(vars).forEach(v => str = str.replace(`{${v}}`, String(vars[v])))
       return str
     } catch { return key }
   }
 
-  const changeLang = async (newLang, supabase, userId) => {
-    setLang(newLang)
-    localStorage.setItem('sss_lang', newLang)
-    document.documentElement.lang = newLang
-    if(supabase && userId) {
-      await supabase.from('profiles').update({ language: newLang }).eq('id', userId)
-    }
+  const changeLang = async (newLang: string, supabase?: any, userId?: string) => {
+    try {
+      setLangState(newLang)
+      localStorage.setItem('sss_lang', newLang)
+      document.documentElement.lang = newLang
+      try { langCtx?.setLanguage?.(newLang) } catch {}
+      if(supabase && userId) {
+        await supabase.from('profiles').update({ language: newLang }).eq('id', userId)
+      }
+    } catch {}
   }
 
-  return { lang, t, changeLang, DICT }
+  return { lang, language: lang, t, changeLang, DICT, setLanguage: changeLang }
 }
