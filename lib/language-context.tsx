@@ -18,6 +18,8 @@ const LanguageContext = createContext<any>({
   languageName: 'English',
   setLang: () => {},
   setLanguage: () => {},
+  LANGUAGE_NAMES,
+  LANGUAGES,
 })
 
 export function LanguageProvider({ children }: any) {
@@ -25,51 +27,71 @@ export function LanguageProvider({ children }: any) {
   const [language, setLanguageState] = useState<Language>('en')
 
   useEffect(() => {
-    const cookieLang = document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
-    const saved = localStorage.getItem('sss_lang') as Language | null
-    const browserLang = navigator.language.slice(0,2) as Language
-    const finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')) as Language
-    setLang(finalLang)
-    setLanguageState(finalLang)
-    document.documentElement.lang = finalLang
+    try {
+      const cookieLang = document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
+      const saved = localStorage.getItem('sss_lang') as Language | null
+      const browserLang = (typeof navigator !== 'undefined' ? navigator.language.slice(0,2) : 'en') as Language
+      const finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')) as Language
+      setLang(finalLang)
+      setLanguageState(finalLang)
+      document.documentElement.lang = finalLang
+    } catch {}
   }, [])
 
   const setLanguage = async (newLang: Language) => {
-    setLang(newLang)
-    setLanguageState(newLang)
-    if (typeof window!== 'undefined') {
-      localStorage.setItem('sss_lang', newLang)
-      document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`
-      document.documentElement.lang = newLang
-    }
     try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        await supabase.from('profiles').update({ language: newLang }).eq('id', user.id)
+      setLang(newLang)
+      setLanguageState(newLang)
+      if (typeof window!== 'undefined') {
+        localStorage.setItem('sss_lang', newLang)
+        document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`
+        document.documentElement.lang = newLang
       }
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          await supabase.from('profiles').update({ language: newLang }).eq('id', user.id)
+        }
+      } catch {}
     } catch {}
   }
 
   const languageName = LANGUAGE_NAMES[language] || 'English'
 
   return (
-    <LanguageContext.Provider value={{ lang, language, languageName, setLang: setLanguage, setLanguage, LANGUAGE_NAMES }}>
+    <LanguageContext.Provider value={{ lang, language, languageName, setLang: setLanguage, setLanguage, LANGUAGE_NAMES, LANGUAGES }}>
       {children}
     </LanguageContext.Provider>
   )
 }
 
 export const useLanguage = () => {
-  const ctx = useContext(LanguageContext)
-  if (!ctx) {
+  try {
+    const ctx = useContext(LanguageContext)
+    if (!ctx || !ctx.language) {
+      return {
+        lang: 'en' as Language,
+        language: 'en' as Language,
+        languageName: 'English',
+        setLang: () => {},
+        setLanguage: () => {},
+        LANGUAGE_NAMES,
+        LANGUAGES,
+      }
+    }
+    return ctx
+  } catch {
     return {
-      lang: 'en',
-      language: 'en',
+      lang: 'en' as Language,
+      language: 'en' as Language,
       languageName: 'English',
       setLang: () => {},
       setLanguage: () => {},
+      LANGUAGE_NAMES,
+      LANGUAGES,
     }
   }
-  return ctx
 }
+
+export default LanguageProvider
