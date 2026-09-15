@@ -2,14 +2,17 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from '@/lib/translations'
 
 export default function DeleteAccount() {
   const [deleting, setDeleting] = useState(false)
   const supabase = createClient()
   const router = useRouter()
+  const t = useTranslations() as any
 
   const doDelete = async () => {
-    if (!window.confirm('Delete your account and all your posts in this zip forever? Cannot be undone.')) return
+    const confirmText = t?.deleteAccount?.confirm || 'Delete your account and all your posts in this zip forever? Cannot be undone.'
+    if (!window.confirm(confirmText)) return
     setDeleting(true)
     try {
       const res = await fetch('/api/delete-account', { method: 'POST' })
@@ -19,7 +22,7 @@ export default function DeleteAccount() {
       localStorage.clear()
       router.push('/')
     } catch (e:any) {
-      alert('Delete failed: ' + e.message + ' — add SERVICE_ROLE_KEY in Vercel env')
+      alert((t?.deleteAccount?.failed || 'Delete failed: ') + e.message + ' — add SERVICE_ROLE_KEY in Vercel env')
       setDeleting(false)
     }
   }
@@ -27,7 +30,7 @@ export default function DeleteAccount() {
   return (
     <div className="mt-8 border-t border-white/10 pt-6 flex gap-3">
       <button onClick={doDelete} disabled={deleting} className="text-xs text-white/40 hover:text-red-400 underline">
-        {deleting ? 'Deleting...' : 'Delete account / Unsubscribe'}
+        {deleting ? (t?.deleteAccount?.deleting || 'Deleting...') : (t?.deleteAccount?.delete || 'Delete account / Unsubscribe')}
       </button>
     </div>
   )
