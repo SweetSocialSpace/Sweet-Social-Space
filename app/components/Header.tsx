@@ -6,6 +6,7 @@ import { User } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { useLocation } from '@/lib/location-context'
 import LanguageSelector from '@/components/LanguageSelector'
+import { useTranslations } from '@/lib/translations'
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null)
@@ -13,6 +14,7 @@ export default function Header() {
   const supabase = createClient()
   const router = useRouter()
   const { zip } = useLocation()
+  const t = useTranslations() as any
 
   const loadProfile = async (u: User | null) => {
     setUser(u)
@@ -37,15 +39,15 @@ export default function Header() {
       <div className="max-w- mx-auto px-6 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Link href="/feed" className="text-xl font-bold text-white tracking-tight drop-shadow">Sweet Social Space</Link>
-          {zip && <span className="text-xs font-black bg-white text-black px-2 py-1 rounded-full">• {zip} • LIVE</span>}
+          {zip && <span className="text-xs font-black bg-white text-black px-2 py-1 rounded-full">• {zip} • {t?.common?.live || t?.weather?.live || 'LIVE'}</span>}
         </div>
         <div className="flex items-center gap-3">
           <LanguageSelector />
           {user && (
             <>
               <Link href="/profile" className="text-sm text-white/80 hidden sm:block font-medium hover:text-white hover:underline cursor-pointer">{username || user.email}</Link>
-              <Link href="/profile" className="text-xs text-white/40 hover:text-white/80 hidden md:block">Settings / Delete</Link>
-              <button onClick={handleSignOut} className="text-sm bg-white/10 hover:bg-white/20 border border-white/10 text-white px-3 py-1.5 rounded-full font-bold backdrop-blur">Sign out</button>
+              <Link href="/profile" className="text-xs text-white/40 hover:text-white/80 hidden md:block">{t?.nav?.settings || 'Settings'} / Delete</Link>
+              <button onClick={handleSignOut} className="text-sm bg-white/10 hover:bg-white/20 border border-white/10 text-white px-3 py-1.5 rounded-full font-bold backdrop-blur">{t?.nav?.signOut || 'Sign out'}</button>
             </>
           )}
         </div>
