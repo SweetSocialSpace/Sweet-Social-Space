@@ -6,17 +6,24 @@
     "signOut": "Cerrar sesión"
   },
   "feed": {
-    "whatsHappening": "¿Qué está pasando?",
+    "whatsHappening": "¿Qué pasa en",
     "postAs": "Publicando como",
     "in": "en",
-    "loading": "Cargando"
+    "loading": "Cargando...",
+    "posting": "PUBLICANDO...",
+    "fixPunctuation": "Arreglar puntuación",
+    "recorded_live": "Transmisión grabada",
+    "whatsHappeningQuestion": "¿Qué está pasando?"
   },
   "common": {
     "backToFeed": "Volver al inicio",
     "save": "Guardar",
-    "cancel": "Eliminar",
+    "cancel": "Cancelar",
+    "delete": "Borrar",
+    "deleteConfirm": "¿Borrar esta publicación?",
     "error": "Error",
-    "loading": "Cargando"
+    "loading": "Cargando...",
+    "recorded": "Grabado"
   },
   "weather": {
     "weather": "Clima",
@@ -27,7 +34,7 @@
     "locating": "Localizando..."
   },
   "filters": {
-    "all": "Todos",
+    "all": "Todo",
     "faith": "Fe",
     "general": "General",
     "safety": "Seguridad",
@@ -36,6 +43,21 @@
     "lostPet": "Mascota Perdida",
     "event": "Evento",
     "help": "Ayuda",
-    "recommend": "Recomendar"
+    "recommend": "Recomendación",
+    "for_sale": "En Venta",
+    "free_stuff": "Cosas gratis",
+    "lost_pet": "Mascota Perdida",
+    "hot_take": "Opinión caliente",
+    "alert": "Alerta",
+    "recommendation": "Recomendación",
+    "lost_found": "Perdido y encontrado"
+  },
+  "auth": {
+    "welcome": "Bienvenido a Sweet Social Space",
+    "emailPlaceholder": "Correo electrónico",
+    "passwordPlaceholder": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "languageLabel": "Elige tu idioma"
   }
 }
