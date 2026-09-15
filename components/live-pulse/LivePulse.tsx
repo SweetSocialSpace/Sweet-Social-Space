@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 export default function LivePulse() {
   const { zip, city } = useLocation()
+  const t = useTranslations() as any
   const [data, setData] = useState<any>(null)
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function LivePulse() {
     return () => clearInterval(i)
   }, [zip])
 
-  const displayCity = city || data?.weather?.city || data?.weather?.name || data?.pulse?.city || 'your area'
+  const displayCity = city || data?.weather?.city || data?.weather?.name || data?.pulse?.city || (t?.common?.yourArea || 'your area')
   const tempRaw = data?.weather?.temp?? data?.weather?.main?.temp?? null
   let temp = tempRaw
   if (temp!== null && temp > 150) temp = Math.round((temp - 273.15) * 9/5 + 32)
@@ -34,13 +34,13 @@ export default function LivePulse() {
     <div className="bg-black/40 rounded-xl p-3 border border-white/10">
       <div className="flex justify-between items-center">
         <span className="text-purple-300 font-black text-sm tracking-widest">{displayCity}</span>
-        <span className="text- bg-white/10 text-white/60 px-2 py-0.5 rounded-full">LIVE</span>
+        <span className="text- bg-white/10 text-white/60 px-2 py-0.5 rounded-full">{t?.common?.live || 'LIVE'}</span>
       </div>
       <div className="text-white text-sm mt-1">
-        {temp!== null? `${Math.round(temp)}° ${weatherDesc}` : 'Loading...'} • {online} online
+        {temp!== null? `${Math.round(temp)}° ${weatherDesc}` : (t?.common?.loading || 'Loading...')} • {online} {t?.livePulse?.online || 'online'}
       </div>
       <div className="text-white/60 text-xs mt-1">
-        {data?.emergency?.alert? `⚠ ${data.emergency.alert}` : `✓ No emergencies`}
+        {data?.emergency?.alert? `⚠ ${data.emergency.alert}` : `✓ ${t?.livePulse?.noEmergencies || 'No emergencies'}`}
       </div>
     </div>
   )
