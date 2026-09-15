@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useLocation } from '@/lib/location-context';
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 export default function StreetHeat() {
   const { zip } = useLocation();
+  const t = useTranslations() as any
   const [heat, setHeat] = useState<any>(null);
 
   useEffect(() => {
@@ -27,8 +27,8 @@ export default function StreetHeat() {
   return (
     <div className="w-full bg-zinc-900 rounded-full px-4 py-2 flex items-center gap-2 border border-white/10">
       <span className="text-xs">🔥</span>
-      <span className="text-white text-xs font-bold">{heat.street} is hottest today • {heat.count} posts</span>
-      <span className="text-white/40 text-xs ml-auto">{heat.total} total in {zip}</span>
+      <span className="text-white text-xs font-bold">{heat.street} {t?.heat?.hottest || 'is hottest today •'} {heat.count} {t?.heat?.posts || 'posts'}</span>
+      <span className="text-white/40 text-xs ml-auto">{heat.total} {t?.heat?.totalIn || 'total in'} {zip}</span>
     </div>
   );
 }
