@@ -24,7 +24,7 @@ export default function TranslatedContent({ text, className }: { text: string, c
         cache.set(key, d.translated)
         setOut(d.translated)
       }
-    })
+    }).catch(()=>{ setOut(text) })
   }, [text, language])
 
   return <div className={className}>{out}</div>
