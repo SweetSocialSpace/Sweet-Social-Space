@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Kas notiek",
-    "postAs": "PUBLICĒT KĀ",
+    "postAs": "Publicēt kā {name}",
+    "postTo": "Publicēt uz {zip} - Viss vienuviet",
     "in": "I",
-    "loading": "Ielāde..."
+    "loading": "Ielāde...",
+    "posting": "PUBLICĒ...",
+    "fixPunctuation": "Labot pieturzīmes",
+    "tapMic": "Pieskarieties mikrofonam - darbojas {zip} - jebkurā tālrunī vai datorā",
+    "postingAs": "Publicē kā",
+    "universalMic": "Universāls mikrofons",
+    "waitBlock": "Joprojām nosakām jūsu bloku... pagaidiet 2 sek un publicējiet vēlreiz",
+    "price": "Cena",
+    "addressPrivate": "Adrese - Privāta",
+    "conditionNew": "Jauns",
+    "conditionLikeNew": "Kā jauns",
+    "conditionGood": "Labs",
+    "conditionFair": "Apmierinošs",
+    "recorded_live": "Ierakstīts tiešraidē",
+    "whatsHappeningQuestion": "Kas notiek?",
+    "there": "tur",
+    "anyDevice": "jebkurā tālrunī vai datorā"
   },
   "common": {
     "backToFeed": "Atpakaļ uz plūsmu",
     "save": "Saglabāt",
     "cancel": "Atcelt",
+    "delete": "Dzēst",
+    "deleteConfirm": "Dzēst šo ierakstu?",
     "error": "Kļūda",
-    "loading": "Ielāde..."
+    "loading": "Ielāde...",
+    "recorded": "Ierakstīts",
+    "yourArea": "jūsu rajons",
+    "loadingDots": "Ielāde...",
+    "wasLive": "Bija tiešraidē"
   },
   "weather": {
     "weather": "Laiks",
@@ -32,10 +55,108 @@
     "general": "Vispārīgi",
     "safety": "Drošība",
     "forSale": "Pārdošanā",
+    "for_sale": "Pārdošanā",
     "free": "Bezmaksas",
+    "free_stuff": "Bezmaksas lietas",
     "lostPet": "Pazudis mājdzīvnieks",
+    "lost_pet": "Pazudis mājdzīvnieks",
     "event": "Notikums",
     "help": "Palīdzība",
-    "recommend": "Ieteikt"
+    "recommend": "Ieteikt",
+    "job": "Darbs",
+    "alert": "Brīdinājums",
+    "recommendation": "Ieteikums",
+    "lost_found": "Pazaudēts un atrasts",
+    "hot_take": "Karsts viedoklis"
+  },
+  "auth": {
+    "welcome": "Laipni lūdzam Sweet Social Space",
+    "emailPlaceholder": "E-pasta adrese",
+    "passwordPlaceholder": "Parole",
+    "signIn": "Pieteikties",
+    "signUp": "Reģistrēties",
+    "languageLabel": "Izvēlieties valodu"
+  },
+  "theme": {
+    "theme": "Tēma",
+    "light": "Gaiša",
+    "dark": "Tumša",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Tiešraides karte",
+    "subtitle": "3 tiešraides piespraudes • Pilns skats"
+  },
+  "faith": {
+    "title": "Dienas ticība",
+    "faithOfTheDay": "Dienas ticība"
+  },
+  "businesses": {
+    "title": "Vietējie uzņēmumi",
+    "loading": "Ielāde",
+    "near": "Tuvumā",
+    "noBusinesses": "Vēl nav uzņēmumu",
+    "policeDeptSuffix": "Policijas departaments",
+    "fireDeptSuffix": "Ugunsdzēsēju departaments",
+    "librarySuffix": "Bibliotēka",
+    "communitySuffix": "Kopienas centrs",
+    "catPolice": "Policija",
+    "catFire": "Ugunsdzēsēji",
+    "catLibrary": "Bibliotēka",
+    "catCommunity": "Kopiena"
+  },
+  "aiMayor": {
+    "goodMorning": "Labrīt",
+    "goodAfternoon": "Labdien",
+    "goodEvening": "Labvakar",
+    "goodNight": "Arlabunakti",
+    "hotDay": "Karsta diena {temp}°F - dzeriet daudz ūdens",
+    "pleasant": "Patīkami {temp}°F - lieliska diena būt ārā",
+    "mild": "Maigs {temp}°F - ideāli apstākļi",
+    "cool": "Vēss {temp}°F - paņemiet vieglu jaku",
+    "chilly": "Auksts {temp}°F - saģērbieties silti",
+    "neighborsActive": "{count} kaimiņi aktīvi šodien",
+    "newUpdates": "{count} jauni atjauninājumi jūsu rajonā",
+    "beFirst": "Esiet pirmais, kas dalās {city}",
+    "weatherAlert": "Aktīvs laika brīdinājums",
+    "seismic": "Netālu konstatēta seismiska aktivitāte",
+    "watchingOver": "Jūsu AI mērs uzrauga {city}",
+    "wakingUp": "AI mērs mostas {city}...",
+    "localFeed": "VIETĒJĀ plūsma - Esiet pirmais!",
+    "monitoring": "AI mērs uzrauga jūsu rajonu",
+    "live": "LIVE",
+    "thinking": "Domā..."
+  },
+  "events": {
+    "upcomingEvents": "Gaidāmie notikumi",
+    "near": "Tuvumā",
+    "noEventsNearby": "Tuvumā nav notikumu",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Kas notiek netālu no jums",
+    "locating": "Nosaka...",
+    "near": "Tuvumā",
+    "informationHighway": "Informācijas lielceļš",
+    "checking": "Pārbauda",
+    "events": "notikumi",
+    "eventsIn": "Notikumi",
+    "local": "Vietējais",
+    "liveApis": "Tiešraide: SeatGeek + Ārējie API • 15 jūdžu rādiuss"
+  },
+  "verified": {
+    "verifiedSources": "Verificēti avoti",
+    "near": "Tuvumā",
+    "noVerifiedOrgs": "Vēl nav verificētu org - piesakieties!",
+    "verified": "Verificēts",
+    "verifiedBadge": "Verificēts",
+    "trustNetwork": "Uzticības tīkls - Verificēts",
+    "communitySafety": "Kopienas drošība - Verificēts",
+    "nws": "NWS - Verificēts",
+    "policeDept": "Policijas departaments",
+    "fireDept": "Ugunsdzēsēju departaments",
+    "police": "Policija",
+    "fire": "Ugunsdzēsēji",
+    "applyForVerification": "Pieteikties verifikācijai"
   }
 }
