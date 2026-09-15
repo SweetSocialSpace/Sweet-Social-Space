@@ -1,11 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
+import { useTranslations } from '@/lib/translations'
 
 type EventItem = { id: string; title: string; venue?: string; icon?: string; source?: string }
 
 export function WhatsHappeningNearYou(){
   const { zip, city, lat, lng } = useLocation()
+  const t = useTranslations() as any
   const [events, setEvents] = useState<EventItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -16,7 +18,6 @@ export function WhatsHappeningNearYou(){
       try{
         setLoading(true)
         
-        // Use existing events API (already working)
         const res = await fetch(`/api/events?zip=${encodeURIComponent(zip)}&lat=${lat}&lon=${lng}`)
         if (res.ok) {
           const json = await res.json()
@@ -26,7 +27,6 @@ export function WhatsHappeningNearYou(){
           }
         }
         
-        // Also try external events API
         const extRes = await fetch(`/api/external-events?zip=${encodeURIComponent(zip)}&city=${encodeURIComponent(city || '')}&lat=${lat}&lon=${lng}`)
         if (extRes.ok) {
           const json = await extRes.json()
@@ -39,7 +39,7 @@ export function WhatsHappeningNearYou(){
       }catch{ 
         if(mounted) {
           setEvents([
-            { id: 'fallback-1', title: `Events in ${city || zip}`, icon: '🎉', source: 'Local' },
+            { id: 'fallback-1', title: `${t?.whatsHappening?.eventsIn || 'Events in'} ${city || zip}`, icon: '🎉', source: t?.whatsHappening?.local || 'Local' },
           ])
           setLoading(false)
         }
@@ -48,21 +48,21 @@ export function WhatsHappeningNearYou(){
     load()
     const id = setInterval(load, 30*60*1000)
     return ()=>{ mounted = false; try { clearInterval(id) } catch {} }
-  },[zip, city, lat, lng])
+  },[zip, city, lat, lng, t])
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📍 What's happening near you</p>
-      <p className="text-xs text-white/50 mt-1">Locating...</p>
+      <p className="font-bold">📍 {t?.whatsHappening?.whatsHappeningNearYou || "What's happening near you"}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.locating || 'Locating...'}</p>
     </div>
   )
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📍 What's happening near you</p>
-      <p className="text-xs text-white/50 mt-1">Near {zip} {city? `• ${city}`:''} • Information Highway</p>
-      {loading? <p className="text-sm mt-3 text-white/60">Loading...</p> : events.length===0? (
-        <p className="text-sm mt-3 text-white/70">Checking {city || zip} events...</p>
+      <p className="font-bold">📍 {t?.whatsHappening?.whatsHappeningNearYou || "What's happening near you"}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.near || 'Near'} {zip} {city? `• ${city}`:''} • {t?.whatsHappening?.informationHighway || 'Information Highway'}</p>
+      {loading? <p className="text-sm mt-3 text-white/60">{t?.common?.loading || 'Loading...'}</p> : events.length===0? (
+        <p className="text-sm mt-3 text-white/70">{t?.whatsHappening?.checking || 'Checking'} {city || zip} {t?.whatsHappening?.events || 'events...'}</p>
       ):(
         <div className="mt-3 space-y-2.5">
           {events.map(ev=>(
@@ -74,7 +74,7 @@ export function WhatsHappeningNearYou(){
               </div>
             </div>
           ))}
-          <p className="text-xs text-white/25 mt-1">Live: SeatGeek + External APIs • 15mi radius</p>
+          <p className="text-xs text-white/25 mt-1">{t?.whatsHappening?.liveApis || 'Live: SeatGeek + External APIs • 15mi radius'}</p>
         </div>
       )}
     </div>
