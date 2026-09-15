@@ -7,7 +7,7 @@
   },
   "feed": {
     "whatsHappening": "Co se děje v",
-    "postAs": "PUBLIKOVAT JAKO",
+    "postAs": "Publikovat jako {name}",
     "in": "V",
     "loading": "Načítání..."
   },
@@ -16,7 +16,12 @@
     "save": "Uložit",
     "cancel": "Zrušit",
     "error": "Chyba",
-    "loading": "Načítání..."
+    "loading": "Načítání...",
+    "yourArea": "vaše okolí",
+    "deleteConfirm": "Smazat příspěvek?",
+    "delete": "Smazat",
+    "recorded": "Nahráno",
+    "wasLive": "Bylo živě"
   },
   "weather": {
     "weather": "Počasí",
@@ -36,6 +41,89 @@
     "lostPet": "Ztracené zvíře",
     "event": "Událost",
     "help": "Pomoc",
-    "recommend": "Doporučit"
+    "recommend": "Doporučit",
+    "job": "Práce"
+  },
+  "theme": {
+    "theme": "Téma",
+    "light": "Světlé",
+    "dark": "Tmavé",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Živá mapa",
+    "subtitle": "3 živé špendlíky • Plný pohled"
+  },
+  "faith": {
+    "title": "Víra dne",
+    "faithOfTheDay": "Víra dne"
+  },
+  "businesses": {
+    "title": "Místní firmy",
+    "loading": "Načítání",
+    "near": "Blízko",
+    "noBusinesses": "Zatím žádné firmy",
+    "policeDeptSuffix": "Policejní oddělení",
+    "fireDeptSuffix": "Hasiči",
+    "librarySuffix": "Knihovna",
+    "communitySuffix": "Komunitní centrum",
+    "catPolice": "Policie",
+    "catFire": "Hasiči",
+    "catLibrary": "Knihovna",
+    "catCommunity": "Komunita"
+  },
+  "aiMayor": {
+    "goodMorning": "Dobré ráno",
+    "goodAfternoon": "Dobré odpoledne",
+    "goodEvening": "Dobrý večer",
+    "goodNight": "Dobrou noc",
+    "hotDay": "Horký den {temp}°F - dodržujte pitný režim",
+    "pleasant": "{temp}°F příjemně - skvělý den venku",
+    "mild": "{temp}°F mírně - ideální podmínky",
+    "cool": "{temp}°F chladno - vezměte si lehkou bundu",
+    "chilly": "{temp}°F zima - obléknete se teple",
+    "neighborsActive": "{count} sousedů je dnes aktivních",
+    "newUpdates": "{count} nových aktualizací ve vašem okolí",
+    "beFirst": "Buďte první, kdo sdílí v {city}",
+    "weatherAlert": "Aktivní varování počasí",
+    "seismic": "Zaznamenána seismická aktivita poblíž",
+    "watchingOver": "Váš AI starosta dohlíží na {city}",
+    "wakingUp": "AI starosta se probouzí v {city}...",
+    "localFeed": "LOKÁLNÍ feed - Buďte první!",
+    "monitoring": "AI starosta sleduje vaše okolí",
+    "live": "ŽIVĚ",
+    "thinking": "Přemýšlí..."
+  },
+  "events": {
+    "upcomingEvents": "Nadcházející události",
+    "near": "Blízko",
+    "noEventsNearby": "Poblíž žádné události",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Co se děje blízko vás",
+    "locating": "Určování polohy...",
+    "near": "Blízko",
+    "informationHighway": "Informační dálnice",
+    "checking": "Kontrola",
+    "events": "událostí",
+    "eventsIn": "Události v",
+    "local": "Místní",
+    "liveApis": "Živě: SeatGeek + Externí API • 15 mil poloměr"
+  },
+  "verified": {
+    "verifiedSources": "Ověřené zdroje",
+    "near": "Blízko",
+    "noVerifiedOrgs": "Zatím žádné ověřené organizace - požádejte!",
+    "verified": "Ověřeno",
+    "verifiedBadge": "Ověřeno",
+    "trustNetwork": "Síť důvěry - Ověřeno",
+    "communitySafety": "Bezpečnost komunity - Ověřeno",
+    "nws": "NWS - Ověřeno",
+    "policeDept": "Policejní oddělení",
+    "fireDept": "Hasiči",
+    "police": "Policie",
+    "fire": "Hasiči",
+    "applyForVerification": "Požádat o ověření"
   }
 }
