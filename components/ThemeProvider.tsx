@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useTranslations } from '@/lib/translations'
 
 export type Theme = 'light' | 'dark' | 'system'
 type Ctx = { theme: Theme; setTheme: (t: Theme) => void; resolved: 'light' | 'dark' }
@@ -54,14 +55,15 @@ export function useTheme() {
 
 export function ThemeToggleGroup() {
   const { theme, setTheme } = useTheme()
+  const t = useTranslations() as any
   const opts: { value: Theme; label: string; icon: string }[] = [
-    { value: 'light', label: 'Light', icon: '☀' },
-    { value: 'dark', label: 'Dark', icon: '🌙' },
-    { value: 'system', label: 'Auto', icon: '🖥' },
+    { value: 'light', label: t?.theme?.light || 'Light', icon: '☀' },
+    { value: 'dark', label: t?.theme?.dark || 'Dark', icon: '🌙' },
+    { value: 'system', label: t?.theme?.auto || 'Auto', icon: '🖥' },
   ]
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-xs font-medium text-muted-foreground">Theme</span>
+      <span className="text-xs font-medium text-muted-foreground">{t?.theme?.theme || 'Theme'}</span>
       <div className="inline-flex rounded-full border border-border bg-secondary p-0.5">
         {opts.map((o) => (
           <button key={o.value} type="button" onClick={() => { try { setTheme(o.value) } catch {} }} aria-pressed={theme === o.value} title={o.label}
