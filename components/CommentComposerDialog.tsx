@@ -1,7 +1,6 @@
 'use client'
 import * as React from 'react'
 import MicRecorder from '@/components/mic/MicRecorder'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 function Dialog({ open, onOpenChange, children }: any) { if (!open) return null; return (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { try { onOpenChange(false) } catch {} }}><div onClick={(e) => e.stopPropagation()}>{children}</div></div>) }
@@ -12,7 +11,8 @@ function DialogDescription({ children }: any) { return <p className="mt-1 text-s
 
 interface CommentComposerDialogProps { value: string; onChange: (value: string) => void; onSubmit: () => void; placeholder?: string; maxLength?: number; submitLabel?: string; disabled?: boolean; title?: string; dialogRows?: number; previewClassName?: string; open?: boolean; onOpenChange?: (open: boolean) => void }
 
-export function CommentComposerDialog({ value, onChange, onSubmit, placeholder = 'Write something…', maxLength = 2000, submitLabel = 'Post', disabled = false, title = 'Write a comment', dialogRows = 10, previewClassName, open: controlledOpen, onOpenChange }: CommentComposerDialogProps) {
+export function CommentComposerDialog({ value, onChange, onSubmit, placeholder, maxLength = 2000, submitLabel, disabled = false, title, dialogRows = 10, previewClassName, open: controlledOpen, onOpenChange }: CommentComposerDialogProps) {
+  const t = useTranslations() as any
   const [internalOpen, setInternalOpen] = React.useState(false)
   const isControlled = controlledOpen!== undefined
   const open = isControlled? controlledOpen : internalOpen
@@ -20,10 +20,14 @@ export function CommentComposerDialog({ value, onChange, onSubmit, placeholder =
   const handleSubmit = () => { try { onSubmit(); setOpen(false) } catch {} }
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleSubmit() } }
 
+  const finalPlaceholder = placeholder ?? (t?.composer?.placeholder || 'Write something…')
+  const finalSubmitLabel = submitLabel ?? (t?.composer?.post || 'Post')
+  const finalTitle = title ?? (t?.composer?.writeComment || 'Write a comment')
+
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={previewClassName?? 'flex-1 cursor-text rounded-2xl border border-border bg-background px-3 py-2 text-left text-sm outline-none transition hover:bg-muted focus:ring-2 focus:ring-primary'}>{value? (<span className="block line-clamp-1 text-foreground">{value}</span>) : (<span className="text-muted-foreground">{placeholder}</span>)}</button>
-      <Dialog open={open} onOpenChange={setOpen}><DialogContent className="max-w-lg gap-4"><DialogHeader><DialogTitle>{title}</DialogTitle><DialogDescription>Review your full message before posting. Press Ctrl+Enter to submit.</DialogDescription></DialogHeader><textarea value={value} onChange={(e) => { try { onChange(e.target.value) } catch {} }} onKeyDown={handleKeyDown} placeholder={placeholder} maxLength={maxLength} rows={dialogRows} autoFocus className="w-full resize-none rounded-md border border-border bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" /><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><MicRecorder onTranscript={(t:string) => { try { onChange(t) } catch {} }} /><span className="text-xs text-muted-foreground">{value.length}/{maxLength}</span></div><div className="flex gap-2"><button type="button" onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-secondary">Cancel</button><button type="button" onClick={handleSubmit} disabled={disabled} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">{submitLabel}</button></div></div></DialogContent></Dialog>
+      <button type="button" onClick={() => setOpen(true)} className={previewClassName?? 'flex-1 cursor-text rounded-2xl border border-border bg-background px-3 py-2 text-left text-sm outline-none transition hover:bg-muted focus:ring-2 focus:ring-primary'}>{value? (<span className="block line-clamp-1 text-foreground">{value}</span>) : (<span className="text-muted-foreground">{finalPlaceholder}</span>)}</button>
+      <Dialog open={open} onOpenChange={setOpen}><DialogContent className="max-w-lg gap-4"><DialogHeader><DialogTitle>{finalTitle}</DialogTitle><DialogDescription>{t?.composer?.reviewHint || 'Review your full message before posting. Press Ctrl+Enter to submit.'}</DialogDescription></DialogHeader><textarea value={value} onChange={(e) => { try { onChange(e.target.value) } catch {} }} onKeyDown={handleKeyDown} placeholder={finalPlaceholder} maxLength={maxLength} rows={dialogRows} autoFocus className="w-full resize-none rounded-md border border-border bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-primary/40" /><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><MicRecorder onTranscript={(t2:string) => { try { onChange(t2) } catch {} }} /><span className="text-xs text-muted-foreground">{value.length}/{maxLength}</span></div><div className="flex gap-2"><button type="button" onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-secondary">{t?.common?.cancel || 'Cancel'}</button><button type="button" onClick={handleSubmit} disabled={disabled} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">{finalSubmitLabel}</button></div></div></DialogContent></Dialog>
     </>
   )
 }
