@@ -7,7 +7,7 @@
   },
   "feed": {
     "whatsHappening": "Τι συμβαίνει στο",
-    "postAs": "ΔΗΜΟΣΙΕΥΣΗ ΩΣ",
+    "postAs": "Δημοσίευση ως {name}",
     "in": "ΣΤΟ",
     "loading": "Φόρτωση..."
   },
@@ -16,7 +16,12 @@
     "save": "Αποθήκευση",
     "cancel": "Ακύρωση",
     "error": "Σφάλμα",
-    "loading": "Φόρτωση..."
+    "loading": "Φόρτωση...",
+    "yourArea": "η περιοχή σας",
+    "deleteConfirm": "Διαγραφή ανάρτησης;",
+    "delete": "Διαγραφή",
+    "recorded": "Ηχογραφημένο",
+    "wasLive": "Ήταν ζωντανά"
   },
   "weather": {
     "weather": "Καιρός",
@@ -36,6 +41,89 @@
     "lostPet": "Χαμένο κατοικίδιο",
     "event": "Εκδήλωση",
     "help": "Βοήθεια",
-    "recommend": "Πρόταση"
+    "recommend": "Πρόταση",
+    "job": "Εργασία"
+  },
+  "theme": {
+    "theme": "Θέμα",
+    "light": "Φωτεινό",
+    "dark": "Σκοτεινό",
+    "auto": "Αυτόματο"
+  },
+  "liveMap": {
+    "title": "Ζωντανός Χάρτης",
+    "subtitle": "3 ζωντανά pins • Πλήρης προβολή"
+  },
+  "faith": {
+    "title": "Πίστη της Ημέρας",
+    "faithOfTheDay": "Πίστη της Ημέρας"
+  },
+  "businesses": {
+    "title": "Τοπικές Επιχειρήσεις",
+    "loading": "Φόρτωση",
+    "near": "Κοντά σε",
+    "noBusinesses": "Καμία επιχείρηση ακόμα",
+    "policeDeptSuffix": "Αστυνομικό Τμήμα",
+    "fireDeptSuffix": "Πυροσβεστική",
+    "librarySuffix": "Βιβλιοθήκη",
+    "communitySuffix": "Κοινοτικό Κέντρο",
+    "catPolice": "Αστυνομία",
+    "catFire": "Πυροσβεστική",
+    "catLibrary": "Βιβλιοθήκη",
+    "catCommunity": "Κοινότητα"
+  },
+  "aiMayor": {
+    "goodMorning": "Καλημέρα",
+    "goodAfternoon": "Καλό απόγευμα",
+    "goodEvening": "Καλησπέρα",
+    "goodNight": "Καληνύχτα",
+    "hotDay": "Ζεστή μέρα {temp}°F - μείνετε ενυδατωμένοι",
+    "pleasant": "{temp}°F ευχάριστα - υπέροχη μέρα έξω",
+    "mild": "{temp}°F ήπια - ιδανικές συνθήκες",
+    "cool": "{temp}°F δροσερά - πάρτε ελαφρύ μπουφάν",
+    "chilly": "{temp}°F κρύο - ντυθείτε ζεστά",
+    "neighborsActive": "{count} γείτονες ενεργοί σήμερα",
+    "newUpdates": "{count} νέες ενημερώσεις στην περιοχή σας",
+    "beFirst": "Γίνετε ο πρώτος που μοιράζεται στο {city}",
+    "weatherAlert": "Ενεργή προειδοποίηση καιρού",
+    "seismic": "Εντοπίστηκε σεισμική δραστηριότητα κοντά",
+    "watchingOver": "Ο AI Δήμαρχός σας επιβλέπει το {city}",
+    "wakingUp": "Ο AI Δήμαρχος ξυπνά στο {city}...",
+    "localFeed": "ΤΟΠΙΚΗ ροή - Γίνετε ο πρώτος!",
+    "monitoring": "Ο AI Δήμαρχος παρακολουθεί την περιοχή σας",
+    "live": "ΖΩΝΤΑΝΑ",
+    "thinking": "Σκέφτεται..."
+  },
+  "events": {
+    "upcomingEvents": "Επερχόμενες εκδηλώσεις",
+    "near": "Κοντά σε",
+    "noEventsNearby": "Καμία εκδήλωση κοντά",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Τι συμβαίνει κοντά σας",
+    "locating": "Εντοπισμός...",
+    "near": "Κοντά σε",
+    "informationHighway": "Λεωφόρος Πληροφοριών",
+    "checking": "Έλεγχος",
+    "events": "εκδηλώσεων",
+    "eventsIn": "Εκδηλώσεις σε",
+    "local": "Τοπικά",
+    "liveApis": "Ζωντανά: SeatGeek + Εξωτερικά API • Ακτίνα 15 μιλίων"
+  },
+  "verified": {
+    "verifiedSources": "Επαληθευμένες πηγές",
+    "near": "Κοντά σε",
+    "noVerifiedOrgs": "Καμία επαληθευμένη οργάνωση ακόμα - κάντε αίτηση!",
+    "verified": "Επαληθευμένο",
+    "verifiedBadge": "Επαληθευμένο",
+    "trustNetwork": "Δίκτυο Εμπιστοσύνης - Επαληθευμένο",
+    "communitySafety": "Ασφάλεια κοινότητας - Επαληθευμένο",
+    "nws": "NWS - Επαληθευμένο",
+    "policeDept": "Αστυνομικό Τμήμα",
+    "fireDept": "Πυροσβεστική",
+    "police": "Αστυνομία",
+    "fire": "Πυροσβεστική",
+    "applyForVerification": "Αίτηση για επαλήθευση"
   }
 }
