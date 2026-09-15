@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Nä bolup jatat",
-    "postAs": "CATIN JARIYILAŇ",
+    "postAs": "{name} RETİNDE JARIYILAŇ",
+    "postTo": "{zip} jerge jariyalaw - Bäri bir jerde",
     "in": "JERDE",
-    "loading": "Jüktelüde..."
+    "loading": "Jüktelüde...",
+    "posting": "JARIYILANUDA...",
+    "fixPunctuation": "Punktuaciyanı tüzetw",
+    "tapMic": "Mikrofondı türtıňiz - {zip} aymağında jumıs isteydi - kez kelgen telefon nemese kompüter",
+    "postingAs": "Jariyalawşı",
+    "universalMic": "Ämbebap mikrofon",
+    "waitBlock": "Sizdiň blogyňız äli anyqtaluda... 2 sek kütip, qayta jariyalaňız",
+    "price": "Bağa",
+    "addressPrivate": "Mekenjay - Qupiya",
+    "conditionNew": "Jaña",
+    "conditionLikeNew": "Jaña siyaqtı",
+    "conditionGood": "Jaqsı",
+    "conditionFair": "Qanağattanarlıq",
+    "recorded_live": "Jazılğan tikeley efir",
+    "whatsHappeningQuestion": "Ne bolıp jatır?",
+    "there": "onda",
+    "anyDevice": "kez kelgen telefon nemese kompüter"
   },
   "common": {
     "backToFeed": "Agımga qaytıŋ",
     "save": "Saqtaw",
     "cancel": "Jibirüw",
+    "delete": "Joyw",
+    "deleteConfirm": "Bul jazbanı joyw kerek pe?",
     "error": "Qate",
-    "loading": "Jüktelüde..."
+    "loading": "Jüktelüde...",
+    "recorded": "Jazılğan",
+    "yourArea": "sizdiň aymağıňız",
+    "loadingDots": "Jüktelüde...",
+    "wasLive": "Tikeley efirde boldı"
   },
   "weather": {
     "weather": "Aba rayı",
@@ -32,10 +55,108 @@
     "general": "Jalpy",
     "safety": "Qauipsizdik",
     "forSale": "Satıda",
+    "for_sale": "Satıda",
     "free": "Tegin",
+    "free_stuff": "Tegin zattar",
     "lostPet": "Joğalğan üy jaŋawarı",
+    "lost_pet": "Joğalğan üy jaŋawarı",
     "event": "Waqıya",
     "help": "Kömek",
-    "recommend": "Usınıw"
+    "recommend": "Usınıw",
+    "job": "Jumıs",
+    "alert": "Dabıl",
+    "recommendation": "Usınıs",
+    "lost_found": "Joğalğan jäne tabılğan",
+    "hot_take": "Ötkir pikir"
+  },
+  "auth": {
+    "welcome": "Sweet Social Space-ke qoş keldiňiz",
+    "emailPlaceholder": "Elektrondıq poşta",
+    "passwordPlaceholder": "Qupiya söz",
+    "signIn": "Kirw",
+    "signUp": "Tirkelw",
+    "languageLabel": "Tiliňizdi taňdaňız"
+  },
+  "theme": {
+    "theme": "Taqırıp",
+    "light": "Aşıq",
+    "dark": "Qaraňğı",
+    "auto": "Avto"
+  },
+  "liveMap": {
+    "title": "Tikeley karta",
+    "subtitle": "3 tikeley belgi • Tolıq körinis"
+  },
+  "faith": {
+    "title": "Künniň senimi",
+    "faithOfTheDay": "Künniň senimi"
+  },
+  "businesses": {
+    "title": "Jergilikti biznester",
+    "loading": "Jüktelüde",
+    "near": "Jaqın",
+    "noBusinesses": "Äzirge biznes joq",
+    "policeDeptSuffix": "Policiya departamenti",
+    "fireDeptSuffix": "Ört söndirw qızmeti",
+    "librarySuffix": "Kitaphana",
+    "communitySuffix": "Qoğamdıq ortalıq",
+    "catPolice": "Policiya",
+    "catFire": "Ört söndirw",
+    "catLibrary": "Kitaphana",
+    "catCommunity": "Qoğam"
+  },
+  "aiMayor": {
+    "goodMorning": "Qayırlı taň",
+    "goodAfternoon": "Qayırlı kün",
+    "goodEvening": "Qayırlı keş",
+    "goodNight": "Qayırlı tün",
+    "hotDay": "Istıq kün {temp}°F - swdı köp işiňiz",
+    "pleasant": "{temp}°F jağımdı - sırtta bolwğa tamaşa",
+    "mild": "{temp}°F jumsaq - tamaşa jağday",
+    "cool": "{temp}°F salqın - jeňil kürteşe alıňız",
+    "chilly": "{temp}°F swıq - jılı kiiniňiz",
+    "neighborsActive": "Bügin {count} körşi belsendi",
+    "newUpdates": "Sizdiň aymağıňızda {count} jaňa jaňartw",
+    "beFirst": "{city} aymağında birinşi bolıp bölisiňiz",
+    "weatherAlert": "Awa rayı twralı eskertw belsendi",
+    "seismic": "Jaqın maňda seysmikalıq belsendilik anıqtaldı",
+    "watchingOver": "Sizdiň AI meriňiz {city} qalasın baqılawda",
+    "wakingUp": "AI mer {city}-da oyanuda...",
+    "localFeed": "JERGILIKTI ağın - Birinşi bolıp bölisiňiz!",
+    "monitoring": "AI mer sizdiň aymağıňızdı baqılawda",
+    "live": "TİKELEI",
+    "thinking": "Oylanuda..."
+  },
+  "events": {
+    "upcomingEvents": "Aldağı waqıyalar",
+    "near": "Jaqın",
+    "noEventsNearby": "Jaqın maňda waqıyalar joq",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Sizdiň janıňızda ne bolıp jatır",
+    "locating": "Anıqtaluda...",
+    "near": "Jaqın",
+    "informationHighway": "Aqparattıq magistral",
+    "checking": "Tekserw",
+    "events": "waqıya",
+    "eventsIn": "Waqıyalar",
+    "local": "Jergilikti",
+    "liveApis": "Tikeley: SeatGeek + Sırtqı API • 15 mil radius"
+  },
+  "verified": {
+    "verifiedSources": "Tekselirgen derekközder",
+    "near": "Jaqın",
+    "noVerifiedOrgs": "Äzirge tekselirgen uyımdar joq - ötiniş beriňiz!",
+    "verified": "Tekselirgen",
+    "verifiedBadge": "Tekselirgen",
+    "trustNetwork": "Senim jelisi - Tekselirgen",
+    "communitySafety": "Qoğam qawipsizdigi - Tekselirgen",
+    "nws": "NWS - Tekselirgen",
+    "policeDept": "Policiya departamenti",
+    "fireDept": "Ört söndirw qızmeti",
+    "police": "Policiya",
+    "fire": "Ört söndirw",
+    "applyForVerification": "Tekselwge ötiniş berw"
   }
 }
