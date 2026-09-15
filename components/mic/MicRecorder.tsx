@@ -1,6 +1,5 @@
 'use client'
 import { useRef, useState } from 'react'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 type Props = {
@@ -20,6 +19,7 @@ function makeLegible(text: string){
 
 export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) {
   const [listening, setListening] = useState(false)
+  const t = useTranslations() as any
   const recognitionRef = useRef<any>(null)
   const mediaRef = useRef<MediaRecorder | null>(null)
   const lastFinalRef = useRef('')
@@ -55,7 +55,6 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
         rec.onresult = (e: any) => {
           let finalTranscript = ''
           let interimTranscript = ''
-          // Rebuild from scratch every time - NO stacking
           for (let i = 0; i < e.results.length; i++) {
             const transcript = e.results[i][0].transcript
             if (e.results[i].isFinal) {
@@ -71,7 +70,6 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
         }
 
         rec.onerror = () => {
-          // fallback to recording
           try{ rec.stop() }catch{}
           startRecordingFallback()
         }
@@ -107,7 +105,7 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
       mr.start()
       setListening(true)
     } catch {
-      alert('Mic blocked - check permissions')
+      alert(t?.mic?.blocked || 'Mic blocked - check permissions')
     }
   }
 
@@ -118,7 +116,7 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
       className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-black shrink-0 ${
         listening? 'bg-red-600 text-white animate-pulse' : 'bg-black text-white'
       }`}
-      title={listening? 'Tap to stop' : 'Tap to speak'}
+      title={listening? (t?.mic?.stop || 'Tap to stop') : (t?.mic?.speak || 'Tap to speak')}
     >
       🎤
     </button>
