@@ -41,10 +41,10 @@ export function BusinessDirectory(){
 
         const displayCity = city || zip
         const fallback: Biz[] = [
-          { id: 'fb-1', name: `${displayCity} Police Department`, category: 'Police' },
-          { id: 'fb-2', name: `${displayCity} Fire Department`, category: 'Fire Station' },
-          { id: 'fb-3', name: `${displayCity} Library`, category: 'Library' },
-          { id: 'fb-4', name: `${displayCity} Community Center`, category: 'Community' },
+          { id: 'fb-1', name: `${displayCity} ${t?.businesses?.policeDeptSuffix || 'Police Department'}`, category: t?.businesses?.catPolice || 'Police' },
+          { id: 'fb-2', name: `${displayCity} ${t?.businesses?.fireDeptSuffix || 'Fire Department'}`, category: t?.businesses?.catFire || 'Fire Station' },
+          { id: 'fb-3', name: `${displayCity} ${t?.businesses?.librarySuffix || 'Library'}`, category: t?.businesses?.catLibrary || 'Library' },
+          { id: 'fb-4', name: `${displayCity} ${t?.businesses?.communitySuffix || 'Community Center'}`, category: t?.businesses?.catCommunity || 'Community' },
         ]
         
         if(mounted){
@@ -106,10 +106,10 @@ export function BusinessDirectory(){
     }, 20*60*1000)
     
     return ()=>{ mounted = false; try { clearInterval(id) } catch {} }
-  },[zip, city, filter])
+  },[zip, city, filter, t])
 
   const display = biz.length > 0 ? biz : liveBiz
-  const displayArea = zip === 'GLOBAL' || !zip ? (city || 'your area') : zip
+  const displayArea = zip === 'GLOBAL' || !zip ? (city || (t?.common?.yourArea || 'your area')) : zip
 
   if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">{t?.businesses?.title || 'Local Businesses'}</p><p className="text-xs text-white/50">{t?.businesses?.loading || 'Loading'} {displayArea}...</p></div>)
 
