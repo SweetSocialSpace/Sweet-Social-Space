@@ -1,11 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
+import { useTranslations } from '@/lib/translations'
 
 type V = { id: string; title: string }
 
 export function VerifiedSources(){
   const { zip, city } = useLocation()
+  const t = useTranslations() as any
   const [liveVs, setLiveVs] = useState<V[]>([])
 
   useEffect(()=>{
@@ -19,9 +21,9 @@ export function VerifiedSources(){
       try {
         if (zip === 'GLOBAL') {
           if(mounted) setLiveVs([
-            { id: 'live-1', title: 'Trust Network - Verified' },
-            { id: 'live-2', title: 'Community Safety - Verified' },
-            { id: 'live-3', title: 'NWS - Verified' },
+            { id: 'live-1', title: t?.verified?.trustNetwork || 'Trust Network - Verified' },
+            { id: 'live-2', title: t?.verified?.communitySafety || 'Community Safety - Verified' },
+            { id: 'live-3', title: t?.verified?.nws || 'NWS - Verified' },
           ])
           return
         }
@@ -35,9 +37,9 @@ export function VerifiedSources(){
 
         const displayCity = city || zip
         const fallback: V[] = [
-          { id: 'vs-1', title: `${displayCity} Police Department - Verified` },
-          { id: 'vs-2', title: `${displayCity} Fire Department - Verified` },
-          { id: 'vs-3', title: `NWS - Verified` },
+          { id: 'vs-1', title: `${displayCity} ${t?.verified?.policeDept || 'Police Department'} - ${t?.verified?.verified || 'Verified'}` },
+          { id: 'vs-2', title: `${displayCity} ${t?.verified?.fireDept || 'Fire Department'} - ${t?.verified?.verified || 'Verified'}` },
+          { id: 'vs-3', title: t?.verified?.nws || 'NWS - Verified' },
         ]
         
         if(mounted){
@@ -49,38 +51,38 @@ export function VerifiedSources(){
         const cached = localStorage.getItem(CACHE_KEY)
         if (cached && mounted) setLiveVs(JSON.parse(cached))
         else if(mounted) setLiveVs([
-          { id: 'vs-1', title: `${city || 'your area'} Police - Verified` },
-          { id: 'vs-2', title: `${city || 'your area'} Fire - Verified` },
-          { id: 'vs-3', title: 'NWS - Verified' },
+          { id: 'vs-1', title: `${city || (t?.common?.yourArea || 'your area')} ${t?.verified?.police || 'Police'} - ${t?.verified?.verified || 'Verified'}` },
+          { id: 'vs-2', title: `${city || (t?.common?.yourArea || 'your area')} ${t?.verified?.fire || 'Fire'} - ${t?.verified?.verified || 'Verified'}` },
+          { id: 'vs-3', title: t?.verified?.nws || 'NWS - Verified' },
         ])
       }
     }
 
     fetchLiveVerified()
-  },[zip, city])
+  },[zip, city, t])
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">Verified Sources</p>
-      <p className="text-xs text-white/50">Loading...</p>
+      <p className="font-bold">{t?.verified?.verifiedSources || 'Verified Sources'}</p>
+      <p className="text-xs text-white/50">{t?.common?.loading || 'Loading...'}</p>
     </div>
   )
 
-  const displayZip = zip === 'GLOBAL' ? 'your area' : zip
+  const displayZip = zip === 'GLOBAL' ? (t?.common?.yourArea || 'your area') : zip
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">Verified Sources - Near {displayZip}</p>
-      {liveVs.length===0? <p className="text-sm mt-3 text-white/60">No verified orgs yet - apply!</p> : (
+      <p className="font-bold">{t?.verified?.verifiedSources || 'Verified Sources'} - {t?.verified?.near || 'Near'} {displayZip}</p>
+      {liveVs.length===0? <p className="text-sm mt-3 text-white/60">{t?.verified?.noVerifiedOrgs || 'No verified orgs yet - apply!'}</p> : (
         <div className="mt-3 space-y-2">
           {liveVs.map(v=>(
             <div key={v.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex items-center gap-2">
-              <span>Verified</span><span className="truncate">{v.title}</span>
+              <span>{t?.verified?.verifiedBadge || 'Verified'}</span><span className="truncate">{v.title}</span>
             </div>
           ))}
         </div>
       )}
-      <a href="/apply-verification" className="mt-3 inline-block text-xs bg-white text-black px-3 py-1 rounded-full font-bold">Apply for verification</a>
+      <a href="/apply-verification" className="mt-3 inline-block text-xs bg-white text-black px-3 py-1 rounded-full font-bold">{t?.verified?.applyForVerification || 'Apply for verification'}</a>
     </div>
   )
 }
