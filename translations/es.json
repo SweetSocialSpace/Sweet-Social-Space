@@ -7,13 +7,13 @@
   },
   "feed": {
     "whatsHappening": "¿Qué pasa en",
-    "postAs": "Publicando como",
-    "postTo": "Publicar en",
+    "postAs": "Publicando como {name}",
+    "postTo": "Publicar en {zip} - Todo en Uno",
     "in": "en",
     "loading": "Cargando...",
     "posting": "PUBLICANDO...",
     "fixPunctuation": "Arreglar puntuación",
-    "tapMic": "Toca el micrófono - funciona en",
+    "tapMic": "Toca el micrófono - funciona en {zip} - cualquier teléfono o computadora",
     "anyDevice": "cualquier teléfono o computadora",
     "postingAs": "Publicando como",
     "universalMic": "Micrófono Universal",
@@ -25,7 +25,8 @@
     "conditionGood": "Bueno",
     "conditionFair": "Regular",
     "recorded_live": "Transmisión grabada",
-    "whatsHappeningQuestion": "¿Qué está pasando?"
+    "whatsHappeningQuestion": "¿Qué está pasando?",
+    "there": "ahí"
   },
   "common": {
     "backToFeed": "Volver al inicio",
@@ -35,7 +36,10 @@
     "deleteConfirm": "¿Borrar esta publicación?",
     "error": "Error",
     "loading": "Cargando...",
-    "recorded": "Grabado"
+    "recorded": "Grabado",
+    "yourArea": "tu área",
+    "loadingDots": "Cargando...",
+    "wasLive": "Estuvo en vivo"
   },
   "weather": {
     "weather": "Clima",
@@ -72,5 +76,87 @@
     "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
     "languageLabel": "Elige tu idioma"
+  },
+  "theme": {
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Mapa en Vivo",
+    "subtitle": "3 pines en vivo • Vista completa"
+  },
+  "faith": {
+    "title": "Fe del Día",
+    "faithOfTheDay": "Fe del Día"
+  },
+  "businesses": {
+    "title": "Negocios Locales",
+    "loading": "Cargando",
+    "near": "Cerca de",
+    "noBusinesses": "Aún no hay negocios",
+    "policeDeptSuffix": "Departamento de Policía",
+    "fireDeptSuffix": "Departamento de Bomberos",
+    "librarySuffix": "Biblioteca",
+    "communitySuffix": "Centro Comunitario",
+    "catPolice": "Policía",
+    "catFire": "Bomberos",
+    "catLibrary": "Biblioteca",
+    "catCommunity": "Comunidad"
+  },
+  "aiMayor": {
+    "goodMorning": "Buenos días",
+    "goodAfternoon": "Buenas tardes",
+    "goodEvening": "Buenas noches",
+    "goodNight": "Buenas noches",
+    "hotDay": "Día caluroso {temp}°F - mantente hidratado",
+    "pleasant": "{temp}°F agradable - gran día para estar afuera",
+    "mild": "{temp}°F templado - condiciones perfectas",
+    "cool": "{temp}°F fresco - lleva una chaqueta ligera",
+    "chilly": "{temp}°F frío - abrígate",
+    "neighborsActive": "{count} vecinos activos hoy",
+    "newUpdates": "{count} nuevas actualizaciones en tu área",
+    "beFirst": "Sé el primero en compartir en {city}",
+    "weatherAlert": "Alerta meteorológica activa",
+    "seismic": "Actividad sísmica detectada cerca",
+    "watchingOver": "Tu Alcalde AI vigila {city}",
+    "wakingUp": "Alcalde AI despertando en {city}...",
+    "localFeed": "Feed LOCAL - ¡Sé el primero!",
+    "monitoring": "Alcalde AI monitorea tu área",
+    "live": "EN VIVO",
+    "thinking": "Pensando..."
+  },
+  "events": {
+    "upcomingEvents": "Próximos Eventos",
+    "near": "Cerca de",
+    "noEventsNearby": "No hay eventos cerca",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Qué pasa cerca de ti",
+    "locating": "Localizando...",
+    "near": "Cerca de",
+    "informationHighway": "Autopista de Información",
+    "checking": "Revisando",
+    "events": "eventos",
+    "eventsIn": "Eventos en",
+    "local": "Local",
+    "liveApis": "En vivo: SeatGeek + APIs externas • Radio de 15 millas"
+  },
+  "verified": {
+    "verifiedSources": "Fuentes Verificadas",
+    "near": "Cerca de",
+    "noVerifiedOrgs": "Aún no hay orgs verificadas - ¡aplica!",
+    "verified": "Verificado",
+    "verifiedBadge": "Verificado",
+    "trustNetwork": "Red de Confianza - Verificado",
+    "communitySafety": "Seguridad Comunitaria - Verificado",
+    "nws": "NWS - Verificado",
+    "policeDept": "Departamento de Policía",
+    "fireDept": "Departamento de Bomberos",
+    "police": "Policía",
+    "fire": "Bomberos",
+    "applyForVerification": "Solicitar verificación"
   }
 }
