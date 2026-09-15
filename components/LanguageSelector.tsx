@@ -6,6 +6,7 @@ import {
   LANGUAGE_NAMES,
   type Language,
 } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export default function LanguageSelector() {
   const {
@@ -13,12 +14,13 @@ export default function LanguageSelector() {
     setLanguage,
     languageName,
   } = useLanguage()
+  const t = useTranslations() as any
 
   const [isOpen, setIsOpen] = useState(false)
 
   const languageGroups = [
     {
-      name: 'Popular',
+      name: t?.language?.popular || 'Popular',
       languages: [
         'en',
         'es',
@@ -35,7 +37,7 @@ export default function LanguageSelector() {
       ],
     },
     {
-      name: 'Europe',
+      name: t?.language?.europe || 'Europe',
       languages: [
         'it',
         'nl',
@@ -62,7 +64,7 @@ export default function LanguageSelector() {
       ],
     },
     {
-      name: 'Middle East & Asia',
+      name: t?.language?.middleEastAsia || 'Middle East & Asia',
       languages: [
         'he',
         'ur',
@@ -78,7 +80,7 @@ export default function LanguageSelector() {
       ],
     },
     {
-      name: 'Central Asia',
+      name: t?.language?.centralAsia || 'Central Asia',
       languages: [
         'ka',
         'hy',
@@ -121,7 +123,7 @@ export default function LanguageSelector() {
           setIsOpen(value => !value)
         }
         className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full text-white text-xs font-black transition"
-        aria-label="Language"
+        aria-label={t?.language?.selectorLabel || 'Language'}
       >
         <span className="text-lg">
           🌐
@@ -140,7 +142,7 @@ export default function LanguageSelector() {
               setIsOpen(false)
             }
             className="absolute top-2 right-2 text-white/50 hover:text-white text-xs"
-            aria-label="Close language menu"
+            aria-label={t?.language?.closeMenu || 'Close language menu'}
           >
             ✕
           </button>
