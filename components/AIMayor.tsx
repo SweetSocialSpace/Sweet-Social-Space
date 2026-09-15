@@ -1,25 +1,31 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 export default function AIMayor() {
   const { zip, city, lat, lng } = useLocation()
+  const t = useTranslations() as any
   const effectiveZip = zip && zip !== 'LOCAL' ? zip : 'LOCAL'
   const effectiveCity = city || (effectiveZip === 'LOCAL' ? 'your area' : effectiveZip)
-  const [brief, setBrief] = useState(`AI Mayor is waking up in ${effectiveCity}...`)
+  const [brief, setBrief] = useState('')
   const [loading, setLoading] = useState(true)
 
   const getTimeGreeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning'
-    if (hour < 17) return 'Good afternoon' 
-    if (hour < 21) return 'Good evening'
-    return 'Good night'
+    if (hour < 12) return t.aiMayor?.goodMorning || 'Good morning'
+    if (hour < 17) return t.aiMayor?.goodAfternoon || 'Good afternoon'
+    if (hour < 21) return t.aiMayor?.goodEvening || 'Good evening'
+    return t.aiMayor?.goodNight || 'Good night'
   }
 
-    const generateIntelligentBrief = (weather: any, pulse: any, emergency: any) => {
+  const format = (str: string, vars: Record<string,string|number>) => {
+    let s = str
+    for (const k in vars) s = s.replace(`{${k}}`, String(vars[k]))
+    return s
+  }
+
+  const generateIntelligentBrief = (weather: any, pulse: any, emergency: any) => {
     const greeting = getTimeGreeting()
     const userLocale = typeof window !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
     const date = new Date().toLocaleDateString(userLocale, { weekday: 'long', month: 'short', day: 'numeric' })
@@ -27,41 +33,40 @@ export default function AIMayor() {
     const postCount = pulse?.count || 0
     const hasAlert = emergency?.alert || emergency?.noaa || emergency?.quake
     
-    let messages = []
-    
-    // Greeting + location
+    let messages: string[] = []
     messages.push(`${greeting} ${effectiveCity}`)
     
-    // Weather intelligence
     if (temp !== null) {
-      if (temp >= 90) messages.push(`🔥 Hot day ahead at ${temp}°F - stay hydrated`)
-      else if (temp >= 75) messages.push(`☀️ Pleasant ${temp}°F - great day to be outside`)
-      else if (temp >= 60) messages.push(`🌤️ Mild ${temp}°F - perfect conditions`)
-      else if (temp >= 45) messages.push(`🧥 Cool ${temp}°F - grab a light jacket`)
-      else messages.push(`❄️ Chilly ${temp}°F - bundle up`)
+      if (temp >= 90) messages.push(format(t.aiMayor?.hotDay || 'Hot day ahead at {temp}°F - stay hydrated', {temp}))
+      else if (temp >= 75) messages.push(format(t.aiMayor?.pleasant || 'Pleasant {temp}°F - great day to be outside', {temp}))
+      else if (temp >= 60) messages.push(format(t.aiMayor?.mild || 'Mild {temp}°F - perfect conditions', {temp}))
+      else if (temp >= 45) messages.push(format(t.aiMayor?.cool || 'Cool {temp}°F - grab a light jacket', {temp}))
+      else messages.push(format(t.aiMayor?.chilly || 'Chilly {temp}°F - bundle up', {temp}))
     }
     
-    // Community activity
-    if (postCount > 10) messages.push(`🏘️ ${postCount} neighbors are active today`)
-    else if (postCount > 0) messages.push(`📢 ${postCount} new updates in your area`)
-    else messages.push(`📱 Be the first to share in ${effectiveCity}`)
+    if (postCount > 10) messages.push(format(t.aiMayor?.neighborsActive || '{count} neighbors are active today', {count: postCount}))
+    else if (postCount > 0) messages.push(format(t.aiMayor?.newUpdates || '{count} new updates in your area', {count: postCount}))
+    else messages.push(format(t.aiMayor?.beFirst || 'Be the first to share in {city}', {city: effectiveCity}))
     
-    // Emergency intelligence
     if (hasAlert) {
-      if (emergency?.noaa) messages.push(`⚠️ Weather alert active - stay informed`)
-      if (emergency?.quake) messages.push(`🌍 Seismic activity detected nearby`)
+      if (emergency?.noaa) messages.push(t.aiMayor?.weatherAlert || 'Weather alert active - stay informed')
+      if (emergency?.quake) messages.push(t.aiMayor?.seismic || 'Seismic activity detected nearby')
     }
     
-    // Date + encouraging close
     messages.push(`📅 ${date}`)
-    messages.push(`🤖 Your AI Mayor is watching over ${effectiveCity}`)
+    messages.push(format(t.aiMayor?.watchingOver || 'Your AI Mayor is watching over {city}', {city: effectiveCity}))
     
     return messages.join(' • ')
   }
 
   useEffect(() => {
+    // set initial waking message
+    setBrief(format(t.aiMayor?.wakingUp || 'AI Mayor is waking up in {city}...', {city: effectiveCity}))
+  }, [t, effectiveCity])
+
+  useEffect(() => {
     if (effectiveZip === 'LOCAL') { 
-      setBrief('LOCAL feed - Be the first to share in your area!'); 
+      setBrief(t.aiMayor?.localFeed || 'LOCAL feed - Be the first to share in your area!'); 
       setLoading(false)
       return 
     }
@@ -70,8 +75,6 @@ export default function AIMayor() {
     const load = async () => {
       try {
         setLoading(true)
-        
-        // AUTOMATIC: Get coordinates if needed
         let useLat = lat
         let useLng = lng
         if (!useLat || !useLng) {
@@ -84,12 +87,9 @@ export default function AIMayor() {
                 useLng = parseFloat(geoData.lon)
               }
             }
-          } catch (e) {
-            console.log('AIMayor: Failed to get coordinates (non-critical):', e)
-          }
+          } catch (e) {}
         }
 
-        // Fetch data from information highway
         const [w, p, e] = await Promise.all([
           fetch(`/api/weather?zip=${effectiveZip}`).then(r=>r.json()).catch(()=>null),
           fetch(`/api/pulse?zip=${effectiveZip}`).then(r=>r.json()).catch(()=>null),
@@ -102,28 +102,26 @@ export default function AIMayor() {
           setLoading(false)
         }
       } catch (error) {
-        console.log('AIMayor error:', error)
-                if (mounted) {
+        if (mounted) {
           const greeting = getTimeGreeting()
           const userLocale = typeof window !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
           const date = new Date().toLocaleDateString(userLocale, { weekday: 'long', month: 'short', day: 'numeric' })
-          setBrief(`${greeting} ${effectiveCity} • ${date} • 🤖 AI Mayor is monitoring your area`)
+          setBrief(`${greeting} ${effectiveCity} • ${date} • ${t.aiMayor?.monitoring || 'AI Mayor is monitoring your area'}`)
           setLoading(false)
         }
       }
     }
     
     load()
-    // Refresh every 5 minutes to keep it current
     const interval = setInterval(load, 5 * 60 * 1000)
     return () => { mounted = false; clearInterval(interval) }
-  }, [effectiveZip, effectiveCity, city, lat, lng])
+  }, [effectiveZip, effectiveCity, city, lat, lng, t])
 
   return (
     <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl p-4 border border-white/10">
       <div className="flex items-center justify-between">
-        <span className="text-purple-300 font-black text-xs">AI MAYOR • LIVE • {effectiveCity.toUpperCase()}</span>
-        {loading && <span className="text-white/40 text-xs animate-pulse">Thinking...</span>}
+        <span className="text-purple-300 font-black text-xs">AI MAYOR • {t.aiMayor?.live || 'LIVE'} • {effectiveCity.toUpperCase()}</span>
+        {loading && <span className="text-white/40 text-xs animate-pulse">{t.aiMayor?.thinking || 'Thinking...'}</span>}
       </div>
       <div className="text-white text-sm mt-1 leading-relaxed">{brief}</div>
     </div>
