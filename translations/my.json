@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "ဘာဖြစ်နေသည်",
-    "postAs": "အဖြစ်ပို့စ်တင်မည်",
+    "postAs": "{name} အဖြစ်ပို့စ်တင်မည်",
+    "postTo": "{zip} သို့ ပို့စ်တင်မည် - အားလုံး တစ်နေရာတည်း",
     "in": "တွင်",
-    "loading": "ရယူနေသည်..."
+    "loading": "ရယူနေသည်...",
+    "posting": "တင်နေသည်...",
+    "fixPunctuation": "ပုဒ်ဖြတ်ပြင်ဆင်မည်",
+    "tapMic": "မိုက်ကို နှိပ်ပါ - {zip} တွင် အလုပ်လုပ်သည် - မည်သည့်ဖုန်း သို့မဟုတ် ကွန်ပျူတာမဆို",
+    "postingAs": "တင်နေသည်မှာ",
+    "universalMic": "ယူနီဗာဆယ် မိုက်",
+    "waitBlock": "သင့်ဘလောက်ကို ရှာဖွေနေဆဲ... ၂ စက္ကန့်စောင့်ပြီး ထပ်တင်ပါ",
+    "price": "ဈေးနှုန်း",
+    "addressPrivate": "လိပ်စာ - ကိုယ်ရေး",
+    "conditionNew": "အသစ်",
+    "conditionLikeNew": "အသစ်နီးပါး",
+    "conditionGood": "ကောင်းသည်",
+    "conditionFair": "သင့်",
+    "recorded_live": "မှတ်တမ်းတင် တိုက်ရိုက်",
+    "whatsHappeningQuestion": "ဘာဖြစ်နေလဲ?",
+    "there": "အဲဒီမှာ",
+    "anyDevice": "မည်သည့်ဖုန်း သို့မဟုတ် ကွန်ပျူတာမဆို"
   },
   "common": {
     "backToFeed": "ဖီးဒ်သို့ပြန်သွားမည်",
     "save": "သိမ်းဆည်း",
     "cancel": "ပယ်ဖျက်မည်",
+    "delete": "ဖျက်မည်",
+    "deleteConfirm": "ဤပို့စ်ကို ဖျက်မလား?",
     "error": "အမှား",
-    "loading": "ရယူနေသည်..."
+    "loading": "ရယူနေသည်...",
+    "recorded": "မှတ်တမ်းတင်ပြီး",
+    "yourArea": "သင့်ဧရိယာ",
+    "loadingDots": "ရယူနေသည်...",
+    "wasLive": "တိုက်ရိုက်ဖြစ်ခဲ့သည်"
   },
   "weather": {
     "weather": "ရာသီဥတု",
@@ -32,10 +55,108 @@
     "general": "ယေဘုယျ",
     "safety": "လုံခြုံရေး",
     "forSale": "ရောင်ရန်",
+    "for_sale": "ရောင်ရန်",
     "free": "အခမဲ့",
+    "free_stuff": "အခမဲ့ပစ္စည်း",
     "lostPet": "ပျောက်ဆုံးအိမ်တိရစ္ဆာန်",
+    "lost_pet": "ပျောက်ဆုံးအိမ်တိရစ္ဆာန်",
     "event": "ပွဲ",
     "help": "အကူအညီ",
-    "recommend": "အကြံပြုမည်"
+    "recommend": "အကြံပြုမည်",
+    "job": "အလုပ်",
+    "alert": "သတိပေးချက်",
+    "recommendation": "အကြံပြုချက်",
+    "lost_found": "ပျောက်ဆုံးနှင့် တွေ့ရှိသည်",
+    "hot_take": "ပူပြင်းသောအမြင်"
+  },
+  "auth": {
+    "welcome": "Sweet Social Space မှ ကြိုဆိုပါသည်",
+    "emailPlaceholder": "အီးမေးလ်လိပ်စာ",
+    "passwordPlaceholder": "စကားဝှက်",
+    "signIn": "ဝင်ရန်",
+    "signUp": "စာရင်းသွင်းရန်",
+    "languageLabel": "ဘာသာစကားရွေးချယ်ပါ"
+  },
+  "theme": {
+    "theme": "အပြင်အဆင်",
+    "light": "အလင်း",
+    "dark": "အမှောင်",
+    "auto": "အလိုအလျောက်"
+  },
+  "liveMap": {
+    "title": "တိုက်ရိုက်မြေပုံ",
+    "subtitle": "တိုက်ရိုက် ပင် ၃ ခု • အပြည့်အဝကြည့်"
+  },
+  "faith": {
+    "title": "နေ့စဉ်ယုံကြည်မှု",
+    "faithOfTheDay": "နေ့စဉ်ယုံကြည်မှု"
+  },
+  "businesses": {
+    "title": "ဒေသခံစီးပွားရေးများ",
+    "loading": "ရယူနေသည်",
+    "near": "အနီး",
+    "noBusinesses": "စီးပွားရေးမရှိသေးပါ",
+    "policeDeptSuffix": "ရဲဌာန",
+    "fireDeptSuffix": "မီးသတ်ဌာန",
+    "librarySuffix": "စာကြည့်တိုက်",
+    "communitySuffix": "ရပ်ရွာစင်တာ",
+    "catPolice": "ရဲ",
+    "catFire": "မီးသတ်",
+    "catLibrary": "စာကြည့်တိုက်",
+    "catCommunity": "အသိုင်းအဝိုင်း"
+  },
+  "aiMayor": {
+    "goodMorning": "မင်္ဂလာနံနက်ခင်း",
+    "goodAfternoon": "မင်္ဂလာနေ့လည်ခင်း",
+    "goodEvening": "မင်္ဂလာညနေခင်း",
+    "goodNight": "မင်္ဂလာညချမ်းပါ",
+    "hotDay": "ပူသောနေ့ {temp}°F - ရေများများသောက်ပါ",
+    "pleasant": "{temp}°F သာယာသည် - အပြင်ထွက်ရန် ကောင်းသောနေ့",
+    "mild": "{temp}°F နွေးထွေးသည် - ပြီးပြည့်စုံသောအခြေအနေ",
+    "cool": "{temp}°F အေးသည် - ပါးလွှာသောဂျာကင်ယူပါ",
+    "chilly": "{temp}°F အေးသည် - နွေးနွေးထွေးထွေးဝတ်ပါ",
+    "neighborsActive": "ယနေ့ {count} အိမ်နီးချင်းတက်ကြွသည်",
+    "newUpdates": "သင့်ဧရိယာတွင် {count} အပ်ဒိတ်အသစ်",
+    "beFirst": "{city} တွင် ပထမဆုံးမျှဝေပါ",
+    "weatherAlert": "ရာသီဥတုသတိပေးချက်ရှိနေသည်",
+    "seismic": "အနီးအနားတွင် ငလျင်လှုပ်ရှားမှုတွေ့ရှိသည်",
+    "watchingOver": "သင့် AI မြို့တော်ဝန်သည် {city} ကို စောင့်ကြည့်နေသည်",
+    "wakingUp": "AI မြို့တော်ဝန်သည် {city} တွင် နိုးထလာနေသည်...",
+    "localFeed": "ဒေသခံဖီးဒ် - ပထမဆုံးမျှဝေပါ!",
+    "monitoring": "AI မြို့တော်ဝန်သည် သင့်ဧရိယာကို စောင့်ကြည့်နေသည်",
+    "live": "တိုက်ရိုက်",
+    "thinking": "စဉ်းစားနေသည်..."
+  },
+  "events": {
+    "upcomingEvents": "လာမည့်ပွဲများ",
+    "near": "အနီး",
+    "noEventsNearby": "အနီးအနားတွင် ပွဲမရှိပါ",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "သင့်အနီးတွင် ဘာဖြစ်နေသလဲ",
+    "locating": "ရှာဖွေနေသည်...",
+    "near": "အနီး",
+    "informationHighway": "သတင်းအချက်အလက်လမ်းမကြီး",
+    "checking": "စစ်ဆေးနေသည်",
+    "events": "ပွဲများ",
+    "eventsIn": "ပွဲများ",
+    "local": "ဒေသခံ",
+    "liveApis": "တိုက်ရိုက်: SeatGeek + ပြင်ပ API • ၁၅ မိုင်အချင်းဝက်"
+  },
+  "verified": {
+    "verifiedSources": "အတည်ပြုထားသောရင်းမြစ်များ",
+    "near": "အနီး",
+    "noVerifiedOrgs": "အတည်ပြုထားသောအဖွဲ့အစည်းမရှိသေးပါ - လျှောက်ထားပါ!",
+    "verified": "အတည်ပြုပြီး",
+    "verifiedBadge": "အတည်ပြုပြီး",
+    "trustNetwork": "ယုံကြည်မှုကွန်ရက် - အတည်ပြုပြီး",
+    "communitySafety": "အသိုင်းအဝိုင်းလုံခြုံရေး - အတည်ပြုပြီး",
+    "nws": "NWS - အတည်ပြုပြီး",
+    "policeDept": "ရဲဌာန",
+    "fireDept": "မီးသတ်ဌာန",
+    "police": "ရဲ",
+    "fire": "မီးသတ်",
+    "applyForVerification": "အတည်ပြုချက်လျှောက်ထားရန်"
   }
 }
