@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 export function TrustMeter() {
   const { zip: contextZip } = useLocation()
+  const t = useTranslations() as any
   const zip = contextZip && contextZip !== 'GLOBAL' ? contextZip : 'GLOBAL'
   const [data, setData] = useState({ verified: 2, total: 2, percent: 100 })
 
@@ -35,16 +35,16 @@ export function TrustMeter() {
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-3">
       <div className="flex items-center justify-between">
-        <span className="text-white font-black text-xs tracking-wider">Trust Meter</span>
+        <span className="text-white font-black text-xs tracking-wider">{t?.trust?.title || 'Trust Meter'}</span>
         <span className={`text-xs font-black px-2 py-0.5 rounded-full ${data.percent>=80?'bg-green-500 text-black':'bg-yellow-500 text-black'}`}>
-          {data.percent}% verified
+          {data.percent}% {t?.trust?.verified || 'verified'}
         </span>
       </div>
       <div className="mt-2 flex items-center gap-3">
         <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
           <div className="h-full bg-gradient-to-r from-blue-500 to-green-500" style={{width:`${data.percent}%`}} />
         </div>
-        <span className="text-white/60 text-xs">{data.verified}/{data.total} trusted</span>
+        <span className="text-white/60 text-xs">{data.verified}/{data.total} {t?.trust?.trusted || 'trusted'}</span>
       </div>
     </div>
   )
