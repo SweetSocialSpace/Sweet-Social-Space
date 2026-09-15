@@ -6,6 +6,18 @@
     "signOut": "Cerrar sesión"
   },
   "feed": {
+    "postTo": "Publicar en",
+"tapMic": "Toca el micrófono - funciona en",
+"anyDevice": "cualquier teléfono o computadora",
+"postingAs": "Publicando como",
+"universalMic": "Micrófono Universal",
+"waitBlock": "Detectando tu bloque... espera 2 seg y publica de nuevo",
+"price": "Precio",
+"addressPrivate": "Dirección - Privada",
+"conditionNew": "Nuevo",
+"conditionLikeNew": "Como Nuevo",
+"conditionGood": "Bueno",
+"conditionFair": "Regular"
     "whatsHappening": "¿Qué pasa en",
     "postAs": "Publicando como",
     "in": "en",
