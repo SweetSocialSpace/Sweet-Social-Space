@@ -57,7 +57,7 @@ export default function WeatherBar() {
     return () => clearInterval(id)
   }, [zip, globalCity, language])
 
-  const displayCity = city || globalCity || (zip? zip : 'your area')
+  const displayCity = city || globalCity || (zip? zip : (t?.common?.yourArea || 'your area'))
 
   return (
     <div data-sss-live className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
