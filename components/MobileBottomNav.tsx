@@ -3,19 +3,20 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Calendar, ShoppingBag, MessageCircle, Bell } from 'lucide-react'
-
-const ITEMS = [
-  { href: '/', label: 'Feed', Icon: Home },
-  { href: '/news-events', label: 'Events', Icon: Calendar },
-  { href: '/marketplace', label: 'Market', Icon: ShoppingBag },
-  { href: '/messages', label: 'Chat', Icon: MessageCircle },
-  { href: '/notifications', label: 'Alerts', Icon: Bell },
-]
+import { useTranslations } from '@/lib/translations'
 
 export function MobileBottomNav() {
   const pathname = usePathname() || '/'
+  const t = useTranslations() as any
+  const ITEMS = [
+    { href: '/', label: t?.nav?.feed || 'Feed', Icon: Home },
+    { href: '/news-events', label: t?.nav?.events || 'Events', Icon: Calendar },
+    { href: '/marketplace', label: t?.nav?.market || 'Market', Icon: ShoppingBag },
+    { href: '/messages', label: t?.nav?.chat || 'Chat', Icon: MessageCircle },
+    { href: '/notifications', label: t?.nav?.alerts || 'Alerts', Icon: Bell },
+  ]
   return (
-    <nav aria-label="Primary" className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[env(safe-area-inset-bottom)]">
+    <nav aria-label={t?.nav?.primary || 'Primary'} className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 pb-[env(safe-area-inset-bottom)]">
       <ul className="grid grid-cols-5">
         {ITEMS.map(({ href, label, Icon }) => {
           const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
