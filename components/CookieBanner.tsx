@@ -2,7 +2,6 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 const COOKIE_VERSION = 'v1.0.0'
@@ -14,6 +13,7 @@ async function logConsent(choice: Choice) { try { const supabase = createClient(
 function save(choice: Choice) { try { localStorage.setItem(KEY, JSON.stringify(choice)); void logConsent(choice) } catch {} }
 
 export function CookieBanner() {
+  const t = useTranslations() as any
   const [open, setOpen] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [functional, setFunctional] = useState(true)
@@ -29,9 +29,9 @@ export function CookieBanner() {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4">
       <div className="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-5 shadow-2xl">
-        <p className="text-sm text-foreground">We use strictly-necessary cookies to keep you signed in. With your permission, we also use functional and anonymized analytics cookies to improve Sweet Social Space. No ads. No tracking across sites. <Link href="/cookies" className="underline">Learn more</Link>.</p>
-        {showDetails && (<div className="mt-3 space-y-2 rounded-xl border border-border bg-background p-3 text-sm"><label className="flex items-start gap-2 opacity-60"><input type="checkbox" checked disabled className="mt-1" /><span><strong>Strictly necessary</strong> — sign-in & security. Always on.</span></label><label className="flex items-start gap-2"><input type="checkbox" checked={functional} onChange={(e) => setFunctional(e.target.checked)} className="mt-1" /><span><strong>Functional</strong> — remembers your language and preferences.</span></label><label className="flex items-start gap-2"><input type="checkbox" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} className="mt-1" /><span><strong>Analytics</strong> — anonymized usage stats.</span></label></div>)}
-        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">{!showDetails? (<button onClick={() => setShowDetails(true)} className="rounded-full px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground">Customize</button>) : (<button onClick={saveChoice} className="rounded-full border border-border px-3 py-1.5 text-sm hover:bg-secondary">Save choices</button>)}<button onClick={rejectNonEssential} className="rounded-full border border-border px-3 py-1.5 text-sm hover:bg-secondary">Reject non-essential</button><button onClick={acceptAll} className="rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">Accept all</button></div>
+        <p className="text-sm text-foreground">{t?.cookies?.banner || 'We use strictly-necessary cookies to keep you signed in. With your permission, we also use functional and anonymized analytics cookies to improve Sweet Social Space. No ads. No tracking across sites.'} <Link href="/cookies" className="underline">{t?.cookies?.learnMore || 'Learn more'}</Link>.</p>
+        {showDetails && (<div className="mt-3 space-y-2 rounded-xl border border-border bg-background p-3 text-sm"><label className="flex items-start gap-2 opacity-60"><input type="checkbox" checked disabled className="mt-1" /><span><strong>{t?.cookies?.necessary || 'Strictly necessary'}</strong> — {t?.cookies?.necessaryDesc || 'sign-in & security. Always on.'}</span></label><label className="flex items-start gap-2"><input type="checkbox" checked={functional} onChange={(e) => setFunctional(e.target.checked)} className="mt-1" /><span><strong>{t?.cookies?.functional || 'Functional'}</strong> — {t?.cookies?.functionalDesc || 'remembers your language and preferences.'}</span></label><label className="flex items-start gap-2"><input type="checkbox" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} className="mt-1" /><span><strong>{t?.cookies?.analytics || 'Analytics'}</strong> — {t?.cookies?.analyticsDesc || 'anonymized usage stats.'}</span></label></div>)}
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">{!showDetails? (<button onClick={() => setShowDetails(true)} className="rounded-full px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground">{t?.cookies?.customize || 'Customize'}</button>) : (<button onClick={saveChoice} className="rounded-full border border-border px-3 py-1.5 text-sm hover:bg-secondary">{t?.cookies?.saveChoices || 'Save choices'}</button>)}<button onClick={rejectNonEssential} className="rounded-full border border-border px-3 py-1.5 text-sm hover:bg-secondary">{t?.cookies?.reject || 'Reject non-essential'}</button><button onClick={acceptAll} className="rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90">{t?.cookies?.acceptAll || 'Accept all'}</button></div>
       </div>
     </div>
   )
