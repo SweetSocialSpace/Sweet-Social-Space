@@ -4,14 +4,11 @@ import { useState, useEffect, useId, useRef } from 'react'
 import { toast } from 'sonner'
 import MicRecorder from '@/components/mic/MicRecorder'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from '@/lib/translations'
 
 type ReportTargetType = 'post' | 'comment' | 'user' | 'business' | 'message'
 type ReportCategory = 'harassment' | 'spam' | 'hate_speech' | 'violence' | 'misinformation' | 'illegal' | 'other'
 const REPORT_CATEGORIES: ReportCategory[] = ['harassment','spam','hate_speech','violence','misinformation','illegal','other']
-const REPORT_CATEGORY_LABEL: Record<ReportCategory, string> = {
-  harassment: 'Harassment or bullying', spam: 'Spam or misleading', hate_speech: 'Hate speech',
-  violence: 'Violence or dangerous acts', misinformation: 'Misinformation', illegal: 'Illegal activity', other: 'Other',
-}
 
 async function submitReport(data: { target_type: ReportTargetType; target_id: string; category: ReportCategory; details?: string; turnstile_token?: string }) {
   try {
@@ -28,6 +25,16 @@ type Props = { targetType: ReportTargetType; targetId: string; label?: string; o
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
+  const t = useTranslations() as any
+  const REPORT_CATEGORY_LABEL: Record<ReportCategory, string> = {
+    harassment: t?.report?.harassment || 'Harassment or bullying',
+    spam: t?.report?.spam || 'Spam or misleading',
+    hate_speech: t?.report?.hateSpeech || 'Hate speech',
+    violence: t?.report?.violence || 'Violence or dangerous acts',
+    misinformation: t?.report?.misinformation || 'Misinformation',
+    illegal: t?.report?.illegal || 'Illegal activity',
+    other: t?.report?.other || 'Other',
+  }
   const [category, setCategory] = useState<ReportCategory>('harassment')
   const [details, setDetails] = useState('')
   const [busy, setBusy] = useState(false)
@@ -37,8 +44,8 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
   const noun = label?? targetType.replace(/_/g, ' ')
 
   async function onSubmit() {
-    try { setBusy(true); setError(''); await submitReport({ target_type: targetType, target_id: targetId, category, details: details.trim() || undefined, turnstile_token: turnstileToken?? undefined }); setDone(true); try { toast.success('Report submitted') } catch {} }
-    catch (e) { try { const msg = e instanceof Error? e.message : 'Failed to submit report'; setError(msg) } catch {} }
+    try { setBusy(true); setError(''); await submitReport({ target_type: targetType, target_id: targetId, category, details: details.trim() || undefined, turnstile_token: turnstileToken?? undefined }); setDone(true); try { toast.success(t?.report?.reportSubmitted || 'Report submitted') } catch {} }
+    catch (e) { try { const msg = e instanceof Error? e.message : (t?.report?.failedToSubmit || 'Failed to submit report'); setError(msg) } catch {} }
     finally { try { setBusy(false) } catch {} }
   }
 
@@ -47,24 +54,24 @@ export function ReportDialog({ targetType, targetId, label, onClose }: Props) {
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         {done? (
           <>
-            <h2 className="font-display text-lg font-semibold">Thanks for reporting</h2>
-            <p className="mt-2 text-sm text-muted-foreground">A moderator will review this {noun}. Reports are confidential.</p>
-            <div className="mt-4 flex justify-end"><button onClick={onClose} className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Close</button></div>
+            <h2 className="font-display text-lg font-semibold">{t?.report?.thanksForReporting || 'Thanks for reporting'}</h2>
+            <p className="mt-2 text-sm text-muted-foreground">{t?.report?.moderatorWillReview || 'A moderator will review this'} {noun}. {t?.report?.reportsConfidential || 'Reports are confidential.'}</p>
+            <div className="mt-4 flex justify-end"><button onClick={onClose} className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">{t?.common?.close || 'Close'}</button></div>
           </>
         ) : (
           <>
-            <h2 className="font-display text-lg font-semibold">Report this {noun}</h2>
-            <p className="mt-1 text-xs text-muted-foreground">Reports go to our moderation queue. False reporting can affect your account standing.</p>
-            <label className="mt-4 block text-sm font-medium">Reason</label>
+            <h2 className="font-display text-lg font-semibold">{t?.report?.reportThis || 'Report this'} {noun}</h2>
+            <p className="mt-1 text-xs text-muted-foreground">{t?.report?.reportsGoToQueue || 'Reports go to our moderation queue. False reporting can affect your account standing.'}</p>
+            <label className="mt-4 block text-sm font-medium">{t?.report?.reason || 'Reason'}</label>
             <select value={category} onChange={(e) => setCategory(e.target.value as ReportCategory)} className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm">{REPORT_CATEGORIES.map((c) => (<option key={c} value={c}>{REPORT_CATEGORY_LABEL[c]}</option>))}</select>
-            <label className="mt-3 block text-sm font-medium">Details (optional)</label>
-            <textarea value={details} onChange={(e) => setDetails(e.target.value)} maxLength={1000} rows={3} className="mt-1 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm" placeholder="Anything that will help us review." />
+            <label className="mt-3 block text-sm font-medium">{t?.report?.detailsOptional || 'Details (optional)'}</label>
+            <textarea value={details} onChange={(e) => setDetails(e.target.value)} maxLength={1000} rows={3} className="mt-1 w-full resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm" placeholder={t?.report?.detailsPlaceholder || 'Anything that will help us review.'} />
             <div className="mt-1 flex justify-end"><MicRecorder onTranscript={setDetails} /></div>
             {TURNSTILE_SITE_KEY && (<TurnstileWidgetSafe siteKey={TURNSTILE_SITE_KEY} onToken={setTurnstileToken} />)}
             {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-secondary">Cancel</button>
-              <button onClick={()=>{ try { onSubmit() } catch {} }} disabled={busy || (!!TURNSTILE_SITE_KEY &&!turnstileToken)} className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy? 'Sending…' : 'Submit report'}</button>
+              <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-secondary">{t?.common?.cancel || 'Cancel'}</button>
+              <button onClick={()=>{ try { onSubmit() } catch {} }} disabled={busy || (!!TURNSTILE_SITE_KEY &&!turnstileToken)} className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy? (t?.report?.sending || 'Sending…') : (t?.report?.submitReport || 'Submit report')}</button>
             </div>
           </>
         )}
