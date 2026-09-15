@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Mis juhtub",
-    "postAs": "POSTITA KUI",
+    "postAs": "Postita kui {name}",
+    "postTo": "Postita asukohta {zip} - Üks peatus",
     "in": "KOHAS",
-    "loading": "Laadimine..."
+    "loading": "Laadimine...",
+    "posting": "POSTITAMINE...",
+    "fixPunctuation": "Paranda kirjavahemärgid",
+    "tapMic": "Puuduta mikki - töötab asukohas {zip} - igas telefonis või arvutis",
+    "postingAs": "Postitad kui",
+    "universalMic": "Universaalne mikk",
+    "waitBlock": "Tuvastan su plokki... oota 2 sek ja postita uuesti",
+    "price": "Hind",
+    "addressPrivate": "Aadress - Privaatne",
+    "conditionNew": "Uus",
+    "conditionLikeNew": "Nagu uus",
+    "conditionGood": "Hea",
+    "conditionFair": "Rahuldav",
+    "recorded_live": "Salvestatud otseülekanne",
+    "whatsHappeningQuestion": "Mis toimub?",
+    "there": "seal",
+    "anyDevice": "igas telefonis või arvutis"
   },
   "common": {
     "backToFeed": "Tagasi voogu",
     "save": "Salvesta",
     "cancel": "Tühista",
+    "delete": "Kustuta",
+    "deleteConfirm": "Kustutada see postitus?",
     "error": "Viga",
-    "loading": "Laadimine..."
+    "loading": "Laadimine...",
+    "recorded": "Salvestatud",
+    "yourArea": "sinu piirkond",
+    "loadingDots": "Laadimine...",
+    "wasLive": "Oli otse"
   },
   "weather": {
     "weather": "Ilm",
@@ -36,6 +59,104 @@
     "lostPet": "Kaotatud lemmikloom",
     "event": "Sündmus",
     "help": "Abi",
-    "recommend": "Soovita"
+    "recommend": "Soovita",
+    "for_sale": "Müügis",
+    "free_stuff": "Tasuta",
+    "lost_pet": "Kaotatud lemmikloom",
+    "job": "Töö",
+    "alert": "Hoiatus",
+    "recommendation": "Soovitus",
+    "lost_found": "Kaotatud ja leitud",
+    "hot_take": "Kuum arvamus"
+  },
+  "auth": {
+    "welcome": "Tere tulemast Sweet Social Space'i",
+    "emailPlaceholder": "E-posti aadress",
+    "passwordPlaceholder": "Parool",
+    "signIn": "Logi sisse",
+    "signUp": "Registreeru",
+    "languageLabel": "Vali keel"
+  },
+  "theme": {
+    "theme": "Teema",
+    "light": "Hele",
+    "dark": "Tume",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Otsekaart",
+    "subtitle": "3 otse märki • Täisvaade"
+  },
+  "faith": {
+    "title": "Päeva usk",
+    "faithOfTheDay": "Päeva usk"
+  },
+  "businesses": {
+    "title": "Kohalikud ettevõtted",
+    "loading": "Laadimine",
+    "near": "Lähedal",
+    "noBusinesses": "Ettevõtteid veel pole",
+    "policeDeptSuffix": "Politseiosakond",
+    "fireDeptSuffix": "Tuletõrje",
+    "librarySuffix": "Raamatukogu",
+    "communitySuffix": "Kogukonnakeskus",
+    "catPolice": "Politsei",
+    "catFire": "Tuletõrje",
+    "catLibrary": "Raamatukogu",
+    "catCommunity": "Kogukond"
+  },
+  "aiMayor": {
+    "goodMorning": "Tere hommikust",
+    "goodAfternoon": "Tere päevast",
+    "goodEvening": "Tere õhtust",
+    "goodNight": "Head ööd",
+    "hotDay": "Kuum päev {temp}°F - hoia end hüdreeritud",
+    "pleasant": "{temp}°F mõnus - suurepärane päev õues",
+    "mild": "{temp}°F mahe - ideaalsed tingimused",
+    "cool": "{temp}°F jahe - võta kerge jope",
+    "chilly": "{temp}°F külm - riietu soojalt",
+    "neighborsActive": "{count} naabrit on täna aktiivsed",
+    "newUpdates": "{count} uut värskendust sinu piirkonnas",
+    "beFirst": "Ole esimene, kes jagab asukohas {city}",
+    "weatherAlert": "Ilmahoiatus aktiivne",
+    "seismic": "Läheduses tuvastati seismiline aktiivsus",
+    "watchingOver": "Sinu AI-linnapea valvab {city}",
+    "wakingUp": "AI-linnapea ärkab asukohas {city}...",
+    "localFeed": "KOHALIK voog - Ole esimene!",
+    "monitoring": "AI-linnapea jälgib sinu piirkonda",
+    "live": "LIVE",
+    "thinking": "Mõtleb..."
+  },
+  "events": {
+    "upcomingEvents": "Tulevased sündmused",
+    "near": "Lähedal",
+    "noEventsNearby": "Läheduses pole sündmusi",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Mis toimub sinu lähedal",
+    "locating": "Asukoha määramine...",
+    "near": "Lähedal",
+    "informationHighway": "Infokiirtee",
+    "checking": "Kontrollin",
+    "events": "sündmust",
+    "eventsIn": "Sündmused asukohas",
+    "local": "Kohalik",
+    "liveApis": "Otse: SeatGeek + Väline API • 15 miili raadius"
+  },
+  "verified": {
+    "verifiedSources": "Kinnitatud allikad",
+    "near": "Lähedal",
+    "noVerifiedOrgs": "Kinnitatud organisatsioone veel pole - kandideeri!",
+    "verified": "Kinnitatud",
+    "verifiedBadge": "Kinnitatud",
+    "trustNetwork": "Usaldusvõrgustik - Kinnitatud",
+    "communitySafety": "Kogukonna turvalisus - Kinnitatud",
+    "nws": "NWS - Kinnitatud",
+    "policeDept": "Politseiosakond",
+    "fireDept": "Tuletõrje",
+    "police": "Politsei",
+    "fire": "Tuletõrje",
+    "applyForVerification": "Taotle kinnitust"
   }
 }
