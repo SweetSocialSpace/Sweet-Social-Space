@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Mi történik",
-    "postAs": "KÜLDÉS MINT",
+    "postAs": "Közzététel mint {name}",
+    "postTo": "Közzététel ide: {zip} - Minden egy helyen",
     "in": "BEN",
-    "loading": "Betöltés..."
+    "loading": "Betöltés...",
+    "posting": "KÖZZÉTÉTEL...",
+    "fixPunctuation": "Írásjelek javítása",
+    "tapMic": "Koppints a mikira - működik itt: {zip} - bármilyen telefonon vagy számítógépen",
+    "postingAs": "Közzététel mint",
+    "universalMic": "Univerzális mikrofon",
+    "waitBlock": "Még érzékelem a blokkod... várj 2 mp-et és posztolj újra",
+    "price": "Ár",
+    "addressPrivate": "Cím - Privát",
+    "conditionNew": "Új",
+    "conditionLikeNew": "Újszerű",
+    "conditionGood": "Jó",
+    "conditionFair": "Megfelelő",
+    "recorded_live": "Rögzített élő",
+    "whatsHappeningQuestion": "Mi történik?",
+    "there": "ott",
+    "anyDevice": "bármilyen telefonon vagy számítógépen"
   },
   "common": {
     "backToFeed": "Vissza a hírfolyamhoz",
     "save": "Mentés",
     "cancel": "Mégse",
+    "delete": "Törlés",
+    "deleteConfirm": "Törlöd ezt a bejegyzést?",
     "error": "Hiba",
-    "loading": "Betöltés..."
+    "loading": "Betöltés...",
+    "recorded": "Rögzítve",
+    "yourArea": "a környéked",
+    "loadingDots": "Betöltés...",
+    "wasLive": "Élő volt"
   },
   "weather": {
     "weather": "Időjárás",
@@ -32,10 +55,108 @@
     "general": "Általános",
     "safety": "Biztonság",
     "forSale": "Eladó",
+    "for_sale": "Eladó",
     "free": "Ingyenes",
+    "free_stuff": "Ingyenes cucc",
     "lostPet": "Elveszett állat",
+    "lost_pet": "Elveszett állat",
     "event": "Esemény",
     "help": "Segítség",
-    "recommend": "Ajánlás"
+    "recommend": "Ajánlás",
+    "job": "Munka",
+    "alert": "Riasztás",
+    "recommendation": "Ajánlás",
+    "lost_found": "Elveszett és megtalált",
+    "hot_take": "Erős vélemény"
+  },
+  "auth": {
+    "welcome": "Üdv a Sweet Social Space-en",
+    "emailPlaceholder": "E-mail cím",
+    "passwordPlaceholder": "Jelszó",
+    "signIn": "Bejelentkezés",
+    "signUp": "Regisztráció",
+    "languageLabel": "Válassz nyelvet"
+  },
+  "theme": {
+    "theme": "Téma",
+    "light": "Világos",
+    "dark": "Sötét",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Élő térkép",
+    "subtitle": "3 élő pin • Teljes nézet"
+  },
+  "faith": {
+    "title": "A nap hite",
+    "faithOfTheDay": "A nap hite"
+  },
+  "businesses": {
+    "title": "Helyi vállalkozások",
+    "loading": "Betöltés",
+    "near": "Közel:",
+    "noBusinesses": "Még nincsenek vállalkozások",
+    "policeDeptSuffix": "Rendőrség",
+    "fireDeptSuffix": "Tűzoltóság",
+    "librarySuffix": "Könyvtár",
+    "communitySuffix": "Közösségi központ",
+    "catPolice": "Rendőrség",
+    "catFire": "Tűzoltóság",
+    "catLibrary": "Könyvtár",
+    "catCommunity": "Közösség"
+  },
+  "aiMayor": {
+    "goodMorning": "Jó reggelt",
+    "goodAfternoon": "Jó napot",
+    "goodEvening": "Jó estét",
+    "goodNight": "Jó éjt",
+    "hotDay": "Forró nap {temp}°F - maradj hidratált",
+    "pleasant": "{temp}°F kellemes - remek nap kint lenni",
+    "mild": "{temp}°F enyhe - tökéletes körülmények",
+    "cool": "{temp}°F hűvös - hozz könnyű dzsekit",
+    "chilly": "{temp}°F hideg - öltözz fel melegen",
+    "neighborsActive": "{count} szomszéd aktív ma",
+    "newUpdates": "{count} új frissítés a környékeden",
+    "beFirst": "Légy az első, aki megoszt itt: {city}",
+    "weatherAlert": "Időjárási riasztás aktív",
+    "seismic": "Szeizmikus aktivitás a közelben",
+    "watchingOver": "Az AI polgármestered vigyáz {city}-ra",
+    "wakingUp": "AI polgármester ébred {city}-ben...",
+    "localFeed": "HELYI hírfolyam - Légy az első!",
+    "monitoring": "AI polgármester figyeli a környéked",
+    "live": "ÉLŐ",
+    "thinking": "Gondolkodik..."
+  },
+  "events": {
+    "upcomingEvents": "Közelgő események",
+    "near": "Közel:",
+    "noEventsNearby": "Nincsenek események a közelben",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Mi történik a közeledben",
+    "locating": "Helymeghatározás...",
+    "near": "Közel:",
+    "informationHighway": "Információs sztráda",
+    "checking": "Ellenőrzés",
+    "events": "esemény",
+    "eventsIn": "Események itt:",
+    "local": "Helyi",
+    "liveApis": "Élő: SeatGeek + Külső API-k • 15 mérföldes körzet"
+  },
+  "verified": {
+    "verifiedSources": "Ellenőrzött források",
+    "near": "Közel:",
+    "noVerifiedOrgs": "Még nincsenek ellenőrzött szervezetek - jelentkezz!",
+    "verified": "Ellenőrzött",
+    "verifiedBadge": "Ellenőrzött",
+    "trustNetwork": "Bizalmi hálózat - Ellenőrzött",
+    "communitySafety": "Közösségi biztonság - Ellenőrzött",
+    "nws": "NWS - Ellenőrzött",
+    "policeDept": "Rendőrség",
+    "fireDept": "Tűzoltóság",
+    "police": "Rendőrség",
+    "fire": "Tűzoltóság",
+    "applyForVerification": "Ellenőrzés igénylése"
   }
 }
