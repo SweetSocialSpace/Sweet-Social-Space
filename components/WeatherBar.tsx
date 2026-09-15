@@ -12,7 +12,7 @@ export default function WeatherBar() {
   const [desc, setDesc] = useState('')
   const [city, setCity] = useState('')
   
-  const t = useTranslations()
+  const t = useTranslations() as any
 
   const load = async () => {
     if (!zip) {
@@ -62,12 +62,12 @@ export default function WeatherBar() {
   return (
     <div data-sss-live className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-white font-black text-xs tracking-widest">{t?.weather?.weather}</span>
-<span className="text- bg-green-500 text-black px-2 py-0.5 rounded-full font-black">{t?.weather?.live}</span>
+        <span className="text-white font-black text-xs tracking-widest">{t?.weather?.weather || 'Weather'}</span>
+        <span className="bg-green-500 text-black px-2 py-0.5 rounded-full font-black text-xs">{t?.weather?.live || 'LIVE'}</span>
       </div>
       <div className="flex items-center gap-3 mt-2">
         <div className="text-white text-3xl font-black">{temp!== null? `${temp}°F` : '--°F'}</div>
-        <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full truncate max-w-">{displayCity}</span>
+        <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full truncate max-w-[150px]">{displayCity}</span>
       </div>
       {desc && <div className="text-white/60 text-xs mt-2 capitalize">{desc}</div>}
     </div>
