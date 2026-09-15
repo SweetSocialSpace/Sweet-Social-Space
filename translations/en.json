@@ -6,6 +6,18 @@
     "signOut": "Sign Out"
   },
   "feed": {
+    "postTo": "Post to",
+"tapMic": "Tap mic - works in",
+"anyDevice": "any phone or computer",
+"postingAs": "Posting as",
+"universalMic": "Universal Mic",
+"waitBlock": "Still detecting your block... wait 2 sec and post again",
+"price": "Price",
+"addressPrivate": "Address - Private",
+"conditionNew": "New",
+"conditionLikeNew": "Like New",
+"conditionGood": "Good",
+"conditionFair": "Fair"
     "whatsHappening": "What's happening in",
     "postAs": "Posting as",
     "in": "in",
