@@ -6,17 +6,24 @@
     "signOut": "Sign Out"
   },
   "feed": {
-    "whatsHappening": "What's happening?",
+    "whatsHappening": "What's happening in",
     "postAs": "Posting as",
     "in": "in",
-    "loading": "Loading"
+    "loading": "Loading...",
+    "posting": "POSTING...",
+    "fixPunctuation": "Fix punctuation",
+    "recorded_live": "Recorded Live",
+    "whatsHappeningQuestion": "What's happening?"
   },
   "common": {
     "backToFeed": "Back to feed",
     "save": "Save",
-    "cancel": "Delete",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this post?",
     "error": "Error",
-    "loading": "Loading"
+    "loading": "Loading...",
+    "recorded": "Recorded"
   },
   "weather": {
     "weather": "Weather",
@@ -32,10 +39,25 @@
     "general": "General",
     "safety": "Safety",
     "forSale": "For Sale",
-    "free": "Free",
+    "free": "Free stuff",
     "lostPet": "Lost Pet",
     "event": "Event",
     "help": "Help",
-    "recommend": "Recommend"
+    "recommend": "Recommend",
+    "for_sale": "For Sale",
+    "free_stuff": "Free stuff",
+    "lost_pet": "Lost Pet",
+    "hot_take": "Hot take",
+    "alert": "Alert",
+    "recommendation": "Recommendation",
+    "lost_found": "Lost & found"
+  },
+  "auth": {
+    "welcome": "Welcome to Sweet Social Space",
+    "emailPlaceholder": "Email address",
+    "passwordPlaceholder": "Password",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "languageLabel": "Choose your language"
   }
 }
