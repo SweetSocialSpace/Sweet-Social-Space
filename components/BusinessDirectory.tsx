@@ -4,7 +4,6 @@ import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
 import { useLocationScope } from '@/hooks/useLocationScope'
 import { applyScope, bboxForRadius } from '@/lib/location-scope'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 type Biz = { id: string; name: string; category: string | null; latitude?: number | null; longitude?: number | null }
@@ -12,6 +11,7 @@ type Biz = { id: string; name: string; category: string | null; latitude?: numbe
 export function BusinessDirectory(){
   const { zip, city } = useLocation()
   const { filter } = useLocationScope()
+  const t = useTranslations() as any
   const [biz, setBiz] = useState<Biz[]>([])
   const [liveBiz, setLiveBiz] = useState<Biz[]>([])
   const [loading, setLoading] = useState(false)
@@ -53,7 +53,6 @@ export function BusinessDirectory(){
           localStorage.setItem(CACHE_TIME_KEY, String(Date.now()))
         }
       } catch (e){
-        console.log('Business directory error:', e)
         const cached = localStorage.getItem(CACHE_KEY)
         if (cached && mounted) setLiveBiz(JSON.parse(cached))
       } finally {
@@ -66,7 +65,6 @@ export function BusinessDirectory(){
         const supabase = createClient() as any
         let data: any[] = []
         
-        // Use radius-based filtering if user has coordinates
         if (filter.lat != null && filter.lng != null) {
           const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
           const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
@@ -82,11 +80,9 @@ export function BusinessDirectory(){
             .limit(10)
           
           if (bizData) {
-            // Apply precise radius filtering
             data = applyScope(bizData, filter)
           }
         } else {
-          // Fallback to zip-based filtering if no coordinates
           const { data: bizData } = await supabase.from('businesses').select('id,name,category').eq('zip_code', zip).order('verified',{ascending:false}).limit(4)
           data = bizData || []
         }
@@ -115,14 +111,14 @@ export function BusinessDirectory(){
   const display = biz.length > 0 ? biz : liveBiz
   const displayArea = zip === 'GLOBAL' || !zip ? (city || 'your area') : zip
 
-  if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">Local Businesses</p><p className="text-xs text-white/50">Loading {displayArea}...</p></div>)
+  if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">{t?.businesses?.title || 'Local Businesses'}</p><p className="text-xs text-white/50">{t?.businesses?.loading || 'Loading'} {displayArea}...</p></div>)
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">Local Businesses</p>
-      <p className="text-xs text-white/50 mt-1">Near {displayArea}</p>
-      {loading ? <p className="text-sm mt-3 text-white/60">Loading...</p> : 
-      display.length===0? <p className="text-sm mt-3 text-white/60">No businesses yet</p> : 
+      <p className="font-bold">{t?.businesses?.title || 'Local Businesses'}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.businesses?.near || 'Near'} {displayArea}</p>
+      {loading ? <p className="text-sm mt-3 text-white/60">{t?.common?.loading || 'Loading...'}</p> : 
+      display.length===0? <p className="text-sm mt-3 text-white/60">{t?.businesses?.noBusinesses || 'No businesses yet'}</p> : 
       (<div className="mt-3 space-y-2">{display.map(b=>(<div key={b.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex justify-between"><span className="truncate">{b.name}</span><span className="text-white/40">{b.category||''}</span></div>))}</div>)}
     </div>
   )
