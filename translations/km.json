@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "តើមានអ្វីកើតឡើងនៅ",
-    "postAs": "បង្ហាញជា",
+    "postAs": "បង្ហោះជា {name}",
+    "postTo": "បង្ហោះទៅ {zip} - ទាំងអស់ក្នុងមួយ",
     "in": "នៅ",
-    "loading": "កំពុងផ្ទុក..."
+    "loading": "កំពុងផ្ទុក...",
+    "posting": "កំពុងបង្ហោះ...",
+    "fixPunctuation": "កែវណ្ណយុត្តិ",
+    "tapMic": "ចុចមីក្រូ - ដំណើរការនៅ {zip} - ទូរស័ព្ទ ឬកុំព្យូទ័រណាក៏បាន",
+    "postingAs": "បង្ហោះជា",
+    "universalMic": "មីក្រូសកល",
+    "waitBlock": "នៅតែរកឃើញប្លុករបស់អ្នក... រង់ចាំ 2 វិ ហើយបង្ហោះម្តងទៀត",
+    "price": "តម្លៃ",
+    "addressPrivate": "អាសយដ្ឋាន - ឯកជន",
+    "conditionNew": "ថ្មី",
+    "conditionLikeNew": "ដូចថ្មី",
+    "conditionGood": "ល្អ",
+    "conditionFair": "សមរម្យ",
+    "recorded_live": "ថតផ្ទាល់",
+    "whatsHappeningQuestion": "តើមានអ្វីកើតឡើង?",
+    "there": "ទីនោះ",
+    "anyDevice": "ទូរស័ព្ទ ឬកុំព្យូទ័រណាក៏បាន"
   },
   "common": {
     "backToFeed": "ត្រឡប់ទៅមតិ",
     "save": "រក្សាទុក",
     "cancel": "បោះបង់",
+    "delete": "លុប",
+    "deleteConfirm": "លុបការបង្ហោះនេះ?",
     "error": "កំហុស",
-    "loading": "កំពុងផ្ទុក..."
+    "loading": "កំពុងផ្ទុក...",
+    "recorded": "បានថត",
+    "yourArea": "តំបន់របស់អ្នក",
+    "loadingDots": "កំពុងផ្ទុក...",
+    "wasLive": "ធ្លាប់ផ្ទាល់"
   },
   "weather": {
     "weather": "អាកាសធាតុ",
@@ -32,10 +55,108 @@
     "general": "ទូទៅ",
     "safety": "សុវត្ថិភាព",
     "forSale": "សម្រាប់លក់",
+    "for_sale": "សម្រាប់លក់",
     "free": "ឥតគិតថ្លៃ",
+    "free_stuff": "របស់ឥតគិតថ្លៃ",
     "lostPet": "សត្វចិញ្ចឹមបាត់បង់",
+    "lost_pet": "សត្វចិញ្ចឹមបាត់បង់",
     "event": "ព្រឹត្តិការណ៍",
     "help": "ជំនួយ",
-    "recommend": "ណែនាំ"
+    "recommend": "ណែនាំ",
+    "job": "ការងារ",
+    "alert": "ការជូនដំណឹង",
+    "recommendation": "ការណែនាំ",
+    "lost_found": "បាត់និងរកឃើញ",
+    "hot_take": "មតិក្តៅ"
+  },
+  "auth": {
+    "welcome": "ស្វាគមន៍មកកាន់ Sweet Social Space",
+    "emailPlaceholder": "អាសយដ្ឋានអ៊ីមែល",
+    "passwordPlaceholder": "ពាក្យសម្ងាត់",
+    "signIn": "ចូល",
+    "signUp": "ចុះឈ្មោះ",
+    "languageLabel": "ជ្រើសភាសារបស់អ្នក"
+  },
+  "theme": {
+    "theme": "រូបរាង",
+    "light": "ភ្លឺ",
+    "dark": "ងងឹត",
+    "auto": "ស្វ័យប្រវត្តិ"
+  },
+  "liveMap": {
+    "title": "ផែនទីផ្ទាល់",
+    "subtitle": "ម្ជុលផ្ទាល់ 3 • ទិដ្ឋភាពពេញ"
+  },
+  "faith": {
+    "title": "ជំនឿប្រចាំថ្ងៃ",
+    "faithOfTheDay": "ជំនឿប្រចាំថ្ងៃ"
+  },
+  "businesses": {
+    "title": "អាជីវកម្មក្នុងស្រុក",
+    "loading": "កំពុងផ្ទុក",
+    "near": "នៅជិត",
+    "noBusinesses": "មិនទាន់មានអាជីវកម្ម",
+    "policeDeptSuffix": "នាយកដ្ឋានប៉ូលីស",
+    "fireDeptSuffix": "នាយកដ្ឋានពន្លត់អគ្គិភ័យ",
+    "librarySuffix": "បណ្ណាល័យ",
+    "communitySuffix": "មជ្ឈមណ្ឌលសហគមន៍",
+    "catPolice": "ប៉ូលីស",
+    "catFire": "ពន្លត់អគ្គិភ័យ",
+    "catLibrary": "បណ្ណាល័យ",
+    "catCommunity": "សហគមន៍"
+  },
+  "aiMayor": {
+    "goodMorning": "អរុណសួស្តី",
+    "goodAfternoon": "ទិវាសួស្តី",
+    "goodEvening": "សាយ័ណ្ណសួស្តី",
+    "goodNight": "រាត្រីសួស្តី",
+    "hotDay": "ថ្ងៃក្តៅ {temp}°F - រក្សាជាតិទឹក",
+    "pleasant": "{temp}°F រីករាយ - ថ្ងៃល្អនៅខាងក្រៅ",
+    "mild": "{temp}°F ស្រាល - លក្ខខណ្ឌល្អ",
+    "cool": "{temp}°F ត្រជាក់ - យកអាវស្តើង",
+    "chilly": "{temp}°F ត្រជាក់ខ្លាំង - ស្លៀកកក់ក្តៅ",
+    "neighborsActive": "អ្នកជិតខាង {count} នាក់សកម្មថ្ងៃនេះ",
+    "newUpdates": "បច្ចុប្បន្នភាពថ្មី {count} នៅក្នុងតំបន់របស់អ្នក",
+    "beFirst": "ក្លាយជាអ្នកដំបូងដែលចែករំលែកនៅ {city}",
+    "weatherAlert": "ការជូនដំណឹងអាកាសធាតុសកម្ម",
+    "seismic": "រកឃើញសកម្មភាពរញ្ជួយដីនៅក្បែរ",
+    "watchingOver": "អភិបាល AI របស់អ្នកកំពុងមើល {city}",
+    "wakingUp": "អភិបាល AI កំពុងភ្ញាក់នៅ {city}...",
+    "localFeed": "មតិក្នុងស្រុក - ក្លាយជាអ្នកដំបូង!",
+    "monitoring": "អភិបាល AI កំពុងតាមដានតំបន់របស់អ្នក",
+    "live": "ផ្ទាល់",
+    "thinking": "កំពុងគិត..."
+  },
+  "events": {
+    "upcomingEvents": "ព្រឹត្តិការណ៍នាពេលខាងមុខ",
+    "near": "នៅជិត",
+    "noEventsNearby": "គ្មានព្រឹត្តិការណ៍នៅក្បែរ",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "តើមានអ្វីកើតឡើងនៅជិតអ្នក",
+    "locating": "កំពុងរក...",
+    "near": "នៅជិត",
+    "informationHighway": "ផ្លូវហាយវេព័ត៌មាន",
+    "checking": "កំពុងពិនិត្យ",
+    "events": "ព្រឹត្តិការណ៍",
+    "eventsIn": "ព្រឹត្តិការណ៍នៅ",
+    "local": "ក្នុងស្រុក",
+    "liveApis": "ផ្ទាល់: SeatGeek + API ខាងក្រៅ • ចម្ងាយ 15 ម៉ាយ"
+  },
+  "verified": {
+    "verifiedSources": "ប្រភពបានផ្ទៀងផ្ទាត់",
+    "near": "នៅជិត",
+    "noVerifiedOrgs": "មិនទាន់មានអង្គការបានផ្ទៀងផ្ទាត់ - ដាក់ពាក្យ!",
+    "verified": "បានផ្ទៀងផ្ទាត់",
+    "verifiedBadge": "បានផ្ទៀងផ្ទាត់",
+    "trustNetwork": "បណ្តាញទំនុកចិត្ត - បានផ្ទៀងផ្ទាត់",
+    "communitySafety": "សុវត្ថិភាពសហគមន៍ - បានផ្ទៀងផ្ទាត់",
+    "nws": "NWS - បានផ្ទៀងផ្ទាត់",
+    "policeDept": "នាយកដ្ឋានប៉ូលីស",
+    "fireDept": "នាយកដ្ឋានពន្លត់អគ្គិភ័យ",
+    "police": "ប៉ូលីស",
+    "fire": "ពន្លត់អគ្គិភ័យ",
+    "applyForVerification": "ស្នើសុំការផ្ទៀងផ្ទាត់"
   }
 }
