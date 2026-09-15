@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Co się dzieje w",
-    "postAs": "OPUBLIKUJ JAKO",
+    "postAs": "OPUBLIKUJ JAKO {name}",
+    "postTo": "Opublikuj do {zip} - Wszystko w Jednym",
     "in": "W",
-    "loading": "Ładowanie..."
+    "loading": "Ładowanie...",
+    "posting": "PUBLIKOWANIE...",
+    "fixPunctuation": "Popraw interpunkcję",
+    "tapMic": "Dotknij mikrofonu - działa w {zip} - dowolny telefon lub komputer",
+    "postingAs": "Publikuje jako",
+    "universalMic": "Uniwersalny Mikrofon",
+    "waitBlock": "Wciąż wykrywamy Twój blok... poczekaj 2 sek i opublikuj ponownie",
+    "price": "Cena",
+    "addressPrivate": "Adres - Prywatny",
+    "conditionNew": "Nowe",
+    "conditionLikeNew": "Jak Nowe",
+    "conditionGood": "Dobre",
+    "conditionFair": "Zadowalające",
+    "recorded_live": "Nagranie na żywo",
+    "whatsHappeningQuestion": "Co się dzieje?",
+    "there": "tam",
+    "anyDevice": "dowolny telefon lub komputer"
   },
   "common": {
     "backToFeed": "Powrót do kanału",
     "save": "Zapisz",
     "cancel": "Anuluj",
+    "delete": "Usuń",
+    "deleteConfirm": "Usunąć ten post?",
     "error": "Błąd",
-    "loading": "Ładowanie..."
+    "loading": "Ładowanie...",
+    "recorded": "Nagrane",
+    "yourArea": "Twoja okolica",
+    "loadingDots": "Ładowanie...",
+    "wasLive": "Było na żywo"
   },
   "weather": {
     "weather": "Pogoda",
@@ -32,10 +55,108 @@
     "general": "Ogólne",
     "safety": "Bezpieczeństwo",
     "forSale": "Na sprzedaż",
+    "for_sale": "Na sprzedaż",
     "free": "Za darmo",
+    "free_stuff": "Darmowe rzeczy",
     "lostPet": "Zagubione zwierzę",
+    "lost_pet": "Zagubione zwierzę",
     "event": "Wydarzenie",
     "help": "Pomoc",
-    "recommend": "Poleć"
+    "recommend": "Poleć",
+    "job": "Praca",
+    "alert": "Alert",
+    "recommendation": "Polecenie",
+    "lost_found": "Zgubione i znalezione",
+    "hot_take": "Gorąca opinia"
+  },
+  "auth": {
+    "welcome": "Witamy w Sweet Social Space",
+    "emailPlaceholder": "Adres e-mail",
+    "passwordPlaceholder": "Hasło",
+    "signIn": "Zaloguj się",
+    "signUp": "Zarejestruj się",
+    "languageLabel": "Wybierz swój język"
+  },
+  "theme": {
+    "theme": "Motyw",
+    "light": "Jasny",
+    "dark": "Ciemny",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Mapa na żywo",
+    "subtitle": "3 pinezki na żywo • Pełny widok"
+  },
+  "faith": {
+    "title": "Wiara Dnia",
+    "faithOfTheDay": "Wiara Dnia"
+  },
+  "businesses": {
+    "title": "Lokalne Firmy",
+    "loading": "Ładowanie",
+    "near": "Blisko",
+    "noBusinesses": "Brak firm jeszcze",
+    "policeDeptSuffix": "Komisariat Policji",
+    "fireDeptSuffix": "Straż Pożarna",
+    "librarySuffix": "Biblioteka",
+    "communitySuffix": "Dom Kultury",
+    "catPolice": "Policja",
+    "catFire": "Straż Pożarna",
+    "catLibrary": "Biblioteka",
+    "catCommunity": "Społeczność"
+  },
+  "aiMayor": {
+    "goodMorning": "Dzień dobry",
+    "goodAfternoon": "Dzień dobry",
+    "goodEvening": "Dobry wieczór",
+    "goodNight": "Dobranoc",
+    "hotDay": "Gorący dzień {temp}°F - pij dużo wody",
+    "pleasant": "Przyjemne {temp}°F - świetny dzień na zewnątrz",
+    "mild": "Łagodne {temp}°F - idealne warunki",
+    "cool": "Chłodno {temp}°F - weź lekką kurtkę",
+    "chilly": "Zimno {temp}°F - ubierz się ciepło",
+    "neighborsActive": "{count} sąsiadów aktywnych dziś",
+    "newUpdates": "{count} nowych aktualizacji w Twojej okolicy",
+    "beFirst": "Bądź pierwszy, który podzieli się w {city}",
+    "weatherAlert": "Alert pogodowy aktywny",
+    "seismic": "Wykryto aktywność sejsmiczną w pobliżu",
+    "watchingOver": "Twój AI Burmistrz czuwa nad {city}",
+    "wakingUp": "AI Burmistrz budzi się w {city}...",
+    "localFeed": "LOKALNY kanał - Bądź pierwszy!",
+    "monitoring": "AI Burmistrz monitoruje Twoją okolicę",
+    "live": "NA ŻYWO",
+    "thinking": "Myśli..."
+  },
+  "events": {
+    "upcomingEvents": "Nadchodzące Wydarzenia",
+    "near": "Blisko",
+    "noEventsNearby": "Brak wydarzeń w pobliżu",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Co dzieje się blisko Ciebie",
+    "locating": "Lokalizowanie...",
+    "near": "Blisko",
+    "informationHighway": "Autostrada Informacji",
+    "checking": "Sprawdzanie",
+    "events": "wydarzenia",
+    "eventsIn": "Wydarzenia w",
+    "local": "Lokalne",
+    "liveApis": "Na żywo: SeatGeek + Zewnętrzne API • Promień 15 mil"
+  },
+  "verified": {
+    "verifiedSources": "Zweryfikowane Źródła",
+    "near": "Blisko",
+    "noVerifiedOrgs": "Brak zweryfikowanych org - aplikuj!",
+    "verified": "Zweryfikowane",
+    "verifiedBadge": "Zweryfikowane",
+    "trustNetwork": "Sieć Zaufania - Zweryfikowane",
+    "communitySafety": "Bezpieczeństwo Społeczności - Zweryfikowane",
+    "nws": "NWS - Zweryfikowane",
+    "policeDept": "Komisariat Policji",
+    "fireDept": "Straż Pożarna",
+    "police": "Policja",
+    "fire": "Straż Pożarna",
+    "applyForVerification": "Złóż wniosek o weryfikację"
   }
 }
