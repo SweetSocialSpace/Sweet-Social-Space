@@ -9,13 +9,13 @@ export default function FaithOfTheDay() {
   const [verse, setVerse] = useState("")
   const [ref, setRef] = useState("")
   const [loading, setLoading] = useState(true)
+  const isEs = language?.startsWith('es')
 
   useEffect(() => {
     let mounted = true
     const load = async () => {
       try {
         setLoading(true)
-        // Pass language correctly — your design is right, dynamic for each user
         const res = await fetch(`/api/faith?lang=${encodeURIComponent(language)}`, { cache: 'no-store' })
         if (!res.ok) throw new Error('faith api failed')
         const d = await res.json()
@@ -24,9 +24,9 @@ export default function FaithOfTheDay() {
           setRef(d.reference || d.ref || '')
         }
       } catch {
-        // Fallback Spanish verses if API fails or returns English when Spanish requested
         if (mounted) {
-          if (language === 'es') {
+          // Auto fallback based on language tab — never hardcoded to one language
+          if (isEs) {
             setVerse("Porque tu corazón se enterneció, y te humillaste delante de Dios, cuando oíste sus palabras contra este lugar y contra sus habitantes, y te humillaste delante de mí, y rasgaste tus vestidos, y lloraste delante de mí, yo también te he oído, dice Yahweh.")
             setRef("2 Crónicas 34:27")
           } else {
@@ -40,13 +40,17 @@ export default function FaithOfTheDay() {
     }
     load()
     return () => { mounted = false }
-  }, [language])
+  }, [language, isEs])
 
   return (
     <div className="bg-black/40 rounded-xl p-4 border border-white/10">
-      <div className="text-purple-300 text-sm font-bold">{t?.faith?.title || t?.faith?.faithOfTheDay || 'Fe del Día'}</div>
-      {loading? (
-        <div className="text-white/50 mt-2 text-sm">{t?.common?.loading || 'Cargando...'}</div>
+      <div className="text-purple-300 text-sm font-bold">
+        {t?.faith?.title || t?.faith?.faithOfTheDay || (isEs ? 'Fe del Día' : 'Faith of the Day')}
+      </div>
+      {loading ? (
+        <div className="text-white/50 mt-2 text-sm">
+          {t?.common?.loading || (isEs ? 'Cargando...' : 'Loading...')}
+        </div>
       ) : (
         <>
           <div className="text-white mt-2 leading-relaxed">"{verse}"</div>
