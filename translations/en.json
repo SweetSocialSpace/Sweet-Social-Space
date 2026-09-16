@@ -94,8 +94,36 @@
       "privacy": "WE care about your privacy • FAILSAFE",
       "errorGeneric": "Login failed"
     },
-    "signup": {},
-    "marketing": {},
+    "signup": {
+      "title": "Join Your Area",
+      "creating": "Creating account...",
+      "checkEmail": "Account created! Check your email to confirm",
+      "success": "Account created! Taking you to your area feed...",
+      "errorGeneric": "Signup failed",
+      "nameLabel": "Your name",
+      "emailLabel": "Your email address",
+      "passwordLabel": "Create a password",
+      "locationSection": "Where are you? (Required)",
+      "privacyTitle": "Your Privacy Protected",
+      "privacyDesc": "We use your zip code to show you posts near you",
+      "zipLabel": "Zip / Postal Code",
+      "cityLabel": "City",
+      "countryLabel": "Country",
+      "whyLocationTitle": "Why we need your location:",
+      "why1": "Show you posts from your actual neighborhood",
+      "why2": "Give you accurate local weather & alerts",
+      "why3": "Connect you with nearby events & businesses",
+      "why4": "Keep your community safe and relevant",
+      "hasAccount": "Already have an account?",
+      "submit": "Sign up — See Your Area Feed"
+    },
+    "marketing": {
+      "title": "Facebook shows you the world. We show you your area.",
+      "feature1": "Your neighbor has a free couch. Another needs a job.",
+      "description": "Sweet Social Space is personalized to your area within {radius} miles of YOU",
+      "tagline": "Speak Freely. Love Your Neighbor.",
+      "subtitle2": "Real people. Real neighborhood. No algorithm from across the world."
+    },
     "feedRadius": {
       "label": "Feed radius",
       "5miles": "5 miles",
