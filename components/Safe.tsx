@@ -1,22 +1,16 @@
 'use client'
 import dynamic from 'next/dynamic'
 import { HouseErrorBoundary } from './HouseErrorBoundary'
-import { useMemo } from 'react'
 
-const MAP: Record<string, any> = {
-  WeatherBar: () => import('./WeatherBar').then(m => m.default).catch(() => ({ default: () => null })),
-  WhatsHappeningNearYou: () => import('./WhatsHappeningNearYou').then(m => (m.default || m.WhatsHappeningNearYou) as any).catch(() => ({ default: () => null })),
-  VerifiedSources: () => import('./VerifiedSources').then(m => (m.default || m.VerifiedSources) as any).catch(() => ({ default: () => null })),
-  UpcomingEvents: () => import('./UpcomingEvents').then(m => (m.default || m.UpcomingEvents) as any).catch(() => ({ default: () => null })),
-}
+const MAP = {
+  WeatherBar: dynamic(() => import('./WeatherBar'), { ssr: false, loading: () => null }),
+  WhatsHappeningNearYou: dynamic(() => import('./WhatsHappeningNearYou'), { ssr: false, loading: () => null }),
+  VerifiedSources: dynamic(() => import('./VerifiedSources'), { ssr: false, loading: () => null }),
+  UpcomingEvents: dynamic(() => import('./UpcomingEvents'), { ssr: false, loading: () => null }),
+} as const
 
-export function Safe({name}:{name:string}){
-  const Comp = useMemo(() => {
-    try {
-      const loader = (MAP as any)[name]
-      if (!loader) return () => null
-      return dynamic(loader, { ssr: false, loading: () => null })
-    } catch { return () => null as any }
-  }, [name])
+export function Safe({name}:{name: keyof typeof MAP}){
+  const Comp = MAP[name]
+  if (!Comp) return null
   return <HouseErrorBoundary name={name}><Comp /></HouseErrorBoundary>
 }
