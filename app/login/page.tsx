@@ -31,16 +31,21 @@ export default function LoginPage() {
       <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
         <div className="text-left">
           <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">
-            {t?.auth?.login?.marketingTitle || 'Facebook shows you the world.'}<br/>{t?.auth?.marketing?.subtitle2 || 'We show you your Neighborhood.'}
+            {t?.auth?.marketing?.title || t?.auth?.login?.marketingTitle || 'Facebook shows you the world. We show you your area.'}
+            <br/>
+            {t?.auth?.marketing?.subtitle2 || 'We show you your Neighborhood.'}
           </h1>
           <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">
-            {t?.auth?.login?.marketingDesc1 || 'Your neighbor might have free stuff. Another might needs a job. Someone 3 houses down just posted an alert.'}
+            {t?.auth?.marketing?.feature1 || t?.auth?.login?.marketingDesc1 || 'Your neighbor has a free couch. Another needs a job.'}
           </p>
           <p className="mt-4 text-base text-white/70 leading-relaxed">
-            {tFormat(t?.auth?.login?.marketingDesc2 || t?.auth?.marketing?.description, { radius: '5,10,15,20' }) || 'Sweet Social Space lets you hear from your neighbors within 5,10,15,20 miles of YOU — wherever you are in the world. No robots deciding what you see. No shadowbans for your faith. Just real neighbors, right now.'}
+            {tFormat(
+              t?.auth?.marketing?.description || t?.auth?.login?.marketingDesc2, 
+              { radius: '5,10,15,20' }
+            ) || `Sweet Social Space is personalized to your area within 5,10,15,20 miles of YOU`}
           </p>
           <p className="mt-6 text-sm font-bold text-white/50 tracking-widest uppercase">
-            {t?.auth?.login?.tagline || 'Speak Freely. Love Your Neighbor. •Jesus LOVES You!-Independent'}
+            {t?.auth?.marketing?.tagline || t?.auth?.login?.tagline || 'Speak Freely. Love Your Neighbor.'}
           </p>
         </div>
         <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
