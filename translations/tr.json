@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Neler oluyor",
-    "postAs": "OLARAK GÖNDER",
+    "postAs": "OLARAK GÖNDER {name}",
+    "postTo": "{zip} - Hepsi Bir Arada'ya Gönder",
     "in": "İN",
-    "loading": "Yükleniyor..."
+    "loading": "Yükleniyor...",
+    "posting": "GÖNDERİLİYOR...",
+    "fixPunctuation": "Noktalama düzelt",
+    "tapMic": "Mikrofona dokun - {zip} içinde çalışır - her telefon veya bilgisayarda",
+    "postingAs": "Olarak gönderiyor",
+    "universalMic": "Evrensel Mikrofon",
+    "waitBlock": "Blokunuz hala tespit ediliyor... 2 sn bekleyin ve tekrar gönderin",
+    "price": "Fiyat",
+    "addressPrivate": "Adres - Gizli",
+    "conditionNew": "Yeni",
+    "conditionLikeNew": "Yeni Gibi",
+    "conditionGood": "İyi",
+    "conditionFair": "Orta",
+    "recorded_live": "Canlı Kaydedildi",
+    "whatsHappeningQuestion": "Neler oluyor?",
+    "there": "orada",
+    "anyDevice": "her telefon veya bilgisayar"
   },
   "common": {
     "backToFeed": "Akışa dön",
     "save": "Kaydet",
     "cancel": "İptal",
+    "delete": "Sil",
+    "deleteConfirm": "Bu gönderi silinsin mi?",
     "error": "Hata",
-    "loading": "Yükleniyor..."
+    "loading": "Yükleniyor...",
+    "recorded": "Kaydedildi",
+    "yourArea": "bölgeniz",
+    "loadingDots": "Yükleniyor...",
+    "wasLive": "Canlıydı"
   },
   "weather": {
     "weather": "Hava durumu",
@@ -32,10 +55,108 @@
     "general": "Genel",
     "safety": "Güvenlik",
     "forSale": "Satılık",
+    "for_sale": "Satılık",
     "free": "Ücretsiz",
+    "free_stuff": "Ücretsiz eşyalar",
     "lostPet": "Kayıp evcil hayvan",
+    "lost_pet": "Kayıp evcil hayvan",
     "event": "Etkinlik",
     "help": "Yardım",
-    "recommend": "Öner"
+    "recommend": "Öner",
+    "job": "İş",
+    "alert": "Uyarı",
+    "recommendation": "Öneri",
+    "lost_found": "Kayıp ve bulunan",
+    "hot_take": "Sıcak görüş"
+  },
+  "auth": {
+    "welcome": "Sweet Social Space'e Hoş Geldiniz",
+    "emailPlaceholder": "E-posta adresi",
+    "passwordPlaceholder": "Şifre",
+    "signIn": "Giriş yap",
+    "signUp": "Kayıt ol",
+    "languageLabel": "Dilinizi seçin"
+  },
+  "theme": {
+    "theme": "Tema",
+    "light": "Açık",
+    "dark": "Koyu",
+    "auto": "Otomatik"
+  },
+  "liveMap": {
+    "title": "Canlı Harita",
+    "subtitle": "3 canlı pin • Tam görünüm"
+  },
+  "faith": {
+    "title": "Günün İnancı",
+    "faithOfTheDay": "Günün İnancı"
+  },
+  "businesses": {
+    "title": "Yerel İşletmeler",
+    "loading": "Yükleniyor",
+    "near": "Yakınında",
+    "noBusinesses": "Henüz işletme yok",
+    "policeDeptSuffix": "Polis Departmanı",
+    "fireDeptSuffix": "İtfaiye Departmanı",
+    "librarySuffix": "Kütüphane",
+    "communitySuffix": "Toplum Merkezi",
+    "catPolice": "Polis",
+    "catFire": "İtfaiye",
+    "catLibrary": "Kütüphane",
+    "catCommunity": "Topluluk"
+  },
+  "aiMayor": {
+    "goodMorning": "Günaydın",
+    "goodAfternoon": "Tünaydın",
+    "goodEvening": "İyi akşamlar",
+    "goodNight": "İyi geceler",
+    "hotDay": "Sıcak gün {temp}°F - susuz kalmayın",
+    "pleasant": "Güzel {temp}°F - dışarı çıkmak için harika gün",
+    "mild": "Ilıman {temp}°F - mükemmel koşullar",
+    "cool": "Serin {temp}°F - hafif ceket alın",
+    "chilly": "Soğuk {temp}°F - sıkı giyinin",
+    "neighborsActive": "{count} komşu bugün aktif",
+    "newUpdates": "Bölgenizde {count} yeni güncelleme",
+    "beFirst": "{city} içinde paylaşan ilk kişi olun",
+    "weatherAlert": "Hava durumu uyarısı aktif",
+    "seismic": "Yakınlarda sismik aktivite tespit edildi",
+    "watchingOver": "AI Başkanınız {city} üzerinde göz kulak oluyor",
+    "wakingUp": "AI Başkan {city} içinde uyanıyor...",
+    "localFeed": "YEREL akış - İlk paylaşan siz olun!",
+    "monitoring": "AI Başkan bölgenizi izliyor",
+    "live": "CANLI",
+    "thinking": "Düşünüyor..."
+  },
+  "events": {
+    "upcomingEvents": "Yaklaşan Etkinlikler",
+    "near": "Yakınında",
+    "noEventsNearby": "Yakınlarda etkinlik yok",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Yakınınızda neler oluyor",
+    "locating": "Bulunuyor...",
+    "near": "Yakınında",
+    "informationHighway": "Bilgi Otoyolu",
+    "checking": "Kontrol ediliyor",
+    "events": "etkinlik",
+    "eventsIn": "Şuradaki Etkinlikler",
+    "local": "Yerel",
+    "liveApis": "Canlı: SeatGeek + Harici API'ler • 15 mil yarıçap"
+  },
+  "verified": {
+    "verifiedSources": "Doğrulanmış Kaynaklar",
+    "near": "Yakınında",
+    "noVerifiedOrgs": "Henüz doğrulanmış kuruluş yok - başvurun!",
+    "verified": "Doğrulandı",
+    "verifiedBadge": "Doğrulandı",
+    "trustNetwork": "Güven Ağı - Doğrulandı",
+    "communitySafety": "Toplum Güvenliği - Doğrulandı",
+    "nws": "NWS - Doğrulandı",
+    "policeDept": "Polis Departmanı",
+    "fireDept": "İtfaiye Departmanı",
+    "police": "Polis",
+    "fire": "İtfaiye",
+    "applyForVerification": "Doğrulama için başvur"
   }
 }
