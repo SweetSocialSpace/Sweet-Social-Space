@@ -18,7 +18,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="bg-black" suppressHydrationWarning>
+    // lang is intentionally NOT hardcoded here - LanguageHtml component sets it dynamically
+    // from localStorage/cookie to prevent hydration mismatch. suppressHydrationWarning allows
+    // client to update lang/dir without React warning. This fixes SEO/accessibility flash.
+    <html className="bg-black" suppressHydrationWarning>
       <body
         style={{
           backgroundImage: `url('/golden_droplet_heart_wallpaper.jpg')`,
