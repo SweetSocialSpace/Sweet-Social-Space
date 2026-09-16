@@ -1,3 +1,4 @@
+
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -22,30 +23,43 @@ const LanguageContext = createContext<any>({
   LANGUAGES,
 })
 
+function safeGetLang(): Language {
+  if (typeof window === 'undefined') return 'en'
+  try {
+    const cookieLang = document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
+    const saved = localStorage.getItem('sss_lang') as Language | null
+    const browserLang = (typeof navigator !== 'undefined' ? navigator.language.slice(0,2) : 'en') as Language
+    const finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang] ? browserLang : 'en')) as Language
+    return LANGUAGE_NAMES[finalLang] ? finalLang : 'en'
+  } catch {
+    return 'en'
+  }
+}
+
 export function LanguageProvider({ children }: any) {
   const [lang, setLang] = useState<Language>('en')
   const [language, setLanguageState] = useState<Language>('en')
 
   useEffect(() => {
     try {
-      const cookieLang = document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
-      const saved = localStorage.getItem('sss_lang') as Language | null
-      const browserLang = (typeof navigator !== 'undefined' ? navigator.language.slice(0,2) : 'en') as Language
-      const finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')) as Language
+      const finalLang = safeGetLang()
       setLang(finalLang)
       setLanguageState(finalLang)
-      document.documentElement.lang = finalLang
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = finalLang
+      }
     } catch {}
   }, [])
 
   const setLanguage = async (newLang: Language) => {
     try {
+      if (!LANGUAGE_NAMES[newLang]) newLang = 'en'
       setLang(newLang)
       setLanguageState(newLang)
-      if (typeof window!== 'undefined') {
-        localStorage.setItem('sss_lang', newLang)
-        document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000`
-        document.documentElement.lang = newLang
+      if (typeof window !== 'undefined') {
+        try { localStorage.setItem('sss_lang', newLang) } catch {}
+        try { document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000` } catch {}
+        try { if (typeof document !== 'undefined') document.documentElement.lang = newLang } catch {}
       }
       try {
         const supabase = createClient()
