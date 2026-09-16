@@ -11,9 +11,20 @@ export const LANGUAGE_NAMES: Record<string, string> = {
 
 export const LANGUAGES = Object.keys(LANGUAGE_NAMES)
 export type Language = keyof typeof LANGUAGE_NAMES
-export const RTL_LANGUAGES: Language[] = ['ar','he','ur','fa'] as any
+export const RTL_LANGUAGES: Language[] = ['ar','he','ur','fa']
 
-const LanguageContext = createContext<any>({
+type LanguageContextType = {
+  lang: Language
+  language: Language
+  languageName: string
+  setLang: (l: Language) => void
+  setLanguage: (l: Language) => void
+  LANGUAGE_NAMES: typeof LANGUAGE_NAMES
+  LANGUAGES: string[]
+  isRTL: boolean
+}
+
+const LanguageContext = createContext<LanguageContextType>({
   lang: 'en',
   language: 'en',
   languageName: 'English',
@@ -21,21 +32,56 @@ const LanguageContext = createContext<any>({
   setLanguage: () => {},
   LANGUAGE_NAMES,
   LANGUAGES,
+  isRTL: false,
 })
 
 function safeGetInitialLang(): Language {
   if (typeof window === 'undefined') return 'en'
   try {
-    const cookieLang = typeof document !== 'undefined' ? document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language : null
-    const saved = (()=>{ try { return localStorage.getItem('sss_lang') as Language } catch { return null } })()
-    const browserLang = (typeof navigator !== 'undefined' ? navigator.language.slice(0,2) : 'en') as Language
-    let finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang] ? browserLang : 'en')) as Language
+    // 1. Cookie has priority (set on previous visits)
+    const cookieLang = typeof document!== 'undefined'
+     ? document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
+      : null
+
+    // 2. localStorage second priority
+    const saved = (() => {
+      try {
+        return localStorage.getItem('sss_lang') as Language
+      } catch {
+        return null
+      }
+    })()
+
+    // 3. Browser language detection - handle regional codes like es-419, pt-BR
+    let browserLang: Language = 'en'
+    if (typeof navigator!== 'undefined') {
+      const raw = navigator.language || (navigator as any).userLanguage || 'en'
+      const short = raw.slice(0, 2).toLowerCase() as Language
+      // Direct match
+      if (LANGUAGE_NAMES[short]) {
+        browserLang = short
+      } else {
+        // Try full code mapping for special cases
+        const fullMap: Record<string, Language> = {
+          'zh-cn': 'zh', 'zh-tw': 'zh', 'zh-hk': 'zh',
+          'pt-br': 'pt', 'pt-pt': 'pt',
+        }
+        const lowerRaw = raw.toLowerCase()
+        browserLang = fullMap[lowerRaw] || short
+      }
+    }
+
+    let finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')) as Language
+
     if (!LANGUAGE_NAMES[finalLang]) {
-      console.warn(`[i18n] Unknown browser lang ${browserLang}, falling back to en`)
+      console.warn(` Unknown lang ${finalLang}, falling back to en`)
       finalLang = 'en'
     }
+
     return finalLang
-  } catch { return 'en' }
+  } catch {
+    return 'en'
+  }
 }
 
 export function LanguageProvider({ children }: any) {
@@ -46,28 +92,67 @@ export function LanguageProvider({ children }: any) {
     const finalLang = safeGetInitialLang()
     setLang(finalLang)
     setLanguageState(finalLang)
-    try { if (typeof document !== 'undefined') { document.documentElement.lang = finalLang; document.documentElement.dir = RTL_LANGUAGES.includes(finalLang) ? 'rtl' : 'ltr' } } catch {}
+    try {
+      if (typeof document!== 'undefined') {
+        document.documentElement.lang = finalLang
+        document.documentElement.dir = RTL_LANGUAGES.includes(finalLang)? 'rtl' : 'ltr'
+      }
+    } catch {}
   }, [])
 
   const setLanguage = async (newLang: Language) => {
-    if (!LANGUAGE_NAMES[newLang]) { console.warn(`[i18n] Invalid lang ${newLang}`); newLang = 'en' }
+    if (!LANGUAGE_NAMES[newLang]) {
+      console.warn(` Invalid lang ${newLang}`);
+      newLang = 'en' as Language
+    }
+
     setLang(newLang)
     setLanguageState(newLang)
-    if (typeof window !== 'undefined') {
-      try { localStorage.setItem('sss_lang', newLang) } catch(e){ console.warn('[i18n] localStorage failed', e) }
-      try { document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000; SameSite=Lax` } catch(e){ console.warn('[i18n] cookie failed', e) }
-      try { if (typeof document !== 'undefined') { document.documentElement.lang = newLang; document.documentElement.dir = RTL_LANGUAGES.includes(newLang) ? 'rtl' : 'ltr' } } catch {}
+
+    if (typeof window!== 'undefined') {
+      try {
+        localStorage.setItem('sss_lang', newLang)
+      } catch(e){
+        console.warn(' localStorage failed', e)
+      }
+
+      try {
+        document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000; SameSite=Lax`
+      } catch(e){
+        console.warn(' cookie failed', e)
+      }
+
+      try {
+        if (typeof document!== 'undefined') {
+          document.documentElement.lang = newLang
+          document.documentElement.dir = RTL_LANGUAGES.includes(newLang)? 'rtl' : 'ltr'
+        }
+      } catch {}
     }
+
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      if (user) await supabase.from('profiles').update({ language: newLang }).eq('id', user.id)
+      if (user) {
+        await supabase.from('profiles').update({ language: newLang }).eq('id', user.id)
+      }
     } catch {}
   }
 
   const languageName = LANGUAGE_NAMES[language] || 'English'
+  const isRTL = RTL_LANGUAGES.includes(language)
+
   return (
-    <LanguageContext.Provider value={{ lang, language, languageName, setLang: setLanguage, setLanguage, LANGUAGE_NAMES, LANGUAGES, isRTL: RTL_LANGUAGES.includes(language) }}>
+    <LanguageContext.Provider value={{
+      lang,
+      language,
+      languageName,
+      setLang: setLanguage,
+      setLanguage,
+      LANGUAGE_NAMES,
+      LANGUAGES,
+      isRTL
+    }}>
       {children}
     </LanguageContext.Provider>
   )
@@ -79,7 +164,17 @@ export const useLanguage = () => {
     if (!ctx?.language) throw new Error('no ctx')
     return ctx
   } catch {
-    return { lang: 'en' as Language, language: 'en' as Language, languageName: 'English', setLang: ()=>{}, setLanguage: ()=>{}, LANGUAGE_NAMES, LANGUAGES, isRTL: false }
+    return {
+      lang: 'en' as Language,
+      language: 'en' as Language,
+      languageName: 'English',
+      setLang: () => {},
+      setLanguage: () => {},
+      LANGUAGE_NAMES,
+      LANGUAGES,
+      isRTL: false
+    }
   }
 }
+
 export default LanguageProvider
