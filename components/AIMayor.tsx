@@ -27,7 +27,7 @@ export default function AIMayor() {
 
   const generateIntelligentBrief = (weather: any, pulse: any, emergency: any) => {
     const greeting = getTimeGreeting()
-    const userLocale = typeof window !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
+    const userLocale = typeof window !== 'undefined' && typeof navigator !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
     const date = new Date().toLocaleDateString(userLocale, { weekday: 'long', month: 'short', day: 'numeric' })
     const temp = weather?.temp ? Math.round(weather.temp) : null
     const postCount = pulse?.count || 0
@@ -103,7 +103,7 @@ export default function AIMayor() {
       } catch (error) {
         if (mounted) {
           const greeting = getTimeGreeting()
-          const userLocale = typeof window !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
+          const userLocale = typeof window !== 'undefined' && typeof navigator !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
           const date = new Date().toLocaleDateString(userLocale, { weekday: 'long', month: 'short', day: 'numeric' })
           setBrief(`${greeting} ${effectiveCity} • ${date} • ${t.aiMayor?.monitoring || 'AI Mayor is monitoring your area'}`)
           setLoading(false)
@@ -119,7 +119,7 @@ export default function AIMayor() {
   return (
     <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl p-4 border border-white/10">
       <div className="flex items-center justify-between">
-        <span className="text-purple-300 font-black text-xs">AI MAYOR • {t.aiMayor?.live || 'LIVE'} • {effectiveCity.toUpperCase()}</span>
+        <span className="text-purple-300 font-black text-xs">AI MAYOR • {t.aiMayor?.live || 'LIVE'} • {(effectiveCity || 'YOUR AREA').toUpperCase()}</span>
         {loading && <span className="text-white/40 text-xs animate-pulse">{t.aiMayor?.thinking || 'Thinking...'}</span>}
       </div>
       <div className="text-white text-sm mt-1 leading-relaxed">{brief}</div>
