@@ -95,15 +95,11 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
 
   const displayZip = zip || (typeof window!== 'undefined'? (()=>{ try { return localStorage.getItem('user_zip') } catch { return '' } })() : '') || (t?.common?.yourBlock || 'YOUR BLOCK')
 
-  // FIXED: Use tFormat to replace {zip} dynamically - NO hardcoded zip
-  // If translation is "Publicar en {zip} - Todo en Uno", this becomes "Publicar en 95122 - Todo en Uno" for your user, "Publicar en 90210 - Todo en Uno" for LA user
   const postToText = useMemo(() => {
     const raw = t.feed?.postTo || 'Post to {zip} - One Stop'
-    // If the string contains {zip}, replace it dynamically
     if (raw.includes('{zip}')) {
       return tFormat(raw, { zip: displayZip })
     }
-    // Otherwise fallback to old style: "Post to" + zip
     return `${raw} ${displayZip} - One Stop`
   }, [t, displayZip])
 
@@ -116,7 +112,6 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   }, [t, displayZip])
 
   const postingAsText = useMemo(() => {
-    // Handles {zip} dynamically
     return `${t.feed?.postingAs || 'Publicando como'} • ${displayZip} • ${currentCat?.icon} ${currentCat?.label} • ${t.feed?.universalMic || 'Micrófono Universal'}`
   }, [t, displayZip, currentCat])
 
@@ -128,7 +123,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
         <textarea
           value={body}
           onChange={e=>{ try { setBody(e.target.value) } catch {} }}
-          placeholder={`${tapMicText} - ${t.feed?.anyDevice || 'cualquier teléfono o computadora'}`}
+          placeholder={tapMicText}
           className="w-full max-w-full min-w-0 bg-white rounded-xl p-3 text-black placeholder:text-black/40 min-h- flex-1 resize-none outline-none border"
         />
         <button onClick={()=>{ try { toggleMic() } catch {} }} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
