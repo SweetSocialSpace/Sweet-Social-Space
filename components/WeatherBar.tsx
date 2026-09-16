@@ -7,6 +7,7 @@ import { useTranslations, tFormat } from '@/lib/translations'
 export default function WeatherBar() {
   const { zip: globalZip, city: globalCity } = useLocation()
   const { language } = useLanguage()
+  const isEs = language?.toLowerCase().startsWith('es')
   const zip = globalZip && globalZip!== 'YOUR NEIGHBORHOOD'? globalZip : ''
   const [temp, setTemp] = useState<number | null>(null)
   const [desc, setDesc] = useState('')
@@ -14,8 +15,8 @@ export default function WeatherBar() {
 
   const t = useTranslations() as any
 
-  // Hardcoded English → Spanish weather map as ultimate fallback if translate API fails
-  const weatherMap: Record<string, string> = {
+  // Auto map — Spanish when Español tab, English when English tab
+  const weatherMapEs: Record<string, string> = {
     'clear sky': 'cielo claro',
     'few clouds': 'pocas nubes',
     'scattered clouds': 'nubes dispersas',
@@ -51,7 +52,8 @@ export default function WeatherBar() {
       const rawDescription = (data?.description || data?.weather?.[0]?.description || '').toLowerCase()
 
       if (rawDescription) {
-        if (language!== 'en') {
+        if (isEs) {
+          // Español mode — try translate API first, then manual map
           try {
             const tr = await fetch('/api/translate', {
               method: 'POST',
@@ -64,13 +66,13 @@ export default function WeatherBar() {
             if (translatedText && translatedText.toLowerCase()!== rawDescription) {
               setDesc(translatedText)
             } else {
-              // Fallback to manual map if API returns same English
-              setDesc(weatherMap[rawDescription] || rawDescription)
+              setDesc(weatherMapEs[rawDescription] || rawDescription)
             }
           } catch {
-            setDesc(weatherMap[rawDescription] || rawDescription)
+            setDesc(weatherMapEs[rawDescription] || rawDescription)
           }
         } else {
+          // English mode — always English, never Spanish map
           setDesc(rawDescription)
         }
       }
@@ -82,15 +84,15 @@ export default function WeatherBar() {
     load()
     const id = setInterval(load, 300000)
     return () => clearInterval(id)
-  }, [zip, globalCity, language])
+  }, [zip, globalCity, language, isEs])
 
-  const displayCity = city || globalCity || (zip? zip : (t?.common?.yourArea || 'tu área'))
+  const displayCity = city || globalCity || (zip? zip : (t?.common?.yourArea || (isEs? 'tu área' : 'your area')))
 
   return (
     <div data-sss-live className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-white font-black text-xs tracking-widest">{t?.weather?.weather || 'Clima'}</span>
-        <span className="bg-green-500 text-black px-2 py-0.5 rounded-full font-black text-xs">{t?.weather?.live || 'EN VIVO'}</span>
+        <span className="text-white font-black text-xs tracking-widest">{t?.weather?.weather || (isEs? 'Clima' : 'Weather')}</span>
+        <span className="bg-green-500 text-black px-2 py-0.5 rounded-full font-black text-xs">{t?.weather?.live || (isEs? 'EN VIVO' : 'LIVE')}</span>
       </div>
       <div className="flex items-center gap-3 mt-2">
         <div className="text-white text-3xl font-black">{temp!== null? `${temp}°F` : '--°F'}</div>
