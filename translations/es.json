@@ -75,7 +75,63 @@
     "passwordPlaceholder": "Contraseña",
     "signIn": "Iniciar sesión",
     "signUp": "Registrarse",
-    "languageLabel": "Elige tu idioma"
+    "languageLabel": "Elige tu idioma",
+    "errors": {
+      "required": "Este campo es obligatorio"
+    },
+    "login": {
+      "title": "Bienvenido a Casa, Vecino.",
+      "subtitle": "Tus vecinos te extrañaron.",
+      "emailLabel": "Tu correo electrónico",
+      "passwordLabel": "Tu contraseña",
+      "signingIn": "Iniciando sesión...",
+      "signInButton": "INICIA SESIÓN — ¡Ve Tu Vecindario!",
+      "noAccount": "¿No tienes cuenta?",
+      "signUpLink": "Únete a tus vecinos — gratis",
+      "marketingTitle": "Facebook te muestra el mundo. Nosotros te mostramos tu vecindario.",
+      "marketingDesc1": "Tu vecino podría tener cosas gratis. Otro podría necesitar trabajo. Alguien a 3 casas acaba de publicar una alerta.",
+      "marketingDesc2": "Sweet Social Space te permite escuchar a tus vecinos dentro de {radius} millas de TI — donde sea que estés en el mundo. Sin robots decidiendo lo que ves. Sin bloqueos por tu fe. Solo vecinos reales, ahora mismo.",
+      "tagline": "Habla Libremente. Ama a Tu Vecino. •¡Jesús TE AMA!-Independiente",
+      "privacy": "Nos importa tu privacidad • A PRUEBA DE FALLOS",
+      "errorGeneric": "Error al iniciar sesión"
+    },
+    "signup": {
+      "title": "Únete a Tu Área",
+      "creating": "Creando cuenta...",
+      "checkEmail": "¡Cuenta creada! Revisa tu correo para confirmar",
+      "success": "¡Cuenta creada! Llevándote a tu feed local...",
+      "errorGeneric": "Error al registrarse",
+      "nameLabel": "Tu nombre",
+      "emailLabel": "Tu correo electrónico",
+      "passwordLabel": "Crea una contraseña",
+      "locationSection": "¿Dónde estás? (Obligatorio)",
+      "privacyTitle": "Tu Privacidad Protegida",
+      "privacyDesc": "Usamos tu código postal para mostrarte publicaciones cerca de ti",
+      "zipLabel": "Código Postal",
+      "cityLabel": "Ciudad",
+      "countryLabel": "País",
+      "whyLocationTitle": "Por qué necesitamos tu ubicación:",
+      "why1": "Mostrarte publicaciones de tu vecindario real",
+      "why2": "Darte el clima local preciso y alertas",
+      "why3": "Conectarte con eventos y negocios cercanos",
+      "why4": "Mantener tu comunidad segura y relevante",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "submit": "Regístrate — Ver Tu Área"
+    },
+    "marketing": {
+      "title": "Facebook te muestra el mundo. Nosotros te mostramos tu área.",
+      "feature1": "Tu vecino tiene un sofá gratis. Otro necesita trabajo.",
+      "description": "Sweet Social Space está personalizado a tu área dentro de {radius} millas de TI",
+      "tagline": "Habla Libremente. Ama a Tu Vecino.",
+      "subtitle2": "Gente real. Vecindario real. Sin algoritmo del otro lado del mundo."
+    },
+    "feedRadius": {
+      "label": "Radio del feed",
+      "5miles": "5 millas",
+      "10miles": "10 millas",
+      "15miles": "15 millas",
+      "20miles": "20 millas"
+    }
   },
   "theme": {
     "theme": "Tema",
