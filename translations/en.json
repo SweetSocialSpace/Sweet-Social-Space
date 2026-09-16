@@ -7,14 +7,14 @@
   },
   "feed": {
     "whatsHappening": "What's happening in",
-    "whatsHappeningQuestion": "What's happening?",
-    "postAs": "Posting as {name}",
-    "postTo": "Post to {zip} - One Stop",
+    "postAs": "Posting as",
+    "postTo": "Post to",
     "in": "in",
     "loading": "Loading...",
     "posting": "POSTING...",
     "fixPunctuation": "Fix punctuation",
-    "tapMic": "Tap mic - works in {zip} - any phone or computer",
+    "tapMic": "Tap mic - works in",
+    "anyDevice": "any phone or computer",
     "postingAs": "Posting as",
     "universalMic": "Universal Mic",
     "waitBlock": "Still detecting your block... wait 2 sec and post again",
@@ -25,8 +25,7 @@
     "conditionGood": "Good",
     "conditionFair": "Fair",
     "recorded_live": "Recorded Live",
-    "there": "there",
-    "anyDevice": "any phone or computer"
+    "whatsHappeningQuestion": "What's happening?"
   },
   "common": {
     "backToFeed": "Back to feed",
@@ -37,9 +36,9 @@
     "error": "Error",
     "loading": "Loading...",
     "recorded": "Recorded",
-    "yourArea": "your area",
-    "loadingDots": "Loading...",
-    "wasLive": "Was Live"
+    "yourArea": "yourArea",
+    "wasLive": "wasLive",
+    "loadingDots": "loadingDots"
   },
   "weather": {
     "weather": "Weather",
@@ -77,55 +76,26 @@
     "signUp": "Sign Up",
     "languageLabel": "Choose your language",
     "errors": {
-      "required": "This field is required",
-      "invalidEmail": "Invalid email address",
-      "passwordMismatch": "Passwords do not match"
+      "required": "This field is required"
     },
     "login": {
-      "title": "Welcome back",
-      "subtitle": "Sign in to your neighborhood",
-      "emailLabel": "Email address",
-      "passwordLabel": "Password",
-      "signingIn": "Signing in...",
-      "forgotPassword": "Forgot password?",
-      "noAccount": "No account?",
-      "signUpLink": "Sign up",
-      "errorGeneric": "Login failed",
-      "signInButton": "Sign In",
-      "checkingEmail": "Checking..."
-    },
-    "signup": {
-      "title": "Join Your Area",
-      "subtitle": "Create your account",
-      "nameLabel": "Your name",
+      "title": "Welcome Home, Neighbor.",
+      "subtitle": "Your Neighbors missed you.",
       "emailLabel": "Your email address",
-      "passwordLabel": "Create a password",
-      "cityLabel": "City",
-      "countryLabel": "Country",
-      "zipLabel": "Zip / Postal Code",
-      "creating": "Creating...",
-      "checkEmail": "Account created! Check your email to confirm, then sign in. Check spam folder too.",
-      "success": "Account created! Taking you to your area feed...",
-      "errorGeneric": "Signup failed",
-      "locationSection": "Where are you? (Required)",
-      "privacyTitle": "Your Privacy Protected",
-      "privacyDesc": "We use your zip code (not GPS tracking) to show you posts, weather, and alerts near you. Your exact address is never shared.",
-      "whyLocationTitle": "Why we need your location:",
-      "why1": "Show you posts from your actual neighborhood",
-      "why2": "Give you accurate local weather & alerts",
-      "why3": "Connect you with nearby events & businesses",
-      "why4": "Keep your community safe and relevant",
-      "submit": "Sign up — See Your Area Feed",
-      "hasAccount": "Already have an account?",
-      "signInLink": "Sign in"
+      "passwordLabel": "Your password",
+      "signingIn": "Signing you in...",
+      "signInButton": "SIGN IN — See Your Neighborhood !",
+      "noAccount": "No account?",
+      "signUpLink": "Join your Neighbors — free",
+      "marketingTitle": "Facebook shows you the world. We show you your Neighborhood.",
+      "marketingDesc1": "Your neighbor might have free stuff. Another might needs a job. Someone 3 houses down just posted an alert.",
+      "marketingDesc2": "Sweet Social Space lets you hear from your neighbors within {radius} miles of YOU — wherever you are in the world. No robots deciding what you see. No shadowbans for your faith. Just real neighbors, right now.",
+      "tagline": "Speak Freely. Love Your Neighbor. •Jesus LOVES You!-Independent",
+      "privacy": "WE care about your privacy • FAILSAFE",
+      "errorGeneric": "Login failed"
     },
-    "marketing": {
-      "title": "Facebook shows you the world. We show you your area.",
-      "description": "Sweet Social Space is personalized to your area within {radius} miles of YOU — wherever you are in the world. Local feed, local focus.",
-      "feature1": "Your neighbor has a free couch. Another needs a job. Someone nearby just posted an update.",
-      "tagline": "Speak Freely. Love Your Neighbor.",
-      "subtitle": "Your neighborhood, live"
-    },
+    "signup": {},
+    "marketing": {},
     "feedRadius": {
       "label": "Feed radius",
       "5miles": "5 miles",
@@ -133,87 +103,5 @@
       "15miles": "15 miles",
       "20miles": "20 miles"
     }
-  },
-  "theme": {
-    "theme": "Theme",
-    "light": "Light",
-    "dark": "Dark",
-    "auto": "Auto"
-  },
-  "liveMap": {
-    "title": "Live Map",
-    "subtitle": "3 live pins • Full view"
-  },
-  "faith": {
-    "title": "Faith of the Day",
-    "faithOfTheDay": "Faith of the Day"
-  },
-  "businesses": {
-    "title": "Local Businesses",
-    "loading": "Loading",
-    "near": "Near",
-    "noBusinesses": "No businesses yet",
-    "policeDeptSuffix": "Police Department",
-    "fireDeptSuffix": "Fire Department",
-    "librarySuffix": "Library",
-    "communitySuffix": "Community Center",
-    "catPolice": "Police",
-    "catFire": "Fire Station",
-    "catLibrary": "Library",
-    "catCommunity": "Community"
-  },
-  "aiMayor": {
-    "goodMorning": "Good morning",
-    "goodAfternoon": "Good afternoon",
-    "goodEvening": "Good evening",
-    "goodNight": "Good night",
-    "hotDay": "Hot day ahead at {temp}°F - stay hydrated",
-    "pleasant": "Pleasant {temp}°F - great day to be outside",
-    "mild": "Mild {temp}°F - perfect conditions",
-    "cool": "Cool {temp}°F - grab a light jacket",
-    "chilly": "Chilly {temp}°F - bundle up",
-    "neighborsActive": "{count} neighbors are active today",
-    "newUpdates": "{count} new updates in your area",
-    "beFirst": "Be the first to share in {city}",
-    "weatherAlert": "Weather alert active - stay informed",
-    "seismic": "Seismic activity detected nearby",
-    "watchingOver": "Your AI Mayor is watching over {city}",
-    "wakingUp": "AI Mayor is waking up in {city}...",
-    "localFeed": "LOCAL feed - Be the first to share in your area!",
-    "monitoring": "AI Mayor is monitoring your area",
-    "live": "LIVE",
-    "thinking": "Thinking..."
-  },
-  "events": {
-    "upcomingEvents": "Upcoming Events",
-    "near": "Near",
-    "noEventsNearby": "No events nearby",
-    "tba": "TBA"
-  },
-  "whatsHappening": {
-    "whatsHappeningNearYou": "What's happening near you",
-    "locating": "Locating...",
-    "near": "Near",
-    "informationHighway": "Information Highway",
-    "checking": "Checking",
-    "events": "events",
-    "eventsIn": "Events in",
-    "local": "Local",
-    "liveApis": "Live: SeatGeek + External APIs • 15 mile radius"
-  },
-  "verified": {
-    "verifiedSources": "Verified Sources",
-    "near": "Near",
-    "noVerifiedOrgs": "No verified orgs yet - apply!",
-    "verified": "Verified",
-    "verifiedBadge": "Verified",
-    "trustNetwork": "Trust Network - Verified",
-    "communitySafety": "Community Safety - Verified",
-    "nws": "NWS - Verified",
-    "policeDept": "Police Department",
-    "fireDept": "Fire Department",
-    "police": "Police",
-    "fire": "Fire",
-    "applyForVerification": "Apply for verification"
   }
 }
