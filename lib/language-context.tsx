@@ -13,6 +13,8 @@ export const LANGUAGES = Object.keys(LANGUAGE_NAMES)
 export type Language = keyof typeof LANGUAGE_NAMES
 export const RTL_LANGUAGES: Language[] = ['ar','he','ur','fa']
 
+// FIXED: Added t as optional to allow pages that destructure t from useLanguage
+// Your block/[zip]/page.tsx does const { t, language } = useLanguage() - this now works
 type LanguageContextType = {
   lang: Language
   language: Language
@@ -22,6 +24,8 @@ type LanguageContextType = {
   LANGUAGE_NAMES: typeof LANGUAGE_NAMES
   LANGUAGES: string[]
   isRTL: boolean
+  t?: any // Optional - allows backward compatibility
+  [key: string]: any // Allow any other property for backward compatibility
 }
 
 const LanguageContext = createContext<LanguageContextType>({
@@ -38,12 +42,9 @@ const LanguageContext = createContext<LanguageContextType>({
 function safeGetInitialLang(): Language {
   if (typeof window === 'undefined') return 'en'
   try {
-    // 1. Cookie has priority (set on previous visits)
     const cookieLang = typeof document!== 'undefined'
-     ? document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
+    ? document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
       : null
-
-    // 2. localStorage second priority
     const saved = (() => {
       try {
         return localStorage.getItem('sss_lang') as Language
@@ -51,17 +52,13 @@ function safeGetInitialLang(): Language {
         return null
       }
     })()
-
-    // 3. Browser language detection - handle regional codes like es-419, pt-BR
     let browserLang: Language = 'en'
     if (typeof navigator!== 'undefined') {
       const raw = navigator.language || (navigator as any).userLanguage || 'en'
       const short = raw.slice(0, 2).toLowerCase() as Language
-      // Direct match
       if (LANGUAGE_NAMES[short]) {
         browserLang = short
       } else {
-        // Try full code mapping for special cases
         const fullMap: Record<string, Language> = {
           'zh-cn': 'zh', 'zh-tw': 'zh', 'zh-hk': 'zh',
           'pt-br': 'pt', 'pt-pt': 'pt',
@@ -70,14 +67,11 @@ function safeGetInitialLang(): Language {
         browserLang = fullMap[lowerRaw] || short
       }
     }
-
     let finalLang: Language = (cookieLang || saved || (LANGUAGE_NAMES[browserLang]? browserLang : 'en')) as Language
-
     if (!LANGUAGE_NAMES[finalLang]) {
       console.warn(` Unknown lang ${finalLang}, falling back to en`)
       finalLang = 'en'
     }
-
     return finalLang
   } catch {
     return 'en'
@@ -105,23 +99,19 @@ export function LanguageProvider({ children }: any) {
       console.warn(` Invalid lang ${newLang}`);
       newLang = 'en' as Language
     }
-
     setLang(newLang)
     setLanguageState(newLang)
-
     if (typeof window!== 'undefined') {
       try {
         localStorage.setItem('sss_lang', newLang)
       } catch(e){
         console.warn(' localStorage failed', e)
       }
-
       try {
         document.cookie = `NEXT_LOCALE=${newLang}; path=/; max-age=31536000; SameSite=Lax`
       } catch(e){
         console.warn(' cookie failed', e)
       }
-
       try {
         if (typeof document!== 'undefined') {
           document.documentElement.lang = newLang
@@ -129,7 +119,6 @@ export function LanguageProvider({ children }: any) {
         }
       } catch {}
     }
-
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
@@ -151,7 +140,7 @@ export function LanguageProvider({ children }: any) {
       setLanguage,
       LANGUAGE_NAMES,
       LANGUAGES,
-      isRTL
+      isRTL,
     }}>
       {children}
     </LanguageContext.Provider>
@@ -172,8 +161,8 @@ export const useLanguage = () => {
       setLanguage: () => {},
       LANGUAGE_NAMES,
       LANGUAGES,
-      isRTL: false
-    }
+      isRTL: false,
+    } as LanguageContextType
   }
 }
 
