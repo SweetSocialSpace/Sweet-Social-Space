@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
-import { useTranslations } from '@/lib/translations'
+import { useTranslations, tFormat } from '@/lib/translations'
 
 type EventItem = { id: string; title: string; venue?: string; icon?: string; source?: string }
 
@@ -11,35 +11,72 @@ export function WhatsHappeningNearYou(){
   const [events, setEvents] = useState<EventItem[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Translate API titles that come in English — keeps zip dynamic
+  const translateEventTitle = (title: string): string => {
+    if (!title) return title
+    // Keep zip dynamic — don't hardcode 95122
+    const zipToUse = zip || ''
+
+    // Map English API titles to Spanish using translations if available
+    const titleMap: Record<string, string> = {
+      [`Live Music near ${zipToUse}`]: t?.whatsHappening?.liveMusicNear? tFormat(t.whatsHappening.liveMusicNear, { zip: zipToUse }) : `Música en Vivo cerca de ${zipToUse}`,
+      [`Local Market near ${zipToUse}`]: t?.whatsHappening?.localMarketNear? tFormat(t.whatsHappening.localMarketNear, { zip: zipToUse }) : `Mercado Local cerca de ${zipToUse}`,
+      [`Community Event`]: t?.whatsHappening?.communityEvent || 'Evento Comunitario',
+      [`Community Events in ${city || ''}, CA`]: t?.whatsHappening?.communityEventsIn? tFormat(t.whatsHappening.communityEventsIn, { city: city || '' }) : `Eventos Comunitarios en ${city || zipToUse}, CA`,
+      [`Local Sports in ${city || ''}, CA`]: t?.whatsHappening?.localSportsIn? tFormat(t.whatsHappening.localSportsIn, { city: city || '' }) : `Deportes Locales en ${city || zipToUse}, CA`,
+    }
+
+    // Check for exact match first
+    if (titleMap[title]) return titleMap[title]
+
+    // Check for pattern matches (API might return variations)
+    if (title.includes('Live Music near')) return t?.whatsHappening?.liveMusicNear? tFormat(t.whatsHappening.liveMusicNear, { zip: zipToUse }) : `Música en Vivo cerca de ${zipToUse}`
+    if (title.includes('Local Market near')) return t?.whatsHappening?.localMarketNear? tFormat(t.whatsHappening.localMarketNear, { zip: zipToUse }) : `Mercado Local cerca de ${zipToUse}`
+    if (title.includes('Community Event')) return t?.whatsHappening?.communityEvent || 'Evento Comunitario'
+    if (title.includes('Community Events in')) return t?.whatsHappening?.communityEventsIn? tFormat(t.whatsHappening.communityEventsIn, { city: city || zipToUse }) : `Eventos Comunitarios en ${city || zipToUse}, CA`
+    if (title.includes('Local Sports in')) return t?.whatsHappening?.localSportsIn? tFormat(t.whatsHappening.localSportsIn, { city: city || zipToUse }) : `Deportes Locales en ${city || zipToUse}, CA`
+    if (title.includes('Events in')) return t?.whatsHappening?.eventsIn? tFormat(t.whatsHappening.eventsIn, { city: city || zipToUse }) : `Eventos en ${city || zipToUse}`
+
+    return title
+  }
+
   useEffect(()=>{
     if (!zip) return
     let mounted = true
     const load = async()=>{
       try{
         setLoading(true)
-        
+
         const res = await fetch(`/api/events?zip=${encodeURIComponent(zip)}&lat=${lat}&lon=${lng}`)
         if (res.ok) {
           const json = await res.json()
           if(mounted) {
-            setEvents((json.events || []).slice(0,5))
+            const translated = (json.events || []).slice(0,5).map((ev: EventItem) => ({
+             ...ev,
+              title: translateEventTitle(ev.title)
+            }))
+            setEvents(translated)
             setLoading(false)
           }
         }
-        
+
         const extRes = await fetch(`/api/external-events?zip=${encodeURIComponent(zip)}&city=${encodeURIComponent(city || '')}&lat=${lat}&lon=${lng}`)
         if (extRes.ok) {
           const json = await extRes.json()
           if(mounted && json.events && json.events.length > 0) {
-            setEvents((prev: EventItem[]) => [...prev, ...json.events].slice(0,5))
+            const translatedExt = json.events.map((ev: EventItem) => ({
+             ...ev,
+              title: translateEventTitle(ev.title)
+            }))
+            setEvents((prev: EventItem[]) => [...prev,...translatedExt].slice(0,5))
           }
         }
-        
+
         if(mounted) setLoading(false)
-      }catch{ 
+      }catch{
         if(mounted) {
           setEvents([
-            { id: 'fallback-1', title: `${t?.whatsHappening?.eventsIn || 'Events in'} ${city || zip}`, icon: '🎉', source: t?.whatsHappening?.local || 'Local' },
+            { id: 'fallback-1', title: t?.whatsHappening?.eventsIn? tFormat(t.whatsHappening.eventsIn, { city: city || zip }) : `Eventos en ${city || zip}`, icon: '🎉', source: t?.whatsHappening?.local || 'Local' },
           ])
           setLoading(false)
         }
@@ -52,17 +89,17 @@ export function WhatsHappeningNearYou(){
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📍 {t?.whatsHappening?.whatsHappeningNearYou || "What's happening near you"}</p>
-      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.locating || 'Locating...'}</p>
+      <p className="font-bold">📍 {t?.whatsHappening?.whatsHappeningNearYou || "Qué pasa cerca de ti"}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.locating || 'Localizando...'}</p>
     </div>
   )
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📍 {t?.whatsHappening?.whatsHappeningNearYou || "What's happening near you"}</p>
-      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.near || 'Near'} {zip} {city? `• ${city}`:''} • {t?.whatsHappening?.informationHighway || 'Information Highway'}</p>
-      {loading? <p className="text-sm mt-3 text-white/60">{t?.common?.loading || 'Loading...'}</p> : events.length===0? (
-        <p className="text-sm mt-3 text-white/70">{t?.whatsHappening?.checking || 'Checking'} {city || zip} {t?.whatsHappening?.events || 'events...'}</p>
+      <p className="font-bold">📍 {t?.whatsHappening?.whatsHappeningNearYou || "Qué pasa cerca de ti"}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.near || 'Cerca de'} {zip} {city? `• ${city}`:''} • {t?.whatsHappening?.informationHighway || 'Autopista de Información'}</p>
+      {loading? <p className="text-sm mt-3 text-white/60">{t?.common?.loading || 'Cargando...'}</p> : events.length===0? (
+        <p className="text-sm mt-3 text-white/70">{t?.whatsHappening?.checking || 'Verificando'} {city || zip} {t?.whatsHappening?.events || 'eventos...'}</p>
       ):(
         <div className="mt-3 space-y-2.5">
           {events.map(ev=>(
@@ -74,7 +111,7 @@ export function WhatsHappeningNearYou(){
               </div>
             </div>
           ))}
-          <p className="text-xs text-white/25 mt-1">{t?.whatsHappening?.liveApis || 'Live: SeatGeek + External APIs • 15mi radius'}</p>
+          <p className="text-xs text-white/25 mt-1">{t?.whatsHappening?.liveApis || 'En vivo: SeatGeek + APIs externas • Radio de 15 millas'}</p>
         </div>
       )}
     </div>
