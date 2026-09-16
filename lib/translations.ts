@@ -1,34 +1,102 @@
 'use client'
-import { useEffect, useState, useMemo, useRef } from 'react'
 import { useLanguage } from './language-context'
+import { useMemo } from 'react'
 
+// SYNCHRONOUS LOADING - No fetch, no 404, no flash, instant switch
+// All translations bundled at build time - works offline
 type Dict = Record<string, any>
 
-// LRU Cache with size limit to prevent memory leak
-const MAX_CACHE_SIZE = 10
-let cache: Map<string, Dict> = new Map()
-let enFallback: Dict | null = null
+// Import English first (required as fallback)
+import en from '@/translations/en.json'
 
-const PATHS = [
-  (l: string) => `/translations/${l}.json`,
-  (l: string) => `/locales/${l}.json`,
-  (l: string) => `/${l}.json`
-]
+// Helper to safely load a language - returns {} if missing
+function loadLang(code: string): Dict {
+  try {
+    // Dynamic require - Next.js will bundle these JSON files
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(`@/translations/${code}.json`)
+  } catch {
+    try {
+      // Fallback: try public folder path
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require(`@/public/translations/${code}.json`)
+    } catch (e) {
+      console.warn(` Failed to load ${code}.json, using fallback`)
+      return {}
+    }
+  }
+}
+
+// Load all 56 languages synchronously at startup
+// This is bundled into JS - no network requests
+const translations: Record<string, Dict> = {
+  en,
+  es: loadLang('es'),
+  fr: loadLang('fr'),
+  de: loadLang('de'),
+  zh: loadLang('zh'),
+  ja: loadLang('ja'),
+  ko: loadLang('ko'),
+  tl: loadLang('tl'),
+  hi: loadLang('hi'),
+  ar: loadLang('ar'),
+  pt: loadLang('pt'),
+  ru: loadLang('ru'),
+  it: loadLang('it'),
+  nl: loadLang('nl'),
+  sv: loadLang('sv'),
+  pl: loadLang('pl'),
+  uk: loadLang('uk'),
+  el: loadLang('el'),
+  tr: loadLang('tr'),
+  cs: loadLang('cs'),
+  hu: loadLang('hu'),
+  fi: loadLang('fi'),
+  no: loadLang('no'),
+  da: loadLang('da'),
+  bg: loadLang('bg'),
+  hr: loadLang('hr'),
+  sr: loadLang('sr'),
+  sk: loadLang('sk'),
+  sl: loadLang('sl'),
+  et: loadLang('et'),
+  lv: loadLang('lv'),
+  lt: loadLang('lt'),
+  be: loadLang('be'),
+  ro: loadLang('ro'),
+  he: loadLang('he'),
+  ur: loadLang('ur'),
+  fa: loadLang('fa'),
+  id: loadLang('id'),
+  vi: loadLang('vi'),
+  th: loadLang('th'),
+  ms: loadLang('ms'),
+  km: loadLang('km'),
+  lo: loadLang('lo'),
+  my: loadLang('my'),
+  bn: loadLang('bn'),
+  ka: loadLang('ka'),
+  hy: loadLang('hy'),
+  az: loadLang('az'),
+  kk: loadLang('kk'),
+  ky: loadLang('ky'),
+  uz: loadLang('uz'),
+  tg: loadLang('tg'),
+  mn: loadLang('mn'),
+}
 
 function deepMerge(target: Dict, fallback: Dict): Dict {
   if (!fallback) return target
   if (!target) return fallback
-  
-  const out: Dict = { ...fallback }
-  
+  const out: Dict = {...fallback }
   for (const k of Object.keys(target)) {
     if (
-      typeof target[k] === 'object' && 
-      target[k] !== null && 
-      !Array.isArray(target[k]) &&
+      typeof target[k] === 'object' &&
+      target[k]!== null &&
+     !Array.isArray(target[k]) &&
       typeof fallback[k] === 'object' &&
-      fallback[k] !== null &&
-      !Array.isArray(fallback[k])
+      fallback[k]!== null &&
+     !Array.isArray(fallback[k])
     ) {
       out[k] = deepMerge(target[k], fallback[k])
     } else {
@@ -38,116 +106,23 @@ function deepMerge(target: Dict, fallback: Dict): Dict {
   return out
 }
 
-function setCache(lang: string, data: Dict) {
-  // LRU eviction - remove oldest if over limit
-  if (cache.size >= MAX_CACHE_SIZE && !cache.has(lang)) {
-    const firstKey = cache.keys().next().value
-    if (firstKey) cache.delete(firstKey)
-  }
-  cache.set(lang, data)
-}
-
-async function safeLoad(lang: string): Promise<Dict | null> {
-  if (cache.has(lang)) {
-    return cache.get(lang)!
-  }
-  
-  for (const getPath of PATHS) {
-    try {
-      const res = await fetch(getPath(lang), { cache: 'no-store' }).catch(() => null)
-      if (res && res.ok) {
-        const j = await res.json()
-        setCache(lang, j)
-        return j
-      }
-    } catch {}
-  }
-  return null
-}
-
 export function useTranslations() {
   const { language } = useLanguage()
-  const [dict, setDict] = useState<Dict>(() => {
-    // Return cached if available to prevent flash
-    if (cache.has(language)) return cache.get(language)!
-    if (language === 'en' && enFallback) return enFallback
-    return enFallback || {}
-  })
-  
-  const mountedRef = useRef(true)
-  const loadingRef = useRef<string | null>(null)
 
-  useEffect(() => {
-    mountedRef.current = true
-    
-    // Prevent duplicate loads for same language
-    if (loadingRef.current === language) return
-    loadingRef.current = language
+  return useMemo(() => {
+    const english = translations['en'] || en
+    if (language === 'en') return english
 
-    let cancelled = false
-
-    ;(async () => {
-      try {
-        // Load English fallback first if not loaded
-        if (!enFallback) {
-          const en = await safeLoad('en')
-          if (en && !cancelled) {
-            enFallback = en
-            if (language === 'en' && mountedRef.current) {
-              setDict(en)
-              loadingRef.current = null
-              return
-            }
-          }
-        }
-
-        if (language === 'en') {
-          if (enFallback && mountedRef.current && !cancelled) {
-            setDict(enFallback)
-          }
-          loadingRef.current = null
-          return
-        }
-
-        // If we have it cached, use it immediately - no flash
-        if (cache.has(language) && enFallback) {
-          if (mountedRef.current && !cancelled) {
-            setDict(deepMerge(cache.get(language)!, enFallback))
-          }
-          loadingRef.current = null
-          return
-        }
-
-        // Load requested language
-        const d = await safeLoad(language)
-        if (cancelled || !mountedRef.current) return
-
-        if (d && enFallback) {
-          setDict(deepMerge(d, enFallback))
-        } else if (d) {
-          setDict(d)
-        } else if (enFallback) {
-          setDict(enFallback)
-        }
-      } finally {
-        if (!cancelled) {
-          loadingRef.current = null
-        }
-      }
-    })()
-
-    return () => {
-      cancelled = true
+    const selected = translations[language]
+    if (!selected || Object.keys(selected).length === 0) {
+      console.warn(` No translation found for ${language}, using English`)
+      return english
     }
+
+    // Merge selected language over English fallback
+    // So if Spanish is missing a key, English shows instead of blank
+    return deepMerge(selected, english)
   }, [language])
-
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false
-    }
-  }, [])
-
-  return useMemo(() => dict, [dict])
 }
 
 export function tFormat(str: string | undefined, vars: Record<string, string | number>) {
