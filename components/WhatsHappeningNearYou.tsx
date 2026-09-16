@@ -4,7 +4,7 @@ import { useLocation } from '@/lib/location-context'
 import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
-type EventItem = { id: string; title: string; venue?: string; icon?: string; source?: string }
+type EventItem = { id: string; title: string; venue?: string; icon?: string; source?: string; _origTitle?: string; _origVenue?: string }
 
 export function WhatsHappeningNearYou(){
   const { zip, city, lat, lng } = useLocation()
@@ -20,25 +20,56 @@ export function WhatsHappeningNearYou(){
     const load = async()=>{
       try{
         setLoading(true)
+        let all: EventItem[] = []
+
         const res = await fetch(`/api/events?zip=${encodeURIComponent(zip)}&lat=${lat}&lon=${lng}`)
         if (res.ok) {
           const json = await res.json()
-          if(mounted) {
-            setEvents((json.events || []).slice(0,5))
-          }
+          all = (json.events || []).slice(0,5)
         }
+        
         const extRes = await fetch(`/api/external-events?zip=${encodeURIComponent(zip)}&city=${encodeURIComponent(city || '')}&lat=${lat}&lon=${lng}`)
         if (extRes.ok) {
           const json = await extRes.json()
-          if(mounted && json.events && json.events.length > 0) {
-            setEvents((prev: EventItem[]) => [...prev, ...json.events].slice(0,5))
+          if (json.events?.length > 0) {
+            all = [...all, ...json.events].slice(0,5)
           }
         }
-        if(mounted) setLoading(false)
+
+        // AUTO-TRANSLATE event titles if Español tab
+        if (isEs && all.length > 0) {
+          try {
+            const textsToTranslate = all.flatMap(ev => [ev.title, ev.venue].filter(Boolean)) as string[]
+            if (textsToTranslate.length > 0) {
+              const trRes = await fetch('/api/translate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ target: language, texts: textsToTranslate }),
+              })
+              if (trRes.ok) {
+                const trData = await trRes.json()
+                const translations: string[] = trData.translations?.map((x:any)=> x.text || x) || trData || []
+                let idx = 0
+                all = all.map(ev => {
+                  const newTitle = translations[idx++] || ev.title
+                  const newVenue = ev.venue ? (translations[idx++] || ev.venue) : ev.venue
+                  return { ...ev, title: newTitle, venue: newVenue, _origTitle: ev.title, _origVenue: ev.venue }
+                })
+              }
+            }
+          } catch {}
+        }
+
+        if(mounted) {
+          setEvents(all.length ? all : [
+            { id: 'fallback-1', title: `${t?.whatsHappening?.eventsIn || (isEs? 'Eventos en' : 'Events in')} ${city || zip}`, icon: '🎉', source: t?.whatsHappening?.local || 'Local' },
+          ])
+          setLoading(false)
+        }
       }catch{ 
         if(mounted) {
           setEvents([
-            { id: 'fallback-1', title: `${t?.whatsHappening?.eventsIn || (isEs? 'Eventos en' : 'Events in')} ${city || zip}`, icon: '🎉', source: t?.whatsHappening?.local || (isEs? 'Local' : 'Local') },
+            { id: 'fallback-1', title: `${t?.whatsHappening?.eventsIn || (isEs? 'Eventos en' : 'Events in')} ${city || zip}`, icon: '🎉', source: t?.whatsHappening?.local || 'Local' },
           ])
           setLoading(false)
         }
@@ -47,7 +78,7 @@ export function WhatsHappeningNearYou(){
     load()
     const id = setInterval(load, 30*60*1000)
     return ()=>{ mounted = false; try { clearInterval(id) } catch {} }
-  },[zip, city, lat, lng])
+  },[zip, city, lat, lng, language, isEs])
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
@@ -59,7 +90,7 @@ export function WhatsHappeningNearYou(){
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
       <p className="font-bold">📍 {t?.whatsHappening?.whatsHappeningNearYou || (isEs? 'Qué pasa cerca de ti' : "What's happening near you")}</p>
-      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.near || (isEs? 'Cerca de' : 'Near')} {zip} {city? `• ${city}`:''} • {t?.whatsHappening?.informationHighway || 'Information Highway'}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.whatsHappening?.near || (isEs? 'Cerca de' : 'Near')} {zip} {city? `• ${city}`:''} • {t?.whatsHappening?.informationHighway || (isEs? 'Autopista de Información' : 'Information Highway')}</p>
       {loading? <p className="text-sm mt-3 text-white/60">{t?.common?.loading || (isEs? 'Cargando...' : 'Loading...')}</p> : events.length===0? (
         <p className="text-sm mt-3 text-white/70">{t?.whatsHappening?.checking || (isEs? 'Revisando' : 'Checking')} {city || zip} {t?.whatsHappening?.events || (isEs? 'eventos...' : 'events...')}</p>
       ):(
@@ -73,7 +104,7 @@ export function WhatsHappeningNearYou(){
               </div>
             </div>
           ))}
-          <p className="text-xs text-white/25 mt-1">{t?.whatsHappening?.liveApis || 'Live: SeatGeek + External APIs • 15mi radius'}</p>
+          <p className="text-xs text-white/25 mt-1">{t?.whatsHappening?.liveApis || (isEs? 'En vivo: SeatGeek + APIs externas • Radio 15 millas' : 'Live: SeatGeek + External APIs • 15mi radius')}</p>
         </div>
       )}
     </div>
