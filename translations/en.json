@@ -75,7 +75,64 @@
     "passwordPlaceholder": "Password",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "languageLabel": "Choose your language"
+    "languageLabel": "Choose your language",
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Invalid email address",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your neighborhood",
+      "emailLabel": "Email address",
+      "passwordLabel": "Password",
+      "signingIn": "Signing in...",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "No account?",
+      "signUpLink": "Sign up",
+      "errorGeneric": "Login failed",
+      "signInButton": "Sign In",
+      "checkingEmail": "Checking..."
+    },
+    "signup": {
+      "title": "Join Your Area",
+      "subtitle": "Create your account",
+      "nameLabel": "Your name",
+      "emailLabel": "Your email address",
+      "passwordLabel": "Create a password",
+      "cityLabel": "City",
+      "countryLabel": "Country",
+      "zipLabel": "Zip / Postal Code",
+      "creating": "Creating...",
+      "checkEmail": "Account created! Check your email to confirm, then sign in. Check spam folder too.",
+      "success": "Account created! Taking you to your area feed...",
+      "errorGeneric": "Signup failed",
+      "locationSection": "Where are you? (Required)",
+      "privacyTitle": "Your Privacy Protected",
+      "privacyDesc": "We use your zip code (not GPS tracking) to show you posts, weather, and alerts near you. Your exact address is never shared.",
+      "whyLocationTitle": "Why we need your location:",
+      "why1": "Show you posts from your actual neighborhood",
+      "why2": "Give you accurate local weather & alerts",
+      "why3": "Connect you with nearby events & businesses",
+      "why4": "Keep your community safe and relevant",
+      "submit": "Sign up — See Your Area Feed",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in"
+    },
+    "marketing": {
+      "title": "Facebook shows you the world. We show you your area.",
+      "description": "Sweet Social Space is personalized to your area within {radius} miles of YOU — wherever you are in the world. Local feed, local focus.",
+      "feature1": "Your neighbor has a free couch. Another needs a job. Someone nearby just posted an update.",
+      "tagline": "Speak Freely. Love Your Neighbor.",
+      "subtitle": "Your neighborhood, live"
+    },
+    "feedRadius": {
+      "label": "Feed radius",
+      "5miles": "5 miles",
+      "10miles": "10 miles",
+      "15miles": "15 miles",
+      "20miles": "20 miles"
+    }
   },
   "theme": {
     "theme": "Theme",
