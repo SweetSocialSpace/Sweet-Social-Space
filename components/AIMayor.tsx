@@ -1,28 +1,22 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
-import { useTranslations } from '@/lib/translations'
+import { useTranslations, tFormat } from '@/lib/translations'
 
 export default function AIMayor() {
   const { zip, city, lat, lng } = useLocation()
   const t = useTranslations() as any
   const effectiveZip = zip && zip !== 'LOCAL' ? zip : 'LOCAL'
-  const effectiveCity = city || (effectiveZip === 'LOCAL' ? (t?.common?.yourArea || 'your area') : effectiveZip)
+  const effectiveCity = city || (effectiveZip === 'LOCAL' ? (t?.common?.yourArea || 'tu área') : effectiveZip)
   const [brief, setBrief] = useState('')
   const [loading, setLoading] = useState(true)
 
   const getTimeGreeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return t.aiMayor?.goodMorning || 'Good morning'
-    if (hour < 17) return t.aiMayor?.goodAfternoon || 'Good afternoon'
-    if (hour < 21) return t.aiMayor?.goodEvening || 'Good evening'
-    return t.aiMayor?.goodNight || 'Good night'
-  }
-
-  const format = (str: string, vars: Record<string,string|number>) => {
-    let s = str
-    for (const k in vars) s = s.replace(`{${k}}`, String(vars[k]))
-    return s
+    if (hour < 12) return t.aiMayor?.goodMorning || 'Buenos días'
+    if (hour < 17) return t.aiMayor?.goodAfternoon || 'Buenas tardes'
+    if (hour < 21) return t.aiMayor?.goodEvening || 'Buenas noches'
+    return t.aiMayor?.goodNight || 'Buenas noches'
   }
 
   const generateIntelligentBrief = (weather: any, pulse: any, emergency: any) => {
@@ -37,35 +31,35 @@ export default function AIMayor() {
     messages.push(`${greeting} ${effectiveCity}`)
     
     if (temp !== null) {
-      if (temp >= 90) messages.push(format(t.aiMayor?.hotDay || 'Hot day ahead at {temp}°F - stay hydrated', {temp}))
-      else if (temp >= 75) messages.push(format(t.aiMayor?.pleasant || 'Pleasant {temp}°F - great day to be outside', {temp}))
-      else if (temp >= 60) messages.push(format(t.aiMayor?.mild || 'Mild {temp}°F - perfect conditions', {temp}))
-      else if (temp >= 45) messages.push(format(t.aiMayor?.cool || 'Cool {temp}°F - grab a light jacket', {temp}))
-      else messages.push(format(t.aiMayor?.chilly || 'Chilly {temp}°F - bundle up', {temp}))
+      if (temp >= 90) messages.push(tFormat(t.aiMayor?.hotDay || 'Día caluroso de {temp}°F - mantente hidratado', {temp}))
+      else if (temp >= 75) messages.push(tFormat(t.aiMayor?.pleasant || '{temp}°F agradable - gran día para salir', {temp}))
+      else if (temp >= 60) messages.push(tFormat(t.aiMayor?.mild || '{temp}°F templado - condiciones perfectas', {temp}))
+      else if (temp >= 45) messages.push(tFormat(t.aiMayor?.cool || '{temp}°F fresco - lleva chaqueta ligera', {temp}))
+      else messages.push(tFormat(t.aiMayor?.chilly || '{temp}°F frío - abrígate', {temp}))
     }
     
-    if (postCount > 10) messages.push(format(t.aiMayor?.neighborsActive || '{count} neighbors are active today', {count: postCount}))
-    else if (postCount > 0) messages.push(format(t.aiMayor?.newUpdates || '{count} new updates in your area', {count: postCount}))
-    else messages.push(format(t.aiMayor?.beFirst || 'Be the first to share in {city}', {city: effectiveCity}))
+    if (postCount > 10) messages.push(tFormat(t.aiMayor?.neighborsActive || '{count} vecinos activos hoy', {count: postCount}))
+    else if (postCount > 0) messages.push(tFormat(t.aiMayor?.newUpdates || '{count} nuevas actualizaciones en tu área', {count: postCount}))
+    else messages.push(tFormat(t.aiMayor?.beFirst || 'Sé el primero en compartir en {city}', {city: effectiveCity}))
     
     if (hasAlert) {
-      if (emergency?.noaa) messages.push(t.aiMayor?.weatherAlert || 'Weather alert active - stay informed')
-      if (emergency?.quake) messages.push(t.aiMayor?.seismic || 'Seismic activity detected nearby')
+      if (emergency?.noaa) messages.push(t.aiMayor?.weatherAlert || 'Alerta meteorológica activa - mantente informado')
+      if (emergency?.quake) messages.push(t.aiMayor?.seismic || 'Actividad sísmica detectada cerca')
     }
     
     messages.push(`📅 ${date}`)
-    messages.push(format(t.aiMayor?.watchingOver || 'Your AI Mayor is watching over {city}', {city: effectiveCity}))
+    messages.push(tFormat(t.aiMayor?.watchingOver || 'Tu Alcalde AI vigila {city}', {city: effectiveCity}))
     
     return messages.join(' • ')
   }
 
   useEffect(() => {
-    setBrief(format(t.aiMayor?.wakingUp || 'AI Mayor is waking up in {city}...', {city: effectiveCity}))
+    setBrief(tFormat(t.aiMayor?.wakingUp || 'Alcalde AI despertando en {city}...', {city: effectiveCity}))
   }, [t, effectiveCity])
 
   useEffect(() => {
     if (effectiveZip === 'LOCAL') { 
-      setBrief(t.aiMayor?.localFeed || 'LOCAL feed - Be the first to share in your area!'); 
+      setBrief(t.aiMayor?.localFeed || 'Feed LOCAL - ¡Sé el primero en compartir en tu área!'); 
       setLoading(false)
       return 
     }
@@ -105,7 +99,7 @@ export default function AIMayor() {
           const greeting = getTimeGreeting()
           const userLocale = typeof window !== 'undefined' && typeof navigator !== 'undefined' ? navigator.language || 'en-US' : 'en-US'
           const date = new Date().toLocaleDateString(userLocale, { weekday: 'long', month: 'short', day: 'numeric' })
-          setBrief(`${greeting} ${effectiveCity} • ${date} • ${t.aiMayor?.monitoring || 'AI Mayor is monitoring your area'}`)
+          setBrief(`${greeting} ${effectiveCity} • ${date} • ${t.aiMayor?.monitoring || 'Alcalde AI monitorea tu área'}`)
           setLoading(false)
         }
       }
@@ -119,8 +113,8 @@ export default function AIMayor() {
   return (
     <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl p-4 border border-white/10">
       <div className="flex items-center justify-between">
-        <span className="text-purple-300 font-black text-xs">AI MAYOR • {t.aiMayor?.live || 'LIVE'} • {(effectiveCity || 'YOUR AREA').toUpperCase()}</span>
-        {loading && <span className="text-white/40 text-xs animate-pulse">{t.aiMayor?.thinking || 'Thinking...'}</span>}
+        <span className="text-purple-300 font-black text-xs">AI MAYOR • {t.aiMayor?.live || 'EN VIVO'} • {(effectiveCity || 'TU ÁREA').toUpperCase()}</span>
+        {loading && <span className="text-white/40 text-xs animate-pulse">{t.aiMayor?.thinking || 'Pensando...'}</span>}
       </div>
       <div className="text-white text-sm mt-1 leading-relaxed">{brief}</div>
     </div>
