@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Đang xảy ra gì ở",
-    "postAs": "ĐĂNG NHƯ",
+    "postAs": "ĐĂNG NHƯ {name}",
+    "postTo": "Đăng tới {zip} - Một Điểm",
     "in": "Ở",
-    "loading": "Đang tải..."
+    "loading": "Đang tải...",
+    "posting": "ĐANG ĐĂNG...",
+    "fixPunctuation": "Sửa dấu câu",
+    "tapMic": "Nhấn mic - hoạt động ở {zip} - mọi điện thoại hoặc máy tính",
+    "postingAs": "Đăng với tư cách",
+    "universalMic": "Mic Toàn Cầu",
+    "waitBlock": "Vẫn đang xác định khối của bạn... đợi 2 giây và đăng lại",
+    "price": "Giá",
+    "addressPrivate": "Địa chỉ - Riêng tư",
+    "conditionNew": "Mới",
+    "conditionLikeNew": "Như Mới",
+    "conditionGood": "Tốt",
+    "conditionFair": "Khá",
+    "recorded_live": "Ghi Trực Tiếp",
+    "whatsHappeningQuestion": "Đang xảy ra gì?",
+    "there": "ở đó",
+    "anyDevice": "mọi điện thoại hoặc máy tính"
   },
   "common": {
     "backToFeed": "Quay lại Feed",
     "save": "Lưu",
     "cancel": "Hủy",
+    "delete": "Xóa",
+    "deleteConfirm": "Xóa bài đăng này?",
     "error": "Lỗi",
-    "loading": "Đang tải..."
+    "loading": "Đang tải...",
+    "recorded": "Đã ghi",
+    "yourArea": "khu vực của bạn",
+    "loadingDots": "Đang tải...",
+    "wasLive": "Đã Trực Tiếp"
   },
   "weather": {
     "weather": "Thời tiết",
@@ -32,11 +55,108 @@
     "general": "Chung",
     "safety": "An toàn",
     "forSale": "Để bán",
+    "for_sale": "Để bán",
     "free": "Miễn phí",
+    "free_stuff": "Đồ miễn phí",
     "lostPet": "Thú cưng bị lạc",
+    "lost_pet": "Thú cưng bị lạc",
     "event": "Sự kiện",
     "help": "Trợ giúp",
-    "recommend": "Đề xuất"
+    "recommend": "Đề xuất",
+    "job": "Việc làm",
+    "alert": "Cảnh báo",
+    "recommendation": "Đề xuất",
+    "lost_found": "Thất lạc & tìm thấy",
+    "hot_take": "Quan điểm nóng"
+  },
+  "auth": {
+    "welcome": "Chào mừng đến Sweet Social Space",
+    "emailPlaceholder": "Địa chỉ email",
+    "passwordPlaceholder": "Mật khẩu",
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "languageLabel": "Chọn ngôn ngữ của bạn"
+  },
+  "theme": {
+    "theme": "Chủ đề",
+    "light": "Sáng",
+    "dark": "Tối",
+    "auto": "Tự động"
+  },
+  "liveMap": {
+    "title": "Bản đồ Trực tiếp",
+    "subtitle": "3 ghim trực tiếp • Xem toàn bộ"
+  },
+  "faith": {
+    "title": "Đức Tin Trong Ngày",
+    "faithOfTheDay": "Đức Tin Trong Ngày"
+  },
+  "businesses": {
+    "title": "Doanh Nghiệp Địa Phương",
+    "loading": "Đang tải",
+    "near": "Gần",
+    "noBusinesses": "Chưa có doanh nghiệp",
+    "policeDeptSuffix": "Sở Cảnh Sát",
+    "fireDeptSuffix": "Sở Cứu Hỏa",
+    "librarySuffix": "Thư viện",
+    "communitySuffix": "Trung Tâm Cộng Đồng",
+    "catPolice": "Cảnh sát",
+    "catFire": "Cứu hỏa",
+    "catLibrary": "Thư viện",
+    "catCommunity": "Cộng đồng"
+  },
+  "aiMayor": {
+    "goodMorning": "Chào buổi sáng",
+    "goodAfternoon": "Chào buổi chiều",
+    "goodEvening": "Chào buổi tối",
+    "goodNight": "Chúc ngủ ngon",
+    "hotDay": "Ngày nóng {temp}°F - giữ đủ nước",
+    "pleasant": "Dễ chịu {temp}°F - ngày tuyệt để ra ngoài",
+    "mild": "Ôn hòa {temp}°F - điều kiện hoàn hảo",
+    "cool": "Mát {temp}°F - mang áo khoác nhẹ",
+    "chilly": "Lạnh {temp}°F - mặc ấm",
+    "neighborsActive": "{count} hàng xóm hoạt động hôm nay",
+    "newUpdates": "{count} cập nhật mới trong khu vực của bạn",
+    "beFirst": "Hãy là người đầu tiên chia sẻ ở {city}",
+    "weatherAlert": "Cảnh báo thời tiết đang hoạt động",
+    "seismic": "Phát hiện hoạt động địa chấn gần đây",
+    "watchingOver": "Thị Trưởng AI của bạn đang trông coi {city}",
+    "wakingUp": "Thị Trưởng AI đang thức dậy ở {city}...",
+    "localFeed": "Feed ĐỊA PHƯƠNG - Hãy là người đầu tiên!",
+    "monitoring": "Thị Trưởng AI đang theo dõi khu vực của bạn",
+    "live": "TRỰC TIẾP",
+    "thinking": "Đang nghĩ..."
+  },
+  "events": {
+    "upcomingEvents": "Sự Kiện Sắp Tới",
+    "near": "Gần",
+    "noEventsNearby": "Không có sự kiện gần đây",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Điều gì đang xảy ra gần bạn",
+    "locating": "Đang định vị...",
+    "near": "Gần",
+    "informationHighway": "Cao Tốc Thông Tin",
+    "checking": "Đang kiểm tra",
+    "events": "sự kiện",
+    "eventsIn": "Sự kiện ở",
+    "local": "Địa phương",
+    "liveApis": "Trực tiếp: SeatGeek + API Bên Ngoài • Bán kính 15 dặm"
+  },
+  "verified": {
+    "verifiedSources": "Nguồn Đã Xác Minh",
+    "near": "Gần",
+    "noVerifiedOrgs": "Chưa có tổ chức đã xác minh - hãy đăng ký!",
+    "verified": "Đã xác minh",
+    "verifiedBadge": "Đã xác minh",
+    "trustNetwork": "Mạng lưới Tin cậy - Đã xác minh",
+    "communitySafety": "An Toàn Cộng Đồng - Đã xác minh",
+    "nws": "NWS - Đã xác minh",
+    "policeDept": "Sở Cảnh Sát",
+    "fireDept": "Sở Cứu Hỏa",
+    "police": "Cảnh sát",
+    "fire": "Cứu hỏa",
+    "applyForVerification": "Đăng ký xác minh"
   }
 }
-
