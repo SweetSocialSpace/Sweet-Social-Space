@@ -7,16 +7,39 @@
   },
   "feed": {
     "whatsHappening": "Vad händer i",
-    "postAs": "POSTA SOM",
+    "postAs": "POSTA SOM {name}",
+    "postTo": "Posta till {zip} - Allt på Ett Ställe",
     "in": "I",
-    "loading": "Laddar..."
+    "loading": "Laddar...",
+    "posting": "POSTAR...",
+    "fixPunctuation": "Fixa skiljetecken",
+    "tapMic": "Tryck på mikrofonen - fungerar i {zip} - vilken telefon eller dator som helst",
+    "postingAs": "Postar som",
+    "universalMic": "Universell Mikrofon",
+    "waitBlock": "Upptäcker fortfarande ditt block... vänta 2 sek och posta igen",
+    "price": "Pris",
+    "addressPrivate": "Adress - Privat",
+    "conditionNew": "Ny",
+    "conditionLikeNew": "Som Ny",
+    "conditionGood": "Bra",
+    "conditionFair": "Godtagbar",
+    "recorded_live": "Inspelat Live",
+    "whatsHappeningQuestion": "Vad händer?",
+    "there": "där",
+    "anyDevice": "vilken telefon eller dator som helst"
   },
   "common": {
     "backToFeed": "Tillbaka till flödet",
     "save": "Spara",
     "cancel": "Avbryt",
+    "delete": "Radera",
+    "deleteConfirm": "Radera detta inlägg?",
     "error": "Fel",
-    "loading": "Laddar..."
+    "loading": "Laddar...",
+    "recorded": "Inspelat",
+    "yourArea": "ditt område",
+    "loadingDots": "Laddar...",
+    "wasLive": "Var Live"
   },
   "weather": {
     "weather": "Väder",
@@ -32,10 +55,108 @@
     "general": "Allmänt",
     "safety": "Säkerhet",
     "forSale": "Till salu",
+    "for_sale": "Till salu",
     "free": "Gratis",
+    "free_stuff": "Gratissaker",
     "lostPet": "Borttappat djur",
+    "lost_pet": "Borttappat djur",
     "event": "Evenemang",
     "help": "Hjälp",
-    "recommend": "Rekommendera"
+    "recommend": "Rekommendera",
+    "job": "Jobb",
+    "alert": "Larm",
+    "recommendation": "Rekommendation",
+    "lost_found": "Borttappat & upphittat",
+    "hot_take": "Het åsikt"
+  },
+  "auth": {
+    "welcome": "Välkommen till Sweet Social Space",
+    "emailPlaceholder": "E-postadress",
+    "passwordPlaceholder": "Lösenord",
+    "signIn": "Logga in",
+    "signUp": "Registrera dig",
+    "languageLabel": "Välj ditt språk"
+  },
+  "theme": {
+    "theme": "Tema",
+    "light": "Ljust",
+    "dark": "Mörkt",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Live Karta",
+    "subtitle": "3 live-nålar • Full vy"
+  },
+  "faith": {
+    "title": "Dagens Tro",
+    "faithOfTheDay": "Dagens Tro"
+  },
+  "businesses": {
+    "title": "Lokala Företag",
+    "loading": "Laddar",
+    "near": "Nära",
+    "noBusinesses": "Inga företag än",
+    "policeDeptSuffix": "Polisstation",
+    "fireDeptSuffix": "Brandstation",
+    "librarySuffix": "Bibliotek",
+    "communitySuffix": "Medborgarhus",
+    "catPolice": "Polis",
+    "catFire": "Brandkår",
+    "catLibrary": "Bibliotek",
+    "catCommunity": "Gemenskap"
+  },
+  "aiMayor": {
+    "goodMorning": "God morgon",
+    "goodAfternoon": "God eftermiddag",
+    "goodEvening": "God kväll",
+    "goodNight": "God natt",
+    "hotDay": "Het dag framför {temp}°F - håll dig hydrerad",
+    "pleasant": "Behagliga {temp}°F - fin dag att vara ute",
+    "mild": "Milda {temp}°F - perfekta förhållanden",
+    "cool": "Svalt {temp}°F - ta en lätt jacka",
+    "chilly": "Kallt {temp}°F - klä dig varmt",
+    "neighborsActive": "{count} grannar aktiva idag",
+    "newUpdates": "{count} nya uppdateringar i ditt område",
+    "beFirst": "Bli först att dela i {city}",
+    "weatherAlert": "Vädervarning aktiv",
+    "seismic": "Seismisk aktivitet upptäckt i närheten",
+    "watchingOver": "Din AI Borgmästare vakar över {city}",
+    "wakingUp": "AI Borgmästare vaknar i {city}...",
+    "localFeed": "LOKALT flöde - Bli först!",
+    "monitoring": "AI Borgmästare övervakar ditt område",
+    "live": "LIVE",
+    "thinking": "Tänker..."
+  },
+  "events": {
+    "upcomingEvents": "Kommande Evenemang",
+    "near": "Nära",
+    "noEventsNearby": "Inga evenemang i närheten",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Vad händer nära dig",
+    "locating": "Hittar...",
+    "near": "Nära",
+    "informationHighway": "Informationsmotorväg",
+    "checking": "Kollar",
+    "events": "evenemang",
+    "eventsIn": "Evenemang i",
+    "local": "Lokalt",
+    "liveApis": "Live: SeatGeek + Externa API:er • 15 miles radie"
+  },
+  "verified": {
+    "verifiedSources": "Verifierade Källor",
+    "near": "Nära",
+    "noVerifiedOrgs": "Inga verifierade org ännu - ansök!",
+    "verified": "Verifierad",
+    "verifiedBadge": "Verifierad",
+    "trustNetwork": "Förtroendenätverk - Verifierad",
+    "communitySafety": "Gemenskapssäkerhet - Verifierad",
+    "nws": "NWS - Verifierad",
+    "policeDept": "Polisstation",
+    "fireDept": "Brandstation",
+    "police": "Polis",
+    "fire": "Brandkår",
+    "applyForVerification": "Ansök om verifiering"
   }
 }
