@@ -28,8 +28,8 @@ export function BusinessDirectory(){
       setLoading(true)
       
       try {
-        const cached = typeof window !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null
-        const cachedTime = typeof window !== 'undefined' ? localStorage.getItem(CACHE_TIME_KEY) : null
+        const cached = (typeof window !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null)
+        const cachedTime = (typeof window !== 'undefined' ? localStorage.getItem(CACHE_TIME_KEY) : null)
         
         if (cached && cachedTime && Date.now() - parseInt(cachedTime) < 15*60*1000) {
           if(mounted){
@@ -49,11 +49,11 @@ export function BusinessDirectory(){
         
         if(mounted){
           setLiveBiz(fallback)
-          if (typeof window !== 'undefined') { try { localStorage.setItem(CACHE_KEY, JSON.stringify(fallback)) } catch {} }
-          if (typeof window !== 'undefined') { try { localStorage.setItem(CACHE_TIME_KEY, String(Date.now())) } catch {} }
+          try { if (typeof window !== 'undefined') localStorage.setItem(CACHE_KEY, JSON.stringify(fallback)) } catch {}
+          try { if (typeof window !== 'undefined') localStorage.setItem(CACHE_TIME_KEY, String(Date.now())) } catch {}
         }
       } catch (e){
-        const cached = typeof window !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null
+        const cached = (typeof window !== 'undefined' ? localStorage.getItem(CACHE_KEY) : null)
         if (cached && mounted) setLiveBiz(JSON.parse(cached))
       } finally {
         if(mounted) setLoading(false)
