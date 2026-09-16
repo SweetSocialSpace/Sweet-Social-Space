@@ -2,6 +2,7 @@ import './globals.css'
 import { LocationProvider } from '@/lib/location-context'
 import type { Metadata, Viewport } from 'next'
 import { LanguageProvider } from '@/lib/language-context'
+import LanguageHtml from '@/components/LanguageHtml'
 
 export const metadata: Metadata = {
   title: 'Sweet Social Space • Your Neighborhood',
@@ -17,7 +18,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="bg-black">
+    <html lang="en" className="bg-black" suppressHydrationWarning>
       <body
         style={{
           backgroundImage: `url('/golden_droplet_heart_wallpaper.jpg')`,
@@ -32,8 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="fixed inset-0 bg-black/40 -z-10 pointer-events-none" />
         <LocationProvider>
           <LanguageProvider>
-            {/* <GlobalLanguageTranslator />  REMOVED - this was forcing English */}
-            <div className="relative z-10 min-h-screen">{children}</div>
+            <LanguageHtml>
+              <div className="relative z-10 min-h-screen">{children}</div>
+            </LanguageHtml>
           </LanguageProvider>
         </LocationProvider>
       </body>
