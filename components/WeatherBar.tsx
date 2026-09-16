@@ -7,6 +7,7 @@ import { useTranslations } from '@/lib/translations'
 export default function WeatherBar() {
   const { zip: globalZip, city: globalCity } = useLocation()
   const { language } = useLanguage()
+  const safeLang = typeof window !== 'undefined' ? language : 'en'
   const zip = globalZip && globalZip!== 'YOUR NEIGHBORHOOD'? globalZip : ''
   const [temp, setTemp] = useState<number | null>(null)
   const [desc, setDesc] = useState('')
@@ -31,12 +32,12 @@ export default function WeatherBar() {
         setTemp(Math.round(Number(t_data)))
       }
       const rawDescription = (data?.description || data?.weather?.[0]?.description || '').toLowerCase()
-      if (rawDescription && language !== 'en') {
+      if (rawDescription && (safeLang || language) !== 'en') {
         try {
           const tr = await fetch('/api/translate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ target: language, texts: [rawDescription] }),
+            body: JSON.stringify({ target: safeLang || language, texts: [rawDescription] }),
             cache: 'no-store'
           })
           const translated = await tr.json().catch(() => null)
