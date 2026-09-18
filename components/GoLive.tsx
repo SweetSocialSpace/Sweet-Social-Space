@@ -31,7 +31,7 @@ function MyVideoAndRecorder({ onReady }: { onReady: (recorder: MediaRecorder) =>
     return <VideoTrack trackRef={trackRef} className="w-full aspect-video rounded-xl bg-black object-cover" />
   }
 
-  return <div className="aspect-video bg-black rounded-xl flex items-center justify-center text-white">{t?.live?.startingCamera || 'Starting camera...'}</div>
+  return <div className="aspect-video bg-black rounded-xl flex items-center justify-center text-white">{t?.live?.startingCamera}</div>
 }
 
 export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnded }: any) {
@@ -69,7 +69,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
 
     const { data: post } = await supabase.from('posts').insert({
       user_id: userId,
-      body: `${t?.live?.liveNowFrom || 'LIVE NOW from'} ${cleanZip} - ${new Date().toLocaleString()}`,
+      body: `${t?.live?.liveNowFrom} ${cleanZip} - ${new Date().toLocaleString()}`,
       tag: 'live',
       zip_code: cleanZip,
       livekit_room: rName
@@ -102,13 +102,13 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
                 finalVideoUrl = data.publicUrl
                 await supabase.from('posts').update({
                   media_url: finalVideoUrl, video_url: finalVideoUrl, tag: 'live_ended',
-                  body: `${t?.live?.wasLiveFrom || 'Was Live from'} ${zipCode} - ${new Date().toLocaleString()}`, media_urls: [finalVideoUrl]
+                  body: `${t?.live?.wasLiveFrom} ${zipCode} - ${new Date().toLocaleString()}`, media_urls: [finalVideoUrl]
                 }).eq('id', postId)
                 resolve(finalVideoUrl)
                 return
               }
             }
-            if (postId) await supabase.from('posts').update({ tag: 'live_ended', body: `${t?.live?.wasLiveFrom || 'Was Live from'} ${zipCode}` }).eq('id', postId)
+            if (postId) await supabase.from('posts').update({ tag: 'live_ended', body: `${t?.live?.wasLiveFrom} ${zipCode}` }).eq('id', postId)
           } catch(e){ console.error(e) }
           resolve('')
         }
@@ -131,16 +131,16 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
   }
 
   if (!open) {
-    return <button onClick={startLive} className="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs">{t?.live?.goLive || 'Go Live'}</button>
+    return <button onClick={startLive} className="bg-red-600 text-white px-4 py-2 rounded-full font-bold text-xs">{t?.live?.goLive}</button>
   }
 
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
       <div className="bg-neutral-900 rounded-2xl w-full max-w-2xl p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-white font-bold">🔴 {t?.live?.live || 'Live'} - {zipCode}</span>
+          <span className="text-white font-bold">🔴 {t?.live?.live} - {zipCode}</span>
           <button onClick={endLive} disabled={isEnding} className="bg-red-600 text-white px-6 py-2 rounded-full font-bold text-sm disabled:opacity-50">
-            {isEnding? (t?.live?.saving || 'Saving...') : (t?.live?.endLiveSave || 'End Live - Save Replay')}
+            {isEnding? t?.live?.saving : t?.live?.endLiveSave}
           </button>
         </div>
         {token && (
@@ -148,7 +148,7 @@ export default function GoLive({ userId, zipCode, city, onLivePosted, onLiveEnde
             <MyVideoAndRecorder onReady={handleRecorderReady} />
           </LiveKitRoom>
         )}
-        <div className="text-xs text-white/60 mt-3">{t?.live?.liveIn || 'Live in'} {zipCode} — {t?.live?.willBeSaved || 'video will be saved for replay.'}</div>
+        <div className="text-xs text-white/60 mt-3">{t?.live?.liveIn} {zipCode} — {t?.live?.willBeSaved}</div>
       </div>
     </div>
   )
