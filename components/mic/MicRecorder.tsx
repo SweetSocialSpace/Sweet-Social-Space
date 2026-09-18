@@ -105,7 +105,7 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
       mr.start()
       setListening(true)
     } catch {
-      alert(t?.mic?.blocked || 'Mic blocked - check permissions')
+      alert(t?.mic?.blocked)
     }
   }
 
@@ -116,7 +116,7 @@ export default function MicRecorder({ onTranscript, onFinalTranscript }: Props) 
       className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-black shrink-0 ${
         listening? 'bg-red-600 text-white animate-pulse' : 'bg-black text-white'
       }`}
-      title={listening? (t?.mic?.stop || 'Tap to stop') : (t?.mic?.speak || 'Tap to speak')}
+      title={listening? t?.mic?.stop : t?.mic?.speak}
     >
       🎤
     </button>
