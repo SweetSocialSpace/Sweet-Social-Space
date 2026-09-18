@@ -20,5 +20,5 @@ export default function KarmaBadge({ userId }: { userId: string }) {
     load()
   }, [userId])
 
-  return <span className="text-xs font-black bg-yellow-500 text-black px-2 py-1 rounded-full">🔥 {karma} {t?.karma?.label || 'KARMA'}</span>
+  return <span className="text-xs font-black bg-yellow-500 text-black px-2 py-1 rounded-full">🔥 {karma} {t?.karma?.label}</span>
 }
