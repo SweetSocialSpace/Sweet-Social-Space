@@ -4,27 +4,24 @@ import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
 import { useLocationScope } from '@/hooks/useLocationScope'
 import { applyScope, bboxForRadius } from '@/lib/location-scope'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 type Alert = { id: string; title?: string; body?: string; severity?: string; created_at: string; latitude?: number | null; longitude?: number | null }
 
-function timeAgo(iso:string, t:any, isEs:boolean){ 
+function timeAgo(iso:string, t:any){ 
   try { 
     const s = Math.floor((Date.now()-new Date(iso).getTime())/1000); 
-    if(s<60) return t?.time?.justNow || (isEs? 'Ahora mismo' : 'Just now'); 
+    if(s<60) return t?.time?.justNow; 
     const m=Math.floor(s/60); 
-    if(m<60) return `${m}${t?.time?.mAgo || (isEs? 'm' : 'm ago')}`; 
+    if(m<60) return `${m}${t?.time?.mAgo}`; 
     const h=Math.floor(m/60); 
-    if(h<24) return `${h}${t?.time?.hAgo || (isEs? 'h' : 'h ago')}`; 
-    return `${Math.floor(h/24)}${t?.time?.dAgo || (isEs? 'd' : 'd ago')}` 
+    if(h<24) return `${h}${t?.time?.hAgo}`; 
+    return `${Math.floor(h/24)}${t?.time?.dAgo}` 
   } catch { return '' } 
 }
 
 export function LatestAlerts(){
   const t = useTranslations() as any
-  const { language } = useLanguage()
-  const isEs = language?.toLowerCase().startsWith('es')
   const { zip, lat, lng } = useLocation()
   const { filter } = useLocationScope()
   const [alerts, setAlerts]=useState<Alert[]>([])
@@ -79,23 +76,23 @@ export function LatestAlerts(){
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">⚠ {t?.alerts?.latest || (isEs? 'Últimas Alertas' : 'Latest Alerts')}</p>
-      <p className="text-sm mt-2 text-white/60">{t?.location?.loading || (isEs? 'Cargando ubicación...' : 'Loading location...')}</p>
+      <p className="font-bold">⚠ {t?.alerts?.latest}</p>
+      <p className="text-sm mt-2 text-white/60">{t?.location?.loading}</p>
     </div>
   )
   
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">⚠ {t?.alerts?.latest || (isEs? 'Últimas Alertas' : 'Latest Alerts')} • {zip}</p>
-      {loading? <p className="text-sm mt-2 text-white/60">{t?.common?.loading || (isEs? 'Cargando...' : 'Loading...')}</p> : alerts.length===0? (
-        <p className="text-sm mt-2 text-white/80">✅ {t?.alerts?.allClear || (isEs? 'Todo despejado — sin alertas activas' : 'All clear — no active alerts')}</p>
+      <p className="font-bold">⚠ {t?.alerts?.latest} • {zip}</p>
+      {loading? <p className="text-sm mt-2 text-white/60">{t?.common?.loading}</p> : alerts.length===0? (
+        <p className="text-sm mt-2 text-white/80">✅ {t?.alerts?.allClear}</p>
       ) : (
         <div className="mt-3 space-y-3">
           {alerts.map(a=>(
             <div key={a.id} className="border-b border-white/10 pb-2 last:border-0 last:pb-0">
-              <p className="text-sm font-semibold truncate">{a.title || t?.alerts?.alert || (isEs? 'Alerta' : 'Alert')}</p>
+              <p className="text-sm font-semibold truncate">{a.title || t?.alerts?.alert}</p>
               {a.body && <p className="text-xs text-white/70 line-clamp-2 mt-1">{a.body}</p>}
-              <p className="text-xs text-white/40 mt-1">🕒 {timeAgo(a.created_at, t, isEs)} {a.severity? `• ${a.severity}`:''}</p>
+              <p className="text-xs text-white/40 mt-1">🕒 {timeAgo(a.created_at, t)} {a.severity? `• ${a.severity}`:''}</p>
             </div>
           ))}
         </div>
