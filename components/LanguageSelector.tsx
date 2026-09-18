@@ -20,7 +20,7 @@ export default function LanguageSelector() {
 
   const languageGroups = [
     {
-      name: t?.language?.popular || 'Popular',
+      name: t?.language?.popular,
       languages: [
         'en',
         'es',
@@ -37,7 +37,7 @@ export default function LanguageSelector() {
       ],
     },
     {
-      name: t?.language?.europe || 'Europe',
+      name: t?.language?.europe,
       languages: [
         'it',
         'nl',
@@ -64,7 +64,7 @@ export default function LanguageSelector() {
       ],
     },
     {
-      name: t?.language?.middleEastAsia || 'Middle East & Asia',
+      name: t?.language?.middleEastAsia,
       languages: [
         'he',
         'ur',
@@ -80,7 +80,7 @@ export default function LanguageSelector() {
       ],
     },
     {
-      name: t?.language?.centralAsia || 'Central Asia',
+      name: t?.language?.centralAsia,
       languages: [
         'ka',
         'hy',
@@ -123,7 +123,7 @@ export default function LanguageSelector() {
           setIsOpen(value => !value)
         }
         className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full text-white text-xs font-black transition"
-        aria-label={t?.language?.selectorLabel || 'Language'}
+        aria-label={t?.language?.selectorLabel}
       >
         <span className="text-lg">
           🌐
@@ -142,7 +142,7 @@ export default function LanguageSelector() {
               setIsOpen(false)
             }
             className="absolute top-2 right-2 text-white/50 hover:text-white text-xs"
-            aria-label={t?.language?.closeMenu || 'Close language menu'}
+            aria-label={t?.language?.closeMenu}
           >
             ✕
           </button>
