@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "ლენტი",
+    "profile": "პროფილი",
+    "settings": "პარამეტრები",
+    "signOut": "გასვლა"
+  },
+  "feed": {
+    "whatsHappening": "რა ხდება",
+    "postAs": "გამოქვეყნება როგორც {name}",
+    "postTo": "გამოქვეყნება {zip}-ში - ყველაფერი ერთ სივრცეში",
+    "in": "ადგილას",
+    "loading": "ჩატვირთვა...",
+    "posting": "ქვეყნდება...",
+    "fixPunctuation": "პუნქტუაციის გასწორება",
+    "tapMic": "შეეხეთ მიკროფონს - მუშაობს {zip}-ში - ნებისმიერ ტელეფონზე ან კომპიუტერზე",
+    "postingAs": "აქვეყნებ როგორც",
+    "universalMic": "უნივერსალური მიკროფონი",
+    "waitBlock": "ჯერ კიდევ ვადგენ თქვენს ბლოკს... დაელოდეთ 2 წმ და ისევ გამოაქვეყნეთ",
+    "price": "ფასი",
+    "addressPrivate": "მისამართი - პირადი",
+    "conditionNew": "ახალი",
+    "conditionLikeNew": "თითქმის ახალი",
+    "conditionGood": "კარგი",
+    "conditionFair": "დამაკმაყოფილებელი",
+    "recorded_live": "ჩაწერილი ლაივი",
+    "whatsHappeningQuestion": "რა ხდება?",
+    "there": "იქ",
+    "anyDevice": "ნებისმიერ ტელეფონზე ან კომპიუტერზე"
+  },
+  "common": {
+    "backToFeed": "ლენტზე დაბრუნება",
+    "save": "შენახვა",
+    "cancel": "გაუქმება",
+    "delete": "წაშლა",
+    "deleteConfirm": "წავშალოთ ეს პოსტი?",
+    "error": "შეცდომა",
+    "loading": "ჩატვირთვა...",
+    "recorded": "ჩაწერილი",
+    "yourArea": "თქვენი არე",
+    "loadingDots": "ჩატვირთვა...",
+    "wasLive": "ლაივში იყო"
+  },
+  "weather": {
+    "weather": "ამინდი",
+    "live": "პირდაპირ"
+  },
+  "location": {
+    "setLocation": "მდებარეობის დაყენება",
+    "locating": "მდებარეობის განსაზღვრა..."
+  },
+  "filters": {
+    "all": "ყველა",
+    "faith": "რწმენა",
+    "general": "ზოგადი",
+    "safety": "უსაფრთხოება",
+    "forSale": "გასაყიდად",
+    "for_sale": "გასაყიდად",
+    "free": "უფასო",
+    "free_stuff": "უფასო ნივთები",
+    "lostPet": "დაკარგული ცხოველი",
+    "lost_pet": "დაკარგული ცხოველი",
+    "event": "ღონისძიება",
+    "help": "დახმარება",
+    "recommend": "რეკომენდაცია",
+    "job": "სამსახური",
+    "alert": "განგაში",
+    "recommendation": "რეკომენდაცია",
+    "lost_found": "დაკარგული და ნაპოვნი",
+    "hot_take": "ცხელი აზრი"
+  },
+  "auth": {
+    "welcome": "კეთილი იყოს თქვენი მობრძანება Sweet Social Space-ში",
+    "emailPlaceholder": "ელ. ფოსტა",
+    "passwordPlaceholder": "პაროლი",
+    "signIn": "შესვლა",
+    "signUp": "რეგისტრაცია",
+    "languageLabel": "აირჩიე ენა"
+  },
+  "theme": {
+    "theme": "თემა",
+    "light": "ღია",
+    "dark": "მუქი",
+    "auto": "ავტო"
+  },
+  "liveMap": {
+    "title": "ლაივ რუკა",
+    "subtitle": "3 ლაივ პინი • სრული ხედი"
+  },
+  "faith": {
+    "title": "დღის რწმენა",
+    "faithOfTheDay": "დღის რწმენა"
+  },
+  "businesses": {
+    "title": "ადგილობრივი ბიზნესები",
+    "loading": "ჩატვირთვა",
+    "near": "ახლოს",
+    "noBusinesses": "ჯერ ბიზნესი არ არის",
+    "policeDeptSuffix": "პოლიციის დეპარტამენტი",
+    "fireDeptSuffix": "სახანძრო დეპარტამენტი",
+    "librarySuffix": "ბიბლიოთეკა",
+    "communitySuffix": "სათემო ცენტრი",
+    "catPolice": "პოლიცია",
+    "catFire": "სახანძრო",
+    "catLibrary": "ბიბლიოთეკა",
+    "catCommunity": "საზოგადოება"
+  },
+  "aiMayor": {
+    "goodMorning": "დილა მშვიდობისა",
+    "goodAfternoon": "შუადღე მშვიდობისა",
+    "goodEvening": "საღამო მშვიდობისა",
+    "goodNight": "ღამე მშვიდობისა",
+    "hotDay": "ცხელი დღე {temp}°F - იყავით ჰიდრატირებული",
+    "pleasant": "სასიამოვნო {temp}°F - შესანიშნავი დღე გარეთ",
+    "mild": "რბილი {temp}°F - იდეალური პირობები",
+    "cool": "გრილი {temp}°F - მსუბუქი ქურთუკი წაიღეთ",
+    "chilly": "ცივი {temp}°F - თბილად ჩაიცვით",
+    "neighborsActive": "{count} მეზობელი აქტიურია დღეს",
+    "newUpdates": "{count} ახალი განახლება თქვენს არეში",
+    "beFirst": "იყავით პირველი ვინც გააზიარებს {city}-ში",
+    "weatherAlert": "ამინდის გაფრთხილება აქტიურია",
+    "seismic": "ახლოს სეისმური აქტივობა დაფიქსირდა",
+    "watchingOver": "თქვენი AI მერი აკვირდება {city}-ს",
+    "wakingUp": "AI მერი იღვიძებს {city}-ში...",
+    "localFeed": "ლოკალური ლენტი - იყავით პირველი!",
+    "monitoring": "AI მერი აკვირდება თქვენს არეს",
+    "live": "პირდაპირ",
+    "thinking": "ფიქრობს..."
+  },
+  "events": {
+    "upcomingEvents": "მომავალი ღონისძიებები",
+    "near": "ახლოს",
+    "noEventsNearby": "ახლოს ღონისძიებები არ არის",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "რა ხდება თქვენთან ახლოს",
+    "locating": "განსაზღვრა...",
+    "near": "ახლოს",
+    "informationHighway": "ინფორმაციის მაგისტრალი",
+    "checking": "შემოწმება",
+    "events": "ღონისძიება",
+    "eventsIn": "ღონისძიებები",
+    "local": "ლოკალური",
+    "liveApis": "ლაივი: SeatGeek + გარე API-ები • 15 მილის რადიუსი"
+  },
+  "verified": {
+    "verifiedSources": "დადასტურებული წყაროები",
+    "near": "ახლოს",
+    "noVerifiedOrgs": "ჯერ დადასტურებული ორგანიზაცია არ არის - მიმართეთ!",
+    "verified": "დადასტურებული",
+    "verifiedBadge": "დადასტურებული",
+    "trustNetwork": "ნდობის ქსელი - დადასტურებული",
+    "communitySafety": "საზოგადოების უსაფრთხოება - დადასტურებული",
+    "nws": "NWS - დადასტურებული",
+    "policeDept": "პოლიციის დეპარტამენტი",
+    "fireDept": "სახანძრო დეპარტამენტი",
+    "police": "პოლიცია",
+    "fire": "სახანძრო",
+    "applyForVerification": "დადასტურებაზე განაცხადი"
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "फीड",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "signOut": "साइन आउट"
+  },
+  "feed": {
+    "whatsHappening": "में क्या हो रहा है",
+    "postAs": "{name} के रूप में पोस्ट करें",
+    "postTo": "{zip} में पोस्ट करें - वन स्टॉप",
+    "in": "में",
+    "loading": "लोड हो रहा है...",
+    "posting": "पोस्ट हो रहा है...",
+    "fixPunctuation": "विराम चिह्न ठीक करें",
+    "tapMic": "माइक टैप करें - {zip} में काम करता है - किसी भी फोन या कंप्यूटर पर",
+    "postingAs": "के रूप में पोस्ट कर रहे हैं",
+    "universalMic": "यूनिवर्सल माइक",
+    "waitBlock": "अभी भी आपका ब्लॉक पता लगाया जा रहा है... 2 सेकंड प्रतीक्षा करें और फिर पोस्ट करें",
+    "price": "कीमत",
+    "addressPrivate": "पता - निजी",
+    "conditionNew": "नया",
+    "conditionLikeNew": "जैसे नया",
+    "conditionGood": "अच्छा",
+    "conditionFair": "ठीक-ठाक",
+    "recorded_live": "रिकॉर्डेड लाइव",
+    "whatsHappeningQuestion": "क्या हो रहा है?",
+    "there": "वहाँ",
+    "anyDevice": "किसी भी फोन या कंप्यूटर पर"
+  },
+  "common": {
+    "backToFeed": "फीड पर वापस जाएं",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "deleteConfirm": "इस पोस्ट को हटाएं?",
+    "error": "त्रुटि",
+    "loading": "लोड हो रहा है...",
+    "recorded": "रिकॉर्ड किया गया",
+    "yourArea": "आपका क्षेत्र",
+    "loadingDots": "लोड हो रहा है...",
+    "wasLive": "लाइव था"
+  },
+  "weather": {
+    "weather": "मौसम",
+    "live": "लाइव"
+  },
+  "location": {
+    "setLocation": "स्थान सेट करें",
+    "locating": "स्थान पता लगाया जा रहा है..."
+  },
+  "filters": {
+    "all": "सभी",
+    "faith": "विश्वास",
+    "general": "सामान्य",
+    "safety": "सुरक्षा",
+    "forSale": "बिक्री के लिए",
+    "for_sale": "बिक्री के लिए",
+    "free": "मुफ्त सामान",
+    "free_stuff": "मुफ्त सामान",
+    "lostPet": "खोया हुआ पालतू",
+    "lost_pet": "खोया हुआ पालतू",
+    "event": "कार्यक्रम",
+    "help": "मदद",
+    "recommend": "सिफारिश",
+    "job": "नौकरी",
+    "alert": "अलर्ट",
+    "recommendation": "सिफारिश",
+    "lost_found": "खोया-पाया",
+    "hot_take": "हॉट टेक"
+  },
+  "auth": {
+    "welcome": "Sweet Social Space में आपका स्वागत है",
+    "emailPlaceholder": "ईमेल पता",
+    "passwordPlaceholder": "पासवर्ड",
+    "signIn": "साइन इन",
+    "signUp": "साइन अप",
+    "languageLabel": "अपनी भाषा चुनें"
+  },
+  "theme": {
+    "theme": "थीम",
+    "light": "लाइट",
+    "dark": "डार्क",
+    "auto": "ऑटो"
+  },
+  "liveMap": {
+    "title": "लाइव मैप",
+    "subtitle": "3 लाइव पिन • पूरा दृश्य"
+  },
+  "faith": {
+    "title": "आज का विश्वास",
+    "faithOfTheDay": "आज का विश्वास"
+  },
+  "businesses": {
+    "title": "स्थानीय व्यवसाय",
+    "loading": "लोड हो रहा है",
+    "near": "निकट",
+    "noBusinesses": "अभी तक कोई व्यवसाय नहीं",
+    "policeDeptSuffix": "पुलिस विभाग",
+    "fireDeptSuffix": "फायर विभाग",
+    "librarySuffix": "पुस्तकालय",
+    "communitySuffix": "सामुदायिक केंद्र",
+    "catPolice": "पुलिस",
+    "catFire": "फायर स्टेशन",
+    "catLibrary": "पुस्तकालय",
+    "catCommunity": "समुदाय"
+  },
+  "aiMayor": {
+    "goodMorning": "सुप्रभात",
+    "goodAfternoon": "नमस्कार",
+    "goodEvening": "शुभ संध्या",
+    "goodNight": "शुभ रात्रि",
+    "hotDay": "आज गर्मी {temp}°F - हाइड्रेटेड रहें",
+    "pleasant": "सुहावना {temp}°F - बाहर घूमने का बढ़िया दिन",
+    "mild": "हल्का {temp}°F - बेहतरीन मौसम",
+    "cool": "ठंडा {temp}°F - हल्की जैकेट ले लें",
+    "chilly": "कड़ाके की ठंड {temp}°F - गर्म कपड़े पहनें",
+    "neighborsActive": "आज {count} पड़ोसी सक्रिय हैं",
+    "newUpdates": "आपके क्षेत्र में {count} नए अपडेट",
+    "beFirst": "{city} में सबसे पहले साझा करें",
+    "weatherAlert": "मौसम अलर्ट सक्रिय है",
+    "seismic": "पास में भूकंपीय गतिविधि पाई गई",
+    "watchingOver": "आपका AI मेयर {city} पर नजर रख रहा है",
+    "wakingUp": "AI मेयर {city} में जाग रहा है...",
+    "localFeed": "LOCAL फीड - सबसे पहले साझा करें!",
+    "monitoring": "AI मेयर आपके क्षेत्र पर नजर रख रहा है",
+    "live": "लाइव",
+    "thinking": "सोच रहा है..."
+  },
+  "events": {
+    "upcomingEvents": "आगामी कार्यक्रम",
+    "near": "निकट",
+    "noEventsNearby": "आस-पास कोई कार्यक्रम नहीं",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "आपके पास क्या हो रहा है",
+    "locating": "पता लगाया जा रहा है...",
+    "near": "निकट",
+    "informationHighway": "सूचना हाईवे",
+    "checking": "जाँच हो रही है",
+    "events": "कार्यक्रम",
+    "eventsIn": "में कार्यक्रम",
+    "local": "स्थानीय",
+    "liveApis": "लाइव: SeatGeek + बाहरी APIs • 15 मील दायरा"
+  },
+  "verified": {
+    "verifiedSources": "सत्यापित स्रोत",
+    "near": "निकट",
+    "noVerifiedOrgs": "अभी तक कोई सत्यापित संस्था नहीं - आवेदन करें!",
+    "verified": "सत्यापित",
+    "verifiedBadge": "सत्यापित",
+    "trustNetwork": "ट्रस्ट नेटवर्क - सत्यापित",
+    "communitySafety": "सामुदायिक सुरक्षा - सत्यापित",
+    "nws": "NWS - सत्यापित",
+    "policeDept": "पुलिस विभाग",
+    "fireDept": "फायर विभाग",
+    "police": "पुलिस",
+    "fire": "फायर",
+    "applyForVerification": "सत्यापन के लिए आवेदन करें"
+  }
+}

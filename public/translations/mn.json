@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Урсгал",
+    "profile": "Профайл",
+    "settings": "Тохиргоо",
+    "signOut": "Гарах"
+  },
+  "feed": {
+    "whatsHappening": "Юу болж байна",
+    "postAs": "{name} хэрэглэгч бол пост",
+    "postTo": "{zip} руу постлох - Бүх зүйл нэг дор",
+    "in": "ГАЗАРТ",
+    "loading": "Ачааллаж байна...",
+    "posting": "ПОСТЛОЖ БАЙНА...",
+    "fixPunctuation": "Цэг таслал засах",
+    "tapMic": "Микрофон дар - {zip} д ажиллана - ямар ч утас эсвэл компьютер",
+    "postingAs": "Постлож буй",
+    "universalMic": "Бүх нийтийн микрофон",
+    "waitBlock": "Таны блокыг илрүүлсээр байна... 2 сек хүлээгээд дахин постлоно уу",
+    "price": "Үнэ",
+    "addressPrivate": "Хаяг - Хувийн",
+    "conditionNew": "Шинэ",
+    "conditionLikeNew": "Шинэ мэт",
+    "conditionGood": "Сайн",
+    "conditionFair": "Дунд",
+    "recorded_live": "Бичлэг хийсэн шууд",
+    "whatsHappeningQuestion": "Юу болж байна?",
+    "there": "тэнд",
+    "anyDevice": "ямар ч утас эсвэл компьютер"
+  },
+  "common": {
+    "backToFeed": "Урсгал руу буцах",
+    "save": "Хадгалах",
+    "cancel": "Цуцлах",
+    "delete": "Устгах",
+    "deleteConfirm": "Энэ постыг устгах уу?",
+    "error": "Алдаа",
+    "loading": "Ачааллаж байна...",
+    "recorded": "Бичигдсэн",
+    "yourArea": "таны бүс",
+    "loadingDots": "Ачааллаж байна...",
+    "wasLive": "Шууд байсан"
+  },
+  "weather": {
+    "weather": "Цаг агаар",
+    "live": "АМЬДАР"
+  },
+  "location": {
+    "setLocation": "Байршил тохируулах",
+    "locating": "Байршил тогтоож байна..."
+  },
+  "filters": {
+    "all": "Бүгд",
+    "faith": "Шүтлэг",
+    "general": "Ерөнхий",
+    "safety": "Аюулгүй байдал",
+    "forSale": "Зарна",
+    "for_sale": "Зарна",
+    "free": "Үнэгүй",
+    "free_stuff": "Үнэгүй зүйлс",
+    "lostPet": "Олдоогүй тэжээвэр амьтан",
+    "lost_pet": "Олдоогүй тэжээвэр амьтан",
+    "event": "Арга хэмжээ",
+    "help": "Тусламж",
+    "recommend": "Санал болгох",
+    "job": "Ажил",
+    "alert": "Анхааруулга",
+    "recommendation": "Зөвлөмж",
+    "lost_found": "Гээсэн болон олсон",
+    "hot_take": "Халуун санал"
+  },
+  "auth": {
+    "welcome": "Sweet Social Space-д тавтай морил",
+    "emailPlaceholder": "И-мэйл хаяг",
+    "passwordPlaceholder": "Нууц үг",
+    "signIn": "Нэвтрэх",
+    "signUp": "Бүртгүүлэх",
+    "languageLabel": "Хэлээ сонгоно уу"
+  },
+  "theme": {
+    "theme": "Загвар",
+    "light": "Цайвар",
+    "dark": "Харанхуй",
+    "auto": "Авто"
+  },
+  "liveMap": {
+    "title": "Шууд газрын зураг",
+    "subtitle": "3 шууд зүү • Бүрэн харагдац"
+  },
+  "faith": {
+    "title": "Өдрийн итгэл",
+    "faithOfTheDay": "Өдрийн итгэл"
+  },
+  "businesses": {
+    "title": "Орон нутгийн бизнес",
+    "loading": "Ачааллаж байна",
+    "near": "Ойролцоо",
+    "noBusinesses": "Одоогоор бизнес алга",
+    "policeDeptSuffix": "Цагдаагийн газар",
+    "fireDeptSuffix": "Гал унтраах алба",
+    "librarySuffix": "Номын сан",
+    "communitySuffix": "Олон нийтийн төв",
+    "catPolice": "Цагдаа",
+    "catFire": "Гал унтраах",
+    "catLibrary": "Номын сан",
+    "catCommunity": "Олон нийт"
+  },
+  "aiMayor": {
+    "goodMorning": "Өглөөний мэнд",
+    "goodAfternoon": "Өдрийн мэнд",
+    "goodEvening": "Оройн мэнд",
+    "goodNight": "Шөнийн мэнд",
+    "hotDay": "Халуун өдөр {temp}°F - шингэн сайн уугаарай",
+    "pleasant": "{temp}°F таатай - гадаа гарахад сайхан өдөр",
+    "mild": "{temp}°F зөөлөн - төгс нөхцөл",
+    "cool": "{temp}°F сэрүүн - нимгэн хүрэм аваарай",
+    "chilly": "{temp}°F хүйтэн - дулаан хувцаслаарай",
+    "neighborsActive": "Өнөөдөр {count} хөрш идэвхтэй байна",
+    "newUpdates": "Танай бүсэд {count} шинэ шинэчлэлт",
+    "beFirst": "{city}-д хамгийн түрүүнд хуваалцаарай",
+    "weatherAlert": "Цаг агаарын сэрэмжлүүлэг идэвхтэй",
+    "seismic": "Ойролцоо газар хөдлөлтийн идэвхжил илэрлээ",
+    "watchingOver": "Таны AI дарга {city}-г харж байна",
+    "wakingUp": "AI дарга {city}-д сэрж байна...",
+    "localFeed": "ОРОН НУТГИЙН урсгал - Хамгийн түрүүнд хуваалцаарай!",
+    "monitoring": "AI дарга таны бүсийг хянаж байна",
+    "live": "АМЬДАР",
+    "thinking": "Бодож байна..."
+  },
+  "events": {
+    "upcomingEvents": "Удахгүй болох арга хэмжээ",
+    "near": "Ойролцоо",
+    "noEventsNearby": "Ойролцоо арга хэмжээ алга",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Таны ойролцоо юу болж байна",
+    "locating": "Тогтоож байна...",
+    "near": "Ойролцоо",
+    "informationHighway": "Мэдээллийн хурдны зам",
+    "checking": "Шалгаж байна",
+    "events": "арга хэмжээ",
+    "eventsIn": "Арга хэмжээ",
+    "local": "Орон нутгийн",
+    "liveApis": "Шууд: SeatGeek + Гадаад API • 15 милийн радиус"
+  },
+  "verified": {
+    "verifiedSources": "Баталгаажсан эх сурвалж",
+    "near": "Ойролцоо",
+    "noVerifiedOrgs": "Одоогоор баталгаажсан байгууллага алга - өргөдөл гарга!",
+    "verified": "Баталгаажсан",
+    "verifiedBadge": "Баталгаажсан",
+    "trustNetwork": "Итгэлцлийн сүлжээ - Баталгаажсан",
+    "communitySafety": "Олон нийтийн аюулгүй байдал - Баталгаажсан",
+    "nws": "NWS - Баталгаажсан",
+    "policeDept": "Цагдаагийн газар",
+    "fireDept": "Гал унтраах алба",
+    "police": "Цагдаа",
+    "fire": "Гал унтраах",
+    "applyForVerification": "Баталгаажуулалт хүсэх"
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "ຟີດ",
+    "profile": "ໂປຣໄຟລ໌",
+    "settings": "ການຕັ້ງຄ່າ",
+    "signOut": "ອອກຈາກລະບົບ"
+  },
+  "feed": {
+    "whatsHappening": "ມີຫຍັງກຳລັງເກີດຂຶ້ນຢູ່",
+    "postAs": "ໂພສເປັນ {name}",
+    "postTo": "ໂພສໄປ {zip} - ຄົບຈົບໃນທີ່ດຽວ",
+    "in": "ຢູ່",
+    "loading": "ກຳລັງໂຫຼດ...",
+    "posting": "ກຳລັງໂພສ...",
+    "fixPunctuation": "ແກ້ໄຂເຄື່ອງໝາຍວັກຕອນ",
+    "tapMic": "ແຕະໄມຄ໌ - ໃຊ້ໄດ້ໃນ {zip} - ໂທລະສັບ ຫຼື ຄອມພິວເຕີໃດກໍໄດ້",
+    "postingAs": "ກຳລັງໂພສເປັນ",
+    "universalMic": "ໄມຄ໌ສາກົນ",
+    "waitBlock": "ຍັງກວດຫາບລ໋ອກຂອງທ່ານຢູ່... ລໍຖ້າ 2 ວິ ແລ້ວໂພສໃໝ່",
+    "price": "ລາຄາ",
+    "addressPrivate": "ທີ່ຢູ່ - ສ່ວນຕົວ",
+    "conditionNew": "ໃໝ່",
+    "conditionLikeNew": "ຄືໃໝ່",
+    "conditionGood": "ດີ",
+    "conditionFair": "ພໍໃຊ້",
+    "recorded_live": "ບັນທຶກສົດ",
+    "whatsHappeningQuestion": "ມີຫຍັງເກີດຂຶ້ນ?",
+    "there": "ບ່ອນນັ້ນ",
+    "anyDevice": "ໂທລະສັບ ຫຼື ຄອມພິວເຕີໃດກໍໄດ້"
+  },
+  "common": {
+    "backToFeed": "ກັບຄືນສູ່ຟີດ",
+    "save": "ບັນທຶກ",
+    "cancel": "ຍົກເລີກ",
+    "delete": "ລົບ",
+    "deleteConfirm": "ລົບໂພສນີ້ບໍ?",
+    "error": "ຂໍ້ຜິດພາດ",
+    "loading": "ກຳລັງໂຫຼດ...",
+    "recorded": "ບັນທຶກແລ້ວ",
+    "yourArea": "ພື້ນທີ່ຂອງທ່ານ",
+    "loadingDots": "ກຳລັງໂຫຼດ...",
+    "wasLive": "ເຄີຍສົດ"
+  },
+  "weather": {
+    "weather": "ອາກາດ",
+    "live": "ສົດ"
+  },
+  "location": {
+    "setLocation": "ຕັ້ງຄ່າສະຖານທີ່",
+    "locating": "ກຳລັງຊອກຫາສະຖານທີ່..."
+  },
+  "filters": {
+    "all": "ທັ້ງໝົດ",
+    "faith": "ສາດສະຫນາ",
+    "general": "ທົ່ວໄປ",
+    "safety": "ຄວາມປອດໄພ",
+    "forSale": "ສຳລັບຂາຍ",
+    "for_sale": "ສຳລັບຂາຍ",
+    "free": "ຟຣີ",
+    "free_stuff": "ຂອງແຈກຟຣີ",
+    "lostPet": "ສັດລ້ຽງຫາຍໄປ",
+    "lost_pet": "ສັດລ້ຽງຫາຍໄປ",
+    "event": "ງານ",
+    "help": "ຊ່ວຍເຫຼືອ",
+    "recommend": "ແນະນຳ",
+    "job": "ວຽກ",
+    "alert": "ແຈ້ງເຕືອນ",
+    "recommendation": "ຄຳແນະນຳ",
+    "lost_found": "ເສຍ ແລະ ພົບ",
+    "hot_take": "ຄວາມເຫັນຮ້ອນແຮງ"
+  },
+  "auth": {
+    "welcome": "ຍິນດີຕ້ອນຮັບສູ່ Sweet Social Space",
+    "emailPlaceholder": "ອີເມວ",
+    "passwordPlaceholder": "ລະຫັດຜ່ານ",
+    "signIn": "ເຂົ້າສູ່ລະບົບ",
+    "signUp": "ລົງທະບຽນ",
+    "languageLabel": "ເລືອກພາສາຂອງທ່ານ"
+  },
+  "theme": {
+    "theme": "ຮູບແບບ",
+    "light": "ສະຫວ່າງ",
+    "dark": "ມືດ",
+    "auto": "ອັດຕະໂນມັດ"
+  },
+  "liveMap": {
+    "title": "ແຜນທີ່ສົດ",
+    "subtitle": "3 ໝຸດສົດ • ມຸມມອງເຕັມ"
+  },
+  "faith": {
+    "title": "ສັດທາປະຈຳວັນ",
+    "faithOfTheDay": "ສັດທາປະຈຳວັນ"
+  },
+  "businesses": {
+    "title": "ທຸລະກິດທ້ອງຖິ່ນ",
+    "loading": "ກຳລັງໂຫຼດ",
+    "near": "ໃກ້",
+    "noBusinesses": "ຍັງບໍ່ມີທຸລະກິດ",
+    "policeDeptSuffix": "ກົມຕຳຫຼວດ",
+    "fireDeptSuffix": "ກົມດັບເພີງ",
+    "librarySuffix": "ຫໍສະໝຸດ",
+    "communitySuffix": "ສູນຊຸມຊົນ",
+    "catPolice": "ຕຳຫຼວດ",
+    "catFire": "ດັບເພີງ",
+    "catLibrary": "ຫໍສະໝຸດ",
+    "catCommunity": "ຊຸມຊົນ"
+  },
+  "aiMayor": {
+    "goodMorning": "ສະບາຍດີຕອນເຊົ້າ",
+    "goodAfternoon": "ສະບາຍດີຕອນບ່າຍ",
+    "goodEvening": "ສະບາຍດີຕອນແລງ",
+    "goodNight": "ສະບາຍດີຕອນຄືນ",
+    "hotDay": "ມື້ນີ້ຮ້ອນ {temp}°F - ດື່ມນ້ຳໃຫ້ພຽງພໍ",
+    "pleasant": "{temp}°F ສະບາຍ - ມື້ດີທີ່ຈະອອກໄປຂ້າງນອກ",
+    "mild": "{temp}°F ອ່ອນໆ - ສະພາບດີ",
+    "cool": "{temp}°F ເຢັນ - ເອົາເສື້ອບາງໆ",
+    "chilly": "{temp}°F ໜາວ - ນຸ່ງຜ້າອຸ່ນ",
+    "neighborsActive": "ມີ {count} ເພື່ອນບ້ານມີການເຄື່ອນໄຫວມື້ນີ້",
+    "newUpdates": "ມີ {count} ອັບເດດໃໝ່ໃນພື້ນທີ່ຂອງທ່ານ",
+    "beFirst": "ເປັນຄົນທຳອິດທີ່ແບ່ງປັນໃນ {city}",
+    "weatherAlert": "ມີການແຈ້ງເຕືອນອາກາດ",
+    "seismic": "ກວດພົບການເຄື່ອນໄຫວແຜ່ນດິນໄຫວໃກ້ໆ",
+    "watchingOver": "ນາຍົກ AI ຂອງທ່ານກຳລັງເຝົ້າລະວັງ {city}",
+    "wakingUp": "ນາຍົກ AI ກຳລັງຕື່ນໃນ {city}...",
+    "localFeed": "ຟີດທ້ອງຖິ່ນ - ເປັນຄົນທຳອິດ!",
+    "monitoring": "ນາຍົກ AI ກຳລັງຕິດຕາມພື້ນທີ່ຂອງທ່ານ",
+    "live": "ສົດ",
+    "thinking": "ກຳລັງຄິດ..."
+  },
+  "events": {
+    "upcomingEvents": "ງານທີ່ຈະມາເຖິງ",
+    "near": "ໃກ້",
+    "noEventsNearby": "ບໍ່ມີງານໃກ້ໆ",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "ມີຫຍັງເກີດຂຶ້ນໃກ້ທ່ານ",
+    "locating": "ກຳລັງຊອກຫາ...",
+    "near": "ໃກ້",
+    "informationHighway": "ທາງດ່ວນຂໍ້ມູນ",
+    "checking": "ກຳລັງກວດ",
+    "events": "ງານ",
+    "eventsIn": "ງານໃນ",
+    "local": "ທ້ອງຖິ່ນ",
+    "liveApis": "ສົດ: SeatGeek + API ພາຍນອກ • ລັດສະໝີ 15 ໄມລ໌"
+  },
+  "verified": {
+    "verifiedSources": "ແຫຼ່ງຢັ້ງຢືນແລ້ວ",
+    "near": "ໃກ້",
+    "noVerifiedOrgs": "ຍັງບໍ່ມີອົງການຢັ້ງຢືນ - ສະໝັກເລີຍ!",
+    "verified": "ຢັ້ງຢືນແລ້ວ",
+    "verifiedBadge": "ຢັ້ງຢືນແລ້ວ",
+    "trustNetwork": "ເຄືອຂ່າຍຄວາມໄວ້ວາງໃຈ - ຢັ້ງຢືນແລ້ວ",
+    "communitySafety": "ຄວາມປອດໄພຊຸມຊົນ - ຢັ້ງຢືນແລ້ວ",
+    "nws": "NWS - ຢັ້ງຢືນແລ້ວ",
+    "policeDept": "ກົມຕຳຫຼວດ",
+    "fireDept": "ກົມດັບເພີງ",
+    "police": "ຕຳຫຼວດ",
+    "fire": "ດັບເພີງ",
+    "applyForVerification": "ສະໝັກຢັ້ງຢືນ"
+  }
+}

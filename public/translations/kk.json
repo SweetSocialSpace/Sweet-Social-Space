@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Ағын",
+    "profile": "Профиль",
+    "settings": "Параметрлер",
+    "signOut": "Шығу"
+  },
+  "feed": {
+    "whatsHappening": "Не болып жатыр",
+    "postAs": "{name} ретінде жариялау",
+    "postTo": "{zip} аумағына жариялау - Бәрі бір жерде",
+    "in": "ЖЕРДЕ",
+    "loading": "Жүктелуде...",
+    "posting": "ЖАРИЯЛАНУДА...",
+    "fixPunctuation": "Пунктуацияны түзету",
+    "tapMic": "Микрофонды түртіңіз - {zip} аймағында жұмыс істейді - кез келген телефон немесе компьютер",
+    "postingAs": "Жариялаушы",
+    "universalMic": "Әмбебап микрофон",
+    "waitBlock": "Сіздің блогыңыз әлі анықталуда... 2 сек күтіп, қайта жариялаңыз",
+    "price": "Баға",
+    "addressPrivate": "Мекенжай - Құпия",
+    "conditionNew": "Жаңа",
+    "conditionLikeNew": "Жаңа сияқты",
+    "conditionGood": "Жақсы",
+    "conditionFair": "Қанағаттанарлық",
+    "recorded_live": "Жазылған тікелей эфир",
+    "whatsHappeningQuestion": "Не болып жатыр?",
+    "there": "онда",
+    "anyDevice": "кез келген телефон немесе компьютер"
+  },
+  "common": {
+    "backToFeed": "Ағынға оралу",
+    "save": "Сақтау",
+    "cancel": "Болдырмау",
+    "delete": "Жою",
+    "deleteConfirm": "Бұл жазбаны жою керек пе?",
+    "error": "Қате",
+    "loading": "Жүктелуде...",
+    "recorded": "Жазылған",
+    "yourArea": "сіздің аумағыңыз",
+    "loadingDots": "Жүктелуде...",
+    "wasLive": "Тікелей эфирде болды"
+  },
+  "weather": {
+    "weather": "Ауа райы",
+    "live": "ТІКЕЛІ"
+  },
+  "location": {
+    "setLocation": "Орналасуды орнату",
+    "locating": "Орналасу анықталуда..."
+  },
+  "filters": {
+    "all": "Барлығы",
+    "faith": "Сенім",
+    "general": "Жалпы",
+    "safety": "Қауіпсіздік",
+    "forSale": "Сатылуда",
+    "for_sale": "Сатылуда",
+    "free": "Тегін",
+    "free_stuff": "Тегін заттар",
+    "lostPet": "Жоғалған үй жануары",
+    "lost_pet": "Жоғалған үй жануары",
+    "event": "Оқиға",
+    "help": "Көмек",
+    "recommend": "Ұсыну",
+    "job": "Жұмыс",
+    "alert": "Дабыл",
+    "recommendation": "Ұсыныс",
+    "lost_found": "Жоғалған және табылған",
+    "hot_take": "Өткір пікір"
+  },
+  "auth": {
+    "welcome": "Sweet Social Space-ке қош келдіңіз",
+    "emailPlaceholder": "Электрондық пошта",
+    "passwordPlaceholder": "Құпия сөз",
+    "signIn": "Кіру",
+    "signUp": "Тіркелу",
+    "languageLabel": "Тіліңізді таңдаңыз"
+  },
+  "theme": {
+    "theme": "Тақырып",
+    "light": "Ашық",
+    "dark": "Қараңғы",
+    "auto": "Авто"
+  },
+  "liveMap": {
+    "title": "Тікелей карта",
+    "subtitle": "3 тікелей белгі • Толық көрініс"
+  },
+  "faith": {
+    "title": "Күннің сенімі",
+    "faithOfTheDay": "Күннің сенімі"
+  },
+  "businesses": {
+    "title": "Жергілікті бизнестер",
+    "loading": "Жүктелуде",
+    "near": "Жақын",
+    "noBusinesses": "Әзірге бизнес жоқ",
+    "policeDeptSuffix": "Полиция департаменті",
+    "fireDeptSuffix": "Өрт сөндіру қызметі",
+    "librarySuffix": "Кітапхана",
+    "communitySuffix": "Қоғамдық орталық",
+    "catPolice": "Полиция",
+    "catFire": "Өрт сөндіру",
+    "catLibrary": "Кітапхана",
+    "catCommunity": "Қоғам"
+  },
+  "aiMayor": {
+    "goodMorning": "Қайырлы таң",
+    "goodAfternoon": "Қайырлы күн",
+    "goodEvening": "Қайырлы кеш",
+    "goodNight": "Қайырлы түн",
+    "hotDay": "Ыстық күн {temp}°F - суды көп ішіңіз",
+    "pleasant": "{temp}°F жағымды - сыртта болуға тамаша",
+    "mild": "{temp}°F жұмсақ - тамаша жағдай",
+    "cool": "{temp}°F салқын - жеңіл күртеше алыңыз",
+    "chilly": "{temp}°F суық - жылы киініңіз",
+    "neighborsActive": "Бүгін {count} көрші белсенді",
+    "newUpdates": "Сіздің аумағыңызда {count} жаңа жаңарту",
+    "beFirst": "{city} аймағында бірінші болып бөлісіңіз",
+    "weatherAlert": "Ауа райы туралы ескерту белсенді",
+    "seismic": "Жақын маңда сейсмикалық белсенділік анықталды",
+    "watchingOver": "Сіздің AI мэріңіз {city} қаласын бақылауда",
+    "wakingUp": "AI мэр {city}-да оянуда...",
+    "localFeed": "ЖЕРГІЛІКТІ ағын - Бірінші болып бөлісіңіз!",
+    "monitoring": "AI мэр сіздің аумағыңызды бақылауда",
+    "live": "ТІКЕЛІ",
+    "thinking": "Ойлануда..."
+  },
+  "events": {
+    "upcomingEvents": "Алдағы оқиғалар",
+    "near": "Жақын",
+    "noEventsNearby": "Жақын маңда оқиғалар жоқ",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Сіздің жаныңызда не болып жатыр",
+    "locating": "Анықталуда...",
+    "near": "Жақын",
+    "informationHighway": "Ақпараттық магистраль",
+    "checking": "Тексеру",
+    "events": "оқиға",
+    "eventsIn": "Оқиғалар",
+    "local": "Жергілікті",
+    "liveApis": "Тікелей: SeatGeek + Сыртқы API • 15 миль радиус"
+  },
+  "verified": {
+    "verifiedSources": "Тексерілген дереккөздер",
+    "near": "Жақын",
+    "noVerifiedOrgs": "Әзірге тексерілген ұйымдар жоқ - өтініш беріңіз!",
+    "verified": "Тексерілген",
+    "verifiedBadge": "Тексерілген",
+    "trustNetwork": "Сенім желісі - Тексерілген",
+    "communitySafety": "Қоғам қауіпсіздігі - Тексерілген",
+    "nws": "NWS - Тексерілген",
+    "policeDept": "Полиция департаменті",
+    "fireDept": "Өрт сөндіру қызметі",
+    "police": "Полиция",
+    "fire": "Өрт сөндіру",
+    "applyForVerification": "Тексеруге өтініш беру"
+  }
+}

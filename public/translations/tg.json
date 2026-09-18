@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Ҷараён",
+    "profile": "Профил",
+    "settings": "Танзимот",
+    "signOut": "Баромадан"
+  },
+  "feed": {
+    "whatsHappening": "Чи рӯй медиҳад",
+    "postAs": "ҲИСОБ ОБАН ПАХШ КУНӮД {name}",
+    "postTo": "Дар {zip} пахш кунед - Ҳама дар як ҷо",
+    "in": "ДАР",
+    "loading": "Бор кардан...",
+    "posting": "ПАХШ МЕШАВАД...",
+    "fixPunctuation": "Аломатҳои китобатро ислоҳ кунед",
+    "tapMic": "Микрофонро ламс кунед - дар {zip} кор мекунад - ҳама гуна телефон ё компютер",
+    "postingAs": "Ҳамчун пахш мекунад",
+    "universalMic": "Микрофони Универсалӣ",
+    "waitBlock": "Ҳанӯз блоки шуморо муайян мекунем... 2 сония интизор шавед ва дубора пахш кунед",
+    "price": "Нарх",
+    "addressPrivate": "Суроға - Хусусӣ",
+    "conditionNew": "Нав",
+    "conditionLikeNew": "Мисли Нав",
+    "conditionGood": "Хуб",
+    "conditionFair": "Қаноатбахш",
+    "recorded_live": "Сабтшуда Зинда",
+    "whatsHappeningQuestion": "Чи рӯй медиҳад?",
+    "there": "он ҷо",
+    "anyDevice": "ҳама гуна телефон ё компютер"
+  },
+  "common": {
+    "backToFeed": "Ба ҷараён баргаштан",
+    "save": "Нигоҳ доштан",
+    "cancel": "Лағв кардан",
+    "delete": "Нест кардан",
+    "deleteConfirm": "Ин пахшро нест кардан?",
+    "error": "Хатогӣ",
+    "loading": "Бор кардан...",
+    "recorded": "Сабтшуда",
+    "yourArea": "минтақаи шумо",
+    "loadingDots": "Бор кардан...",
+    "wasLive": "Зинда Буд"
+  },
+  "weather": {
+    "weather": "Ҳаво",
+    "live": "ЗИНДА"
+  },
+  "location": {
+    "setLocation": "Ҷойгиршини таъин кардан",
+    "locating": "Ҷойгиршини муайян кардан..."
+  },
+  "filters": {
+    "all": "Ҳама",
+    "faith": "Имон",
+    "general": "Умумӣ",
+    "safety": "Амният",
+    "forSale": "Ба фурӯш",
+    "for_sale": "Ба фурӯш",
+    "free": "Бепул",
+    "free_stuff": "Чизҳои ройгон",
+    "lostPet": "Ҳайвони хонаш гумшуда",
+    "lost_pet": "Ҳайвони хонаш гумшуда",
+    "event": "Тадбир",
+    "help": "Кӯмак",
+    "recommend": "Тавсия кардан",
+    "job": "Кор",
+    "alert": "Огоҳӣ",
+    "recommendation": "Тавсия",
+    "lost_found": "Гумшуда ва ёфтшуда",
+    "hot_take": "Андешаи тез"
+  },
+  "auth": {
+    "welcome": "Хуш омадед ба Sweet Social Space",
+    "emailPlaceholder": "Суроғаи почтаи электронӣ",
+    "passwordPlaceholder": "Рамз",
+    "signIn": "Ворид шудан",
+    "signUp": "Бақайдгирӣ",
+    "languageLabel": "Забони худро интихоб кунед"
+  },
+  "theme": {
+    "theme": "Мавзӯъ",
+    "light": "Равшан",
+    "dark": "Торик",
+    "auto": "Авто"
+  },
+  "liveMap": {
+    "title": "Харитаи Зинда",
+    "subtitle": "3 пин зинда • Намоиши пурра"
+  },
+  "faith": {
+    "title": "Имони Рӯз",
+    "faithOfTheDay": "Имони Рӯз"
+  },
+  "businesses": {
+    "title": "Бизнесҳои Маҳаллӣ",
+    "loading": "Бор кардан",
+    "near": "Наздик",
+    "noBusinesses": "Ҳанӯз ҳеҷ бизнесе нест",
+    "policeDeptSuffix": "Шӯъбаи Полис",
+    "fireDeptSuffix": "Шӯъбаи Сӯхторнишонӣ",
+    "librarySuffix": "Китобхона",
+    "communitySuffix": "Маркази Ҷомеа",
+    "catPolice": "Полис",
+    "catFire": "Сӯхторнишонӣ",
+    "catLibrary": "Китобхона",
+    "catCommunity": "Ҷомеа"
+  },
+  "aiMayor": {
+    "goodMorning": "Субҳ ба хайр",
+    "goodAfternoon": "Рӯз ба хайр",
+    "goodEvening": "Шом ба хайр",
+    "goodNight": "Шаб ба хайр",
+    "hotDay": "Рӯзи гарм {temp}°F - об бинӯшед",
+    "pleasant": "Хуш {temp}°F - рӯзи олӣ барои берун",
+    "mild": "Мулойим {temp}°F - шароити комил",
+    "cool": "Салқин {temp}°F - куртаи сабук гиред",
+    "chilly": "Сард {temp}°F - гарм пӯшед",
+    "neighborsActive": "{count} ҳамсоя имрӯз фаъоланд",
+    "newUpdates": "{count} навсозиҳои нав дар минтақаи шумо",
+    "beFirst": "Аввалин шуда дар {city} мубодила кунед",
+    "weatherAlert": "Огоҳии обу ҳаво фаъол",
+    "seismic": "Фаъолияти сейсмикӣ дар наздикӣ ошкор шуд",
+    "watchingOver": "Шаҳрдори AI-и шумо {city}-ро назорат мекунад",
+    "wakingUp": "Шаҳрдори AI дар {city} бедор мешавад...",
+    "localFeed": "Ҷараёни МАҲАЛЛӢ - Аввалин бошед!",
+    "monitoring": "Шаҳрдори AI минтақаи шуморо назорат мекунад",
+    "live": "ЗИНДА",
+    "thinking": "Фикр мекунад..."
+  },
+  "events": {
+    "upcomingEvents": "Тадбирҳои Дарпешистода",
+    "near": "Наздик",
+    "noEventsNearby": "Дар наздикӣ ягон тадбир нест",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Дар наздикии шумо чи рӯй медиҳад",
+    "locating": "Муайян кардан...",
+    "near": "Наздик",
+    "informationHighway": "Шоҳроҳи Иттилоот",
+    "checking": "Санҷиш",
+    "events": "тадбирҳо",
+    "eventsIn": "Тадбирҳо дар",
+    "local": "Маҳаллӣ",
+    "liveApis": "Зинда: SeatGeek + API-ҳои берунӣ • Радиуси 15 мил"
+  },
+  "verified": {
+    "verifiedSources": "Манбаъҳои Тасдиқшуда",
+    "near": "Наздик",
+    "noVerifiedOrgs": "Ҳанӯз ҳеҷ ташкилоти тасдиқшуда нест - муроҷиат кунед!",
+    "verified": "Тасдиқшуда",
+    "verifiedBadge": "Тасдиқшуда",
+    "trustNetwork": "Шабакаи Боварӣ - Тасдиқшуда",
+    "communitySafety": "Амнияти Ҷомеа - Тасдиқшуда",
+    "nws": "NWS - Тасдиқшуда",
+    "policeDept": "Шӯъбаи Полис",
+    "fireDept": "Шӯъбаи Сӯхторнишонӣ",
+    "police": "Полис",
+    "fire": "Сӯхторнишонӣ",
+    "applyForVerification": "Барои тасдиқ муроҷиат кунед"
+  }
+}

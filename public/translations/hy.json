@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Ֆիդ",
+    "profile": "Պրոֆիլ",
+    "settings": "Կարգավորումներ",
+    "signOut": "Դուրս գալ"
+  },
+  "feed": {
+    "whatsHappening": "Ինչ է կատարվում",
+    "postAs": "Հրապարակել որպես {name}",
+    "postTo": "Հրապարակել {zip}-ում - Ամեն ինչ մեկ տեղում",
+    "in": "ՏԵՂՈՒՄ",
+    "loading": "Բեռնում...",
+    "posting": "ՀՐԱՊԱՐԱԿՈՒՄ...",
+    "fixPunctuation": "Ուղղել կետադրությունը",
+    "tapMic": "Հպիր խոսափողին - աշխատում է {zip}-ում - ցանկացած հեռախոս կամ համակարգիչ",
+    "postingAs": "Հրապարակում ես որպես",
+    "universalMic": "Ունիվերսալ խոսափող",
+    "waitBlock": "Դեռ հայտնաբերում եմ քո բլոկը... սպասիր 2 վրկ և նորից հրապարակիր",
+    "price": "Գին",
+    "addressPrivate": "Հասցե - Գաղտնի",
+    "conditionNew": "Նոր",
+    "conditionLikeNew": "Ինչպես նոր",
+    "conditionGood": "Լավ",
+    "conditionFair": "Բավարար",
+    "recorded_live": "Ձայնագրված ուղիղ",
+    "whatsHappeningQuestion": "Ինչ է կատարվում?",
+    "there": "այնտեղ",
+    "anyDevice": "ցանկացած հեռախոս կամ համակարգիչ"
+  },
+  "common": {
+    "backToFeed": "Վերադառնալ ֆիդ",
+    "save": "Պահել",
+    "cancel": "Չեղարկել",
+    "delete": "Ջնջել",
+    "deleteConfirm": "Ջնջել այս գրառումը?",
+    "error": "Սխալ",
+    "loading": "Բեռնում...",
+    "recorded": "Ձայնագրված",
+    "yourArea": "քո տարածքը",
+    "loadingDots": "Բեռնում...",
+    "wasLive": "Ուղիղ էր"
+  },
+  "weather": {
+    "weather": "Եղանակ",
+    "live": "ՈՒՂԻՂ"
+  },
+  "location": {
+    "setLocation": "Սահմանել տեղը",
+    "locating": "Տեղորոշում..."
+  },
+  "filters": {
+    "all": "Բոլորը",
+    "faith": "Հավատ",
+    "general": "Ընդհանուր",
+    "safety": "Անվտանգություն",
+    "forSale": "Վաճառքի համար",
+    "for_sale": "Վաճառքի համար",
+    "free": "Անվճար",
+    "free_stuff": "Անվճար իրեր",
+    "lostPet": "Կորած ընտանի կենդանի",
+    "lost_pet": "Կորած ընտանի կենդանի",
+    "event": "Միջոցառում",
+    "help": "Օգնություն",
+    "recommend": "Խորհուրդ տալ",
+    "job": "Աշխատանք",
+    "alert": "Զգուշացում",
+    "recommendation": "Խորհուրդ",
+    "lost_found": "Կորած և գտնված",
+    "hot_take": "Թեժ կարծիք"
+  },
+  "auth": {
+    "welcome": "Բարի գալուստ Sweet Social Space",
+    "emailPlaceholder": "Էլ. հասցե",
+    "passwordPlaceholder": "Գաղտնաբառ",
+    "signIn": "Մուտք",
+    "signUp": "Գրանցվել",
+    "languageLabel": "Ընտրիր լեզուն"
+  },
+  "theme": {
+    "theme": "Թեմա",
+    "light": "Բաց",
+    "dark": "Մուգ",
+    "auto": "Ավտո"
+  },
+  "liveMap": {
+    "title": "Ուղիղ քարտեզ",
+    "subtitle": "3 ուղիղ նշիչ • Ամբողջ տեսք"
+  },
+  "faith": {
+    "title": "Օրվա հավատք",
+    "faithOfTheDay": "Օրվա հավատք"
+  },
+  "businesses": {
+    "title": "Տեղական բիզնեսներ",
+    "loading": "Բեռնում",
+    "near": "Մոտ",
+    "noBusinesses": "Դեռ բիզնեսներ չկան",
+    "policeDeptSuffix": "Ոստիկանության բաժանմունք",
+    "fireDeptSuffix": "Հրշեջ ծառայություն",
+    "librarySuffix": "Գրադարան",
+    "communitySuffix": "Համայնքային կենտրոն",
+    "catPolice": "Ոստիկանություն",
+    "catFire": "Հրշեջ",
+    "catLibrary": "Գրադարան",
+    "catCommunity": "Համայնք"
+  },
+  "aiMayor": {
+    "goodMorning": "Բարի լույս",
+    "goodAfternoon": "Բարի օր",
+    "goodEvening": "Բարի երեկո",
+    "goodNight": "Բարի գիշեր",
+    "hotDay": "Շոգ օր {temp}°F - մնա խոնավ",
+    "pleasant": "{temp}°F հաճելի - հիանալի օր դրսում",
+    "mild": "{temp}°F մեղմ - կատարյալ պայմաններ",
+    "cool": "{temp}°F զով - վերցրու թեթև բաճկոն",
+    "chilly": "{temp}°F ցուրտ - տաք հագնվիր",
+    "neighborsActive": "{count} հարևան ակտիվ է այսօր",
+    "newUpdates": "{count} նոր թարմացում քո տարածքում",
+    "beFirst": "Եղիր առաջինը ով կկիսվի {city}-ում",
+    "weatherAlert": "Եղանակային նախազգուշացում ակտիվ է",
+    "seismic": "Սեյսմիկ ակտիվություն մոտակայքում",
+    "watchingOver": "Քո AI քաղաքապետը հսկում է {city}-ն",
+    "wakingUp": "AI քաղաքապետը արթնանում է {city}-ում...",
+    "localFeed": "ՏԵՂԱԿԱՆ ֆիդ - Եղիր առաջինը!",
+    "monitoring": "AI քաղաքապետը հետևում է քո տարածքին",
+    "live": "ՈՒՂԻՂ",
+    "thinking": "Մտածում է..."
+  },
+  "events": {
+    "upcomingEvents": "Առաջիկա միջոցառումներ",
+    "near": "Մոտ",
+    "noEventsNearby": "Մոտակայքում միջոցառումներ չկան",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Ինչ է կատարվում քո մոտ",
+    "locating": "Տեղորոշում...",
+    "near": "Մոտ",
+    "informationHighway": "Տեղեկատվության մայրուղի",
+    "checking": "Ստուգում",
+    "events": "միջոցառում",
+    "eventsIn": "Միջոցառումներ",
+    "local": "Տեղական",
+    "liveApis": "Ուղիղ՝ SeatGeek + Արտաքին API-ներ • 15 մղոն շառավիղ"
+  },
+  "verified": {
+    "verifiedSources": "Ստուգված աղբյուրներ",
+    "near": "Մոտ",
+    "noVerifiedOrgs": "Դեռ ստուգված կազմակերպություններ չկան - դիմիր!",
+    "verified": "Ստուգված",
+    "verifiedBadge": "Ստուգված",
+    "trustNetwork": "Վստահության ցանց - Ստուգված",
+    "communitySafety": "Համայնքի անվտանգություն - Ստուգված",
+    "nws": "NWS - Ստուգված",
+    "policeDept": "Ոստիկանության բաժանմունք",
+    "fireDept": "Հրշեջ ծառայություն",
+    "police": "Ոստիկանություն",
+    "fire": "Հրշեջ",
+    "applyForVerification": "Դիմել ստուգման"
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "个人资料",
+    "settings": "设置",
+    "signOut": "退出登录"
+  },
+  "feed": {
+    "whatsHappening": "正在发生",
+    "postAs": "发布为 {name}",
+    "postTo": "发布到 {zip} - 一站式",
+    "in": "在",
+    "loading": "加载中...",
+    "posting": "发布中...",
+    "fixPunctuation": "修正标点",
+    "tapMic": "点击麦克风 - 在 {zip} 可用 - 任何手机或电脑",
+    "postingAs": "发布为",
+    "universalMic": "通用麦克风",
+    "waitBlock": "仍在检测您的街区...请等待2秒后重试",
+    "price": "价格",
+    "addressPrivate": "地址 - 私密",
+    "conditionNew": "全新",
+    "conditionLikeNew": "几乎全新",
+    "conditionGood": "良好",
+    "conditionFair": "一般",
+    "recorded_live": "直播录制",
+    "whatsHappeningQuestion": "发生了什么？",
+    "there": "那里",
+    "anyDevice": "任何手机或电脑"
+  },
+  "common": {
+    "backToFeed": "返回Feed",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "deleteConfirm": "删除此帖子？",
+    "error": "错误",
+    "loading": "加载中...",
+    "recorded": "已录制",
+    "yourArea": "您的区域",
+    "loadingDots": "加载中...",
+    "wasLive": "曾直播"
+  },
+  "weather": {
+    "weather": "天气",
+    "live": "直播"
+  },
+  "location": {
+    "setLocation": "设置位置",
+    "locating": "定位中..."
+  },
+  "filters": {
+    "all": "全部",
+    "faith": "信仰",
+    "general": "一般",
+    "safety": "安全",
+    "forSale": "出售",
+    "for_sale": "出售",
+    "free": "免费",
+    "free_stuff": "免费物品",
+    "lostPet": "丢失宠物",
+    "lost_pet": "丢失宠物",
+    "event": "活动",
+    "help": "帮助",
+    "recommend": "推荐",
+    "job": "工作",
+    "alert": "警报",
+    "recommendation": "推荐",
+    "lost_found": "失物招领",
+    "hot_take": "热门观点"
+  },
+  "auth": {
+    "welcome": "欢迎来到 Sweet Social Space",
+    "emailPlaceholder": "电子邮箱",
+    "passwordPlaceholder": "密码",
+    "signIn": "登录",
+    "signUp": "注册",
+    "languageLabel": "选择您的语言"
+  },
+  "theme": {
+    "theme": "主题",
+    "light": "浅色",
+    "dark": "深色",
+    "auto": "自动"
+  },
+  "liveMap": {
+    "title": "实时地图",
+    "subtitle": "3个实时图钉 • 全视图"
+  },
+  "faith": {
+    "title": "今日信仰",
+    "faithOfTheDay": "今日信仰"
+  },
+  "businesses": {
+    "title": "本地商家",
+    "loading": "加载中",
+    "near": "附近",
+    "noBusinesses": "暂无商家",
+    "policeDeptSuffix": "警察局",
+    "fireDeptSuffix": "消防局",
+    "librarySuffix": "图书馆",
+    "communitySuffix": "社区中心",
+    "catPolice": "警察",
+    "catFire": "消防站",
+    "catLibrary": "图书馆",
+    "catCommunity": "社区"
+  },
+  "aiMayor": {
+    "goodMorning": "早上好",
+    "goodAfternoon": "下午好",
+    "goodEvening": "晚上好",
+    "goodNight": "晚安",
+    "hotDay": "今天高温 {temp}°F - 请多喝水",
+    "pleasant": "宜人 {temp}°F - 适合外出",
+    "mild": "温和 {temp}°F - 完美天气",
+    "cool": "凉爽 {temp}°F - 带件薄外套",
+    "chilly": "寒冷 {temp}°F - 多穿点",
+    "neighborsActive": "今天有 {count} 位邻居活跃",
+    "newUpdates": "您附近有 {count} 条新动态",
+    "beFirst": "成为在 {city} 首个分享的人",
+    "weatherAlert": "天气警报生效中",
+    "seismic": "附近检测到地震活动",
+    "watchingOver": "您的AI市长正在守护 {city}",
+    "wakingUp": "AI市长正在 {city} 醒来...",
+    "localFeed": "本地动态 - 成为首个分享者！",
+    "monitoring": "AI市长正在监控您的区域",
+    "live": "直播",
+    "thinking": "思考中..."
+  },
+  "events": {
+    "upcomingEvents": "即将举行的活动",
+    "near": "附近",
+    "noEventsNearby": "附近没有活动",
+    "tba": "待定"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "您附近正在发生什么",
+    "locating": "定位中...",
+    "near": "附近",
+    "informationHighway": "信息高速公路",
+    "checking": "检查中",
+    "events": "活动",
+    "eventsIn": "在 的活动",
+    "local": "本地",
+    "liveApis": "实时：SeatGeek + 外部API • 15英里半径"
+  },
+  "verified": {
+    "verifiedSources": "已验证来源",
+    "near": "附近",
+    "noVerifiedOrgs": "暂无已验证机构 - 申请吧！",
+    "verified": "已验证",
+    "verifiedBadge": "已验证",
+    "trustNetwork": "信任网络 - 已验证",
+    "communitySafety": "社区安全 - 已验证",
+    "nws": "NWS - 已验证",
+    "policeDept": "警察局",
+    "fireDept": "消防局",
+    "police": "警察",
+    "fire": "消防",
+    "applyForVerification": "申请验证"
+  }
+}

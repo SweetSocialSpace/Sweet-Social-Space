@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "ฟีด",
+    "profile": "โปรไฟล์",
+    "settings": "การตั้งค่า",
+    "signOut": "ออกจากระบบ"
+  },
+  "feed": {
+    "whatsHappening": "เกิดอะไรขึ้นที่",
+    "postAs": "โพสต์ในฐานะ {name}",
+    "postTo": "โพสต์ไปที่ {zip} - ครบจบในที่เดียว",
+    "in": "ใน",
+    "loading": "กำลังโหลด...",
+    "posting": "กำลังโพสต์...",
+    "fixPunctuation": "แก้ไขเครื่องหมายวรรคตอน",
+    "tapMic": "แตะไมค์ - ใช้ได้ใน {zip} - โทรศัพท์หรือคอมพิวเตอร์ใดก็ได้",
+    "postingAs": "โพสต์ในฐานะ",
+    "universalMic": "ไมค์สากล",
+    "waitBlock": "ยังตรวจหาบล็อกของคุณอยู่... รอ 2 วินาทีแล้วโพสต์อีกครั้ง",
+    "price": "ราคา",
+    "addressPrivate": "ที่อยู่ - ส่วนตัว",
+    "conditionNew": "ใหม่",
+    "conditionLikeNew": "เหมือนใหม่",
+    "conditionGood": "ดี",
+    "conditionFair": "พอใช้",
+    "recorded_live": "บันทึกสด",
+    "whatsHappeningQuestion": "เกิดอะไรขึ้น?",
+    "there": "ที่นั่น",
+    "anyDevice": "โทรศัพท์หรือคอมพิวเตอร์ใดก็ได้"
+  },
+  "common": {
+    "backToFeed": "กลับไปที่ฟีด",
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "delete": "ลบ",
+    "deleteConfirm": "ลบโพสต์นี้?",
+    "error": "ข้อผิดพลาด",
+    "loading": "กำลังโหลด...",
+    "recorded": "บันทึกแล้ว",
+    "yourArea": "พื้นที่ของคุณ",
+    "loadingDots": "กำลังโหลด...",
+    "wasLive": "เคยไลฟ์"
+  },
+  "weather": {
+    "weather": "สภาพอากาศ",
+    "live": "สด"
+  },
+  "location": {
+    "setLocation": "ตั้งค่าตำแหน่ง",
+    "locating": "กำลังระบุตำแหน่ง..."
+  },
+  "filters": {
+    "all": "ทั้งหมด",
+    "faith": "ศรัทธา",
+    "general": "ทั่วไป",
+    "safety": "ความปลอดภัย",
+    "forSale": "สำหรับขาย",
+    "for_sale": "สำหรับขาย",
+    "free": "ฟรี",
+    "free_stuff": "ของฟรี",
+    "lostPet": "สัตว์เลี้ยงหาย",
+    "lost_pet": "สัตว์เลี้ยงหาย",
+    "event": "กิจกรรม",
+    "help": "ช่วยเหลือ",
+    "recommend": "แนะนำ",
+    "job": "งาน",
+    "alert": "แจ้งเตือน",
+    "recommendation": "คำแนะนำ",
+    "lost_found": "ของหายและพบ",
+    "hot_take": "ความคิดเห็นร้อนแรง"
+  },
+  "auth": {
+    "welcome": "ยินดีต้อนรับสู่ Sweet Social Space",
+    "emailPlaceholder": "ที่อยู่อีเมล",
+    "passwordPlaceholder": "รหัสผ่าน",
+    "signIn": "เข้าสู่ระบบ",
+    "signUp": "สมัครสมาชิก",
+    "languageLabel": "เลือกภาษาของคุณ"
+  },
+  "theme": {
+    "theme": "ธีม",
+    "light": "สว่าง",
+    "dark": "มืด",
+    "auto": "อัตโนมัติ"
+  },
+  "liveMap": {
+    "title": "แผนที่สด",
+    "subtitle": "3 หมุดสด • มุมมองเต็ม"
+  },
+  "faith": {
+    "title": "ศรัทธาประจำวัน",
+    "faithOfTheDay": "ศรัทธาประจำวัน"
+  },
+  "businesses": {
+    "title": "ธุรกิจท้องถิ่น",
+    "loading": "กำลังโหลด",
+    "near": "ใกล้",
+    "noBusinesses": "ยังไม่มีธุรกิจ",
+    "policeDeptSuffix": "กรมตำรวจ",
+    "fireDeptSuffix": "สถานีดับเพลิง",
+    "librarySuffix": "ห้องสมุด",
+    "communitySuffix": "ศูนย์ชุมชน",
+    "catPolice": "ตำรวจ",
+    "catFire": "ดับเพลิง",
+    "catLibrary": "ห้องสมุด",
+    "catCommunity": "ชุมชน"
+  },
+  "aiMayor": {
+    "goodMorning": "สวัสดีตอนเช้า",
+    "goodAfternoon": "สวัสดีตอนบ่าย",
+    "goodEvening": "สวัสดีตอนเย็น",
+    "goodNight": "ราตรีสวัสดิ์",
+    "hotDay": "อากาศร้อน {temp}°F - ดื่มน้ำให้เพียงพอ",
+    "pleasant": "อากาศดี {temp}°F - วันที่ดีสำหรับการออกไปข้างนอก",
+    "mild": "อากาศสบาย {temp}°F - สภาพอากาศสมบูรณ์แบบ",
+    "cool": "อากาศเย็น {temp}°F - หยิบแจ็คเก็ตบางๆ",
+    "chilly": "อากาศหนาว {temp}°F - สวมเสื้อผ้าหนาๆ",
+    "neighborsActive": "{count} เพื่อนบ้านกำลังใช้งานวันนี้",
+    "newUpdates": "{count} อัปเดตใหม่ในพื้นที่ของคุณ",
+    "beFirst": "เป็นคนแรกที่แชร์ใน {city}",
+    "weatherAlert": "มีการแจ้งเตือนสภาพอากาศ",
+    "seismic": "ตรวจพบกิจกรรมแผ่นดินไหวใกล้เคียง",
+    "watchingOver": "นายก AI ของคุณดูแล {city} อยู่",
+    "wakingUp": "นายก AI กำลังตื่นใน {city}...",
+    "localFeed": "ฟีดท้องถิ่น - เป็นคนแรกที่แชร์!",
+    "monitoring": "นายก AI กำลังเฝ้าดูพื้นที่ของคุณ",
+    "live": "สด",
+    "thinking": "กำลังคิด..."
+  },
+  "events": {
+    "upcomingEvents": "กิจกรรมที่กำลังจะมาถึง",
+    "near": "ใกล้",
+    "noEventsNearby": "ไม่มีกิจกรรมใกล้เคียง",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "เกิดอะไรขึ้นใกล้คุณ",
+    "locating": "กำลังระบุ...",
+    "near": "ใกล้",
+    "informationHighway": "ทางหลวงข้อมูล",
+    "checking": "กำลังตรวจสอบ",
+    "events": "กิจกรรม",
+    "eventsIn": "กิจกรรมใน",
+    "local": "ท้องถิ่น",
+    "liveApis": "สด: SeatGeek + API ภายนอก • รัศมี 15 ไมล์"
+  },
+  "verified": {
+    "verifiedSources": "แหล่งที่เชื่อถือได้",
+    "near": "ใกล้",
+    "noVerifiedOrgs": "ยังไม่มีองค์กรที่ยืนยัน - สมัครเลย!",
+    "verified": "ยืนยันแล้ว",
+    "verifiedBadge": "ยืนยันแล้ว",
+    "trustNetwork": "เครือข่ายความน่าเชื่อถือ - ยืนยันแล้ว",
+    "communitySafety": "ความปลอดภัยชุมชน - ยืนยันแล้ว",
+    "nws": "NWS - ยืนยันแล้ว",
+    "policeDept": "กรมตำรวจ",
+    "fireDept": "สถานีดับเพลิง",
+    "police": "ตำรวจ",
+    "fire": "ดับเพลิง",
+    "applyForVerification": "สมัครเพื่อยืนยันตัวตน"
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Syöte",
+    "profile": "Profiili",
+    "settings": "Asetukset",
+    "signOut": "Kirjaudu ulos"
+  },
+  "feed": {
+    "whatsHappening": "Mitä tapahtuu",
+    "postAs": "Julkaise nimellä {name}",
+    "postTo": "Julkaise alueelle {zip} - Yksi paikka",
+    "in": "PAIKASSA",
+    "loading": "Ladataan...",
+    "posting": "JULKAISTAAN...",
+    "fixPunctuation": "Korjaa välimerkit",
+    "tapMic": "Napauta mikkiä - toimii alueella {zip} - mikä tahansa puhelin tai tietokone",
+    "postingAs": "Julkaistaan nimellä",
+    "universalMic": "Universaali mikki",
+    "waitBlock": "Tunnistetaan vielä kortteliasi... odota 2 sek ja julkaise uudelleen",
+    "price": "Hinta",
+    "addressPrivate": "Osoite - Yksityinen",
+    "conditionNew": "Uusi",
+    "conditionLikeNew": "Kuin uusi",
+    "conditionGood": "Hyvä",
+    "conditionFair": "Kohtalainen",
+    "recorded_live": "Tallennettu live",
+    "whatsHappeningQuestion": "Mitä tapahtuu?",
+    "there": "siellä",
+    "anyDevice": "mikä tahansa puhelin tai tietokone"
+  },
+  "common": {
+    "backToFeed": "Takaisin syötteeseen",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "error": "Virhe",
+    "loading": "Ladataan...",
+    "delete": "Poista",
+    "deleteConfirm": "Poistetaanko julkaisu?",
+    "recorded": "Tallennettu",
+    "yourArea": "alueesi",
+    "loadingDots": "Ladataan...",
+    "wasLive": "Oli livenä"
+  },
+  "weather": {
+    "weather": "Sää",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Aseta sijainti",
+    "locating": "Paikannetaan..."
+  },
+  "filters": {
+    "all": "Kaikki",
+    "faith": "Usko",
+    "general": "Yleinen",
+    "safety": "Turvallisuus",
+    "forSale": "Myydään",
+    "free": "Ilmainen",
+    "lostPet": "Kadonnut lemmikki",
+    "event": "Tapahtuma",
+    "help": "Apua",
+    "recommend": "Suosittele",
+    "for_sale": "Myydään",
+    "free_stuff": "Ilmaista",
+    "lost_pet": "Kadonnut lemmikki",
+    "job": "Työ",
+    "alert": "Hälytys",
+    "recommendation": "Suositus",
+    "lost_found": "Kadonnut ja löydetty",
+    "hot_take": "Kuumia mielipiteitä"
+  },
+  "auth": {
+    "welcome": "Tervetuloa Sweet Social Spaceen",
+    "emailPlaceholder": "Sähköpostiosoite",
+    "passwordPlaceholder": "Salasana",
+    "signIn": "Kirjaudu",
+    "signUp": "Rekisteröidy",
+    "languageLabel": "Valitse kieli"
+  },
+  "theme": {
+    "theme": "Teema",
+    "light": "Vaalea",
+    "dark": "Tumma",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Live-kartta",
+    "subtitle": "3 live-nastaa • Koko näkymä"
+  },
+  "faith": {
+    "title": "Päivän usko",
+    "faithOfTheDay": "Päivän usko"
+  },
+  "businesses": {
+    "title": "Paikalliset yritykset",
+    "loading": "Ladataan",
+    "near": "Lähellä",
+    "noBusinesses": "Ei vielä yrityksiä",
+    "policeDeptSuffix": "Poliisilaitos",
+    "fireDeptSuffix": "Palokunta",
+    "librarySuffix": "Kirjasto",
+    "communitySuffix": "Yhteisökeskus",
+    "catPolice": "Poliisi",
+    "catFire": "Palokunta",
+    "catLibrary": "Kirjasto",
+    "catCommunity": "Yhteisö"
+  },
+  "aiMayor": {
+    "goodMorning": "Hyvää huomenta",
+    "goodAfternoon": "Hyvää iltapäivää",
+    "goodEvening": "Hyvää iltaa",
+    "goodNight": "Hyvää yötä",
+    "hotDay": "Kuuma päivä {temp}°F - pysy nesteytettynä",
+    "pleasant": "{temp}°F miellyttävä - hieno päivä ulkona",
+    "mild": "{temp}°F leuto - täydelliset olosuhteet",
+    "cool": "{temp}°F viileä - ota kevyt takki",
+    "chilly": "{temp}°F kylmä - pukeudu lämpimästi",
+    "neighborsActive": "{count} naapuria aktiivisena tänään",
+    "newUpdates": "{count} uutta päivitystä alueellasi",
+    "beFirst": "Ole ensimmäinen joka jakaa alueella {city}",
+    "weatherAlert": "Säävaroitus aktiivinen",
+    "seismic": "Seisminen aktiivisuus havaittu lähellä",
+    "watchingOver": "AI-pormestarisi valvoo aluetta {city}",
+    "wakingUp": "AI-pormestari herää alueella {city}...",
+    "localFeed": "PAIKALLINEN syöte - Ole ensimmäinen!",
+    "monitoring": "AI-pormestari seuraa aluettasi",
+    "live": "LIVE",
+    "thinking": "Ajattelee..."
+  },
+  "events": {
+    "upcomingEvents": "Tulevat tapahtumat",
+    "near": "Lähellä",
+    "noEventsNearby": "Ei tapahtumia lähellä",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Mitä lähelläsi tapahtuu",
+    "locating": "Paikannetaan...",
+    "near": "Lähellä",
+    "informationHighway": "Tiedon valtatie",
+    "checking": "Tarkistetaan",
+    "events": "tapahtumaa",
+    "eventsIn": "Tapahtumat paikassa",
+    "local": "Paikallinen",
+    "liveApis": "Live: SeatGeek + Ulkoiset API:t • 15 mailin säde"
+  },
+  "verified": {
+    "verifiedSources": "Vahvistetut lähteet",
+    "near": "Lähellä",
+    "noVerifiedOrgs": "Ei vielä vahvistettuja organisaatioita - hae!",
+    "verified": "Vahvistettu",
+    "verifiedBadge": "Vahvistettu",
+    "trustNetwork": "Luottamusverkosto - Vahvistettu",
+    "communitySafety": "Yhteisön turvallisuus - Vahvistettu",
+    "nws": "NWS - Vahvistettu",
+    "policeDept": "Poliisilaitos",
+    "fireDept": "Palokunta",
+    "police": "Poliisi",
+    "fire": "Palokunta",
+    "applyForVerification": "Hae vahvistusta"
+  }
+}

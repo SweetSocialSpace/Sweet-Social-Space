@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "feed": "Стужка",
+    "profile": "Профіль",
+    "settings": "Налады",
+    "signOut": "Выйсці"
+  },
+  "feed": {
+    "whatsHappening": "Што адбываецца ў",
+    "postAs": "Апублікаваць як {name}",
+    "in": "У",
+    "loading": "Загрузка..."
+  },
+  "common": {
+    "backToFeed": "Вярнуцца да стужкі",
+    "save": "Захаваць",
+    "cancel": "Скасаваць",
+    "error": "Памылка",
+    "loading": "Загрузка...",
+    "yourArea": "ваш раён"
+  },
+  "weather": {
+    "weather": "Пагода",
+    "live": "НАЖЫВА"
+  },
+  "location": {
+    "setLocation": "Устанавіць месцазнаходжанне",
+    "locating": "Вызначэнне месцазнаходжання..."
+  },
+  "filters": {
+    "all": "Усе",
+    "faith": "Вера",
+    "general": "Агульнае",
+    "safety": "Бяспека",
+    "forSale": "Прадаецца",
+    "free": "Бясплатна",
+    "lostPet": "Згубленае жывёла",
+    "event": "Падзея",
+    "help": "Дапамога",
+    "recommend": "Рэкамендаваць",
+    "job": "Праца"
+  },
+  "theme": {
+    "theme": "Тэма",
+    "light": "Светлая",
+    "dark": "Цёмная",
+    "auto": "Аўта"
+  },
+  "liveMap": {
+    "title": "Жывая карта",
+    "subtitle": "3 жывыя шпількі • Поўны агляд"
+  },
+  "faith": {
+    "title": "Вера дня",
+    "faithOfTheDay": "Вера дня"
+  },
+  "businesses": {
+    "title": "Мясцовыя прадпрыемствы",
+    "loading": "Загрузка",
+    "near": "Побач",
+    "noBusinesses": "Пакуль няма прадпрыемстваў",
+    "policeDeptSuffix": "Аддзел паліцыі",
+    "fireDeptSuffix": "Пажарная частка",
+    "librarySuffix": "Бібліятэка",
+    "communitySuffix": "Грамадскі цэнтр",
+    "catPolice": "Паліцыя",
+    "catFire": "Пажарная",
+    "catLibrary": "Бібліятэка",
+    "catCommunity": "Супольнасць"
+  },
+  "aiMayor": {
+    "goodMorning": "Добрай раніцы",
+    "goodAfternoon": "Добры дзень",
+    "goodEvening": "Добры вечар",
+    "goodNight": "Дабранач",
+    "hotDay": "Га karая дзень {temp}°F - піце ваду",
+    "pleasant": "{temp}°F прыемна - выдатны дзень для прагулкі",
+    "mild": "{temp}°F мякка - ідэальныя ўмовы",
+    "cool": "{temp}°F прахалодна - вазьміце лёгкую куртку",
+    "chilly": "{temp}°F холадна - апранайцеся цяплей",
+    "neighborsActive": "{count} суседзяў актыўныя сёння",
+    "newUpdates": "{count} новых абнаўленняў у вашым раёне",
+    "beFirst": "Будзьце першымі, хто падзеліцца ў {city}",
+    "weatherAlert": "Актыўнае папярэджанне аб надвор'і - будзьце ў курсе",
+    "seismic": "Побач выяўлена сейсмічная актыўнасць",
+    "watchingOver": "Ваш AI мэр назірае за {city}",
+    "wakingUp": "AI мэр прачынаецца ў {city}...",
+    "localFeed": "ЛАКАЛЬНАЯ стужка - Будзьце першымі!",
+    "monitoring": "AI мэр сочыць за вашым раёнам",
+    "live": "ЖЫЎЦОМ",
+    "thinking": "Думае..."
+  },
+  "events": {
+    "upcomingEvents": "Маючыя адбыцца падзеі",
+    "near": "Побач",
+    "noEventsNearby": "Побач няма падзей",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Што адбываецца побач з вамі",
+    "locating": "Вызначэнне месца...",
+    "near": "Побач",
+    "informationHighway": "Інфармацыйная магістраль",
+    "checking": "Праверка",
+    "events": "падзей",
+    "eventsIn": "Падзеі ў",
+    "local": "Мясцова",
+    "liveApis": "Жыўцом: SeatGeek + Знешнія API • 15 міль радыус"
+  },
+  "verified": {
+    "verifiedSources": "Правераныя крыніцы",
+    "near": "Побач",
+    "noVerifiedOrgs": "Пакуль няма правераных арганізацый - падайце заяўку!",
+    "verified": "Праверана",
+    "verifiedBadge": "Праверана",
+    "trustNetwork": "Сетка даверу - Праверана",
+    "communitySafety": "Бяспека супольнасці - Праверана",
+    "nws": "NWS - Праверана",
+    "policeDept": "Аддзел паліцыі",
+    "fireDept": "Пажарная частка",
+    "police": "Паліцыя",
+    "fire": "Пажарная",
+    "applyForVerification": "Падаць заяўку на верыфікацыю"
+  }
+}

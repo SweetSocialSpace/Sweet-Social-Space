@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Dovod",
+    "profile": "Profil",
+    "settings": "Nastavitve",
+    "signOut": "Odjava"
+  },
+  "feed": {
+    "whatsHappening": "Kaj se dogaja v",
+    "postAs": "OBJAVI KOT {name}",
+    "postTo": "Objavi v {zip} - Vse na Enem Mestu",
+    "in": "V",
+    "loading": "Nalaganje...",
+    "posting": "OBJAVLJANJE...",
+    "fixPunctuation": "Popravi ločila",
+    "tapMic": "Tapni mikrofon - deluje v {zip} - kateri koli telefon ali računalnik",
+    "postingAs": "Objavlja kot",
+    "universalMic": "Univerzalni Mikrofon",
+    "waitBlock": "Še vedno zaznavamo vaš blok... počakajte 2 sek in objavite znova",
+    "price": "Cena",
+    "addressPrivate": "Naslov - Zasebno",
+    "conditionNew": "Novo",
+    "conditionLikeNew": "Kot Novo",
+    "conditionGood": "Dobro",
+    "conditionFair": "Zadovoljivo",
+    "recorded_live": "Posneto v Živo",
+    "whatsHappeningQuestion": "Kaj se dogaja?",
+    "there": "tam",
+    "anyDevice": "kateri koli telefon ali računalnik"
+  },
+  "common": {
+    "backToFeed": "Nazaj na dovod",
+    "save": "Shrani",
+    "cancel": "Prekliči",
+    "delete": "Izbriši",
+    "deleteConfirm": "Izbrisati to objavo?",
+    "error": "Napaka",
+    "loading": "Nalaganje...",
+    "recorded": "Posneto",
+    "yourArea": "vaše območje",
+    "loadingDots": "Nalaganje...",
+    "wasLive": "Je Bilo v Živo"
+  },
+  "weather": {
+    "weather": "Vreme",
+    "live": "V ŽIVO"
+  },
+  "location": {
+    "setLocation": "Nastavi lokacijo",
+    "locating": "Lociranje..."
+  },
+  "filters": {
+    "all": "Vse",
+    "faith": "Vera",
+    "general": "Splošno",
+    "safety": "Varnost",
+    "forSale": "Na prodajo",
+    "for_sale": "Na prodajo",
+    "free": "Brezplačno",
+    "free_stuff": "Brezplačne stvari",
+    "lostPet": "Izgubljena žival",
+    "lost_pet": "Izgubljena žival",
+    "event": "Dogodek",
+    "help": "Pomoč",
+    "recommend": "Priporoči",
+    "job": "Delo",
+    "alert": "Opozorilo",
+    "recommendation": "Priporočilo",
+    "lost_found": "Izgubljeno in najdeno",
+    "hot_take": "Vroče mnenje"
+  },
+  "auth": {
+    "welcome": "Dobrodošli v Sweet Social Space",
+    "emailPlaceholder": "E-poštni naslov",
+    "passwordPlaceholder": "Geslo",
+    "signIn": "Prijava",
+    "signUp": "Registracija",
+    "languageLabel": "Izberite svoj jezik"
+  },
+  "theme": {
+    "theme": "Tema",
+    "light": "Svetla",
+    "dark": "Temna",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Zemljevid v Živo",
+    "subtitle": "3 žive oznake • Celoten pogled"
+  },
+  "faith": {
+    "title": "Vera Dneva",
+    "faithOfTheDay": "Vera Dneva"
+  },
+  "businesses": {
+    "title": "Lokalna Podjetja",
+    "loading": "Nalaganje",
+    "near": "Blizu",
+    "noBusinesses": "Zaenkrat še ni podjetij",
+    "policeDeptSuffix": "Policijska Postaja",
+    "fireDeptSuffix": "Gasilci",
+    "librarySuffix": "Knjižnica",
+    "communitySuffix": "Skupnostni Center",
+    "catPolice": "Policija",
+    "catFire": "Gasilci",
+    "catLibrary": "Knjižnica",
+    "catCommunity": "Skupnost"
+  },
+  "aiMayor": {
+    "goodMorning": "Dobro jutro",
+    "goodAfternoon": "Dober dan",
+    "goodEvening": "Dober večer",
+    "goodNight": "Lahko noč",
+    "hotDay": "Vroč dan {temp}°F - ostanite hidrirani",
+    "pleasant": "Prijetnih {temp}°F - super dan za zunaj",
+    "mild": "Milo {temp}°F - popolni pogoji",
+    "cool": "Hladno {temp}°F - vzemite lahko jakno",
+    "chilly": "Mrzlo {temp}°F - toplo se oblecite",
+    "neighborsActive": "{count} sosedov aktivnih danes",
+    "newUpdates": "{count} novih posodobitev v vašem območju",
+    "beFirst": "Bodite prvi, ki deli v {city}",
+    "weatherAlert": "Aktivno vremensko opozorilo",
+    "seismic": "Zaznana seizmična aktivnost v bližini",
+    "watchingOver": "Vaš AI Župan bdi nad {city}",
+    "wakingUp": "AI Župan se prebuja v {city}...",
+    "localFeed": "LOKALNI dovod - Bodite prvi!",
+    "monitoring": "AI Župan spremlja vaše območje",
+    "live": "V ŽIVO",
+    "thinking": "Razmišlja..."
+  },
+  "events": {
+    "upcomingEvents": "Prihajajoči Dogodki",
+    "near": "Blizu",
+    "noEventsNearby": "Ni dogodkov v bližini",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Kaj se dogaja blizu vas",
+    "locating": "Lociranje...",
+    "near": "Blizu",
+    "informationHighway": "Informacijska Avtocesta",
+    "checking": "Preverjanje",
+    "events": "dogodki",
+    "eventsIn": "Dogodki v",
+    "local": "Lokalno",
+    "liveApis": "V živo: SeatGeek + Zunanji API-ji • Radij 15 milj"
+  },
+  "verified": {
+    "verifiedSources": "Preverjeni Viri",
+    "near": "Blizu",
+    "noVerifiedOrgs": "Zaenkrat ni preverjenih org - prijavite se!",
+    "verified": "Preverjeno",
+    "verifiedBadge": "Preverjeno",
+    "trustNetwork": "Mreža Zaupanja - Preverjeno",
+    "communitySafety": "Varnost Skupnosti - Preverjeno",
+    "nws": "NWS - Preverjeno",
+    "policeDept": "Policijska Postaja",
+    "fireDept": "Gasilci",
+    "police": "Policija",
+    "fire": "Gasilci",
+    "applyForVerification": "Zaprosi za preverjanje"
+  }
+}

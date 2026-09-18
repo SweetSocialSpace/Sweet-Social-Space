@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "signOut": "Déconnexion"
+  },
+  "feed": {
+    "whatsHappening": "Ce qui se passe à",
+    "postAs": "Publier en tant que {name}",
+    "postTo": "Publier à {zip} - Tout en Un",
+    "in": "À",
+    "loading": "Chargement...",
+    "posting": "PUBLICATION...",
+    "fixPunctuation": "Corriger la ponctuation",
+    "tapMic": "Appuyez sur le micro - fonctionne à {zip} - tout téléphone ou ordinateur",
+    "postingAs": "Publication en tant que",
+    "universalMic": "Micro Universel",
+    "waitBlock": "Détection de votre bloc... attendez 2 sec et publiez à nouveau",
+    "price": "Prix",
+    "addressPrivate": "Adresse - Privée",
+    "conditionNew": "Neuf",
+    "conditionLikeNew": "Comme Neuf",
+    "conditionGood": "Bon",
+    "conditionFair": "Correct",
+    "recorded_live": "Enregistré en direct",
+    "whatsHappeningQuestion": "Que se passe-t-il ?",
+    "there": "là-bas",
+    "anyDevice": "tout téléphone ou ordinateur"
+  },
+  "common": {
+    "backToFeed": "Retour au Feed",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "error": "Erreur",
+    "loading": "Chargement...",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer ce post ?",
+    "recorded": "Enregistré",
+    "yourArea": "votre quartier",
+    "loadingDots": "Chargement...",
+    "wasLive": "Était en direct"
+  },
+  "weather": {
+    "weather": "Météo",
+    "live": "EN DIRECT"
+  },
+  "location": {
+    "setLocation": "Définir la localisation",
+    "locating": "Localisation..."
+  },
+  "filters": {
+    "all": "Tous",
+    "faith": "Foi",
+    "general": "Général",
+    "safety": "Sécurité",
+    "forSale": "À Vendre",
+    "free": "Gratuit",
+    "lostPet": "Animal Perdu",
+    "event": "Événement",
+    "help": "Aide",
+    "recommend": "Recommander",
+    "for_sale": "À Vendre",
+    "free_stuff": "Gratuit",
+    "lost_pet": "Animal Perdu",
+    "job": "Emploi",
+    "alert": "Alerte",
+    "recommendation": "Recommandation",
+    "lost_found": "Perdu & trouvé",
+    "hot_take": "Avis tranché"
+  },
+  "auth": {
+    "welcome": "Bienvenue sur Sweet Social Space",
+    "emailPlaceholder": "Adresse e-mail",
+    "passwordPlaceholder": "Mot de passe",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "languageLabel": "Choisissez votre langue"
+  },
+  "theme": {
+    "theme": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Carte en Direct",
+    "subtitle": "3 épingles en direct • Vue complète"
+  },
+  "faith": {
+    "title": "Foi du Jour",
+    "faithOfTheDay": "Foi du Jour"
+  },
+  "businesses": {
+    "title": "Commerces Locaux",
+    "loading": "Chargement",
+    "near": "Près de",
+    "noBusinesses": "Pas encore de commerces",
+    "policeDeptSuffix": "Commissariat",
+    "fireDeptSuffix": "Caserne de Pompiers",
+    "librarySuffix": "Bibliothèque",
+    "communitySuffix": "Centre Communautaire",
+    "catPolice": "Police",
+    "catFire": "Pompiers",
+    "catLibrary": "Bibliothèque",
+    "catCommunity": "Communauté"
+  },
+  "aiMayor": {
+    "goodMorning": "Bonjour",
+    "goodAfternoon": "Bon après-midi",
+    "goodEvening": "Bonsoir",
+    "goodNight": "Bonne nuit",
+    "hotDay": "Journée chaude {temp}°F - restez hydraté",
+    "pleasant": "{temp}°F agréable - belle journée dehors",
+    "mild": "{temp}°F doux - conditions parfaites",
+    "cool": "{temp}°F frais - prenez une veste légère",
+    "chilly": "{temp}°F froid - couvrez-vous",
+    "neighborsActive": "{count} voisins actifs aujourd'hui",
+    "newUpdates": "{count} nouvelles mises à jour dans votre quartier",
+    "beFirst": "Soyez le premier à partager à {city}",
+    "weatherAlert": "Alerte météo active",
+    "seismic": "Activité sismique détectée à proximité",
+    "watchingOver": "Votre Maire IA veille sur {city}",
+    "wakingUp": "Maire IA se réveille à {city}...",
+    "localFeed": "Fil LOCAL - Soyez le premier !",
+    "monitoring": "Maire IA surveille votre quartier",
+    "live": "EN DIRECT",
+    "thinking": "Réfléchit..."
+  },
+  "events": {
+    "upcomingEvents": "Événements à Venir",
+    "near": "Près de",
+    "noEventsNearby": "Pas d'événements à proximité",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Que se passe-t-il près de vous",
+    "locating": "Localisation...",
+    "near": "Près de",
+    "informationHighway": "Autoroute de l'Information",
+    "checking": "Vérification de",
+    "events": "événements",
+    "eventsIn": "Événements à",
+    "local": "Local",
+    "liveApis": "En direct : SeatGeek + APIs externes • Rayon 15 miles"
+  },
+  "verified": {
+    "verifiedSources": "Sources Vérifiées",
+    "near": "Près de",
+    "noVerifiedOrgs": "Pas encore d'orgas vérifiées - postulez !",
+    "verified": "Vérifié",
+    "verifiedBadge": "Vérifié",
+    "trustNetwork": "Réseau de Confiance - Vérifié",
+    "communitySafety": "Sécurité Communautaire - Vérifié",
+    "nws": "NWS - Vérifié",
+    "policeDept": "Commissariat",
+    "fireDept": "Caserne de Pompiers",
+    "police": "Police",
+    "fire": "Pompiers",
+    "applyForVerification": "Demander la vérification"
+  }
+}

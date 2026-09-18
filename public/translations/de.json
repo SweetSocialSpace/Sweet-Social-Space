@@ -1,0 +1,129 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "signOut": "Abmelden"
+  },
+  "feed": {
+    "whatsHappening": "Was passiert in",
+    "postAs": "Posten als {name}",
+    "in": "IN",
+    "loading": "Laden..."
+  },
+  "common": {
+    "backToFeed": "Zurück zum Feed",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "error": "Fehler",
+    "loading": "Laden...",
+    "yourArea": "deine Gegend",
+    "deleteConfirm": "Beitrag löschen?",
+    "delete": "Löschen",
+    "recorded": "Aufgezeichnet",
+    "wasLive": "War live"
+  },
+  "weather": {
+    "weather": "Wetter",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Standort festlegen",
+    "locating": "Lokalisierung..."
+  },
+  "filters": {
+    "all": "Alle",
+    "faith": "Glaube",
+    "general": "Allgemein",
+    "safety": "Sicherheit",
+    "forSale": "Zu Verkaufen",
+    "free": "Kostenlos",
+    "lostPet": "Haustier Verloren",
+    "event": "Veranstaltung",
+    "help": "Hilfe",
+    "recommend": "Empfehlen",
+    "job": "Job"
+  },
+  "theme": {
+    "theme": "Thema",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "auto": "Auto"
+  },
+  "liveMap": {
+    "title": "Live-Karte",
+    "subtitle": "3 Live-Pins • Vollansicht"
+  },
+  "faith": {
+    "title": "Glaube des Tages",
+    "faithOfTheDay": "Glaube des Tages"
+  },
+  "businesses": {
+    "title": "Lokale Unternehmen",
+    "loading": "Laden",
+    "near": "In der Nähe von",
+    "noBusinesses": "Noch keine Unternehmen",
+    "policeDeptSuffix": "Polizeidienststelle",
+    "fireDeptSuffix": "Feuerwehr",
+    "librarySuffix": "Bibliothek",
+    "communitySuffix": "Gemeindezentrum",
+    "catPolice": "Polizei",
+    "catFire": "Feuerwehr",
+    "catLibrary": "Bibliothek",
+    "catCommunity": "Gemeinschaft"
+  },
+  "aiMayor": {
+    "goodMorning": "Guten Morgen",
+    "goodAfternoon": "Guten Tag",
+    "goodEvening": "Guten Abend",
+    "goodNight": "Gute Nacht",
+    "hotDay": "Heißer Tag mit {temp}°F - bleib hydriert",
+    "pleasant": "{temp}°F angenehm - toller Tag draußen",
+    "mild": "{temp}°F mild - perfekte Bedingungen",
+    "cool": "{temp}°F kühl - leichte Jacke mitnehmen",
+    "chilly": "{temp}°F kalt - warm anziehen",
+    "neighborsActive": "{count} Nachbarn sind heute aktiv",
+    "newUpdates": "{count} neue Updates in deiner Gegend",
+    "beFirst": "Sei der Erste, der in {city} teilt",
+    "weatherAlert": "Wetterwarnung aktiv",
+    "seismic": "Seismische Aktivität in der Nähe entdeckt",
+    "watchingOver": "Dein KI-Bürgermeister wacht über {city}",
+    "wakingUp": "KI-Bürgermeister wacht in {city} auf...",
+    "localFeed": "LOKALER Feed - Sei der Erste!",
+    "monitoring": "KI-Bürgermeister überwacht deine Gegend",
+    "live": "LIVE",
+    "thinking": "Denkt nach..."
+  },
+  "events": {
+    "upcomingEvents": "Kommende Veranstaltungen",
+    "near": "In der Nähe",
+    "noEventsNearby": "Keine Veranstaltungen in der Nähe",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Was passiert in deiner Nähe",
+    "locating": "Standort wird ermittelt...",
+    "near": "In der Nähe",
+    "informationHighway": "Informations-Highway",
+    "checking": "Prüfe",
+    "events": "Veranstaltungen",
+    "eventsIn": "Veranstaltungen in",
+    "local": "Lokal",
+    "liveApis": "Live: SeatGeek + Externe APIs • 15 Meilen Radius"
+  },
+  "verified": {
+    "verifiedSources": "Verifizierte Quellen",
+    "near": "In der Nähe",
+    "noVerifiedOrgs": "Noch keine verifizierten Organisationen - bewerben!",
+    "verified": "Verifiziert",
+    "verifiedBadge": "Verifiziert",
+    "trustNetwork": "Vertrauensnetzwerk - Verifiziert",
+    "communitySafety": "Gemeinschaftssicherheit - Verifiziert",
+    "nws": "NWS - Verifiziert",
+    "policeDept": "Polizeidienststelle",
+    "fireDept": "Feuerwehr",
+    "police": "Polizei",
+    "fire": "Feuerwehr",
+    "applyForVerification": "Für Verifizierung bewerben"
+  }
+}

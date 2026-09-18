@@ -1,0 +1,162 @@
+{
+  "nav": {
+    "feed": "Oqim",
+    "profile": "Profil",
+    "settings": "Sozlamalar",
+    "signOut": "Chiqish"
+  },
+  "feed": {
+    "whatsHappening": "Nima bo'lyapti",
+    "postAs": "SIFATIDA YUBORISH {name}",
+    "postTo": "{zip} - Hamma Bir Joyda ga Yuborish",
+    "in": "JOYDA",
+    "loading": "Yuklanmoqda...",
+    "posting": "YUBORILMOQDA...",
+    "fixPunctuation": "Tinish belgilarini tuzatish",
+    "tapMic": "Mikrofonga teging - {zip} da ishlaydi - har qanday telefon yoki kompyuterda",
+    "postingAs": "Sifatida yuborilmoqda",
+    "universalMic": "Universal Mikrofon",
+    "waitBlock": "Hali blokni aniqlayapmiz... 2 sek kutib qayta yuboring",
+    "price": "Narx",
+    "addressPrivate": "Manzil - Shaxsiy",
+    "conditionNew": "Yangi",
+    "conditionLikeNew": "Yangidek",
+    "conditionGood": "Yaxshi",
+    "conditionFair": "O'rtacha",
+    "recorded_live": "Jonli Yozib Olindi",
+    "whatsHappeningQuestion": "Nima bo'lyapti?",
+    "there": "u yerda",
+    "anyDevice": "har qanday telefon yoki kompyuter"
+  },
+  "common": {
+    "backToFeed": "Oqimga qaytish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "delete": "O'chirish",
+    "deleteConfirm": "Bu post o'chirilsinmi?",
+    "error": "Xato",
+    "loading": "Yuklanmoqda...",
+    "recorded": "Yozib olindi",
+    "yourArea": "hududingiz",
+    "loadingDots": "Yuklanmoqda...",
+    "wasLive": "Jonli edi"
+  },
+  "weather": {
+    "weather": "Ob-havo",
+    "live": "TO'G'RIDAN-TO'G'RI"
+  },
+  "location": {
+    "setLocation": "Joylashuvni o'rnatish",
+    "locating": "Joylashuvni aniqlash..."
+  },
+  "filters": {
+    "all": "Barchasi",
+    "faith": "Iymon",
+    "general": "Umumiy",
+    "safety": "Xavfsizlik",
+    "forSale": "Sotiladi",
+    "for_sale": "Sotiladi",
+    "free": "Bepul",
+    "free_stuff": "Bepul narsalar",
+    "lostPet": "Yo'qolgan uy hayvoni",
+    "lost_pet": "Yo'qolgan uy hayvoni",
+    "event": "Tadbir",
+    "help": "Yordam",
+    "recommend": "Tavsiya etish",
+    "job": "Ish",
+    "alert": "Ogohlantirish",
+    "recommendation": "Tavsiya",
+    "lost_found": "Yo'qolgan va topilgan",
+    "hot_take": "Qizg'in fikr"
+  },
+  "auth": {
+    "welcome": "Sweet Social Space ga Xush Kelibsiz",
+    "emailPlaceholder": "Email manzili",
+    "passwordPlaceholder": "Parol",
+    "signIn": "Kirish",
+    "signUp": "Ro'yxatdan o'tish",
+    "languageLabel": "Tilingizni tanlang"
+  },
+  "theme": {
+    "theme": "Mavzu",
+    "light": "Yorug'",
+    "dark": "Qorong'i",
+    "auto": "Avto"
+  },
+  "liveMap": {
+    "title": "Jonli Xarita",
+    "subtitle": "3 jonli pin • To'liq ko'rinish"
+  },
+  "faith": {
+    "title": "Kun Iymoni",
+    "faithOfTheDay": "Kun Iymoni"
+  },
+  "businesses": {
+    "title": "Mahalliy Bizneslar",
+    "loading": "Yuklanmoqda",
+    "near": "Yaqinida",
+    "noBusinesses": "Hali biznes yo'q",
+    "policeDeptSuffix": "Politsiya Departamenti",
+    "fireDeptSuffix": "O't O'chirish Departamenti",
+    "librarySuffix": "Kutubxona",
+    "communitySuffix": "Jamiyat Markazi",
+    "catPolice": "Politsiya",
+    "catFire": "O't o'chirish",
+    "catLibrary": "Kutubxona",
+    "catCommunity": "Jamiyat"
+  },
+  "aiMayor": {
+    "goodMorning": "Xayrli tong",
+    "goodAfternoon": "Xayrli kun",
+    "goodEvening": "Xayrli kech",
+    "goodNight": "Xayrli tun",
+    "hotDay": "Issiq kun {temp}°F - ko'p suv iching",
+    "pleasant": "Yoqimli {temp}°F - tashqarida bo'lish uchun ajoyib kun",
+    "mild": "Mo'tadil {temp}°F - mukammal sharoit",
+    "cool": "Salqin {temp}°F - yengil kurtka oling",
+    "chilly": "Sovuq {temp}°F - qalin kiyining",
+    "neighborsActive": "{count} qo'shni bugun faol",
+    "newUpdates": "Hududingizda {count} yangi yangilanish",
+    "beFirst": "{city} da birinchi bo'lib ulashing",
+    "weatherAlert": "Ob-havo ogohlantirishi faol",
+    "seismic": "Yaqin atrofda seysmik faollik aniqlandi",
+    "watchingOver": "AI Hokimingiz {city} ni kuzatmoqda",
+    "wakingUp": "AI Hokim {city} da uyg'onmoqda...",
+    "localFeed": "MAHALLIY oqim - Birinchi bo'ling!",
+    "monitoring": "AI Hokim hududingizni kuzatmoqda",
+    "live": "JONLI",
+    "thinking": "O'ylamoqda..."
+  },
+  "events": {
+    "upcomingEvents": "Yaqinlashib Kelayotgan Tadbirlar",
+    "near": "Yaqinida",
+    "noEventsNearby": "Yaqin atrofda tadbir yo'q",
+    "tba": "TBA"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "Yaqiningizda nima bo'lyapti",
+    "locating": "Aniqlash...",
+    "near": "Yaqinida",
+    "informationHighway": "Axborot Magistrali",
+    "checking": "Tekshirilmoqda",
+    "events": "tadbirlar",
+    "eventsIn": "dagi Tadbirlar",
+    "local": "Mahalliy",
+    "liveApis": "Jonli: SeatGeek + Tashqi API lar • 15 mil radius"
+  },
+  "verified": {
+    "verifiedSources": "Tasdiqlangan Manbalar",
+    "near": "Yaqinida",
+    "noVerifiedOrgs": "Hali tasdiqlangan tashkilot yo'q - ariza bering!",
+    "verified": "Tasdiqlangan",
+    "verifiedBadge": "Tasdiqlangan",
+    "trustNetwork": "Ishonch Tarmog'i - Tasdiqlangan",
+    "communitySafety": "Jamiyat Xavfsizligi - Tasdiqlangan",
+    "nws": "NWS - Tasdiqlangan",
+    "policeDept": "Politsiya Departamenti",
+    "fireDept": "O't O'chirish Departamenti",
+    "police": "Politsiya",
+    "fire": "O't o'chirish",
+    "applyForVerification": "Tasdiqlash uchun ariza berish"
+  }
+}
