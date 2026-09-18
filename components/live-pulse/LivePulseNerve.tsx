@@ -24,12 +24,12 @@ export default function LivePulseNerve() {
 
   return (
     <div className="w-full bg-black/80 backdrop-blur border border-yellow-500/20 rounded-2xl p-3 flex items-center gap-3 mb-4">
-      <div className="flex items-center gap-2 shrink-0"><span className="h-2 w-2 bg-red-500 rounded-full animate-pulse" /><span className="text-white font-black text-xs tracking-widest">{t?.common?.live || 'LIVE'} {zip}</span></div>
+      <div className="flex items-center gap-2 shrink-0"><span className="h-2 w-2 bg-red-500 rounded-full animate-pulse" /><span className="text-white font-black text-xs tracking-widest">{t?.common?.live} {zip}</span></div>
       <div className="flex gap-2 overflow-x-auto scrollbar-none">
         <span className="shrink-0 bg-zinc-800 text-white text-xs px-3 py-1.5 rounded-full">{data.temp}° • {data.condition}</span>
-        <span className="shrink-0 bg-zinc-800 text-white text-xs px-3 py-1.5 rounded-full">{data.tacoLine ? `Tacos • ${data.tacoLine}` : (t?.livePulseNerve?.localSpot || `Local spot • Open`)}</span>
-        <span className="shrink-0 bg-zinc-800 text-white text-xs px-3 py-1.5 rounded-full">{data.yardSales} {t?.livePulseNerve?.yardSales || 'yard sales'}</span>
-        <span className="shrink-0 bg-zinc-800 text-white text-xs px-3 py-1.5 rounded-full">{data.onlineNow} {t?.livePulseNerve?.onlineNow || 'online now'}</span>
+        <span className="shrink-0 bg-zinc-800 text-white text-xs px-3 py-1.5 rounded-full">{data.tacoLine ? `Tacos • ${data.tacoLine}` : t?.livePulseNerve?.localSpot}</span>
+        <span className="shrink-0 bg-zinc-800 text-white text-xs px-3 py-1.5 rounded-full">{data.yardSales} {t?.livePulseNerve?.yardSales}</span>
+        <span className="shrink-0 bg-zinc-800 text-white text-xs px-3 py-1.5 rounded-full">{data.onlineNow} {t?.livePulseNerve?.onlineNow}</span>
       </div>
       <div className="ml-auto text-zinc-400 text-xs shrink-0">{time}</div>
     </div>
