@@ -1,32 +1,29 @@
 'use client'
 import Link from 'next/link'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 export default function LocalFooter() {
-  const { language } = useLanguage()
   const t = useTranslations() as any
-  const isEs = language?.startsWith('es')
 
   const F = {
-    verify: t?.footer?.verify || (isEs ? 'VERIFICAR' : 'VERIFY'),
-    verification: t?.footer?.verification || (isEs ? 'Verificación' : 'Verification'),
-    securitySsl: t?.footer?.securitySsl || (isEs ? 'Seguridad • SSL Seguro' : 'Security • SSL Secured'),
-    trustMeter: t?.footer?.trustMeter || (isEs ? 'Medidor de Confianza' : 'Trust Meter'),
-    legal: t?.footer?.legal || 'LEGAL',
-    termsOfUse: t?.footer?.termsOfUse || (isEs ? 'Términos de Uso' : 'Terms of Use'),
-    privacyPolicy: t?.footer?.privacyPolicy || (isEs ? 'Política de Privacidad' : 'Privacy Policy'),
-    legalDmca: t?.footer?.legalDmca || 'Legal • DMCA',
-    guarantees: t?.footer?.guarantees || (isEs ? 'GARANTÍAS' : 'GUARANTEES'),
-    ourGuarantees: t?.footer?.ourGuarantees || (isEs ? 'Nuestras Garantías' : 'Our Guarantees'),
-    faithCorner: t?.footer?.faithCorner || (isEs ? 'Rincón de Fe' : 'Faith Corner'),
-    failsafe: t?.footer?.failsafe || (isEs ? 'A Prueba de Fallos' : 'Failsafe'),
-    contact: t?.footer?.contact || (isEs ? 'CONTACTO' : 'CONTACT'),
-    contactUs: t?.footer?.contactUs || (isEs ? 'Contáctanos' : 'Contact Us'),
-    about: t?.footer?.about || (isEs ? 'Acerca de' : 'About'),
-    support: t?.footer?.support || (isEs ? 'Soporte' : 'Support'),
-    platform: t?.footer?.platform || (isEs ? 'PLATAFORMA' : 'PLATFORM'),
-    platformTagline: t?.footer?.platformTagline || (isEs ? 'INDEPENDIENTE • A PRUEBA DE FALLOS • SSL SEGURO • 100% VERIFICADO • Nos importa tu privacidad' : 'INDEPENDENT • FAILSAFE • SSL SECURED • 100% VERIFIED • We care about your privacy'),
+    verify: t?.footer?.verify,
+    verification: t?.footer?.verification,
+    securitySsl: t?.footer?.securitySsl,
+    trustMeter: t?.footer?.trustMeter,
+    legal: t?.footer?.legal,
+    termsOfUse: t?.footer?.termsOfUse,
+    privacyPolicy: t?.footer?.privacyPolicy,
+    legalDmca: t?.footer?.legalDmca,
+    guarantees: t?.footer?.guarantees,
+    ourGuarantees: t?.footer?.ourGuarantees,
+    faithCorner: t?.footer?.faithCorner,
+    failsafe: t?.footer?.failsafe,
+    contact: t?.footer?.contact,
+    contactUs: t?.footer?.contactUs,
+    about: t?.footer?.about,
+    support: t?.footer?.support,
+    platform: t?.footer?.platform,
+    platformTagline: t?.footer?.platformTagline,
   }
 
   return (
