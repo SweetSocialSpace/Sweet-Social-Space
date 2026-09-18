@@ -41,10 +41,10 @@ export function BusinessDirectory(){
 
         const displayCity = city || zip
         const fallback: Biz[] = [
-          { id: 'fb-1', name: `${displayCity} ${t?.businesses?.policeDeptSuffix || 'Police Department'}`, category: t?.businesses?.catPolice || 'Police' },
-          { id: 'fb-2', name: `${displayCity} ${t?.businesses?.fireDeptSuffix || 'Fire Department'}`, category: t?.businesses?.catFire || 'Fire Station' },
-          { id: 'fb-3', name: `${displayCity} ${t?.businesses?.librarySuffix || 'Library'}`, category: t?.businesses?.catLibrary || 'Library' },
-          { id: 'fb-4', name: `${displayCity} ${t?.businesses?.communitySuffix || 'Community Center'}`, category: t?.businesses?.catCommunity || 'Community' },
+          { id: 'fb-1', name: `${displayCity} ${t?.businesses?.policeDeptSuffix}`, category: t?.businesses?.catPolice },
+          { id: 'fb-2', name: `${displayCity} ${t?.businesses?.fireDeptSuffix}`, category: t?.businesses?.catFire },
+          { id: 'fb-3', name: `${displayCity} ${t?.businesses?.librarySuffix}`, category: t?.businesses?.catLibrary },
+          { id: 'fb-4', name: `${displayCity} ${t?.businesses?.communitySuffix}`, category: t?.businesses?.catCommunity },
         ]
         
         if(mounted){
@@ -109,16 +109,16 @@ export function BusinessDirectory(){
   },[zip, city, filter, t])
 
   const display = biz.length > 0 ? biz : liveBiz
-  const displayArea = zip === 'GLOBAL' || !zip ? (city || (t?.common?.yourArea || 'your area')) : zip
+  const displayArea = zip === 'GLOBAL' || !zip ? (city || t?.common?.yourArea) : zip
 
-  if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">{t?.businesses?.title || 'Local Businesses'}</p><p className="text-xs text-white/50">{t?.businesses?.loading || 'Loading'} {displayArea}...</p></div>)
+  if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">{t?.businesses?.title}</p><p className="text-xs text-white/50">{t?.businesses?.loading} {displayArea}...</p></div>)
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">{t?.businesses?.title || 'Local Businesses'}</p>
-      <p className="text-xs text-white/50 mt-1">{t?.businesses?.near || 'Near'} {displayArea}</p>
-      {loading ? <p className="text-sm mt-3 text-white/60">{t?.common?.loading || 'Loading...'}</p> : 
-      display.length===0? <p className="text-sm mt-3 text-white/60">{t?.businesses?.noBusinesses || 'No businesses yet'}</p> : 
+      <p className="font-bold">{t?.businesses?.title}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.businesses?.near} {displayArea}</p>
+      {loading ? <p className="text-sm mt-3 text-white/60">{t?.common?.loading}</p> : 
+      display.length===0? <p className="text-sm mt-3 text-white/60">{t?.businesses?.noBusinesses}</p> : 
       (<div className="mt-3 space-y-2">{display.map(b=>(<div key={b.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex justify-between"><span className="truncate">{b.name}</span><span className="text-white/40">{b.category||''}</span></div>))}</div>)}
     </div>
   )
