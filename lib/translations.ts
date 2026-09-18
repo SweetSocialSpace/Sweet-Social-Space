@@ -1,66 +1,84 @@
 'use client'
 import { useLanguage } from './language-context'
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 
-type Dict = Record<string, any>
-
-// ONLY static imports — Next.js can bundle these. Must exist at /translations/en.json and /translations/es.json
-import en from '@/translations/en.json'
-import es from '@/translations/es.json'
-
-// Add more as you create them — static so build never fails
-// import fr from '@/translations/fr.json'
-
-const translations: Record<string, Dict> = {
-  en,
-  es,
-  // fr,
-}
-
-function deepMerge(target: Dict, fallback: Dict): Dict {
-  if (!fallback) return target
-  if (!target) return fallback
-  const out: Dict = {...fallback }
-  for (const k of Object.keys(target)) {
-    if (
-      typeof target[k] === 'object' &&
-      target[k]!== null &&
-     !Array.isArray(target[k]) &&
-      typeof fallback[k] === 'object' &&
-      fallback[k]!== null &&
-     !Array.isArray(fallback[k])
-    ) {
-      out[k] = deepMerge(target[k], fallback[k])
-    } else {
-      out[k] = target[k]
-    }
-  }
-  return out
-}
+const cache = new Map<string,string>()
+let enData: any = null
 
 export function useTranslations() {
   const { language } = useLanguage()
-  return useMemo(() => {
-    const english = translations['en'] || en
-    if (!language || language === 'en') return english
-    const code = language.toLowerCase().split('-')[0] // es-MX -> es
-    const selected = translations[code] || translations[language]
-    if (!selected || Object.keys(selected).length === 0) {
-      return english
+  const lang = (language || 'en').toLowerCase()
+  const isEn = lang.startsWith('en')
+  const [t, setT] = useState<any>(enData || {})
+
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      try {
+        // 1. Load English base
+        if (!enData) {
+          const res = await fetch('/locales/en.json').catch(()=>null)
+          if (res?.ok) enData = await res.json()
+        }
+        if (isEn) { if(mounted) setT(enData||{}); return }
+
+        // 2. Try to load that language file if you have it (es.json, fr.json etc)
+        const resLang = await fetch(`/locales/${lang.split('-')[0]}.json`).catch(()=>null)
+        if (resLang?.ok) {
+          const data = await resLang.json()
+          if(mounted) setT(data)
+          return
+        }
+
+        // 3. No file? Auto-translate ALL English keys via your /api/translate — this makes all 52 work even without 52 json files
+        const flatKeys: string[] = []
+        const flatValues: string[] = []
+        const collect = (obj:any, prefix='') => {
+          for (const k in obj) {
+            const v = obj[k]
+            if (typeof v === 'string') { flatKeys.push(prefix+k); flatValues.push(v) }
+            else if (typeof v === 'object') collect(v, prefix+k+'.')
+          }
+        }
+        if (enData) collect(enData)
+
+        // Translate in chunks of 20 to avoid API limit
+        const translatedValues: string[] = []
+        for (let i=0;i<flatValues.length;i+=20) {
+          const chunk = flatValues.slice(i,i+20)
+          const key = `${lang}:${chunk.join('|')}`
+          if (cache.has(key)) { translatedValues.push(...cache.get(key)!.split('|')); continue }
+          const tr = await fetch('/api/translate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target: lang, texts: chunk })
+          }).then(r=>r.json()).catch(()=>null)
+          const list = tr?.translations?.map((x:any)=> x.text || x.translatedText || x) || chunk
+          cache.set(key, list.join('|'))
+          translatedValues.push(...list)
+        }
+
+        // Rebuild nested object
+        const rebuilt: any = {}
+        flatKeys.forEach((k,i)=>{
+          const parts = k.split('.')
+          let cur = rebuilt
+          for(let j=0;j<parts.length-1;j++){ cur[parts[j]] = cur[parts[j]]||{}; cur = cur[parts[j]] }
+          cur[parts[parts.length-1]] = translatedValues[i]
+        })
+        if(mounted) setT(rebuilt)
+      } catch {}
     }
-    return deepMerge(selected, english)
-  }, [language])
+    load()
+    return ()=>{ mounted = false }
+  }, [lang, isEn])
+
+  return t
 }
 
-export function tFormat(str: string | undefined, vars: Record<string, string | number>) {
+export function tFormat(str: string, params: any) {
   if (!str) return ''
-  let s = str
-  try {
-    for (const [k, v] of Object.entries(vars)) {
-      s = s.replaceAll(`{${k}}`, String(v))
-    }
-  } catch {}
-  return s
+  let out = str
+  for (const k in params) out = out.replace(`{${k}}`, params[k])
+  return out
 }
-
-export default useTranslations
