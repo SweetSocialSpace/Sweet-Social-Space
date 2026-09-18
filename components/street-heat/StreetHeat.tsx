@@ -27,8 +27,8 @@ export default function StreetHeat() {
   return (
     <div className="w-full bg-zinc-900 rounded-full px-4 py-2 flex items-center gap-2 border border-white/10">
       <span className="text-xs">🔥</span>
-      <span className="text-white text-xs font-bold">{heat.street} {t?.heat?.hottest || 'is hottest today •'} {heat.count} {t?.heat?.posts || 'posts'}</span>
-      <span className="text-white/40 text-xs ml-auto">{heat.total} {t?.heat?.totalIn || 'total in'} {zip}</span>
+      <span className="text-white text-xs font-bold">{heat.street} {t?.heat?.hottest} {heat.count} {t?.heat?.posts}</span>
+      <span className="text-white/40 text-xs ml-auto">{heat.total} {t?.heat?.totalIn} {zip}</span>
     </div>
   );
 }
