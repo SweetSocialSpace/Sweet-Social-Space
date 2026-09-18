@@ -64,14 +64,14 @@ export default function KarmaLeaderboard() {
 
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-3">
-      <div className="text-yellow-400 font-black text-xs mb-2">🏆 {t?.karma?.leaders || 'KARMA LEADERS'} • {zip}</div>
+      <div className="text-yellow-400 font-black text-xs mb-2">🏆 {t?.karma?.leaders} • {zip}</div>
       {leaders.map((u, i) => (
         <div key={u.id} className="flex justify-between text-xs text-white py-1 border-b border-white/5 last:border-0">
-          <span>{i+1}. {u.display_name || t?.common?.neighbor || 'Neighbor'}</span>
+          <span>{i+1}. {u.display_name || t?.common?.neighbor}</span>
           <span className="font-black text-yellow-400">★</span>
         </div>
       ))}
-      {leaders.length===0 && <div className="text-xs text-white/40">{t?.karma?.beFirstIn || 'Be first in'} {zip} - {t?.karma?.beFirstDesc || 'post, get hearts'}</div>}
+      {leaders.length===0 && <div className="text-xs text-white/40">{t?.karma?.beFirstIn} {zip} - {t?.karma?.beFirstDesc}</div>}
     </div>
   )
 }
