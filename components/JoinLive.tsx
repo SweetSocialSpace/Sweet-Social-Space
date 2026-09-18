@@ -73,7 +73,7 @@ function HostStreamView() {
     <div className="relative w-full h-full bg-black">
       {!hasVideo && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-white">{t?.live?.waitingStream || 'Waiting for stream to start...'}</p>
+          <p className="text-white">{t?.live?.waitingStream}</p>
         </div>
       )}
       <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
@@ -113,7 +113,7 @@ export default function JoinLive({
         })
         if (!tokenRes.ok) {
           const errorData = await tokenRes.json()
-          setError(errorData.error || (t?.live?.failedJoin || 'Failed to join stream'))
+          setError(errorData.error || t?.live?.failedJoin)
           setLoading(false)
           return
         }
@@ -121,25 +121,25 @@ export default function JoinLive({
         setToken(tokenData.token)
         setLoading(false)
       } catch (err: any) {
-        setError((t?.live?.failedJoinPrefix || 'Failed to join stream: ') + err.message)
+        setError(t?.live?.failedJoinPrefix + err.message)
         setLoading(false)
       }
     }
     joinStream()
-  }, [roomName, supabase])
+  }, [roomName, supabase, t])
 
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-5">
       <div className="bg-neutral-900 rounded-2xl w-full max-w-4xl p-5 border border-neutral-700">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-white font-bold text-lg">🔴 {userName} {t?.live?.isLive || 'is LIVE'}</span>
+          <span className="text-white font-bold text-lg">🔴 {userName} {t?.live?.isLive}</span>
           <button onClick={onClose} className="bg-neutral-700 text-white rounded-full w-8 h-8 border-none cursor-pointer text-base">X</button>
         </div>
         {error && <div className="bg-red-900/20 border border-red-600 text-red-400 p-3 rounded-lg mb-4 text-sm">{error}</div>}
         {loading? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="text-6xl mb-4 animate-pulse">🔴</div>
-            <p className="text-neutral-400">{t?.live?.joiningStream || 'Joining stream...'}</p>
+            <p className="text-neutral-400">{t?.live?.joiningStream}</p>
           </div>
         ) : token? (
           <div className="aspect-video bg-black rounded-xl overflow-hidden">
@@ -157,7 +157,7 @@ export default function JoinLive({
             </LiveKitRoom>
           </div>
         ) : null}
-        <div className="mt-3 text-center text-neutral-500 text-xs">{t?.live?.watchOnly || 'Watch only — your camera and microphone are not shared'}</div>
+        <div className="mt-3 text-center text-neutral-500 text-xs">{t?.live?.watchOnly}</div>
       </div>
     </div>
   )
