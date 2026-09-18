@@ -1,27 +1,24 @@
 'use client'
 import Link from 'next/link'
-import { useLanguage } from '@/lib/language-context'
 import { useTranslations } from '@/lib/translations'
 
 const LEGAL = { entityName: 'Sweet Social Space' }
 
 export function LegalFooter() {
-  const { language } = useLanguage()
   const t = useTranslations() as any
-  const isEs = language?.startsWith('es')
 
   const L = {
-    securityPolicy: t?.legal?.securityPolicy || (isEs ? 'Política de Seguridad' : 'Security Policy'),
-    terms: t?.legal?.terms || (isEs ? 'Términos' : 'Terms'),
-    privacy: t?.legal?.privacy || (isEs ? 'Privacidad' : 'Privacy'),
-    cookies: t?.legal?.cookies || 'Cookies',
-    communityGuidelines: t?.legal?.communityGuidelines || (isEs ? 'Normas de la Comunidad' : 'Community Guidelines'),
-    dmca: t?.legal?.dmca || 'DMCA',
-    contact: t?.legal?.contact || (isEs ? 'Contacto' : 'Contact'),
-    verification: t?.legal?.verification || (isEs ? 'Verificación' : 'Verification'),
-    allRights: t?.legal?.allRights || (isEs ? 'Todos los derechos reservados.' : 'All rights reserved.'),
-    worksAnywhere: t?.legal?.worksAnywhere || (isEs ? 'Funciona en Cualquier Lugar' : 'Works Anywhere'),
-    sslSecured: t?.legal?.sslSecured || (isEs ? 'SSL SEGURO' : 'SSL SECURED'),
+    securityPolicy: t?.legal?.securityPolicy,
+    terms: t?.legal?.terms,
+    privacy: t?.legal?.privacy,
+    cookies: t?.legal?.cookies,
+    communityGuidelines: t?.legal?.communityGuidelines,
+    dmca: t?.legal?.dmca,
+    contact: t?.legal?.contact,
+    verification: t?.legal?.verification,
+    allRights: t?.legal?.allRights,
+    worksAnywhere: t?.legal?.worksAnywhere,
+    sslSecured: t?.legal?.sslSecured,
   }
 
   return (
