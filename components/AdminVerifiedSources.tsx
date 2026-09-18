@@ -64,15 +64,15 @@ async function adminUpdateVerifiedSource({ data }: any) {
 }
 
 const KIND_OPTIONS = [
-  { value: 'gov', label: 'Government' },
-  { value: 'police', label: 'Police' },
-  { value: 'fire', label: 'Fire' },
-  { value: 'school', label: 'School' },
-  { value: 'news', label: 'News' },
-  { value: 'assoc', label: 'Community group' },
-  { value: 'nonprofit', label: 'Nonprofit' },
-  { value: 'business', label: 'Business' },
-  { value: 'other', label: 'Other' },
+  { value: 'gov' },
+  { value: 'police' },
+  { value: 'fire' },
+  { value: 'school' },
+  { value: 'news' },
+  { value: 'assoc' },
+  { value: 'nonprofit' },
+  { value: 'business' },
+  { value: 'other' },
 ] as const
 
 type Kind = typeof KIND_OPTIONS[number]['value']
@@ -127,7 +127,7 @@ export function AdminVerifiedSources() {
       } as any,
     })
 .then((r) => { if (!cancelled) setRows(r) })
-.catch((e) => { if (!cancelled) setErr(e?.message?? (t?.admin?.failedLoad || 'Failed to load')) })
+.catch((e) => { if (!cancelled) setErr(e?.message?? t?.admin?.failedLoad) })
     return () => { cancelled = true }
   }, [tab, kindFilter, cityFilter, stateFilter, debouncedSearch, reloadKey, t])
 
@@ -138,17 +138,17 @@ export function AdminVerifiedSources() {
       await adminReviewVerifiedSource({ data: { id, status, review_notes: notes?? null } })
       reload()
     } catch (e: any) {
-      alert(e?.message?? (t?.common?.failed || 'Failed'))
+      alert(e?.message?? t?.common?.failed)
     }
   }
 
   async function remove(id: string) {
-    if (!confirm(t?.admin?.deleteConfirm || 'Delete this organization and all its updates? This cannot be undone.')) return
+    if (!confirm(t?.admin?.deleteConfirm)) return
     try {
       await adminDeleteVerifiedSource({ data: { id } })
       reload()
     } catch (e: any) {
-      alert(e?.message?? (t?.common?.failed || 'Failed'))
+      alert(e?.message?? t?.common?.failed)
     }
   }
 
@@ -165,7 +165,7 @@ export function AdminVerifiedSources() {
               tab === s? 'border-transparent bg-foreground text-background' : 'border-border bg-background text-muted-foreground'
             }`}
           >
-            {t?.admin?.[s] || s}
+            {t?.admin?.[s]}
           </button>
         ))}
       </div>
@@ -174,18 +174,18 @@ export function AdminVerifiedSources() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder={t?.admin?.searchPlaceholder || 'Search name / slug / description'}
+          placeholder={t?.admin?.searchPlaceholder}
           className={cls}
         />
         <select value={kindFilter} onChange={(e) => setKindFilter(e.target.value as any)} className={cls}>
-          <option value="">{t?.admin?.allTypes || 'All types'}</option>
-          {KIND_OPTIONS.map((o) => <option key={o.value} value={o.value}>{t?.admin?.kinds?.[o.value] || o.label}</option>)}
+          <option value="">{t?.admin?.allTypes}</option>
+          {KIND_OPTIONS.map((o) => <option key={o.value} value={o.value}>{t?.admin?.kinds?.[o.value]}</option>)}
         </select>
-        <input value={cityFilter} onChange={(e) => setCityFilter(e.target.value)} placeholder={t?.admin?.city || 'City'} className={cls} />
+        <input value={cityFilter} onChange={(e) => setCityFilter(e.target.value)} placeholder={t?.admin?.city} className={cls} />
         <input
           value={stateFilter}
           onChange={(e) => setStateFilter(e.target.value.toUpperCase().slice(0, 4))}
-          placeholder={t?.admin?.statePh || 'State (CA)'}
+          placeholder={t?.admin?.statePh}
           className={cls}
         />
       </div>
@@ -201,48 +201,48 @@ export function AdminVerifiedSources() {
                   <div className="flex flex-wrap items-center gap-2">
                     {r.logo_emoji && <span aria-hidden>{r.logo_emoji}</span>}
                     <span className="font-semibold">{r.name}</span>
-                    <StatusBadge status={r.status} />
-                    <span className="rounded-full bg-secondary px-2 py-0.5 text- font-semibold capitalize text-muted-foreground">{t?.admin?.kinds?.[r.kind] || r.kind}</span>
+                    <StatusBadge status={r.status} t={t} />
+                    <span className="rounded-full bg-secondary px-2 py-0.5 text- font-semibold capitalize text-muted-foreground">{t?.admin?.kinds?.[r.kind]}</span>
                   </div>
                   <div className="mt-1 text-xs text-muted-foreground">
-                    {[r.city, r.state_code].filter(Boolean).join(', ') || (t?.admin?.noLocation || 'No location')}
+                    {[r.city, r.state_code].filter(Boolean).join(', ') || t?.admin?.noLocation}
                     {r.latitude!= null && r.longitude!= null && (
                       <> · {r.latitude.toFixed(3)}, {r.longitude.toFixed(3)}</>
                     )}
-                    {r.website && <> · <a href={r.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{t?.admin?.website || 'website'}</a></>}
+                    {r.website && <> · <a href={r.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{t?.admin?.website}</a></>}
                     {r.contact_email && <> · {r.contact_email}</>}
                     {r.contact_phone && <> · {r.contact_phone}</>}
                   </div>
-                  {r.contact_name && <p className="mt-0.5 text-xs text-muted-foreground">{t?.admin?.contact || 'Contact'}: {r.contact_name}</p>}
+                  {r.contact_name && <p className="mt-0.5 text-xs text-muted-foreground">{t?.admin?.contact}: {r.contact_name}</p>}
                   {r.description && <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{r.description}</p>}
-                  {r.review_notes && <p className="mt-1 text-xs italic text-muted-foreground">{t?.admin?.notes || 'Notes'}: {r.review_notes}</p>}
+                  {r.review_notes && <p className="mt-1 text-xs italic text-muted-foreground">{t?.admin?.notes}: {r.review_notes}</p>}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {r.status!== 'approved' && (
-                    <button onClick={() => setStatus(r.id, 'approved')} className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">{t?.admin?.approve || 'Approve'}</button>
+                    <button onClick={() => setStatus(r.id, 'approved')} className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">{t?.admin?.approve}</button>
                   )}
                   {r.status!== 'rejected' && (
                     <button onClick={() => {
-                      const notes = prompt(t?.admin?.rejectReason || 'Reason for rejection (optional):')?? null
+                      const notes = prompt(t?.admin?.rejectReason)?? null
                       setStatus(r.id, 'rejected', notes)
-                    }} className="rounded-full border border-border px-3 py-1 text-xs font-semibold">{t?.admin?.reject || 'Reject'}</button>
+                    }} className="rounded-full border border-border px-3 py-1 text-xs font-semibold">{t?.admin?.reject}</button>
                   )}
                   {r.status!== 'suspended' && (
                     <button onClick={() => {
-                      const notes = prompt(t?.admin?.suspendReason || 'Reason for suspension (optional):')?? null
+                      const notes = prompt(t?.admin?.suspendReason)?? null
                       setStatus(r.id, 'suspended', notes)
-                    }} className="rounded-full border border-yellow-600 px-3 py-1 text-xs font-semibold text-yellow-700">{t?.admin?.suspend || 'Suspend'}</button>
+                    }} className="rounded-full border border-yellow-600 px-3 py-1 text-xs font-semibold text-yellow-700">{t?.admin?.suspend}</button>
                   )}
-                  <button onClick={() => setEditing(r)} className="rounded-full border border-border px-3 py-1 text-xs font-semibold">{t?.common?.edit || 'Edit'}</button>
-                  <button onClick={() => remove(r.id)} className="rounded-full border border-destructive px-3 py-1 text-xs font-semibold text-destructive">{t?.common?.delete || 'Delete'}</button>
+                  <button onClick={() => setEditing(r)} className="rounded-full border border-border px-3 py-1 text-xs font-semibold">{t?.common?.edit}</button>
+                  <button onClick={() => remove(r.id)} className="rounded-full border border-destructive px-3 py-1 text-xs font-semibold text-destructive">{t?.common?.delete}</button>
                 </div>
               </div>
             </li>
           ))}
           {rows!== null && rows.length === 0 && (
-            <li className="p-6 text-center text-sm text-muted-foreground">{t?.admin?.noMatch || 'No organizations match these filters.'}</li>
+            <li className="p-6 text-center text-sm text-muted-foreground">{t?.admin?.noMatch}</li>
           )}
-          {rows === null && <li className="p-6 text-center text-sm text-muted-foreground">{t?.common?.loading || 'Loading…'}</li>}
+          {rows === null && <li className="p-6 text-center text-sm text-muted-foreground">{t?.common?.loading}</li>}
         </ul>
       </div>
 
@@ -257,13 +257,13 @@ export function AdminVerifiedSources() {
   )
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, t }: { status: string; t: any }) {
   const tone =
     status === 'approved'? 'bg-primary/10 text-primary'
     : status === 'pending'? 'bg-yellow-500/15 text-yellow-700'
     : status === 'suspended'? 'bg-orange-500/15 text-orange-700'
     : 'bg-destructive/15 text-destructive'
-  return <span className={`rounded-full px-2 py-0.5 text- font-semibold capitalize ${tone}`}>{status}</span>
+  return <span className={`rounded-full px-2 py-0.5 text- font-semibold capitalize ${tone}`}>{t?.admin?.[status] || status}</span>
 }
 
 function CreateForm({ onCreated }: { onCreated: () => void }) {
@@ -288,7 +288,7 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
     e.preventDefault()
     setErr(null)
     if (!name.trim() ||!city.trim() ||!stateCode.trim() ||!countryCode.trim()) {
-      setErr(t?.admin?.requiredFields || 'Name, city, state, and country are required.')
+      setErr(t?.admin?.requiredFields)
       return
     }
     setSubmitting(true)
@@ -316,7 +316,7 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
       setOpen(false)
       onCreated()
     } catch (e: any) {
-      setErr(e?.message?? (t?.admin?.createFailed || 'Failed to create'))
+      setErr(e?.message?? t?.admin?.createFailed)
     } finally {
       setSubmitting(false)
     }
@@ -325,33 +325,33 @@ function CreateForm({ onCreated }: { onCreated: () => void }) {
   if (!open) {
     return (
       <button onClick={() => setOpen(true)} className="rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background">
-        {t?.admin?.createVerified || '+ Create verified source'}
+        {t?.admin?.createVerified}
       </button>
     )
   }
 
   return (
     <form onSubmit={submit} className="space-y-3 rounded-2xl border border-border bg-card p-4">
-      <h3 className="text-sm font-semibold">{t?.admin?.newSource || 'New verified source'}</h3>
+      <h3 className="text-sm font-semibold">{t?.admin?.newSource}</h3>
             <div className="grid gap-3 sm:grid-cols-2">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={`${t?.admin?.name || 'Name'} *`} required className={cls} />
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t?.admin?.name} required className={cls} />
         <input value={slug} onChange={(e) => { setSlugTouched(true); setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')) }} placeholder="slug" className={cls} />
         <select value={kind} onChange={(e) => setKind(e.target.value as Kind)} className={cls}>
-          {KIND_OPTIONS.map((o) => <option key={o.value} value={o.value}>{t?.admin?.kinds?.[o.value] || o.label}</option>)}
+          {KIND_OPTIONS.map((o) => <option key={o.value} value={o.value}>{t?.admin?.kinds?.[o.value]}</option>)}
         </select>
-        <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={4} placeholder={t?.admin?.emojiPh || 'Emoji (🏛)'} className={cls} />
-        <input value={city} onChange={(e) => setCity(e.target.value)} placeholder={`${t?.admin?.city || 'City'} *`} required className={cls} />
-        <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder={`${t?.admin?.statePh || 'State/Province (CA)'} *`} required className={cls} />
-        <input value={countryCode} onChange={(e) => setCountryCode(e.target.value.toUpperCase().slice(0, 2))} placeholder={`${t?.admin?.countryPh || 'Country Code (US)'} *`} required className={cls} />
+        <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={4} placeholder={t?.admin?.emojiPh} className={cls} />
+        <input value={city} onChange={(e) => setCity(e.target.value)} placeholder={t?.admin?.city} required className={cls} />
+        <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder={t?.admin?.statePh} required className={cls} />
+        <input value={countryCode} onChange={(e) => setCountryCode(e.target.value.toUpperCase().slice(0, 2))} placeholder={t?.admin?.countryPh} required className={cls} />
         <input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://website" className={cls} />
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t?.admin?.description || 'Description'} rows={2} className={`${cls} sm:col-span-2`} />
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t?.admin?.description} rows={2} className={`${cls} sm:col-span-2`} />
       </div>
       {err && <p className="text-sm text-destructive">{err}</p>}
       <div className="flex gap-2">
         <button type="submit" disabled={submitting} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">
-          {submitting? (t?.admin?.creating || 'Creating…') : (t?.admin?.createApproved || 'Create (approved)')}
+          {submitting? t?.admin?.creating : t?.admin?.createApproved}
         </button>
-        <button type="button" onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-2 text-sm">{t?.common?.cancel || 'Cancel'}</button>
+        <button type="button" onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-2 text-sm">{t?.common?.cancel}</button>
       </div>
     </form>
   )
@@ -382,7 +382,7 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
       const lat = latitude.trim() === ''? null : Number(latitude)
       const lng = longitude.trim() === ''? null : Number(longitude)
       if ((lat!== null && Number.isNaN(lat)) || (lng!== null && Number.isNaN(lng))) {
-        throw new Error(t?.admin?.latLngNumeric || 'Latitude and longitude must be numeric.')
+        throw new Error(t?.admin?.latLngNumeric)
       }
             await adminUpdateVerifiedSource({
         data: {
@@ -404,7 +404,7 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
       })
       onSaved()
     } catch (e: any) {
-      setErr(e?.message?? (t?.admin?.saveFailed || 'Failed to save'))
+      setErr(e?.message?? t?.admin?.saveFailed)
     } finally {
       setSaving(false)
     }
@@ -420,34 +420,34 @@ function EditModal({ row, onClose, onSaved }: { row: VerifiedSourceAdminRow; onC
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/40 p-4">
       <div className="w-full max-w-2xl rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-soft)]">
         <div className="flex items-center justify-between">
-          <h3 className="font-display text-lg font-semibold">{t?.admin?.editTitle || 'Edit verified source'}</h3>
-          <button onClick={onClose} className="text-sm text-muted-foreground hover:text-foreground">{t?.common?.close || 'Close'}</button>
+          <h3 className="font-display text-lg font-semibold">{t?.admin?.editTitle}</h3>
+          <button onClick={onClose} className="text-sm text-muted-foreground hover:text-foreground">{t?.common?.close}</button>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t?.admin?.name || 'Name'} className={cls} />
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t?.admin?.name} className={cls} />
           <select value={kind} onChange={(e) => setKind(e.target.value as Kind)} className={cls}>
-            {KIND_OPTIONS.map((o) => <option key={o.value} value={o.value}>{t?.admin?.kinds?.[o.value] || o.label}</option>)}
+            {KIND_OPTIONS.map((o) => <option key={o.value} value={o.value}>{t?.admin?.kinds?.[o.value]}</option>)}
           </select>
-          <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={4} placeholder={t?.admin?.emojiPh || 'Emoji'} className={cls} />
+          <input value={emoji} onChange={(e) => setEmoji(e.target.value)} maxLength={4} placeholder={t?.admin?.emojiPh} className={cls} />
           <input value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://website" className={cls} />
-          <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder={t?.admin?.contactName || 'Contact name'} className={cls} />
-          <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder={t?.admin?.contactEmail || 'Contact email'} className={cls} />
-                    <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder={t?.admin?.contactPhone || 'Contact phone'} className={cls} />
-          <input value={city} onChange={(e) => setCity(e.target.value)} placeholder={t?.admin?.city || 'City'} className={cls} />
-          <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder={t?.admin?.statePh || 'State/Province (CA)'} className={cls} />
-          <input value={countryCode} onChange={(e) => setCountryCode(e.target.value.toUpperCase().slice(0, 2))} placeholder={t?.admin?.countryPh || 'Country Code (US)'} className={cls} />
+          <input value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder={t?.admin?.contactName} className={cls} />
+          <input value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder={t?.admin?.contactEmail} className={cls} />
+                    <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder={t?.admin?.contactPhone} className={cls} />
+          <input value={city} onChange={(e) => setCity(e.target.value)} placeholder={t?.admin?.city} className={cls} />
+          <input value={stateCode} onChange={(e) => setStateCode(e.target.value.toUpperCase().slice(0, 4))} placeholder={t?.admin?.statePh} className={cls} />
+          <input value={countryCode} onChange={(e) => setCountryCode(e.target.value.toUpperCase().slice(0, 2))} placeholder={t?.admin?.countryPh} className={cls} />
           <div className="flex gap-2 sm:col-span-2">
-            <input value={latitude} onChange={(e) => setLatitude(e.target.value)} placeholder={t?.admin?.latitude || 'Latitude'} className={cls} />
-            <input value={longitude} onChange={(e) => setLongitude(e.target.value)} placeholder={t?.admin?.longitude || 'Longitude'} className={cls} />
-            <button type="button" onClick={regeocode} className="whitespace-nowrap rounded-xl border border-border px-3 text-sm">{t?.admin?.regeocode || 'Re-geocode'}</button>
+            <input value={latitude} onChange={(e) => setLatitude(e.target.value)} placeholder={t?.admin?.latitude} className={cls} />
+            <input value={longitude} onChange={(e) => setLongitude(e.target.value)} placeholder={t?.admin?.longitude} className={cls} />
+            <button type="button" onClick={regeocode} className="whitespace-nowrap rounded-xl border border-border px-3 text-sm">{t?.admin?.regeocode}</button>
           </div>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder={t?.admin?.description || 'Description'} className={`${cls} sm:col-span-2`} />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder={t?.admin?.description} className={`${cls} sm:col-span-2`} />
         </div>
         {err && <p className="mt-3 text-sm text-destructive">{err}</p>}
         <div className="mt-5 flex justify-end gap-2">
-          <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm">{t?.common?.cancel || 'Cancel'}</button>
+          <button onClick={onClose} className="rounded-full border border-border px-4 py-2 text-sm">{t?.common?.cancel}</button>
           <button onClick={save} disabled={saving} className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">
-            {saving? (t?.admin?.saving || 'Saving…') : (t?.admin?.saveChanges || 'Save changes')}
+            {saving? t?.admin?.saving : t?.admin?.saveChanges}
           </button>
         </div>
       </div>
