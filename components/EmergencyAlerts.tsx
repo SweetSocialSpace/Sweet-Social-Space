@@ -78,20 +78,20 @@ export function EmergencyAlerts() {
 
   if (!globalZip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">🚨 {t?.emergency?.title || (isEs? 'Emergencia' : 'Emergency')} • {t?.emergency?.loadingLocation || (isEs? 'Cargando ubicación...' : 'Loading location...')}</p>
+      <p className="font-bold">🚨 {t?.emergency?.title} • {t?.emergency?.loadingLocation}</p>
     </div>
   )
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold flex items-center gap-2">🚨 {t?.emergency?.title || (isEs? 'Emergencia' : 'Emergency')} • {t?.emergency?.near || (isEs? 'Cerca de' : 'Near')} {zip}</p>
-      {status === 'checking' && <p className="text-sm mt-2 text-white/60 animate-pulse">{t?.emergency?.scanning || (isEs? 'Escaneando NOAA, OpenWeather, USGS...' : 'Scanning NOAA, OpenWeather, USGS...')}</p>}
+      <p className="font-bold flex items-center gap-2">🚨 {t?.emergency?.title} • {t?.emergency?.near} {zip}</p>
+      {status === 'checking' && <p className="text-sm mt-2 text-white/60 animate-pulse">{t?.emergency?.scanning}</p>}
       {status === 'clear' && (
         <div className="mt-2">
           {alerts.map(a=> (
             <p key={a.id} className="text-sm text-white/80 bg-white/5 rounded-lg p-2.5">{(a as any).icon} {a.title} - {a.message}</p>
           ))}
-          {alerts.length===0 && <p className="text-sm mt-1 text-white/80">✅ {t?.emergency?.allClearIn || (isEs? 'Todo despejado en' : 'All clear in')} {zip} • {t?.emergency?.noActive || (isEs? 'Sin alertas activas' : 'No active alerts')}</p>}
+          {alerts.length===0 && <p className="text-sm mt-1 text-white/80">✅ {t?.emergency?.allClearIn} {zip} • {t?.emergency?.noActive}</p>}
         </div>
       )}
       {status === 'alert' && (
@@ -102,7 +102,7 @@ export function EmergencyAlerts() {
               <div className="text-white/80 mt-1 text-xs leading-snug">{a.message || a.body}</div>
             </div>
           ))}
-          <p className="text-xs text-white/30 mt-2">{t?.emergency?.autoRefresh || (isEs? 'Actualización automática 5m • Clima y Seguridad' : 'Auto-refresh 5m • Weather & Safety APIs')}</p>
+          <p className="text-xs text-white/30 mt-2">{t?.emergency?.autoRefresh}</p>
         </div>
       )}
     </div>
