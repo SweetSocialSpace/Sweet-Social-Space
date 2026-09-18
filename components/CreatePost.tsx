@@ -25,17 +25,17 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const killedRef = useRef(false)
 
   const CATEGORIES = useMemo(() => [
-    { id: 'general', label: t.filters?.general || (isEs? 'General' : 'General'), icon: '😊', needsAddress: false },
-    { id: 'faith', label: t.filters?.faith || (isEs? 'Fe' : 'Faith'), icon: '✝', needsAddress: false },
-    { id: 'safety', label: t.filters?.safety || (isEs? 'Seguridad' : 'Safety'), icon: '🚨', needsAddress: true },
-    { id: 'for_sale', label: t.filters?.forSale || (isEs? 'En Venta' : 'For Sale'), icon: '💰', needsAddress: true },
-    { id: 'free', label: t.filters?.free || (isEs? 'Gratis' : 'Free'), icon: '🎁', needsAddress: true },
-    { id: 'lost_pet', label: t.filters?.lostPet || (isEs? 'Mascota Perdida' : 'Lost Pet'), icon: '🐶', needsAddress: true },
-    { id: 'event', label: t.filters?.event || (isEs? 'Evento' : 'Event'), icon: '🎉', needsAddress: true },
-    { id: 'help', label: t.filters?.help || (isEs? 'Ayuda' : 'Help'), icon: '🤝', needsAddress: false },
-    { id: 'recommend', label: t.filters?.recommend || (isEs? 'Recomendación' : 'Recommendation'), icon: '🌮', needsAddress: false },
-    { id: 'job', label: t.filters?.job || (isEs? 'Trabajo' : 'Job'), icon: '💼', needsAddress: true },
-  ], [t, isEs])
+    { id: 'general', label: t.filters?.general, icon: '😊', needsAddress: false },
+    { id: 'faith', label: t.filters?.faith, icon: '✝', needsAddress: false },
+    { id: 'safety', label: t.filters?.safety, icon: '🚨', needsAddress: true },
+    { id: 'for_sale', label: t.filters?.forSale, icon: '💰', needsAddress: true },
+    { id: 'free', label: t.filters?.free, icon: '🎁', needsAddress: true },
+    { id: 'lost_pet', label: t.filters?.lostPet, icon: '🐶', needsAddress: true },
+    { id: 'event', label: t.filters?.event, icon: '🎉', needsAddress: true },
+    { id: 'help', label: t.filters?.help, icon: '🤝', needsAddress: false },
+    { id: 'recommend', label: t.filters?.recommend, icon: '🌮', needsAddress: false },
+    { id: 'job', label: t.filters?.job, icon: '💼', needsAddress: true },
+  ], [t])
 
   const currentCat = CATEGORIES.find(c=>c.id===category)
 
@@ -75,7 +75,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       mr.ondataavailable = e=> { if(!killedRef.current) chunks.push(e.data) }
       mr.onstop = async ()=>{ if(killedRef.current){ stopMic(); return }; stopMic(); const blob = new Blob(chunks, { type: 'audio/webm' }); try{ const fd = new FormData(); fd.append('audio', blob); const res = await fetch('/api/transcribe-elevenlabs', { method: 'POST', body: fd }); const data = await res.json(); if(data.text &&!killedRef.current){ const legible = makeLegible(data.text); setBody(prev=> makeLegible((prev? prev+' ':'') + legible)) } }catch{} }
       mr.start(); setListening(true); finalRef.current = body? body + ' ' : ''
-    }catch{ try { alert(t?.feed?.micBlocked || (isEs? 'Micrófono bloqueado - revisa permisos' : 'Microphone blocked - check permissions')) } catch {} }
+    }catch{ try { alert(t?.feed?.micBlocked) } catch {} }
   }
 
   const handlePost = async () => {
@@ -87,36 +87,36 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       const { data: { user } } = await supabase.auth.getUser()
       const finalBody = makeLegible(body.trim())
       const effectiveZip = zip || (typeof window!== 'undefined'? localStorage.getItem('user_zip') : '') || ''
-      if (!effectiveZip || effectiveZip === 'YOUR BLOCK') { alert(t.feed?.waitBlock || (isEs? 'Detectando tu bloque... espera 2 seg y publica de nuevo' : 'Detecting your block... wait 2 sec and post again')); setPosting(false); return }
+      if (!effectiveZip || effectiveZip === 'YOUR BLOCK') { alert(t.feed?.waitBlock); setPosting(false); return }
       const payload: any = { body: finalBody, tag: category, category, zip_code: effectiveZip, user_id: user?.id, location_address: address || null }
       if(price) payload.price = parseFloat(price) || null
       if(category==='for_sale') payload.condition = condition
       const { error } = await supabase.from('posts').insert(payload)
       if(!error){ setBody(''); setPrice(''); setAddress(''); setCategory('general'); finalRef.current=''; try { onPosted?.() } catch {} } else { try { alert(error.message) } catch {} }
-    } catch(e:any){ try { alert(e?.message || (t?.feed?.postFailed || (isEs? 'Error al publicar' : 'Failed to post'))) } catch {} } finally { setPosting(false) }
+    } catch(e:any){ try { alert(e?.message || t?.feed?.postFailed) } catch {} } finally { setPosting(false) }
   }
 
-  const displayZip = zip || (typeof window!== 'undefined'? (()=>{ try { return localStorage.getItem('user_zip') } catch { return '' } })() : '') || (t?.common?.yourBlock || (isEs? 'TU BLOQUE' : 'YOUR BLOCK'))
+  const displayZip = zip || (typeof window!== 'undefined'? (()=>{ try { return localStorage.getItem('user_zip') } catch { return '' } })() : '') || t?.common?.yourBlock
 
   const postToText = useMemo(() => {
-    const raw = t.feed?.postTo || (isEs? 'Publicar en {zip} - Todo en Uno' : 'Post to {zip} - One Stop')
-    if (raw.includes('{zip}')) {
+    const raw = t.feed?.postTo
+    if (raw?.includes('{zip}')) {
       return tFormat(raw, { zip: displayZip })
     }
-    return `${raw} ${displayZip} - ${isEs? 'Todo en Uno' : 'One Stop'}`
-  }, [t, displayZip, isEs])
+    return raw? `${raw} ${displayZip}` : displayZip
+  }, [t, displayZip])
 
   const tapMicText = useMemo(() => {
-    const raw = t.feed?.tapMic || (isEs? 'Toca el micrófono - funciona en {zip} - cualquier teléfono o computadora' : 'Tap mic to talk - works in {zip} - any phone or computer')
-    if (raw.includes('{zip}')) {
+    const raw = t.feed?.tapMic
+    if (raw?.includes('{zip}')) {
       return tFormat(raw, { zip: displayZip })
     }
-    return `${raw} ${displayZip}`
-  }, [t, displayZip, isEs])
+    return raw
+  }, [t, displayZip])
 
   const postingAsText = useMemo(() => {
-    return `${t.feed?.postingAs || (isEs? 'Publicando como' : 'Posting as')} • ${displayZip} • ${currentCat?.icon} ${currentCat?.label} • ${t.feed?.universalMic || (isEs? 'Micrófono Universal' : 'Universal Mic')}`
-  }, [t, displayZip, currentCat, isEs])
+    return `${t.feed?.postingAs} • ${displayZip} • ${currentCat?.icon} ${currentCat?.label} • ${t.feed?.universalMic}`
+  }, [t, displayZip, currentCat])
 
   return (
     <div className="w-full max-w-full min-w-0 overflow-hidden bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white mb-4">
@@ -131,7 +131,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
         />
         <button onClick={()=>{ try { toggleMic() } catch {} }} className={`h-12 w-12 rounded-full flex items-center justify-center border-2 border-white shrink-0 ${listening? 'bg-red-600 animate-pulse' : 'bg-black'}`}>🎤</button>
       </div>
-      {currentCat?.needsAddress && (<div className="mt-3 bg-white/10 rounded-xl p-3 border border-white/10 w-full max-w-full min-w-0 overflow-hidden"><div className="flex gap-2 w-full max-w-full min-w-0 flex-wrap"><input value={price} onChange={e=>{ try { setPrice(e.target.value) } catch {} }} placeholder={category==='free'?`${t.filters?.free || (isEs? 'Gratis' : 'Free')} (0)`: category==='for_sale'?`${t.feed?.price || (isEs? 'Precio' : 'Price')} $`:' '} className={`bg-white rounded-xl p-2.5 text-sm text-black ${category==='event' || category==='job'? 'hidden' : 'w-24'}`} />{category==='for_sale' && <select value={condition} onChange={e=>{ try { setCondition(e.target.value) } catch {} }} className="bg-white rounded-xl p-2.5 text-sm text-black"><option value="new">{t.feed?.conditionNew || (isEs? 'Nuevo' : 'New')}</option><option value="like_new">{t.feed?.conditionLikeNew || (isEs? 'Como Nuevo' : 'Like New')}</option><option value="good">{t.feed?.conditionGood || (isEs? 'Bueno' : 'Good')}</option><option value="fair">{t.feed?.conditionFair || (isEs? 'Regular' : 'Fair')}</option></select>}<input value={address} onChange={e=>{ try { setAddress(e.target.value) } catch {} }} placeholder={`📍 ${t.feed?.addressPrivate || (isEs? 'Dirección - Privada' : 'Address - Private')}`} className="flex-1 min-w-0 bg-white rounded-xl p-2.5 text-sm text-black" /></div></div>)}
+      {currentCat?.needsAddress && (<div className="mt-3 bg-white/10 rounded-xl p-3 border border-white/10 w-full max-w-full min-w-0 overflow-hidden"><div className="flex gap-2 w-full max-w-full min-w-0 flex-wrap"><input value={price} onChange={e=>{ try { setPrice(e.target.value) } catch {} }} placeholder={category==='free'?`${t.filters?.free} (0)`: category==='for_sale'?`${t.feed?.price} $`:' '} className={`bg-white rounded-xl p-2.5 text-sm text-black ${category==='event' || category==='job'? 'hidden' : 'w-24'}`} />{category==='for_sale' && <select value={condition} onChange={e=>{ try { setCondition(e.target.value) } catch {} }} className="bg-white rounded-xl p-2.5 text-sm text-black"><option value="new">{t.feed?.conditionNew}</option><option value="like_new">{t.feed?.conditionLikeNew}</option><option value="good">{t.feed?.conditionGood}</option><option value="fair">{t.feed?.conditionFair}</option></select>}<input value={address} onChange={e=>{ try { setAddress(e.target.value) } catch {} }} placeholder={`📍 ${t.feed?.addressPrivate}`} className="flex-1 min-w-0 bg-white rounded-xl p-2.5 text-sm text-black" /></div></div>)}
       <div className="flex justify-between items-center mt-3 w-full max-w-full min-w-0">
         <p className="text-xs text-white/40">{postingAsText}</p>
         <button onClick={()=>{ try { handlePost() } catch {} }} disabled={posting ||!body.trim()} className="bg-white text-black font-bold px-5 py-2 rounded-full text-sm disabled:opacity-40">{postToText} 🚀</button>
