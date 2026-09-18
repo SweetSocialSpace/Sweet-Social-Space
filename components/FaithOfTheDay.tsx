@@ -9,7 +9,6 @@ export default function FaithOfTheDay() {
   const [verse, setVerse] = useState("")
   const [ref, setRef] = useState("")
   const [loading, setLoading] = useState(true)
-  const isEs = language?.startsWith('es')
 
   useEffect(() => {
     let mounted = true
@@ -25,14 +24,9 @@ export default function FaithOfTheDay() {
         }
       } catch {
         if (mounted) {
-          // Auto fallback based on language tab — never hardcoded to one language
-          if (isEs) {
-            setVerse("Porque tu corazón se enterneció, y te humillaste delante de Dios, cuando oíste sus palabras contra este lugar y contra sus habitantes, y te humillaste delante de mí, y rasgaste tus vestidos, y lloraste delante de mí, yo también te he oído, dice Yahweh.")
-            setRef("2 Crónicas 34:27")
-          } else {
-            setVerse("because your heart was tender, and you humbled yourself before God, when you heard his words against this place, and against its inhabitants, and have humbled yourself before me, and have torn your clothes, and wept before me, I also have heard you, says Yahweh.")
-            setRef("2 Chronicles 34:27")
-          }
+          // Fallback now driven by json, not hardcoded
+          setVerse(t?.faith?.fallbackVerse || '')
+          setRef(t?.faith?.fallbackRef || '')
         }
       } finally {
         if (mounted) setLoading(false)
@@ -40,16 +34,16 @@ export default function FaithOfTheDay() {
     }
     load()
     return () => { mounted = false }
-  }, [language, isEs])
+  }, [language, t])
 
   return (
     <div className="bg-black/40 rounded-xl p-4 border border-white/10">
       <div className="text-purple-300 text-sm font-bold">
-        {t?.faith?.title || t?.faith?.faithOfTheDay || (isEs ? 'Fe del Día' : 'Faith of the Day')}
+        {t?.faith?.title || t?.faith?.faithOfTheDay}
       </div>
       {loading ? (
         <div className="text-white/50 mt-2 text-sm">
-          {t?.common?.loading || (isEs ? 'Cargando...' : 'Loading...')}
+          {t?.common?.loading}
         </div>
       ) : (
         <>
