@@ -24,7 +24,7 @@ export default function ProximityPing() {
   return (
     <div className="w-full bg-blue-600/90 backdrop-blur rounded-full px-4 py-2 flex items-center gap-2 border border-white/20 animate-pulse">
       <span className="text-xs">🔵</span>
-      <span className="text-white text-xs font-black">{ping.count} {ping.count > 1 ? (t?.ping?.newPosts || 'new posts') : (t?.ping?.newPost || 'new post')} {t?.ping?.near || 'near'} {ping.street} {t?.ping?.last60 || 'in last 60m'}</span>
+      <span className="text-white text-xs font-black">{ping.count} {ping.count > 1 ? t?.ping?.newPosts : t?.ping?.newPost} {t?.ping?.near} {ping.street} {t?.ping?.last60}</span>
     </div>
   );
 }
