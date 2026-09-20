@@ -7,9 +7,22 @@
   },
   "feed": {
     "whatsHappening": "What's happening in",
-    "postAs": "POST AS",
+    "placeholder": "What's happening in {zip}?",
+    "placeholderLoading": "Loading location...",
+    "postAs": "POST AS {tag} IN {zip}",
+    "posting": "POSTING...",
+    "fixPunctuation": "Fix punctuation",
+    "recordedLive": "📹 Recorded Live Stream",
     "in": "IN",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "tags": {
+      "General": "General",
+      "Alert": "Alert",
+      "Recommendation": "Recommendation",
+      "Free stuff": "Free stuff",
+      "Hot take": "Hot take",
+      "Lost & found": "Lost & found"
+    }
   },
   "common": {
     "backToFeed": "Back to Feed",
