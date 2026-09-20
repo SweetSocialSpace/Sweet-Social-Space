@@ -15,7 +15,7 @@ export default function Onboarding() {
   const { zip: detectedZip, city, country } = useLocation()
 
   useEffect(() => {
-    if (detectedZip && detectedZip.toUpperCase()!=='YOUR BLOCK' && detectedZip.trim()!=='' &&!zip) {
+    if (detectedZip && detectedZip.toUpperCase()!=='YOUR NEIGHBORHOOD' && detectedZip.trim()!=='' &&!zip) {
       setZip(detectedZip)
     }
   }, [detectedZip])
@@ -29,8 +29,8 @@ export default function Onboarding() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { setError('Not signed in'); setLoading(false); return }
 
-      let safeZip = (zip && zip.toUpperCase()!=='YOUR BLOCK' && zip.trim()!==''? zip.trim() : detectedZip)
-      if (!safeZip || safeZip.toUpperCase()==='YOUR BLOCK' || safeZip==='') safeZip = 'GLOBAL'
+      let safeZip = (zip && zip.toUpperCase()!=='YOUR NEIGHBORHOOD' && zip.trim()!==''? zip.trim() : detectedZip)
+      if (!safeZip || safeZip.toUpperCase()==='YOUR NEIGHBORHOOD' || safeZip==='') safeZip = 'GLOBAL'
 
       let finalCity = city || ''
       // No IP fallback - pure zip code based as requested

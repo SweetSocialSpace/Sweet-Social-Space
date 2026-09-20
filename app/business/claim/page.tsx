@@ -9,7 +9,7 @@ const PRICE_CENTS = 2900
 
 export default function ClaimBusinessPage() {
   const { zip: contextZip, city } = useLocation()
-  const zip = (contextZip && contextZip.toUpperCase()!=='YOUR BLOCK' && contextZip.trim()!==''? contextZip : 'GLOBAL')
+  const zip = (contextZip && contextZip.toUpperCase()!=='YOUR NEIGHBORHOOD' && contextZip.trim()!==''? contextZip : 'GLOBAL')
   const [business, setBusiness] = useState('')
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -46,7 +46,7 @@ export default function ClaimBusinessPage() {
       </div>
 
       <h1 className="text-3xl font-black mt-8 tracking-tight">Claim Your Business on Sweet Social Space</h1>
-      <p className="text-white/60 mt-2">Own your block in {zip==='GLOBAL'? (city || 'your city') : `${city} ${zip}`} - {PRICE_DISPLAY} - Verified badge + post as business</p>
+      <p className="text-white/60 mt-2">Own your neighborhood in {zip==='GLOBAL'? (city || 'your city') : `${city} ${zip}`} - {PRICE_DISPLAY} - Verified badge + post as business</p>
 
       <div className="mt-8 space-y-4 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-pink-600/10 pointer-events-none" />
@@ -64,7 +64,7 @@ export default function ClaimBusinessPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 rounded-xl bg-black border border-white/20 focus:border-purple-500 outline-none"
           />
-          <div className="text- text-white/30 uppercase tracking-widest">Zip: {zip} • {city} • GLOBAL • Auto-detected • Independent</div>
+          <div className="text- text-white/30 uppercase tracking-widest">Zip: {zip} • {city} • Auto-detected • Independent</div>
 
           <button
             onClick={handleClaim}
@@ -78,7 +78,7 @@ export default function ClaimBusinessPage() {
             Cancel and return to feed
           </Link>
 
-          <p className="text-xs text-white/30 text-center">Powered by Stripe - Cancel anytime • GLOBAL • {zip} • FAILSAFE</p>
+          <p className="text-xs text-white/30 text-center">Powered by Stripe - Cancel anytime • {zip} • FAILSAFE</p>
         </div>
       </div>
     </div>

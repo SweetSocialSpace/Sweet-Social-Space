@@ -20,7 +20,7 @@ export default function ApplyVerificationPage() {
       setLoading(true)
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { alert('Please sign in first to apply'); setLoading(false); return }
-      const safeZip = (zip && zip.toUpperCase()!=='YOUR BLOCK' && zip!==''? zip : 'GLOBAL')
+      const safeZip = (zip && zip.toUpperCase()!=='YOUR NEIGHBORHOOD' && zip!==''? zip : 'GLOBAL')
       const safeCity = city || ''
       const { error } = await supabase.from('verification_requests').insert({
         user_id: user.id,
@@ -52,7 +52,7 @@ export default function ApplyVerificationPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-green-600/10 pointer-events-none" />
           <div className="relative">
             <h1 className="text-3xl font-black text-white tracking-tight">Apply for Verification</h1>
-            <p className="text-white/70 mt-2">For Police, Fire, NWS, City Agencies, Schools, and local authorities in <span className="text-white font-bold">{city || zip} • {zip} • GLOBAL</span></p>
+            <p className="text-white/70 mt-2">For Police, Fire, NWS, City Agencies, Schools, and local authorities in <span className="text-white font-bold">{city || zip} • {zip}</span></p>
             <p className="text-white/30 text- mt-1 uppercase tracking-widest">GLOBAL Independent Auto-detected • {zip}</p>
             {done? (
               <div className="mt-6 bg-green-600 text-white p-4 rounded-xl font-bold">✓ Request submitted for {city || zip}! We'll review and verify your organization in {zip} area.</div>

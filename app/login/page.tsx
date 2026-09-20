@@ -29,7 +29,7 @@ export default function LoginPage() {
       <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
         <div className="text-left">
           <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">
-            Facebook shows you the world.<br/>We show you your block.
+            Facebook shows you the world.<br/>We show you your neighborhood.
           </h1>
           <p className="mt-6 text-lg text-white/90 leading-relaxed font-semibold drop-shadow">
             Your neighbor has a free couch. Another needs a job. Someone 3 houses down just posted an alert. You missed it scrolling people 3,000 miles away.
@@ -38,13 +38,13 @@ export default function LoginPage() {
             Sweet Social Space is private to neighbors within 10 miles of YOU — wherever you are in the world — GLOBAL • LIVE. No robots deciding what you see. No shadowbans for your faith. Just real neighbors, right now.
           </p>
           <p className="mt-6 text-sm font-bold text-white/50 tracking-widest uppercase">
-            Speak Freely. Love Your Neighbor. • GLOBAL • Independent
+            Speak Freely. Love Your Neighbor. • Independent
           </p>
         </div>
 
         <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
           <h2 className="text-3xl font-black text-white text-center">Welcome Home, Neighbor.</h2>
-          <p className="text-white/80 text-center text-sm mb-6 mt-2 font-semibold">Your block missed you. GLOBAL • LIVE</p>
+          <p className="text-white/80 text-center text-sm mb-6 mt-2 font-semibold">Your neighborhood missed you. GLOBAL • LIVE</p>
           <form onSubmit={handleLogin} className="space-y-4">
             <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Your email address" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Your password" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
@@ -54,7 +54,7 @@ export default function LoginPage() {
           </form>
           {msg && <p className="mt-4 text-center text-sm text-white bg-white/10 p-2 rounded-lg">{msg}</p>}
           <p className="mt-6 text-center text-sm text-white/60">
-            No account? <Link href="/signup" className="text-white font-bold underline">Join your block — free • GLOBAL</Link>
+            No account? <Link href="/signup" className="text-white font-bold underline">Join your neighborhood — free</Link>
           </p>
           <div className="text-white/20 uppercase tracking-widest text-center mt-4 text-sm">GLOBAL • FAILSAFE</div>
         </div>

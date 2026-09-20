@@ -7,7 +7,7 @@ export default function GlobalFooter() {
         <div>
           <h4 className="font-black text-white uppercase tracking-widest mb-3">Verify</h4>
           <ul className="space-y-2 text-white/60">
-            <li><Link href="/verification" className="hover:text-white">Verification • GLOBAL</Link></li>
+            <li><Link href="/verification" className="hover:text-white">Verification</Link></li>
             <li><Link href="/security" className="hover:text-white">Security • SSL Secured</Link></li>
             <li><Link href="/trust" className="hover:text-white">Trust Meter • LIVE</Link></li>
           </ul>
@@ -32,7 +32,7 @@ export default function GlobalFooter() {
           <h4 className="font-black text-white uppercase tracking-widest mb-3">Contact</h4>
           <ul className="space-y-2 text-white/60">
             <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
-            <li><Link href="/about" className="hover:text-white">About • GLOBAL</Link></li>
+            <li><Link href="/about" className="hover:text-white">About</Link></li>
             <li><Link href="/support" className="hover:text-white">Support • LIVE</Link></li>
           </ul>
         </div>

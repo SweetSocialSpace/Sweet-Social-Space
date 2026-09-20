@@ -81,7 +81,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
       const { data: { user } } = await supabase.auth.getUser()
       const finalBody = makeLegible(body.trim())
       const effectiveZip = zip || (typeof window!== 'undefined'? localStorage.getItem('user_zip') : '') || ''
-      if (!effectiveZip || effectiveZip === 'YOUR BLOCK') { alert('Still detecting your block... wait 2 sec and post again'); setPosting(false); return }
+      if (!effectiveZip || effectiveZip === 'YOUR NEIGHBORHOOD') { alert('Still detecting your neighborhood... wait 2 sec and post again'); setPosting(false); return }
       const payload: any = { body: finalBody, tag: category, category, zip_code: effectiveZip, user_id: user?.id, location_address: address || null }
       if(price) payload.price = parseFloat(price) || null
       if(category==='for_sale') payload.condition = condition
@@ -90,7 +90,7 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
     } catch(e:any){ try { alert(e?.message || 'Post failed') } catch {} } finally { setPosting(false) }
   }
 
-  const displayZip = zip || (typeof window!== 'undefined'? (()=>{ try { return localStorage.getItem('user_zip') } catch { return '' } })() : '') || 'YOUR BLOCK'
+  const displayZip = zip || (typeof window!== 'undefined'? (()=>{ try { return localStorage.getItem('user_zip') } catch { return '' } })() : '') || 'YOUR NEIGHBORHOOD'
 
   return (
     <div className="w-full max-w-full min-w-0 overflow-hidden bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white mb-4">

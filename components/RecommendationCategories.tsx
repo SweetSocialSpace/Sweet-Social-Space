@@ -48,7 +48,7 @@ export default function RecommendationCategories({ compact = false }: { compact?
       <div className={compact? 'grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2' : 'flex flex-col gap-3 md:flex-row md:items-end md:justify-between'}>
         <div>
           <h3 className={compact? 'font-display text-sm font-semibold leading-tight' : 'font-display text-2xl font-bold md:text-3xl'}>⭐ Local recommendations</h3>
-          <p className={compact? 'mt-1 line-clamp-2 text-xs text-muted-foreground' : 'mt-1 text-sm text-muted-foreground'}>Ask neighbors who they trust — plumber, pizza, mechanic, daycare. Real answers from real people on your block {zip? `• ${zip}`:''}.</p>
+          <p className={compact? 'mt-1 line-clamp-2 text-xs text-muted-foreground' : 'mt-1 text-sm text-muted-foreground'}>Ask neighbors who they trust — plumber, pizza, mechanic, daycare. Real answers from real people on your neighborhood {zip? `• ${zip}`:''}.</p>
         </div>
         <Link href="/recommendations" className="text-sm font-medium text-primary hover:underline">Browse recommendations →</Link>
       </div>
