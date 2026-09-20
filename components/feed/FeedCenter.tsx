@@ -18,7 +18,7 @@ export default function FeedCenter() {
   const { zip: userZip } = useLocation()
   const { filter, scope } = useLocationScope()
   const { language } = useLanguage()
-  const t = useTranslations()
+    const t = useTranslations() as any
   const [draft, setDraft] = useState('')
   const [tag, setTag] = useState<typeof TAG_KEYS[number]>('general')
   const [posts, setPosts] = useState<any[]>([])
