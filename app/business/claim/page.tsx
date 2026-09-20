@@ -64,7 +64,7 @@ export default function ClaimBusinessPage() {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 rounded-xl bg-black border border-white/20 focus:border-purple-500 outline-none"
           />
-          <div className="text- text-white/30 uppercase tracking-widest">Zip: {zip} • {city} • GLOBAL • Auto-detected • VERTEBRAE • Independent</div>
+          <div className="text- text-white/30 uppercase tracking-widest">Zip: {zip} • {city} • GLOBAL • Auto-detected • Independent</div>
 
           <button
             onClick={handleClaim}

@@ -25,7 +25,7 @@ export default function GlobalFooter() {
           <ul className="space-y-2 text-white/60">
             <li><Link href="/guarantees" className="hover:text-white">Our Guarantees</Link></li>
             <li><Link href="/faith" className="hover:text-white">Faith Policy</Link></li>
-            <li><Link href="/failsafe" className="hover:text-white">Failsafe • Vertebrae</Link></li>
+            <li><Link href="/failsafe" className="hover:text-white">Failsafe</Link></li>
           </ul>
         </div>
         <div>

@@ -38,7 +38,7 @@ export default function LoginPage() {
             Sweet Social Space is private to neighbors within 10 miles of YOU — wherever you are in the world — GLOBAL • LIVE. No robots deciding what you see. No shadowbans for your faith. Just real neighbors, right now.
           </p>
           <p className="mt-6 text-sm font-bold text-white/50 tracking-widest uppercase">
-            Speak Freely. Love Your Neighbor. • GLOBAL • VERTEBRAE • Independent
+            Speak Freely. Love Your Neighbor. • GLOBAL • Independent
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function LoginPage() {
           <p className="mt-6 text-center text-sm text-white/60">
             No account? <Link href="/signup" className="text-white font-bold underline">Join your block — free • GLOBAL</Link>
           </p>
-          <div className="text-white/20 uppercase tracking-widest text-center mt-4 text-sm">GLOBAL • VERTEBRAE • FAILSAFE</div>
+          <div className="text-white/20 uppercase tracking-widest text-center mt-4 text-sm">GLOBAL • FAILSAFE</div>
         </div>
       </div>
     </div>

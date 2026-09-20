@@ -72,7 +72,7 @@ const PAGES: Record<string, LegalContent> = {
         <p>4. GLOBAL DETECTION - Zip code based only, no IP detection</p>
         <p>5. VERIFIED SOURCES LIVE - Latest Alerts GLOBAL WeatherBar Fire Station 3, 63</p>
         <p>6. SSL SECURED - Full TLS Vercel RLS Supabase</p>
-        <p>7. INDEPENDENT - Not Big Tech Vertebrae independent</p>
+        <p>7. INDEPENDENT - Not Big Tech independent</p>
       </div>
     ),
   },
