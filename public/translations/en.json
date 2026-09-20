@@ -119,6 +119,39 @@
   "meteo": {
     "title": "Weather"
   },
+  "verified": {
+    "verifiedSources": "Verified Sources",
+    "verifiedBy": "Verified by",
+    "trustNetwork": "Trust Network",
+    "trustScore": "Trust Score",
+    "sources": "Sources",
+    "verified": "Verified"
+  },
+  "whatsHappening": {
+    "whatsHappeningNearYou": "What's happening near you",
+    "eventsIn": "Events in",
+    "local": "Local",
+    "nearLine": "Near {zip}{city} • Information Highway",
+    "loading": "Loading...",
+    "liveLine": "Live: SeatGeek + External APIs • 15mi radius"
+  },
+  "events": {
+    "upcomingEvents": "Upcoming Events",
+    "near": "near",
+    "noEventsNearby": "No events nearby",
+    "tba": "TBA",
+    "in": "in",
+    "local": "Local"
+  },
+  "marketplace": {
+    "title": "Marketplace",
+    "near": "Near",
+    "noItems": "No items nearby"
+  },
+  "businessDirectory": {
+    "title": "Business Directory",
+    "near": "Near"
+  },
   "auth": {
     "welcome": "Welcome to Sweet Social Space",
     "emailPlaceholder": "Email address",
@@ -135,7 +168,7 @@
       "emailLabel": "Your email address",
       "passwordLabel": "Your password",
       "signingIn": "Signing you in...",
-      "signInButton": "SIGN IN — See Your Neighborhood !",
+      "signInButton": "SIGN IN — See Your Neighborhood!",
       "noAccount": "No account?",
       "signUpLink": "Join your Neighbors — free",
       "marketingTitle": "Facebook shows you the world. We show you your Neighborhood.",
