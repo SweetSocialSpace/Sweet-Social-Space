@@ -16,7 +16,7 @@ export function LegalFooter() {
           <Link href="/legal/contact" className="hover:text-foreground">Contact</Link>
           <Link href="/legal/verification" className="hover:text-foreground">Verification</Link>
         </nav>
-        <p className="mt-4">© {new Date().getFullYear()} {LEGAL.entityName}. All rights reserved. GLOBAL • VERTEBRAE • SSL SECURED</p>
+        <p className="mt-4">© {new Date().getFullYear()} {LEGAL.entityName}. All rights reserved. GLOBAL • SSL SECURED</p>
       </div>
     </footer>
   )
