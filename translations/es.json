@@ -6,6 +6,22 @@
     "signOut": "Cerrar sesión"
   },
   "feed": {
+    "placeholder": "¿Qué está pasando en {zip}?",
+    "placeholderLoading": "Cargando ubicación...",
+    "posting": "PUBLICANDO...",
+    "postAs": "PUBLICAR COMO {tag} EN {zip}",
+    "fixPunctuation": "Corregir puntuación",
+    "recordedLive": "📹 Transmisión grabada",
+    "tags": {
+      "General": "General",
+      "Alert": "Alerta",
+      "Recommendation": "Recomendación",
+      "Free stuff": "Cosas gratis",
+      "Hot take": "Opinión",
+      "Lost & found": "Perdido y encontrado"
+    }
+  }
+}
     "whatsHappening": "Qué está pasando en",
     "postAs": "PUBLICAR COMO",
     "in": "EN",
