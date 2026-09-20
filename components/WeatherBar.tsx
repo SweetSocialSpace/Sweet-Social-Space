@@ -13,7 +13,6 @@ export default function WeatherBar() {
   const [city, setCity] = useState('')
   
   const t = useTranslations()
-  console.log('WeatherBar language:', language, 'translations:', t)
 
   const load = async () => {
     if (!zip) {
