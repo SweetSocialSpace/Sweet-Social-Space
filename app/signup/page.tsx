@@ -17,12 +17,12 @@ export default function SignupPage() {
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // AUTO-FILL city/country from internet via zip - GLOBAL automation
+  // AUTO-FILL city/country from internet via zip - neighborhood automation
   const lookupZip = async (zipValue: string) => {
     if (!zipValue || zipValue.length < 3) return
     try {
       const res = await fetch(`/api/zips?zip=${zipValue.trim()}`, { cache: 'no-store' }).then(r=>r.json())
-      if (res?.city && res.city !== 'your area') setCity(res.city)
+      if (res?.city && res.city !== 'your area' && res.city !== 'your neighborhood') setCity(res.city)
       if (res?.state || res?.country) setCountry(res.country || res.state || country)
     } catch {}
   }
@@ -48,7 +48,7 @@ export default function SignupPage() {
             city: city.trim(), 
             country: country.trim(),
             radius_mi: radius,
-            lat: null, // will be filled by /api/zips on backend
+            lat: null,
             lon: null
           },
           emailRedirectTo: `${window.location.origin}/login`
@@ -63,7 +63,7 @@ export default function SignupPage() {
         return
       }
 
-      setMsg('Account created! Taking you to your area feed...')
+      setMsg('Account created! Taking you to your neighborhood feed...')
       router.push('/feed')
       router.refresh()
 
@@ -80,14 +80,11 @@ export default function SignupPage() {
       <div className="absolute inset-0 bg-black/50" />
       <div className="relative z-10 max-w-7xl w-full grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
         <div className="text-left">
-          <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">Facebook shows you the world.<br/>We show you your area.</h1>
+          <h1 className="text-5xl font-black text-white leading-tight drop-shadow-xl">Facebook shows you the world.<br/>We show you your neighborhood.</h1>
           <p className="mt-6 text-lg text-white/90 font-semibold">Your neighbor has a free couch. Another needs a job. Someone nearby just posted an update.</p>
-<<<<<<< HEAD
-          <p className="mt-4 text-base text-white/70">
+          <div className="mt-4 text-base text-white/70">
             <p>Sweet Social Space is personalized to your neighborhood within {radius} miles of you - wherever you are in the world. Local to your neighborhood.</p>
-=======
-          <p className="mt-4 text-base text-white/70">Sweet Social Space is personalized to your area within {radius} miles of YOU — wherever you are in the world.local feed, neighborhood focus.</p>
->>>>>>> f37415d (copy: GLOBAL and your block -> Local to your neighborhood)
+          </div>
           <div className="mt-4 bg-white/10 border border-white/20 rounded-xl p-4">
             <p className="text-sm font-bold text-white">📍 Why we need your location:</p>
             <ul className="text-sm text-white/80 mt-2 space-y-1">
@@ -100,13 +97,13 @@ export default function SignupPage() {
           <p className="mt-6 text-sm font-bold text-white/50 tracking-widest uppercase">Speak Freely. Love Your Neighbor.</p>
         </div>
         <div className="w-full bg-black/40 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl">
-          <h2 className="text-3xl font-black text-white text-center mb-4">Join Your Area</h2>
+          <h2 className="text-3xl font-black text-white text-center mb-4">Join Your Neighborhood</h2>
           <form onSubmit={handleSignup} className="space-y-3">
             <input type="text" value={displayName} onChange={e=>setDisplayName(e.target.value)} placeholder="Your name *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Your email address *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Create a password *" className="w-full p-3 rounded-xl bg-white text-black font-semibold" required />
             <div className="pt-2 border-t border-white/10">
-              <p className="text-xs font-black tracking-widest text-white/50 mb-2 uppercase">Where are you? (Required — Global)</p>
+              <p className="text-xs font-black tracking-widest text-white/50 mb-2 uppercase">Where are you? (Required - Your neighborhood)</p>
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3 mb-3">
                 <p className="text-xs text-blue-200 font-semibold">🔒 Your Privacy Protected</p>
                 <p className="text-xs text-white/70 mt-1">We use your zip code (not GPS tracking) to show you posts, weather, and alerts near you. Your exact address is never shared.</p>
@@ -127,7 +124,7 @@ export default function SignupPage() {
               </div>
             </div>
             <button disabled={loading} type="submit" className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-black py-3 rounded-full mt-2">
-              {loading ? 'Creating...' : 'Sign up — See Your Area Feed'}
+              {loading ? 'Creating...' : 'Sign up — See Your Neighborhood Feed'}
             </button>
           </form>
           {msg && <p className="mt-4 text-center text-sm text-white bg-white/10 p-2 rounded-lg break-words">{msg}</p>}
