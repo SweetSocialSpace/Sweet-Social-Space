@@ -36,11 +36,11 @@ export function UpcomingEvents(){
       try {
         const supabase = createClient() as any
         let data: any[] = []
-        
-        if (filter.lat != null && filter.lng != null) {
+
+        if (filter.lat!= null && filter.lng!= null) {
           const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
           const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
-          
+
           const { data: eventData } = await supabase
             .from('events')
             .select('id,title,starts_at,latitude,longitude')
@@ -51,7 +51,7 @@ export function UpcomingEvents(){
             .lte('longitude', bbox.maxLng)
             .order('starts_at')
             .limit(10)
-          
+
           if (eventData) {
             data = applyScope(eventData, filter)
           }
@@ -59,7 +59,7 @@ export function UpcomingEvents(){
           const { data: eventData } = await supabase.from('events').select('id,title,starts_at').eq('zip_code', zip).gte('starts_at', new Date().toISOString()).order('starts_at').limit(4)
           data = eventData || []
         }
-        
+
         if(mounted && data.length > 0) setEvs(data)
         else await fetchLiveEvents()
       } catch { try { await fetchLiveEvents() } catch {} }
@@ -68,11 +68,11 @@ export function UpcomingEvents(){
       try {
         const supabase = createClient() as any
         let data: any[] = []
-        
-        if (filter.lat != null && filter.lng != null) {
+
+        if (filter.lat!= null && filter.lng!= null) {
           const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
           const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
-          
+
           const { data: eventData } = await supabase
             .from('events')
             .select('id,title,starts_at,latitude,longitude')
@@ -83,7 +83,7 @@ export function UpcomingEvents(){
             .lte('longitude', bbox.maxLng)
             .order('starts_at')
             .limit(10)
-          
+
           if (eventData) {
             data = applyScope(eventData, filter)
           }
@@ -91,7 +91,7 @@ export function UpcomingEvents(){
           const { data: eventData } = await supabase.from('events').select('id,title,starts_at').eq('zip_code', zip).gte('starts_at', new Date().toISOString()).order('starts_at').limit(4)
           data = eventData || []
         }
-        
+
         if(mounted && data.length > 0) setEvs(data)
       } catch {}
     }, 30*60*1000)
@@ -102,21 +102,21 @@ export function UpcomingEvents(){
 
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📅 {t?.events?.upcomingEvents || 'Upcoming Events'}</p>
-      <p className="text-xs text-white/50">{t?.common?.loading || 'Loading...'}</p>
+      <p className="font-bold">📅 {t?.events?.upcomingEvents}</p>
+      <p className="text-xs text-white/50">{t?.common?.loading}</p>
     </div>
   )
 
   return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
-      <p className="font-bold">📅 {t?.events?.upcomingEvents || 'Upcoming Events'}</p>
-      <p className="text-xs text-white/50 mt-1">{t?.events?.near || 'Near'} {zip}</p>
-      {display.length===0? <p className="text-sm mt-3 text-white/60">{t?.events?.noEventsNearby || 'No events nearby'}</p> : (
+      <p className="font-bold">📅 {t?.events?.upcomingEvents}</p>
+      <p className="text-xs text-white/50 mt-1">{t?.events?.near} {zip}</p>
+      {display.length===0? <p className="text-sm mt-3 text-white/60">{t?.events?.noEventsNearby}</p> : (
         <div className="mt-3 space-y-2">
           {display.map(e=>(
             <div key={e.id} className="bg-white/5 rounded-xl p-2.5 text-xs">
               <p className="font-semibold truncate">{e.title}</p>
-              <p className="text-white/40 text-xs mt-1">{e.starts_at? new Date(e.starts_at).toLocaleDateString() : (t?.events?.tba || 'TBA')}</p>
+              <p className="text-white/40 text-xs mt-1">{e.starts_at? new Date(e.starts_at).toLocaleDateString() : t?.events?.tba}</p>
             </div>
           ))}
         </div>
