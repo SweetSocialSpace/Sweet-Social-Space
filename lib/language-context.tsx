@@ -13,8 +13,6 @@ export const LANGUAGES = Object.keys(LANGUAGE_NAMES)
 export type Language = keyof typeof LANGUAGE_NAMES
 export const RTL_LANGUAGES: Language[] = ['ar','he','ur','fa']
 
-// FIXED: Added t as optional to allow pages that destructure t from useLanguage
-// Your block/[zip]/page.tsx does const { t, language } = useLanguage() - this now works
 type LanguageContextType = {
   lang: Language
   language: Language
@@ -24,8 +22,8 @@ type LanguageContextType = {
   LANGUAGE_NAMES: typeof LANGUAGE_NAMES
   LANGUAGES: string[]
   isRTL: boolean
-  t?: any // Optional - allows backward compatibility
-  [key: string]: any // Allow any other property for backward compatibility
+  t?: any
+  [key: string]: any
 }
 
 const LanguageContext = createContext<LanguageContextType>({
@@ -40,10 +38,10 @@ const LanguageContext = createContext<LanguageContextType>({
 })
 
 function safeGetInitialLang(): Language {
-  if (typeof window === 'undefined') return 'en'
+  if (typeof window=== 'undefined') return 'en'
   try {
     const cookieLang = typeof document!== 'undefined'
-    ? document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
+   ? document.cookie.match(/NEXT_LOCALE=([^;]+)/)?.[1] as Language
       : null
     const saved = (() => {
       try {
