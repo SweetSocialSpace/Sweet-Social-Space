@@ -72,7 +72,7 @@ function FeedContent() {
   useEffect(()=>{ if (nearZip) fetchPosts(nearZip, radius) }, [radius])
 
   const handleLivePosted = (newPost:any) => setPosts(prev=>[newPost,...prev])
-  const handleLiveEnded = (endedId: string, videoUrl?: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live'), video_url: videoUrl, media_url: videoUrl, media_urls: videoUrl ? [videoUrl] : undefined} : p))
+  const handleLiveEnded = (endedId: string, videoUrl?: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live'), video_url: videoUrl, media_url: videoUrl, media_urls: videoUrl? [videoUrl] : undefined} : p))
 
   const deletePost = async (postId: string) => {
     if (!confirm('Delete this post?')) return
@@ -88,10 +88,12 @@ function FeedContent() {
   const isGlobal =!displayZip || displayZip === 'GLOBAL'
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col relative">
+      <div className="fixed inset-0 -z-10 bg-[url('/golden_droplet_heart_wallpaper.jpg')] bg-cover bg-center" />
+      <div className="fixed inset-0 -z-10 bg-black/30" />
       <Safe loader={() => import('@/components/PermissionsGate')} name="PermissionsGate" />
       <Header />
-      <div className="max-w- mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
+      <div className="flex-1 max-w- mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
         <div className="space-y-4 xl:sticky xl:top-20">
           <Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" />
           <Safe loader={() => import('@/components/AIMayor')} name="AIMayor" />
@@ -114,12 +116,12 @@ function FeedContent() {
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
-            <GoLive 
-  userId={currentUserId || undefined} 
-  zipCode={nearZip || 'GLOBAL'} 
-  city="" 
-  onLivePosted={handleLivePosted} 
-  onLiveEnded={handleLiveEnded} 
+            <GoLive
+  userId={currentUserId || undefined}
+  zipCode={nearZip || 'GLOBAL'}
+  city=""
+  onLivePosted={handleLivePosted}
+  onLiveEnded={handleLiveEnded}
 />
             </div>
           </div>
@@ -143,8 +145,8 @@ function FeedContent() {
                   {isEnded && (
                     <>
                       {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
-                        <video 
-                          controls 
+                        <video
+                          controls
                           className="mt-3 w-full rounded-xl"
                           src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])}
                         />
@@ -166,10 +168,10 @@ function FeedContent() {
           <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
           <Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" />
           <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
-          <Safe loader={() => import('@/components/GlobalFooter')} name="GlobalFooter" />
         </div>
       </div>
-    </>
+      <GlobalFooter />
+    </div>
   )
 }
 
