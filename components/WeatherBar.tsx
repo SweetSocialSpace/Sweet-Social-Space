@@ -37,13 +37,13 @@ export default function WeatherBar() {
 
   useEffect(() => { load(); const id = setInterval(load, 300000); return () => clearInterval(id) }, [zip, globalCity, language])
 
-  const displayCity = city || globalCity || (zip? zip : (t?.common?.yourArea || 'your area'))
+  const displayCity = city || globalCity || (zip? zip : t?.common?.yourArea)
 
   return (
     <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4">
       <div className="flex items-center justify-between">
-        <span className="text-white font-black text-xs tracking-widest">{t?.weather?.weather || 'Weather'}</span>
-        <span className="bg-green-500 text-black px-2 py-0.5 rounded-full font-black text-xs">{t?.weather?.live || 'LIVE'}</span>
+        <span className="text-white font-black text-xs tracking-widest">{t?.weather?.weather}</span>
+        <span className="bg-green-500 text-black px-2 py-0.5 rounded-full font-black text-xs">{t?.weather?.live}</span>
       </div>
       <div className="flex items-center gap-3 mt-2">
         <div className="text-white text-3xl font-black">{temp!== null? `${temp}°F` : '--°F'}</div>
