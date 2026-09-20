@@ -1,4 +1,4 @@
-# name: Free Automation - GLOBAL - All Components Live
+name: Free Automation - GLOBAL - All Components Live
 on:
   schedule:
     - cron: '*/5 * * * *'
@@ -16,7 +16,7 @@ jobs:
           # 1. Test if site is up at all
           HTTP=$(curl -s -o /dev/null -w "%{http_code}" "$DOMAIN/api/pulse?zip=95122" -m 10 || echo "000")
           echo "Pulse status: $HTTP"
-          if [ "$HTTP" = "000" ]; then echo "❌ SITE DOWN"; exit 1; fi
+          if [ "$HTTP" = "000" ]; then echo "SITE DOWN"; exit 1; fi
 
           # 2. Get zips - try 2 formats
           ZIPS_JSON=$(curl -sf "$DOMAIN/api/zips" -m 10 || echo '["95122"]')
@@ -24,15 +24,15 @@ jobs:
           
           # 3. Global keep alive
           echo "== GLOBAL HOUSEKEEPING =="
-          curl -sf "$DOMAIN/api/ingest" -m 20 && echo "✓ ingest live" || echo "❌ ingest failed"
-          curl -sf "$DOMAIN/api/pulse?zip=95122" -m 10 && echo "✓ pulse live" || echo "❌ pulse failed"
-          curl -sf "$DOMAIN/api/faith?ref=John%203:16" -m 10 && echo "✓ faith live" || echo "❌ faith failed - this is the one that was 404ing"
-          curl -sf "$DOMAIN/api/weather?zip=95122" -m 10 && echo "✓ weather live" || echo "❌ weather failed"
+          curl -sf "$DOMAIN/api/ingest" -m 20 && echo "ingest live" || echo "ingest failed"
+          curl -sf "$DOMAIN/api/pulse?zip=95122" -m 10 && echo "pulse live" || echo "pulse failed"
+          curl -sf "$DOMAIN/api/faith?ref=John%203:16" -m 10 && echo "faith live" || echo "faith failed"
+          curl -sf "$DOMAIN/api/weather?zip=95122" -m 10 && echo "weather live" || echo "weather failed"
 
           # 4. Simple loop - just 3 zips to prove it works globally
           for ZIP in 95122 90210 10001; do
             echo "== Checking ZIP: $ZIP =="
-            curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 5 && echo "✓ $ZIP pulse OK" || echo "❌ $ZIP pulse FAIL"
+            curl -sf "$DOMAIN/api/pulse?zip=$ZIP" -m 5 && echo "$ZIP pulse OK" || echo "$ZIP pulse FAIL"
           done
           
-          echo "Done - $(date) - Check Actions tab for green check"
+          echo "Done - $(date)"
