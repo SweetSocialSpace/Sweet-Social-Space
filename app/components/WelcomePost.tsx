@@ -3,7 +3,7 @@ import { useLocation } from '@/lib/location-context'
 
 export default function WelcomePost() {
   const { zip, city } = useLocation()
-  const area = city && !city.includes('Manado') && !city.includes('Sulawesi') ? city : (zip && zip !== 'GLOBAL' ? zip : 'your block')
+  const area = city && !city.includes('Manado') && !city.includes('Sulawesi') ? city : (zip && zip !== 'GLOBAL' ? zip : 'your neighborhood')
 
   return (
     <div className="bg-white/[0.08] backdrop-blur-2xl rounded-2xl p-6 border border-white/15 shadow-2xl relative overflow-hidden">
