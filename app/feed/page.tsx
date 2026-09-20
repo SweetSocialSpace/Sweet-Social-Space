@@ -1,7 +1,8 @@
 'use client'
-import GlobalFooter from '@/components/GlobalFooter'
-import { useState, useEffect, Suspense, useCallback } from 'react'
+import { useState, useEffect, Suspense, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from '@/lib/translations'
+import { useLanguage } from '@/lib/language-context'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import { useLocation } from '@/lib/location-context'
@@ -10,6 +11,14 @@ import WelcomePost from '@/app/components/WelcomePost'
 import GoLive from '@/components/GoLive'
 import JoinLive from '@/components/JoinLive'
 import React from 'react'
+
+function CardShell({ minH, children }: { minH: string, children: React.ReactNode }) {
+  return (
+    <div style={{ minHeight: minH }} className="bg-black/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4 h-auto overflow-visible">
+      <div className="animate-in fade-in duration-300">{children}</div>
+    </div>
+  )
+}
 
 function Safe({ loader, name }: { loader: () => Promise<any>, name: string }){
   const Comp = dynamic(() => loader().then((m:any)=> m.default || m[name] || m).catch(()=> ({ default: () => null })), { ssr: false, loading: () => null })
@@ -29,6 +38,9 @@ function FeedContent() {
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<any[]>([])
   const { zip: locationZip } = useLocation()
+  const { language } = useLanguage()
+  const t = useTranslations()
+  console.log('Feed translations:', t, 'Language:', language)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
   const [nearZip, setNearZip] = useState<string>('')
@@ -44,14 +56,25 @@ function FeedContent() {
   const handleFilter = (id: string) => { setFilter(id); router.push(id === 'all'? '/feed' : `/feed?filter=${id}`) }
   const handleRadiusChange = (newRadius: number) => { setRadius(newRadius); localStorage.setItem('feed_radius', String(newRadius)) }
 
-  const FILTERS = [{ id: 'all', label: 'All' }, { id: 'faith', label: 'Faith' }, { id: 'general', label: 'General' }, { id: 'safety', label: 'Safety' }, { id: 'for_sale', label: 'For Sale' }, { id: 'free', label: 'Free' }, { id: 'lost_pet', label: 'Lost Pet' }, { id: 'event', label: 'Event' }, { id: 'help', label: 'Help' }, { id: 'recommend', label: 'Recommend' }]
-
+const FILTERS = useMemo(() => [
+  { id: 'all', label: t?.filters?.all || 'All' }, 
+  { id: 'faith', label: t?.filters?.faith || 'Faith' }, 
+  { id: 'general', label: t?.filters?.general || 'General' }, 
+  { id: 'safety', label: t?.filters?.safety || 'Safety' }, 
+  { id: 'for_sale', label: t?.filters?.forSale || 'For Sale' }, 
+  { id: 'free', label: t?.filters?.free || 'Free' }, 
+  { id: 'lost_pet', label: t?.filters?.lostPet || 'Lost Pet' }, 
+  { id: 'event', label: t?.filters?.event || 'Event' }, 
+  { id: 'help', label: t?.filters?.help || 'Help' }, 
+  { id: 'recommend', label: t?.filters?.recommend || 'Recommend' }
+], [t, language])
+  console.log('FILTERS:', FILTERS)
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
-    if (zipToUse) query = query.or(`zip_code.eq.${zipToUse},zip_code.eq.GLOBAL`)
+    if (zipToUse) query = query.eq('zip_code', zipToUse)
     const { data } = await query
     if (data) setPosts(data)
-  }, [supabase, radius])
+  }, [supabase, radius, t])
 
   useEffect(() => {
     (async()=>{
@@ -85,49 +108,41 @@ function FeedContent() {
   const authorName = currentProfile?.username || currentProfile?.display_name || 'there'
   const displayZip = nearZip || locationZip || ''
   const displayCity = currentProfile?.city || 'your area'
-  const isGlobal =!displayZip || displayZip === 'GLOBAL'
+  const hasNoZip = !displayZip
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <div className="fixed inset-0 -z-10 bg-[url('/golden_droplet_heart_wallpaper.jpg')] bg-cover bg-center" />
-      <div className="fixed inset-0 -z-10 bg-black/30" />
+    <>
       <Safe loader={() => import('@/components/PermissionsGate')} name="PermissionsGate" />
       <Header />
-      <div className="flex-1 max-w- mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
+      <div className="max-w-[1920px] mx-auto px-3 xl:px-4 py-4 grid grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_380px] 2xl:grid-cols-[320px_minmax(640px,860px)_400px] gap-4 xl:gap-5 items-start w-full justify-center">
         <div className="space-y-4 xl:sticky xl:top-20">
-          <Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" />
-          <Safe loader={() => import('@/components/AIMayor')} name="AIMayor" />
-          <Safe loader={() => import('@/components/LiveMap')} name="LiveMap" />
-          <Safe loader={() => import('@/components/trust-meter/TrustMeter')} name="TrustMeter" />
-          <Safe loader={() => import('@/components/WeatherBar')} name="WeatherBar" />
-          <Safe loader={() => import('@/components/PinnedAutomatedAlert')} name="PinnedAutomatedAlert" />
-          <Safe loader={() => import('@/components/EmergencyAlerts')} name="EmergencyAlerts" />
-          <Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" />
-          <Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" />
+          <CardShell minH="90px"><Safe loader={() => import('@/components/live-pulse/LivePulse')} name="LivePulse" /></CardShell>
+          <CardShell minH="110px"><Safe loader={() => import('@/components/AIMayor')} name="AIMayor" /></CardShell>
+          <CardShell minH="100px"><Safe loader={() => import('@/components/LiveMap')} name="LiveMap" /></CardShell>
+          <CardShell minH="70px"><Safe loader={() => import('@/components/trust-meter/TrustMeter')} name="TrustMeter" /></CardShell>
+          <CardShell minH="85px"><Safe loader={() => import('@/components/WeatherBar')} name="WeatherBar" /></CardShell>
+          <CardShell minH="85px"><Safe loader={() => import('@/components/PinnedAutomatedAlert')} name="PinnedAutomatedAlert" /></CardShell>
+          <CardShell minH="90px"><Safe loader={() => import('@/components/EmergencyAlerts')} name="EmergencyAlerts" /></CardShell>
+          <CardShell minH="95px"><Safe loader={() => import('@/components/LatestAlerts')} name="LatestAlerts" /></CardShell>
+          <CardShell minH="180px"><Safe loader={() => import('@/components/WhatsHappeningNearYou')} name="WhatsHappeningNearYou" /></CardShell>
         </div>
 
         <div className="bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 p-4 xl:p-6 w-full min-w-0">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-white/60 text-xs font-bold">Near</span>
-            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">{isGlobal? displayCity : displayZip}</span>
+            <span className="bg-white text-black text-xs font-black px-3 py-1 rounded-full">{hasNoZip? displayCity : displayZip}</span>
             <select value={radius} onChange={(e)=>handleRadiusChange(parseInt(e.target.value))} className="bg-white/10 text-white rounded-full px-3 py-1 text-xs font-bold border border-white/20">
               <option value={5}>5 mi</option><option value={10}>10 mi</option><option value={15}>15 mi</option><option value={20}>20 mi</option>
             </select>
             <span className="text-white/40 text-xs">• {filtered.length} posts</span>
             <div className="ml-auto flex items-center gap-2">
               <span className="bg-green-500 text-black px-2.5 py-1 rounded-full text-xs font-bold">LIVE</span>
-            <GoLive
-  userId={currentUserId || undefined}
-  zipCode={nearZip || 'GLOBAL'}
-  city=""
-  onLivePosted={handleLivePosted}
-  onLiveEnded={handleLiveEnded}
-/>
+              <GoLive userId={currentUserId || undefined} zipCode={nearZip || displayZip || 'your area'} city="" onLivePosted={handleLivePosted} onLiveEnded={handleLiveEnded} />
             </div>
           </div>
 
           <div className="mt-4"><Safe loader={() => import('@/components/CreatePost')} name="CreatePost" /></div>
-          <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {isGlobal? displayCity : displayZip} • {radius}mi</div>
+          <div className="mt-2 text-xs text-white/40 px-1">Posting as {authorName} • {hasNoZip? displayCity : displayZip} • {radius}mi</div>
 
           <div className="flex gap-2 overflow-x-auto py-3 mt-2 -mx-1 px-1">
             {FILTERS.map(f=>(<button key={f.id} onClick={()=>handleFilter(f.id)} className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border shrink-0 ${filter===f.id?'bg-white text-black border-white':'bg-white/10 text-white border-white/20'}`}>{f.label}</button>))}
@@ -140,21 +155,19 @@ function FeedContent() {
               const displayBody = isEnded? (p.body||p.content||'').replace('LIVE NOW','Was Live') : (p.body||p.content)
               return (
                 <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
-                  <p className="text-black whitespace-pre-wrap break-words leading-6">{displayBody}</p>
+                 <p className="text-black whitespace-pre-wrap break-words leading-6">
+  {displayBody}
+</p>
                   {p.tag === 'live' && p.livekit_room && <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 Join Live Stream</button>}
                   {isEnded && (
                     <>
                       {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
-                        <video
-                          controls
-                          className="mt-3 w-full rounded-xl"
-                          src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])}
-                        />
+                        <video controls className="mt-3 w-full rounded-xl" src={p.video_url || p.media_url || (p.media_urls && p.media_urls[0])} />
                       )}
                       <div className="mt-3 text-xs text-white bg-gray-800 rounded-full px-3 py-2 inline-block">Was Live • {new Date(p.created_at).toLocaleString()} • {p.zip_code}</div>
                     </>
                   )}
-                  <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code === 'GLOBAL'? displayCity : (p.zip_code || displayZip)}</div>
+                  <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
                   {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">Delete</button>}
                 </div>
               )
@@ -165,13 +178,13 @@ function FeedContent() {
         </div>
 
         <div className="space-y-4 xl:sticky xl:top-20">
-          <Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" />
-          <Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" />
-          <Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" />
+          <CardShell minH="280px"><Safe loader={() => import('@/components/FaithOfTheDay')} name="FaithOfTheDay" /></CardShell>
+          <CardShell minH="320px"><Safe loader={() => import('@/components/BusinessDirectory')} name="BusinessDirectory" /></CardShell>
+          <CardShell minH="320px"><Safe loader={() => import('@/components/MarketplacePreview')} name="MarketplacePreview" /></CardShell>
         </div>
       </div>
-      <GlobalFooter />
-    </div>
+      <Safe loader={() => import('@/components/LocalFooter')} name="LocalFooter" />
+    </>
   )
 }
 

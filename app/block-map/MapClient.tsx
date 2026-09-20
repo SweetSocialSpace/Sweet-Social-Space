@@ -70,7 +70,7 @@ export default function MapClient(){
   return(
     <div>
       <style>{`.gold-pulse { filter: drop-shadow(0 0 8px gold); animation: pulse 1.5s infinite; } @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)} }`}</style>
-      <div className="absolute top-2 left-12 z-[1000] bg-black text-white px-3 py-1 rounded-full text-xs font-black">📍 {zip || 'YOUR NEIGHBORHOOD'} • {pins.length + lostPets.length} LIVE PINS</div>
+      <div className="absolute top-2 left-12 z-[1000] bg-black text-white px-3 py-1 rounded-full text-xs font-black">📍 {zip || 'YOUR BLOCK'} • {pins.length + lostPets.length} LIVE PINS</div>
       <MapContainer center={mapCenter} zoom={15} style={{height:'100vh', width:'100vw'}}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <FixSize />

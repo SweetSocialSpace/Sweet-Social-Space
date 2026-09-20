@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useLocation } from '@/lib/location-context'
+import { useLocationScope } from '@/hooks/useLocationScope'
 import DeleteAccount from '@/app/components/DeleteAccount'
 
 export default function ProfilePage(){
   const supabase = createClient()
   const router = useRouter()
   const { setLoc } = useLocation()
+  const { setManualLocation } = useLocationScope()
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
   const [profile, setProfile] = useState({
@@ -107,6 +109,13 @@ export default function ProfilePage(){
           longitude: lng,
           city: cityName || profile.cross_street || ''
         }).eq('user_id', user.id)
+        
+        // Update location scope with coordinates for radius-based filtering
+        await setManualLocation({ 
+          latitude: lat, 
+          longitude: lng, 
+          location_label: cityName || zipClean 
+        })
       }
 
       setLoc({ zip: zipClean, city: cityName || '', country: '', lat: lat || 0, lng: lng || 0 })
@@ -133,7 +142,7 @@ export default function ProfilePage(){
       <div className="w-full max-w-2xl bg-black/70 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden">
         <div className="p-4 flex items-center justify-between border-b border-white/10 shrink-0">
           <button onClick={()=> window.location.href='/feed'} className="text-sm font-bold px-3 py-1.5 rounded-full bg-white/10 text-white/70 hover:bg-white/20">← Feed</button>
-          <h1 className="text-lg font-black text-white truncate">@{profile.username || 'yourname'} • {profile.zip || 'GLOBAL'}</h1>
+          <h1 className="text-lg font-black text-white truncate">@{profile.username || 'yourname'} • {profile.zip || 'your area'}</h1>
           <div className="w-16"></div>
         </div>
 
@@ -158,9 +167,9 @@ export default function ProfilePage(){
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-white/60 font-bold">Zip Code • Global</label>
+              <label className="text-xs text-white/60 font-bold">Zip Code • Works Anywhere</label>
               <input value={profile.zip} onChange={e=>setProfile({...profile, zip:e.target.value})} className="w-full bg-white border border-white/20 rounded-xl p-3 text-sm text-black font-black mt-1" placeholder="ZIP Code" />
-              <p className="text-xs text-white/30 mt-1">What goes on in {profile.zip || 'your area'} stays in {profile.zip || 'your area'}</p>
+              <p className="text-xs text-white/30 mt-1">See content within 5-20 miles of {profile.zip || 'your area'}</p>
             </div>
             <div>
               <label className="text-xs text-white/40">Cross Street</label>
