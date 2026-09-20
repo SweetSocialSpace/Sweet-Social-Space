@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Suapan",
+    "profile": "Profil",
+    "settings": "Tetapan",
+    "signOut": "Log keluar"
+  },
+  "feed": {
+    "whatsHappening": "Apa yang berlaku di",
+    "postAs": "POST SEBAGAI",
+    "in": "DI",
+    "loading": "Memuatkan..."
+  },
+  "common": {
+    "backToFeed": "Kembali ke Suapan",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "error": "Ralat",
+    "loading": "Memuatkan..."
+  },
+  "weather": {
+    "weather": "Cuaca",
+    "live": "LANGSUNG"
+  },
+  "location": {
+    "setLocation": "Tetapkan lokasi",
+    "locating": "Mencari lokasi..."
+  },
+  "filters": {
+    "all": "Semua",
+    "faith": "Kepercayaan",
+    "general": "Umum",
+    "safety": "Keselamatan",
+    "forSale": "Untuk Dijual",
+    "free": "Percuma",
+    "lostPet": "Haiwan Peliharaan Hilang",
+    "event": "Acara",
+    "help": "Bantuan",
+    "recommend": "Cadangkan"
+  }
+}

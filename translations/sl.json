@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Dovod",
+    "profile": "Profil",
+    "settings": "Nastavitve",
+    "signOut": "Odjava"
+  },
+  "feed": {
+    "whatsHappening": "Kaj se dogaja v",
+    "postAs": "OBJAVI KOT",
+    "in": "V",
+    "loading": "Nalaganje..."
+  },
+  "common": {
+    "backToFeed": "Nazaj na dovod",
+    "save": "Shrani",
+    "cancel": "Prekliči",
+    "error": "Napaka",
+    "loading": "Nalaganje..."
+  },
+  "weather": {
+    "weather": "Vreme",
+    "live": "V ŽIVO"
+  },
+  "location": {
+    "setLocation": "Nastavi lokacijo",
+    "locating": "Lociranje..."
+  },
+  "filters": {
+    "all": "Vse",
+    "faith": "Vera",
+    "general": "Splošno",
+    "safety": "Varnost",
+    "forSale": "Na prodajo",
+    "free": "Brezplačno",
+    "lostPet": "Izgubljena žival",
+    "event": "Dogodek",
+    "help": "Pomoč",
+    "recommend": "Priporoči"
+  }
+}

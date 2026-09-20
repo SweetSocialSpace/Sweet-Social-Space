@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "فید",
+    "profile": "پروفایل",
+    "settings": "تنظیمات",
+    "signOut": "خروج"
+  },
+  "feed": {
+    "whatsHappening": "چه اتفاقی در حال افتادن است در",
+    "postAs": "ارسال به عنوان",
+    "in": "در",
+    "loading": "در حال بارگذاری..."
+  },
+  "common": {
+    "backToFeed": "بازگشت به فید",
+    "save": "ذخیره",
+    "cancel": "لغو",
+    "error": "خطا",
+    "loading": "در حال بارگذاری..."
+  },
+  "weather": {
+    "weather": "آب و هوا",
+    "live": "زنده"
+  },
+  "location": {
+    "setLocation": "تنظیم مکان",
+    "locating": "در حال یافتن مکان..."
+  },
+  "filters": {
+    "all": "همه",
+    "faith": "ایمان",
+    "general": "عمومی",
+    "safety": "ایمنی",
+    "forSale": "برای فروش",
+    "free": "رایگان",
+    "lostPet": "حیوان خانگی گمشده",
+    "event": "رویداد",
+    "help": "کمک",
+    "recommend": "توصیه"
+  }
+}

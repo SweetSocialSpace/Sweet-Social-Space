@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profil",
+    "settings": "Setări",
+    "signOut": "Deconectare"
+  },
+  "feed": {
+    "whatsHappening": "Ce se întâmplă în",
+    "postAs": "POSTEAZĂ CA",
+    "in": "ÎN",
+    "loading": "Se încarcă..."
+  },
+  "common": {
+    "backToFeed": "Înapoi la Feed",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "error": "Eroare",
+    "loading": "Se încarcă..."
+  },
+  "weather": {
+    "weather": "Vreme",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Setează locația",
+    "locating": "Se localizează..."
+  },
+  "filters": {
+    "all": "Toate",
+    "faith": "Credință",
+    "general": "General",
+    "safety": "Siguranță",
+    "forSale": "De vânzare",
+    "free": "Gratuit",
+    "lostPet": "Animal pierdut",
+    "event": "Eveniment",
+    "help": "Ajutor",
+    "recommend": "Recomandă"
+  }
+}

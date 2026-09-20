@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profil",
+    "settings": "Pengaturan",
+    "signOut": "Keluar"
+  },
+  "feed": {
+    "whatsHappening": "Apa yang terjadi di",
+    "postAs": "POST SEBAGAI",
+    "in": "DI",
+    "loading": "Memuat..."
+  },
+  "common": {
+    "backToFeed": "Kembali ke Feed",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "error": "Kesalahan",
+    "loading": "Memuat..."
+  },
+  "weather": {
+    "weather": "Cuaca",
+    "live": "LANGSUNG"
+  },
+  "location": {
+    "setLocation": "Atur lokasi",
+    "locating": "Mencari lokasi..."
+  },
+  "filters": {
+    "all": "Semua",
+    "faith": "Iman",
+    "general": "Umum",
+    "safety": "Keamanan",
+    "forSale": "Dijual",
+    "free": "Gratis",
+    "lostPet": "Hewan Peliharaan Hilang",
+    "event": "Acara",
+    "help": "Bantuan",
+    "recommend": "Rekomendasi"
+  }
+}

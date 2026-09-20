@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profil",
+    "settings": "Nastavení",
+    "signOut": "Odhlásit se"
+  },
+  "feed": {
+    "whatsHappening": "Co se děje v",
+    "postAs": "PUBLIKOVAT JAKO",
+    "in": "V",
+    "loading": "Načítání..."
+  },
+  "common": {
+    "backToFeed": "Zpět na Feed",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "error": "Chyba",
+    "loading": "Načítání..."
+  },
+  "weather": {
+    "weather": "Počasí",
+    "live": "ŽIVĚ"
+  },
+  "location": {
+    "setLocation": "Nastavit polohu",
+    "locating": "Určování polohy..."
+  },
+  "filters": {
+    "all": "Vše",
+    "faith": "Víra",
+    "general": "Obecné",
+    "safety": "Bezpečnost",
+    "forSale": "Na prodej",
+    "free": "Zdarma",
+    "lostPet": "Ztracené zvíře",
+    "event": "Událost",
+    "help": "Pomoc",
+    "recommend": "Doporučit"
+  }
+}

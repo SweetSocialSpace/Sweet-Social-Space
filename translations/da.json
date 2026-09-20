@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Feed",
+    "profile": "Profil",
+    "settings": "Indstillinger",
+    "signOut": "Log ud"
+  },
+  "feed": {
+    "whatsHappening": "Hvad sker der i",
+    "postAs": "INDLÆG SOM",
+    "in": "I",
+    "loading": "Indlæser..."
+  },
+  "common": {
+    "backToFeed": "Tilbage til feed",
+    "save": "Gem",
+    "cancel": "Annuller",
+    "error": "Fejl",
+    "loading": "Indlæser..."
+  },
+  "weather": {
+    "weather": "Vejr",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Angiv placering",
+    "locating": "Finder placering..."
+  },
+  "filters": {
+    "all": "Alle",
+    "faith": "Tro",
+    "general": "Generelt",
+    "safety": "Sikkerhed",
+    "forSale": "Til salg",
+    "free": "Gratis",
+    "lostPet": "Mistet kæledyr",
+    "event": "Begivenhed",
+    "help": "Hjælp",
+    "recommend": "Anbefal"
+  }
+}

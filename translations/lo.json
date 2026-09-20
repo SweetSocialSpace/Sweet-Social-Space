@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "ຟີດ",
+    "profile": "ໂປຣໄຟລ໌",
+    "settings": "ການຕັ້ງຄ່າ",
+    "signOut": "ອອກຈາກລະບົບ"
+  },
+  "feed": {
+    "whatsHappening": "ມີຫຍັງກຳລັງເກີດຂຶ້ນຢູ່",
+    "postAs": "ໂພສເປັນ",
+    "in": "ຢູ່",
+    "loading": "ກຳລັງໂຫຼດ..."
+  },
+  "common": {
+    "backToFeed": "ກັບຄືນສູ່ຟີດ",
+    "save": "ບັນທຶກ",
+    "cancel": "ຍົກເລີກ",
+    "error": "ຂໍ້ຜິດພາດ",
+    "loading": "ກຳລັງໂຫຼດ..."
+  },
+  "weather": {
+    "weather": "ອາກາດ",
+    "live": "ສົດ"
+  },
+  "location": {
+    "setLocation": "ຕັ້ງຄ່າສະຖານທີ່",
+    "locating": "ກຳລັງຊອກຫາສະຖານທີ່..."
+  },
+  "filters": {
+    "all": "ທັ້ງໝົດ",
+    "faith": "ສາດສະຫນາ",
+    "general": "ທົ່ວໄປ",
+    "safety": "ຄວາມປອດໄພ",
+    "forSale": "ສຳລັບຂາຍ",
+    "free": "ຟຣີ",
+    "lostPet": "ສັດລ້ຽງຫາຍໄປ",
+    "event": "ງານ",
+    "help": "ຊ່ວຍເຫຼືອ",
+    "recommend": "ແນະນຳ"
+  }
+}

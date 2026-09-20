@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "פיד",
+    "profile": "פרופיל",
+    "settings": "הגדרות",
+    "signOut": "התנתק"
+  },
+  "feed": {
+    "whatsHappening": "מה קורה ב",
+    "postAs": "פרסם כ",
+    "in": "ב",
+    "loading": "טוען..."
+  },
+  "common": {
+    "backToFeed": "חזרה לפיד",
+    "save": "שמור",
+    "cancel": "בטל",
+    "error": "שגיאה",
+    "loading": "טוען..."
+  },
+  "weather": {
+    "weather": "מזג אוויר",
+    "live": "חי"
+  },
+  "location": {
+    "setLocation": "הגדר מיקום",
+    "locating": "מאתר מיקום..."
+  },
+  "filters": {
+    "all": "הכל",
+    "faith": "אמונה",
+    "general": "כללי",
+    "safety": "בטיחות",
+    "forSale": "למכירה",
+    "free": "חינם",
+    "lostPet": "חיית מחמד אבודה",
+    "event": "אירוע",
+    "help": "עזרה",
+    "recommend": "המלצה"
+  }
+}

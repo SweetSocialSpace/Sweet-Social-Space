@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "feed": "Syöte",
+    "profile": "Profiili",
+    "settings": "Asetukset",
+    "signOut": "Kirjaudu ulos"
+  },
+  "feed": {
+    "whatsHappening": "Mitä tapahtuu",
+    "postAs": "JULKAISE MINTA",
+    "in": "PAIKASSA",
+    "loading": "Ladataan..."
+  },
+  "common": {
+    "backToFeed": "Takaisin syötteeseen",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "error": "Virhe",
+    "loading": "Ladataan..."
+  },
+  "weather": {
+    "weather": "Sää",
+    "live": "LIVE"
+  },
+  "location": {
+    "setLocation": "Aseta sijainti",
+    "locating": "Paikannetaan..."
+  },
+  "filters": {
+    "all": "Kaikki",
+    "faith": "Usko",
+    "general": "Yleinen",
+    "safety": "Turvallisuus",
+    "forSale": "Myydään",
+    "free": "Ilmainen",
+    "lostPet": "Kadonnut lemmikki",
+    "event": "Tapahtuma",
+    "help": "Apua",
+    "recommend": "Suosittele"
+  }
+}
