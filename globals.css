@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  height: 100dvh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  background: #000 url('/golden_droplet_heart_wallpaper.jpg') center/cover no-repeat fixed !important;
+  background-size: cover !important;
+  min-height: 100dvh;
+  min-width: 100vw;
+  height: auto;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  color: #FFFFFF;
+  font-weight: 600;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.35));
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(147,197,253,0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+main {
+  background: transparent !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+input,
+textarea {
+  background: rgba(255,255,255,1);
+  color: #1C1917;
+  font-weight: 600;
+  font-size: clamp(14px, 1.5vw, 16px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.block-map-body {
+  background: #000 url('/golden_droplet_heart_wallpaper.jpg') center/cover no-repeat fixed !important;
+  display: block !important;
+  flex-direction: initial !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  overflow: hidden !important;
+}
