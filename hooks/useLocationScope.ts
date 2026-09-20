@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import type { LocationFilter, ScopeKind } from '@/lib/location-scope'
 import { useLocation as useGlobalLoc } from '@/lib/location-context'
+import { useLanguage } from '@/lib/language-context'
 
 const STORAGE_KEY = 'sss.location-scope.v1'
 type Stored = {
@@ -37,9 +38,9 @@ function saveToStorage(s: Stored) {
   try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(s)) } catch {}
 }
 
-async function reverseGeocode(lat: number, lng: number) {
+async function reverseGeocode(lat: number, lng: number, lang: string = 'en') {
   try {
-    const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`)
+    const r = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=${lang}`)
     if (!r.ok) return { label: null as string | null }
     const j: any = await r.json()
     const city = j.city || j.locality || j.principalSubdivision || ''
@@ -52,6 +53,7 @@ async function reverseGeocode(lat: number, lng: number) {
 export function useLocationScope() {
   const { user } = useAuth()
   const { zip } = useGlobalLoc() // use profile zip for label
+  const { language } = useLanguage()
   const [state, setState] = useState<Stored>(() => loadFromStorage())
   const [ready, setReady] = useState(false)
   const [prompting, setPrompting] = useState(false)
@@ -110,12 +112,12 @@ export function useLocationScope() {
       )
       const lat = pos.coords.latitude
       const lng = pos.coords.longitude
-      const geo = await reverseGeocode(lat, lng)
+      const geo = await reverseGeocode(lat, lng, language)
       await setManualLocation({ latitude: lat, longitude: lng, location_label: geo.label || zip || null })
     } catch (e: any) {
       setError(e?.message || "Couldn't get your location.")
     } finally { setPrompting(false) }
-  }, [setManualLocation, zip])
+  }, [setManualLocation, zip, language])
 
     useEffect(() => {
     // DISABLED - No automatic GPS detection per user request
