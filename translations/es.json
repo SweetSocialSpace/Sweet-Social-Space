@@ -35,10 +35,15 @@
     "weather": "Clima",
     "live": "EN VIVO"
   },
-  "location": {
-    "setLocation": "Establecer ubicación",
-    "locating": "Localizando..."
-  },
+"location": {
+  "near": "CERCA DE",
+  "setLocation": "Establecer ubicación",
+  "locating": "Localizando...",
+  "miles": "millas"
+},
+"radius": {
+  "miles": "millas"
+}
   "filters": {
     "all": "Todo",
     "faith": "Fe",
