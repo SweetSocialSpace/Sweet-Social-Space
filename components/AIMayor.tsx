@@ -1,11 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export default function AIMayor() {
   const { zip, city, lat, lng } = useLocation()
-  const effectiveZip = zip && zip !== 'GLOBAL' ? zip : 'GLOBAL'
-  const effectiveCity = city || (effectiveZip === 'GLOBAL' ? 'your area' : effectiveZip)
+  const effectiveZip = zip && zip !== 'LOCAL' ? zip : 'LOCAL'
+  const effectiveCity = city || (effectiveZip === 'LOCAL' ? 'your area' : effectiveZip)
   const [brief, setBrief] = useState(`AI Mayor is waking up in ${effectiveCity}...`)
   const [loading, setLoading] = useState(true)
 
@@ -58,8 +60,8 @@ export default function AIMayor() {
   }
 
   useEffect(() => {
-    if (effectiveZip === 'GLOBAL') { 
-      setBrief('GLOBAL feed - Be the first to share in your area!'); 
+    if (effectiveZip === 'LOCAL') { 
+      setBrief('LOCAL feed - Be the first to share in your area!'); 
       setLoading(false)
       return 
     }

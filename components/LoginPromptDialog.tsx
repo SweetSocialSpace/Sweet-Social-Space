@@ -26,7 +26,7 @@ export function LoginPromptDialog() {
         <div className="flex flex-col items-center text-center">
           <img src={logo} alt="Sweet Social Space" className="h-16 w-16 rounded-full object-cover ring-1 ring-border" onError={(e)=>{ try { (e.target as any).style.display='none' } catch {} }} />
           <h2 id="login-prompt-title" className="mt-4 font-display text-xl font-semibold">Welcome to Sweet Social Space</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Log in or create an account to see what's happening on your neighborhood.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Log in or create an account to see what's happening on your block.</p>
           <div className="mt-6 flex w-full flex-col gap-3">
             <Link href="/auth?mode=signin" onClick={dismiss} className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-[1.02] active:scale-100" style={{ background: 'var(--gradient-warm)', boxShadow: 'var(--shadow-sweet)' } as any}>Log in</Link>
             <Link href="/auth?mode=signup" onClick={dismiss} className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background px-6 py-2.5 text-sm font-semibold transition hover:bg-secondary">Create account</Link>

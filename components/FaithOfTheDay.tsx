@@ -2,16 +2,18 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 const VERSES = [
-  { verse: "Love your neighbor as yourself.", ref: "Mark 12:31", prompt: "Who on your neighborhood can you show love to today?" },
+  { verse: "Love your neighbor as yourself.", ref: "Mark 12:31", prompt: "Who on your block can you show love to today?" },
   { verse: "Faith without works is dead.", ref: "James 2:17", prompt: "Is there a neighbor nearby who needs a hand?" },
   { verse: "Be still, and know that I am God.", ref: "Psalm 46:10", prompt: "Take 30 seconds before you scroll. Breathe." },
   { verse: "What you do to the least of these, you do to me.", ref: "Matthew 25:40", prompt: "That free couch? Someone's blessing." },
-  { verse: "Let your light shine before others.", ref: "Matthew 5:16", prompt: "Post one encouragement to your neighborhood today." },
+  { verse: "Let your light shine before others.", ref: "Matthew 5:16", prompt: "Post one encouragement to your block today." },
   { verse: "Bear one another's burdens.", ref: "Galatians 6:2", prompt: "Someone near you is carrying something heavy." },
   { verse: "The Lord is near to the brokenhearted.", ref: "Psalm 34:18", prompt: "Check on a neighbor today." },
-  { verse: "Do unto others as you would have them do unto you.", ref: "Luke 6:31", prompt: "WWJD on your neighborhood today?" },
+  { verse: "Do unto others as you would have them do unto you.", ref: "Luke 6:31", prompt: "WWJD on your block today?" },
 ]
 
 export default function FaithOfTheDay() {
@@ -28,7 +30,7 @@ export default function FaithOfTheDay() {
     return (
       <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-black rounded-2xl p-5 border border-white/10">
         <div className="text-xs font-black tracking-widest text-yellow-400">Faith of the Day</div>
-        <div className="text-white/60 text-xs mt-2">Finding your neighborhood...</div>
+        <div className="text-white/60 text-xs mt-2">Finding your block...</div>
       </div>
     )
   }

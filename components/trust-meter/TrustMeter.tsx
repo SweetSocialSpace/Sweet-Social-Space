@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useLocation } from '@/lib/location-context'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export function TrustMeter() {
   const { zip: contextZip } = useLocation()

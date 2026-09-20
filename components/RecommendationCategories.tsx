@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useLocation } from '@/lib/location-context'
+import { useLocationScope } from '@/hooks/useLocationScope'
+import { applyScope, bboxForRadius } from '@/lib/location-scope'
 
 type RecommendationCategoryCount = { category: string; count: number }
 
@@ -20,6 +22,7 @@ const CATEGORY_LABELS: Record<string, { emoji: string; label: string }> = {
 
 export default function RecommendationCategories({ compact = false }: { compact?: boolean }) {
   const { zip } = useLocation()
+  const { filter } = useLocationScope()
   const [cats, setCats] = useState<RecommendationCategoryCount[] | null>(null)
 
   useEffect(() => {
@@ -29,9 +32,34 @@ export default function RecommendationCategories({ compact = false }: { compact?
     const load = async () => {
       try {
         const supabase = createClient() as any
-        // GLOBAL FIX: filter by real zip - per-block recs
-        const { data, error } = await supabase.from('recommendations').select('category').eq('status', 'active').eq('zip_code', zip).limit(100)
-        if (error) throw error
+        let data: any[] = []
+        
+        // Use radius-based filtering if user has coordinates
+        if (filter.lat != null && filter.lng != null) {
+          const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
+          const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
+          
+          const { data: recData } = await supabase
+            .from('recommendations')
+            .select('category,latitude,longitude')
+            .eq('status', 'active')
+            .gte('latitude', bbox.minLat)
+            .lte('latitude', bbox.maxLat)
+            .gte('longitude', bbox.minLng)
+            .lte('longitude', bbox.maxLng)
+            .limit(100)
+          
+          if (recData) {
+            // Apply precise radius filtering
+            data = applyScope(recData, filter)
+          }
+        } else {
+          // Fallback to zip-based filtering if no coordinates
+          const { data: recData, error } = await supabase.from('recommendations').select('category').eq('status', 'active').eq('zip_code', zip).limit(100)
+          if (error) throw error
+          data = recData || []
+        }
+        
         if (cancelled) return
         const counts: Record<string, number> = {}
         data?.forEach((r:any) => { counts[r.category] = (counts[r.category] || 0) + 1 })
@@ -41,14 +69,14 @@ export default function RecommendationCategories({ compact = false }: { compact?
     }
     load()
     return () => { cancelled = true }
-  }, [zip])
+  }, [zip, filter])
 
   return (
     <section className={compact? 'rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-soft)]' : 'mt-8 rounded-3xl border border-border bg-card p-6 md:p-8 shadow-[var(--shadow-soft)]'}>
       <div className={compact? 'grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2' : 'flex flex-col gap-3 md:flex-row md:items-end md:justify-between'}>
         <div>
           <h3 className={compact? 'font-display text-sm font-semibold leading-tight' : 'font-display text-2xl font-bold md:text-3xl'}>⭐ Local recommendations</h3>
-          <p className={compact? 'mt-1 line-clamp-2 text-xs text-muted-foreground' : 'mt-1 text-sm text-muted-foreground'}>Ask neighbors who they trust — plumber, pizza, mechanic, daycare. Real answers from real people on your neighborhood {zip? `• ${zip}`:''}.</p>
+          <p className={compact? 'mt-1 line-clamp-2 text-xs text-muted-foreground' : 'mt-1 text-sm text-muted-foreground'}>Ask neighbors who they trust — plumber, pizza, mechanic, daycare. Real answers from real people on your block {zip? `• ${zip}`:''}.</p>
         </div>
         <Link href="/recommendations" className="text-sm font-medium text-primary hover:underline">Browse recommendations →</Link>
       </div>

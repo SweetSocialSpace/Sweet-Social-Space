@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 import {
   LiveKitRoom,
   RoomAudioRenderer,

@@ -1,5 +1,7 @@
 'use client'
 import React from 'react'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 export class HouseErrorBoundary extends React.Component<{children: React.ReactNode, name: string}, {hasError: boolean}>{
   constructor(props:any){ super(props); this.state = {hasError: false} }

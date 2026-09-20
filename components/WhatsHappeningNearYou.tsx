@@ -31,7 +31,7 @@ export function WhatsHappeningNearYou(){
         if (extRes.ok) {
           const json = await extRes.json()
           if(mounted && json.events && json.events.length > 0) {
-            setEvents(prev => [...prev, ...json.events].slice(0,5))
+            setEvents((prev: EventItem[]) => [...prev, ...json.events].slice(0,5))
           }
         }
         
@@ -53,7 +53,7 @@ export function WhatsHappeningNearYou(){
   if (!zip) return (
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
       <p className="font-bold">📍 What's happening near you</p>
-      <p className="text-xs text-white/50 mt-1">Loading location...</p>
+      <p className="text-xs text-white/50 mt-1">Locating...</p>
     </div>
   )
 
@@ -61,7 +61,7 @@ export function WhatsHappeningNearYou(){
     <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white">
       <p className="font-bold">📍 What's happening near you</p>
       <p className="text-xs text-white/50 mt-1">Near {zip} {city? `• ${city}`:''} • Information Highway</p>
-      {loading? <p className="text-sm mt-3 text-white/60">Scanning event APIs...</p> : events.length===0? (
+      {loading? <p className="text-sm mt-3 text-white/60">Loading...</p> : events.length===0? (
         <p className="text-sm mt-3 text-white/70">Checking {city || zip} events...</p>
       ):(
         <div className="mt-3 space-y-2.5">

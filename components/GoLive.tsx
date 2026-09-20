@@ -3,6 +3,8 @@ import { useState, useRef, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { LiveKitRoom, VideoTrack, useTracks, useLocalParticipant } from '@livekit/components-react'
 import { Track } from 'livekit-client'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 function MyVideoAndRecorder({ onReady }: { onReady: (recorder: MediaRecorder) => void }) {
   const tracks = useTracks([Track.Source.Camera])

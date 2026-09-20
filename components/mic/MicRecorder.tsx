@@ -1,5 +1,7 @@
 'use client'
 import { useRef, useState } from 'react'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 type Props = {
   onTranscript: (text: string) => void

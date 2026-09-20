@@ -1,5 +1,8 @@
 'use client'
 import Link from 'next/link'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
+
 export default function LiveMap(){
   return (
     <Link href="/live-map" className="block bg-black/60 backdrop-blur-2xl rounded-2xl border border-white/10 p-3">

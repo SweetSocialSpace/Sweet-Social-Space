@@ -1,6 +1,8 @@
 'use client'
 import * as React from 'react'
 import MicRecorder from '@/components/mic/MicRecorder'
+import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from '@/lib/translations'
 
 function Dialog({ open, onOpenChange, children }: any) { if (!open) return null; return (<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => { try { onOpenChange(false) } catch {} }}><div onClick={(e) => e.stopPropagation()}>{children}</div></div>) }
 function DialogContent({ children, className = '' }: any) { return <div className={`w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-xl ${className}`}>{children}</div> }
