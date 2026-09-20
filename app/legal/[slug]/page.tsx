@@ -54,8 +54,8 @@ const PAGES: Record<string, LegalContent> = {
             <div>
         <p>1. SSL Secured - https://sweetsocialspace.com TLS 1.3 Vercel</p>
         <p>2. Domain - sweetsocialspace.com only DNS Vercel iad1</p>
-        <p>3. GLOBAL Test - Incognito /feed shows GLOBAL not hardwired - zip code based only</p>
-        <p>4. Verified Sources - Near GLOBAL Fire Station 3, 63 verified fire_station Events LIVE</p>
+        <p>3. LOCAL Test - Incognito /feed shows LOCAL not hardwired - zip code based only - zip code based only</p>
+        <p>4. Verified Sources - Near Fire Station 3, 63 verified fire_station Events LIVE</p>
         <p>5. Privacy - Private 10 miles of YOU wherever you are No tracking RLS</p>
         <p>6. Independent - No Big Tech No robots Speak Freely Love Neighbor</p>
       </div>
@@ -66,11 +66,11 @@ const PAGES: Record<string, LegalContent> = {
     updated: 'July 28, 2026',
     content: (
       <div>
-        <p>1. YOUR NEIGHBORHOOD FIRST - Private within 10 miles of YOU GLOBAL</p>
+        <p>1. YOUR NEIGHBORHOOD FIRST - Private within 10 miles of YOU</p>
         <p>2. NO SHADOWBANS FOR FAITH - SPEAK FREELY LOVE YOUR NEIGHBOR</p>
         <p>3. NO ROBOTS - Chronological by zip_code no bots</p>
-        <p>4. GLOBAL DETECTION - Zip code based only, no IP detection</p>
-        <p>5. VERIFIED SOURCES LIVE - Latest Alerts GLOBAL WeatherBar Fire Station 3, 63</p>
+        <p>4. LOCAL DETECTION - Zip code based only, no IP detection</p>
+        <p>5. VERIFIED SOURCES LIVE - Latest Alerts WeatherBar Fire Station 3, 63</p>
         <p>6. SSL SECURED - Full TLS Vercel RLS Supabase</p>
         <p>7. INDEPENDENT - Not Big Tech independent</p>
       </div>

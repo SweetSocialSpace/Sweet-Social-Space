@@ -3,7 +3,7 @@ import { LocationProvider } from '@/lib/location-context'
 import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Sweet Social Space • Your Block • Live',
+  title: 'Sweet Social Space • Your Neighborhood • Live',
   description: 'Facebook shows you the world. We show you your neighborhood - 10 miles of YOU - wherever you are in the world - Local to your neighborhood, independent',
   manifest: '/manifest.json'
 }

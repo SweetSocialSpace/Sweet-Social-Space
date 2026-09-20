@@ -17,7 +17,6 @@ export default function SignupPage() {
   const [msg, setMsg] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // AUTO-FILL city/country from internet via zip - neighborhood automation
   const lookupZip = async (zipValue: string) => {
     if (!zipValue || zipValue.length < 3) return
     try {

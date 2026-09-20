@@ -53,7 +53,7 @@ export default function ApplyVerificationPage() {
           <div className="relative">
             <h1 className="text-3xl font-black text-white tracking-tight">Apply for Verification</h1>
             <p className="text-white/70 mt-2">For Police, Fire, NWS, City Agencies, Schools, and local authorities in <span className="text-white font-bold">{city || zip} • {zip}</span></p>
-            <p className="text-white/30 text- mt-1 uppercase tracking-widest">GLOBAL Independent Auto-detected • {zip}</p>
+            <p className="text-white/30 text- mt-1 uppercase tracking-widest">LOCAL Independent Auto-detected • {zip}</p>
             {done? (
               <div className="mt-6 bg-green-600 text-white p-4 rounded-xl font-bold">✓ Request submitted for {city || zip}! We'll review and verify your organization in {zip} area.</div>
             ) : (
@@ -70,7 +70,7 @@ export default function ApplyVerificationPage() {
                 <button onClick={submit} disabled={loading} className="mt-6 w-full bg-blue-600 hover:bg-blue-700 disabled:bg-white/10 text-white font-black py-3 rounded-full transition-all">
                   {loading?'SUBMITTING...':`SUBMIT FOR VERIFICATION IN ${zip}`}
                 </button>
-                <div className="text-white/20 text- mt-3 uppercase text-center">GLOBAL • {zip} • {city} • Always-Automated • Failsafe</div>
+                <div className="text-white/20 text- mt-3 uppercase text-center">LOCAL TO YOUR NEIGHBORHOOD • {zip} • {city} • Always-Automated • Failsafe</div>
               </>
             )}
           </div>
