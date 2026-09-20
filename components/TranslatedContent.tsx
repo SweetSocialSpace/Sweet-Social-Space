@@ -9,7 +9,7 @@ export default function TranslatedContent({ text, className }: { text: string, c
   const [out, setOut] = useState(text)
 
   useEffect(() => {
-    if (!text || language === 'en') { setOut(text); return }
+    if (!text || language=== 'en') { setOut(text); return }
     const key = `${language}:${text}`
     if (cache.has(key)) { setOut(cache.get(key)!); return }
 
