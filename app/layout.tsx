@@ -2,7 +2,7 @@ import './globals.css'
 import { LocationProvider } from '@/lib/location-context'
 import type { Metadata, Viewport } from 'next'
 import { LanguageProvider } from '@/lib/language-context'
-import GlobalLanguageTranslator from '@/components/GlobalLanguageTranslator'
+
 
 export const metadata: Metadata = {
   title: 'Sweet Social Space • Your Neighborhood',
