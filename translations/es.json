@@ -1,17 +1,20 @@
 {
   "nav": {
-    "feed": "Feed",
+    "feed": "Inicio",
     "profile": "Perfil",
     "settings": "Configuración",
     "signOut": "Cerrar sesión"
   },
   "feed": {
+    "whatsHappening": "Qué está pasando en",
     "placeholder": "¿Qué está pasando en {zip}?",
     "placeholderLoading": "Cargando ubicación...",
-    "posting": "PUBLICANDO...",
     "postAs": "PUBLICAR COMO {tag} EN {zip}",
+    "posting": "PUBLICANDO...",
     "fixPunctuation": "Corregir puntuación",
     "recordedLive": "📹 Transmisión grabada",
+    "in": "EN",
+    "loading": "Cargando...",
     "tags": {
       "General": "General",
       "Alert": "Alerta",
@@ -20,15 +23,9 @@
       "Hot take": "Opinión",
       "Lost & found": "Perdido y encontrado"
     }
-  }
-}
-    "whatsHappening": "Qué está pasando en",
-    "postAs": "PUBLICAR COMO",
-    "in": "EN",
-    "loading": "Cargando..."
   },
   "common": {
-    "backToFeed": "Volver al Feed",
+    "backToFeed": "Volver al Inicio",
     "save": "Guardar",
     "cancel": "Cancelar",
     "error": "Error",
@@ -43,7 +40,7 @@
     "locating": "Localizando..."
   },
   "filters": {
-    "all": "Todos",
+    "all": "Todo",
     "faith": "Fe",
     "general": "General",
     "safety": "Seguridad",
