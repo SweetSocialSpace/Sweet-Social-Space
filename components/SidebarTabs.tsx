@@ -6,15 +6,15 @@ export type SidebarTab = { id: string; label: string; icon?: string; content: Re
 
 export function SidebarTabs({ tabs, initial }: { tabs: SidebarTab[]; initial?: string }) {
   const [active, setActive] = useState(initial?? tabs[0]?.id?? '')
-  const current = tabs.find((t) => t.id === active)?? tabs[0]
+  const current = tabs.find((t) => t.id=== active)?? tabs[0]
 
-  if (!tabs || tabs.length === 0) return null
+  if (!tabs || tabs.length=== 0) return null
 
   return (
     <div className="space-y-3">
       <div role="tablist" className="grid w-full gap-1 rounded-2xl border border-border bg-card p-1 shadow-[var(--shadow-soft)]" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
         {tabs.map((t) => {
-          const isActive = t.id === current?.id
+          const isActive = t.id=== current?.id
           const showIcon = tabs.length <= 3
           return (
             <button key={t.id} role="tab" aria-selected={isActive} onClick={() => { try { setActive(t.id) } catch {} }} title={t.label}
