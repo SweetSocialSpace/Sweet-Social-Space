@@ -34,7 +34,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="fixed inset-0 bg-black/40 -z-10 pointer-events-none" />
         <LocationProvider>
        <LanguageProvider>
-          <GlobalLanguageTranslator />
           <div className="relative z-10 min-h-screen">{children}</div>
         </LanguageProvider>
         </LocationProvider>
