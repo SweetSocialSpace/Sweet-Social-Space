@@ -40,7 +40,6 @@ function FeedContent() {
   const { zip: locationZip } = useLocation()
   const { language } = useLanguage()
   const t = useTranslations()
-  console.log('Feed translations:', t, 'Language:', language)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
   const [nearZip, setNearZip] = useState<string>('')
@@ -68,7 +67,6 @@ const FILTERS = useMemo(() => [
   { id: 'help', label: t?.filters?.help || 'Help' }, 
   { id: 'recommend', label: t?.filters?.recommend || 'Recommend' }
 ], [t, language])
-  console.log('FILTERS:', FILTERS)
   const fetchPosts = useCallback(async (zipToUse?: string, radiusToUse: number = radius) => {
     let query = supabase.from('posts').select('*').order('created_at',{ascending:false}).limit(150)
     if (zipToUse) query = query.eq('zip_code', zipToUse)
