@@ -35,10 +35,15 @@
     "weather": "Weather",
     "live": "LIVE"
   },
-  "location": {
-    "setLocation": "Set location",
-    "locating": "Locating..."
-  },
+ "location": {
+  "near": "NEAR",
+  "setLocation": "Set location",
+  "locating": "Locating...",
+  "miles": "mi"
+},
+"radius": {
+  "miles": "mi"
+}
   "filters": {
     "all": "All",
     "faith": "Faith",
