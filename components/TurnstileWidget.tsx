@@ -15,7 +15,7 @@ export function TurnstileWidget({ siteKey, onToken, onExpire }: Props) {
 
   useEffect(() => {
     try {
-      if (typeof window === 'undefined') return
+      if (typeof window=== 'undefined') return
       if (!siteKey) return
       try {
         if (!document.querySelector('script[data-turnstile]')) {
