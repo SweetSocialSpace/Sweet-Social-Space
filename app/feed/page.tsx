@@ -55,13 +55,12 @@ function FeedContent() {
     } catch {}
   }, [searchParams])
 
-  const handleFilter = (id: string) => { setFilter(id); router.push(id === 'all'? '/feed' : `/feed?filter=${id}`) }
+  const handleFilter = (id: string) => { setFilter(id); router.push(id=== 'all'? '/feed' : `/feed?filter=${id}`) }
   const handleRadiusChange = (newRadius: number) => {
     setRadius(newRadius)
     try { localStorage.setItem('feed_radius', String(newRadius)) } catch {}
   }
 
-  // BRAIN IS NOW DRIVER - no hardcoded Spanish, just reads from translation folder
   const FILTERS = useMemo(() => [
     { id: 'all', label: t?.filters?.all },
     { id: 'faith', label: t?.filters?.faith },
@@ -106,7 +105,7 @@ function FeedContent() {
   useEffect(()=>{ if (nearZip) fetchPosts(nearZip, radius) }, [radius, nearZip])
 
   const handleLivePosted = (newPost:any) => setPosts(prev=>[newPost,...prev])
-  const handleLiveEnded = (endedId: string, videoUrl?: string) => setPosts(prev => prev.map(p => p.id === endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live'), video_url: videoUrl, media_url: videoUrl, media_urls: videoUrl? [videoUrl] : undefined} : p))
+  const handleLiveEnded = (endedId: string, videoUrl?: string) => setPosts(prev => prev.map(p => p.id=== endedId? {...p, tag: 'live_ended', body: (p.body||'').replace('LIVE NOW','Was Live'), video_url: videoUrl, media_url: videoUrl, media_urls: videoUrl? [videoUrl] : undefined} : p))
 
   const deletePost = async (postId: string) => {
     if (!confirm(t?.common?.deleteConfirm)) return
@@ -124,7 +123,6 @@ function FeedContent() {
   const displayCity = currentProfile?.city || locationCity || t?.common?.yourArea
   const hasNoZip =!displayZip
 
-  // No fallback - goes to translation folder
   const postAsText = t?.feed?.postAs? tFormat(t.feed.postAs, { name: authorName } as any) : ''
 
   return (
@@ -168,12 +166,12 @@ function FeedContent() {
           <div className="space-y-3 mt-2">
             {filtered.length===0 && <WelcomePost />}
             {filtered.map((p:any)=>{
-              const isEnded = p.tag === 'live_ended'
+              const isEnded = p.tag=== 'live_ended'
               const displayBody = isEnded? (p.body||p.content||'').replace('LIVE NOW', t?.common?.wasLive) : (p.body||p.content)
               return (
                 <div key={p.id} className="bg-white rounded-2xl p-5 border-l-4 shadow-xl break-words">
                 <TranslatedContent text={displayBody || ''} className="text-black" />
-                  {p.tag === 'live' && p.livekit_room && <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 {t?.weather?.live}</button>}
+                  {p.tag=== 'live' && p.livekit_room && <button onClick={() => setJoinLivePost(p)} className="mt-3 bg-red-600 text-white px-6 py-3 rounded-full font-bold text-sm w-full">🔴 {t?.weather?.live}</button>}
                   {isEnded && (
                     <>
                       {(p.video_url || p.media_url || (p.media_urls && p.media_urls[0])) && (
@@ -183,7 +181,7 @@ function FeedContent() {
                     </>
                   )}
                   <div className="mt-2 text-xs text-gray-400">{new Date(p.created_at).toLocaleString()} • {p.zip_code || displayZip}</div>
-                  {currentUserId && p.user_id === currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">{t?.common?.delete}</button>}
+                  {currentUserId && p.user_id=== currentUserId && <button onClick={()=>deletePost(p.id)} className="mt-2 bg-red-100 text-red-600 rounded-full px-3 py-1 text-xs font-bold">{t?.common?.delete}</button>}
                 </div>
               )
             })}
