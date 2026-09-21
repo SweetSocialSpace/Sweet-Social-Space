@@ -16,12 +16,12 @@
     "in": "IN",
     "loading": "Loading...",
     "tags": {
-      "General": "General",
-      "Alert": "Alert",
-      "Recommendation": "Recommendation",
-      "Free stuff": "Free stuff",
-      "Hot take": "Hot take",
-      "Lost & found": "Lost & found"
+      "general": "General",
+      "alert": "Alert",
+      "recommendation": "Recommendation",
+      "free_stuff": "Free stuff",
+      "hot_take": "Hot take",
+      "lost_found": "Lost & found"
     }
   },
   "common": {
@@ -35,15 +35,15 @@
     "weather": "Weather",
     "live": "LIVE"
   },
- "location": {
-  "near": "NEAR",
-  "setLocation": "Set location",
-  "locating": "Locating...",
-  "miles": "mi"
-},
-"radius": {
-  "miles": "mi"
-}
+  "location": {
+    "near": "NEAR",
+    "setLocation": "Set location",
+    "locating": "Locating...",
+    "miles": "mi"
+  },
+  "radius": {
+    "miles": "mi"
+  },
   "filters": {
     "all": "All",
     "faith": "Faith",
