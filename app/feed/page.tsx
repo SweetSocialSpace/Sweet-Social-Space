@@ -40,6 +40,7 @@ function FeedContent() {
   const { zip: locationZip } = useLocation()
   const { language } = useLanguage()
   const t = useTranslations()
+  console.log('[BRAIN CHECK] Lang:', language, 'Filter All:', t.filters.all)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [currentProfile, setCurrentProfile] = useState<any>(null)
   const [nearZip, setNearZip] = useState<string>('')
