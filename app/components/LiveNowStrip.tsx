@@ -26,7 +26,6 @@ const D: Record<string, any> = {
   id: { liveNow:"Live Sekarang di {zip}", noOne:"Tidak ada yang live di {zip}", beFirst:"Jadilah pertama yang live!", goLive:"Mulai Live • $5/bulan", subscribe:"Berlangganan untuk Menonton", watching:"{count} menonton", claimLive:"Mulai Live Sekarang", loading:"Mencari live...", checkout:"Mengalihkan ke checkout..." },
   vi: { liveNow:"Trực Tiếp Bây Giờ tại {zip}", noOne:"Không ai trực tiếp tại {zip}", beFirst:"Hãy là người đầu tiên lên sóng!", goLive:"Lên Sóng • $5/tháng", subscribe:"Đăng ký để Xem", watching:"{count} đang xem", claimLive:"Lên Sóng Ngay", loading:"Đang tìm trực tiếp...", checkout:"Chuyển hướng đến thanh toán..." },
   th: { liveNow:"ไลฟ์ตอนนี้ใน {zip}", noOne:"ไม่มีใครไลฟ์ตอนนี้ใน {zip}", beFirst:"เป็นคนแรกที่ไลฟ์!", goLive:"เริ่มไลฟ์ • $5/เดือน", subscribe:"สมัครเพื่อรับชม", watching:"{count} คนกำลังดู", claimLive:"ไลฟ์ตอนนี้เลย", loading:"กำลังหาคนไลฟ์...", checkout:"กำลังไปที่หน้าชำระเงิน..." },
-  // rest 35 — auto fallback translated so build never shows English
   sv: { liveNow:"Live Nu i {zip}", noOne:"Ingen live nu i {zip}", beFirst:"Bli först att gå live!", goLive:"Gå Live • $5/mån", subscribe:"Prenumerera för att Titta", watching:"{count} tittar", claimLive:"Gå Live Nu", loading:"Letar live...", checkout:"Omdirigerar till kassan..." },
   pl: { liveNow:"Teraz Na Żywo w {zip}", noOne:"Nikt teraz na żywo w {zip}", beFirst:"Bądź pierwszy na żywo!", goLive:"Idź Na Żywo • $5/mies", subscribe:"Subskrybuj aby Oglądać", watching:"{count} ogląda", claimLive:"Idź Na Żywo Teraz", loading:"Szukam live...", checkout:"Przekierowanie do płatności..." },
   tr: { liveNow:"Şimdi Canlı {zip} içinde", noOne:"{zip} içinde şimdi canlı yok", beFirst:"İlk canlı yayına geçen ol!", goLive:"Canlıya Geç • $5/ay", subscribe:"İzlemek için Abone Ol", watching:"{count} izliyor", claimLive:"Şimdi Canlıya Geç", loading:"Canlı aranıyor...", checkout:"Ödemeye yönlendiriliyor..." },
@@ -59,7 +58,6 @@ const D: Record<string, any> = {
   km: { liveNow:"ផ្ទាល់ឥឡូវនៅ {zip}", noOne:"គ្មាននរណាផ្ទាល់ឥឡូវនៅ {zip}", beFirst:"ក្លាយជាអ្នកផ្ទាល់ដំបូង!", goLive:"ចូលផ្ទាល់ • $5/ខែ", subscribe:"ជាវដើម្បីមើល", watching:"{count} កំពុងមើល", claimLive:"ចូលផ្ទាល់ឥឡូវ", loading:"កំពុងស្វែងរកផ្ទាល់...", checkout:"បញ្ជូនទៅការទូទាត់..." },
   lo: { liveNow:"ສົດຕອນນີ້ໃນ {zip}", noOne:"ບໍ່ມີໃຜສົດຕອນນີ້ໃນ {zip}", beFirst:"ເປັນຄົນທຳອິດທີ່ສົດ!", goLive:"ໄປສົດ • $5/ເດືອນ", subscribe:"ສະໝັກເພື່ອເບິ່ງ", watching:"{count} ກຳລັງເບິ່ງ", claimLive:"ໄປສົດຕອນນີ້", loading:"ກຳລັງຊອກຫາສົດ...", checkout:"ກຳລັງໄປໜ້າຊຳລະເງິນ..." },
   my: { liveNow:"{zip} တွင် ယခု တိုက်ရိုက်", noOne:"{zip} တွင် ယခု တိုက်ရိုက်မရှိ", beFirst:"ပထမဆုံး တိုက်ရိုက် လွှင့်ပါ!", goLive:"တိုက်ရိုက် သွားရန် • $5/လ", subscribe:"ကြည့်ရန် စာရင်းသွင်းပါ", watching:"{count} ကြည့်နေသည်", claimLive:"ယခု တိုက်ရိုက် သွားပါ", loading:"တိုက်ရိုက်ရှာနေသည်...", checkout:"ငွေချေရန် လွှဲပြောင်းနေသည်..." },
-  bn: { liveNow:"{zip} তে এখন লাইভ", noOne:"{zip} তে এখন কেউ লাইভ নেই", beFirst:"প্রথম লাইভে যান!", goLive:"লাইভে যান • $5/মাস", subscribe:"দেখতে সাবস্ক্রাইব করুন", watching:"{count} দেখছে", claimLive:"এখনই লাইভে যান", loading:"লাইভ খুঁজছে...", checkout:"চেকআউটে যাচ্ছে..." },
   ms: { liveNow:"Live Sekarang di {zip}", noOne:"Tiada siapa live sekarang di {zip}", beFirst:"Jadilah pertama live!", goLive:"Pergi Live • $5/bulan", subscribe:"Langgan untuk Menonton", watching:"{count} menonton", claimLive:"Pergi Live Sekarang", loading:"Mencari live...", checkout:"Mengalihkan ke pembayaran..." },
   fa: { liveNow:"زنده اکنون در {zip}", noOne:"هیچکس زنده اکنون در {zip} نیست", beFirst:"اولین کسی باش که زنده می‌رود!", goLive:"رفتن به زنده • $5/ماه", subscribe:"اشتراک برای تماشا", watching:"{count} در حال تماشا", claimLive:"اکنون زنده برو", loading:"جستجوی زنده...", checkout:"انتقال به پرداخت..." },
   ur: { liveNow:"ابھی لائیو {zip} میں", noOne:"{zip} میں ابھی کوئی لائیو نہیں", beFirst:"پہلے لائیو جائیں!", goLive:"لائیو جائیں • $5/مہینہ", subscribe:"دیکھنے کے لیے سبسکرائب کریں", watching:"{count} دیکھ رہے ہیں", claimLive:"ابھی لائیو جائیں", loading:"لائیو تلاش ہو رہا ہے...", checkout:"چیک آؤٹ پر جا رہے ہیں..." },
@@ -79,7 +77,6 @@ export default function LiveNowStrip() {
     if (!zip || zip === 'GLOBAL') { setLoading(false); return }
     try {
       let query = supabase.from('posts').select('*').not('video_url', 'is', null).order('created_at', { ascending: false }).limit(20)
-
       if (filter.lat!= null && filter.lng!= null) {
         const radiusMiles = { '5mi': 5, '10mi': 10, '15mi': 15, '20mi': 20 }[filter.scope] || 10
         const bbox = bboxForRadius(filter.lat, filter.lng, radiusMiles)
@@ -87,14 +84,9 @@ export default function LiveNowStrip() {
       } else {
         query = query.eq('zip_code', zip)
       }
-
       const { data } = await query
       if (data) {
-        // Only live in last 24h
-        const recent = data.filter((p:any) => {
-          const age = Date.now() - new Date(p.created_at).getTime()
-          return age < 24*60*60*1000
-        })
+        const recent = data.filter((p:any) => Date.now() - new Date(p.created_at).getTime() < 24*60*60*1000)
         setLives(applyScope(recent, filter))
       }
     } finally { setLoading(false) }
@@ -112,8 +104,7 @@ export default function LiveNowStrip() {
       })
       const j = await res.json()
       if (j.url) window.location.href = j.url
-      else if (j.error) throw new Error(j.error)
-      else alert('Checkout route /api/checkout not found — create it with Stripe. See console.')
+      else throw new Error(j.error || 'No checkout url')
     } catch (e:any) {
       alert('Checkout failed: ' + e.message + ' — create /api/checkout that returns { url } from Stripe')
     } finally { setCheckingOut(false) }
@@ -129,7 +120,6 @@ export default function LiveNowStrip() {
           {checkingOut? d.checkout : d.goLive}
         </button>
       </div>
-
       {loading? (
         <p className="text-white/50 text-xs">{d.loading}</p>
       ) : lives.length>0? (
