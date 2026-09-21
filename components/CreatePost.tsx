@@ -11,7 +11,7 @@ const D: Record<string, any> = {
   de: { general:"Allgemein", faith:"Glaube", safety:"Sicherheit", for_sale:"Zu Verkaufen", free:"Kostenlos", lost_pet:"Haustier Vermisst", event:"Event", help:"Hilfe", recommend:"Empfehlen", job:"Job", postTo:"Posten in {zip} - One Stop", tapMic:"Tippe Mikro - funktioniert in {zip}", postingAs:"Posten als • {zip} • {icon} {cat} • Universal Mikro", postBtn:"Posten in {zip} 🚀", addressPh:"📍 Adresse - Privat", pricePh:"Preis $", freePh:"Kostenlos (0)", new:"Neu", likeNew:"Wie Neu", good:"Gut", fair:"Akzeptabel", detecting:"Block wird noch erkannt... 2 Sek warten", micBlocked:"Mikro blockiert - Berechtigungen prüfen" },
   zh: { general:"综合", faith:"信仰", safety:"安全", for_sale:"出售", free:"免费", lost_pet:"丢失宠物", event:"活动", help:"求助", recommend:"推荐", job:"工作", postTo:"发布到 {zip} - 一站式", tapMic:"点击麦克风 - 在 {zip} 可用 - 任何手机或电脑", postingAs:"发布为 • {zip} • {icon} {cat} • 通用麦克风", postBtn:"发布到 {zip} 🚀", addressPh:"📍 地址 - 私密", pricePh:"价格 $", freePh:"免费 (0)", new:"全新", likeNew:"接近全新", good:"良好", fair:"一般", detecting:"仍在检测你的街区...等待2秒再发布", micBlocked:"麦克风被阻止 - 检查浏览器权限" },
   ja: { general:"一般", faith:"信仰", safety:"安全", for_sale:"販売", free:"無料", lost_pet:"迷子ペット", event:"イベント", help:"ヘルプ", recommend:"おすすめ", job:"仕事", postTo:"{zip} に投稿 - ワンストップ", tapMic:"マイクをタップ - {zip}で動作 - どの端末でも", postingAs:"投稿者 • {zip} • {icon} {cat} • ユニバーサルマイク", postBtn:"{zip} に投稿 🚀", addressPh:"📍 住所 - 非公開", pricePh:"価格 $", freePh:"無料 (0)", new:"新品", likeNew:"ほぼ新品", good:"良好", fair:"可", detecting:"まだブロックを検出中...2秒待って再投稿", micBlocked:"マイクがブロック - 権限を確認" },
-  ko: { general:"일반", faith:"신앙", safety:"안전", for_sale:"판매", free:"무료", lost_pet:"실종 반려동물", event:"이벤트", help:"도움", recommend:"추천", job:"직업", postTo:"{zip}에 게시 - One Stop", tapMic:"마이크 탭 - {zip}에서 작동 - 모든 기기", postingAs:"게시 중 • {zip} • {icon} {cat} • 유니버설 마이크", postBtn:"{zip}에 게시 🚀", addressPh:"📍 주소 - 비공개", pricePh:"가격 $", freePh:"무료 (0)", new:"새것", likeNew:"거의 새것", good:"좋음", fair:"보통", detecting:"아직 블록 감지 중... 2초 후 다시 게시", micBlocked:"마이크 차단 - 권한 확인" },
+  ko: { general:"一般", faith:"信仰", safety:"安全", for_sale:"販売", free:"無料", lost_pet:"迷子ペット", event:"イベント", help:"ヘルプ", recommend:"おすすめ", job:"仕事", postTo:"{zip} に投稿 - ワンストップ", tapMic:"マイクをタップ - {zip}で動作 - どの端末でも", postingAs:"投稿者 • {zip} • {icon} {cat} • ユニバーサルマイク", postBtn:"{zip} に投稿 🚀", addressPh:"📍 住所 - 非公開", pricePh:"価格 $", freePh:"無料 (0)", new:"新品", likeNew:"ほぼ新品", good:"良好", fair:"可", detecting:"まだブロックを検出中...2秒待って再投稿", micBlocked:"マイクがブロック - 権限を確認" },
   pt: { general:"Geral", faith:"Fé", safety:"Segurança", for_sale:"À Venda", free:"Grátis", lost_pet:"Pet Perdido", event:"Evento", help:"Ajuda", recommend:"Recomendar", job:"Emprego", postTo:"Postar em {zip} - One Stop", tapMic:"Toque micro - funciona em {zip} - qualquer celular", postingAs:"Postando como • {zip} • {icon} {cat} • Mic Universal", postBtn:"Postar em {zip} 🚀", addressPh:"📍 Endereço - Privado", pricePh:"Preço $", freePh:"Grátis (0)", new:"Novo", likeNew:"Como Novo", good:"Bom", fair:"Regular", detecting:"Ainda detectando seu bloco... espere 2 seg", micBlocked:"Micro bloqueado - verifique permissões" },
   ru: { general:"Общее", faith:"Вера", safety:"Безопасность", for_sale:"Продам", free:"Бесплатно", lost_pet:"Потерян питомец", event:"Событие", help:"Помощь", recommend:"Рекомендую", job:"Работа", postTo:"Опубликовать в {zip} - One Stop", tapMic:"Нажми микро - работает в {zip} - любой телефон", postingAs:"Публикация как • {zip} • {icon} {cat} • Универсальный микрофон", postBtn:"Опубликовать в {zip} 🚀", addressPh:"📍 Адрес - Приватно", pricePh:"Цена $", freePh:"Бесплатно (0)", new:"Новый", likeNew:"Как Новый", good:"Хорошее", fair:"Удовл.", detecting:"Все еще определяем ваш блок... подождите 2 сек", micBlocked:"Микрофон заблокирован - проверьте разрешения" },
   ar: { general:"عام", faith:"إيمان", safety:"سلامة", for_sale:"للبيع", free:"مجاني", lost_pet:"حيوان مفقود", event:"حدث", help:"مساعدة", recommend:"توصية", job:"وظيفة", postTo:"انشر في {zip} - One Stop", tapMic:"اضغط الميكروفون - يعمل في {zip} - أي هاتف", postingAs:"النشر كـ • {zip} • {icon} {cat} • ميكروفون شامل", postBtn:"انشر في {zip} 🚀", addressPh:"📍 العنوان - خاص", pricePh:"السعر $", freePh:"مجاني (0)", new:"جديد", likeNew:"كأنه جديد", good:"جيد", fair:"مقبول", detecting:"لا يزال يكتشف منطقتك... انتظر ثانيتين", micBlocked:"الميكروفون محظور - تحقق من الأذونات" },
@@ -66,13 +66,13 @@ export default function CreatePost({ onPosted }: { onPosted?: () => void }){
   const { zip } = useLocation()
   const { language } = useLanguage()
   const d = D[language] || D.en
-  const [body][setBody] = useState('')
-  const [category][setCategory] = useState('general')
-  const [price][setPrice] = useState('')
-  const [condition][setCondition] = useState('good')
-  const [address][setAddress] = useState('')
-  const [posting][setPosting] = useState(false)
-  const [listening][setListening] = useState(false)
+  const [body, setBody] = useState('')
+  const [category, setCategory] = useState('general')
+  const [price, setPrice] = useState('')
+  const [condition, setCondition] = useState('good')
+  const [address, setAddress] = useState('')
+  const [posting, setPosting] = useState(false)
+  const [listening, setListening] = useState(false)
   const recRef = useRef<any>(null)
   const mediaRef = useRef<MediaRecorder | null>(null)
   const finalRef = useRef('')
