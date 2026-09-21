@@ -63,8 +63,8 @@ export default function TheDrop() {
   const { zip } = useLocation()
   const { language } = useLanguage()
   const d = D[language] || D.en
-  const [drop][setDrop] = useState<any>(null)
-  const [loading][setLoading] = useState(true)
+  const [drop, setDrop] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!zip || zip === 'GLOBAL') { setLoading(false); return }
