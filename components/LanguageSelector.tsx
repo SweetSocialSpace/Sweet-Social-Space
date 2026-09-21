@@ -15,10 +15,10 @@ export default function LanguageSelector() {
   ] as const
 
   return (
-    <div className="relative" data-sss-no-translate>
+    <div className="relative">
       <button
         type="button"
-        onClick={() => setIsOpen(value => !value)}
+        onClick={() => setIsOpen(value =>!value)}
         className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full text-white text-xs font-black transition"
         aria-label="Language"
       >
@@ -50,12 +50,15 @@ export default function LanguageSelector() {
                     type="button"
                     key={lang}
                     onClick={() => {
+                      console.log('[BRAIN] Switching to:', lang)
                       setLanguage(lang)
+                      localStorage.setItem('sss_language', lang)
+                      window.dispatchEvent(new Event('languageChanged'))
                       setIsOpen(false)
                     }}
                     className={`w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition ${
                       language === lang
-                        ? 'bg-white/20 text-white'
+                       ? 'bg-white/20 text-white'
                         : 'text-white/70'
                     }`}
                   >
