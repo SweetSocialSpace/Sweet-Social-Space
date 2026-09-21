@@ -89,17 +89,29 @@ const translations: Record<string, Translations> = {
   my: require('../translations/my.json')
 }
 
+// Deep merge: ensures if a language is missing a key, English fills it
+function deepMerge(en: any, tr: any): any {
+  if (!tr) return en
+  const result: any = {...en }
+  for (const key of Object.keys(en)) {
+    if (typeof en[key] === 'object' && typeof tr[key] === 'object') {
+      result[key] = deepMerge(en[key], tr[key])
+    } else {
+      result[key] = tr[key] || en[key]
+    }
+  }
+  return result
+}
+
 export function useTranslations() {
   const { language } = useLanguage()
   return useMemo(() => {
-    return translations[language] || translations.en
+    const en = translations.en
+    const selected = translations[language] || en
+    return deepMerge(en, selected) as Translations
   }, [language])
 }
 
-/**
- * Fixed: walk both trees in parallel so we don't lose keys to collisions.
- * Returns Map: English phrase -> Translated phrase
- */
 export function getGlobalTranslations(language: string): Record<string, string> {
   const selected = translations[language] || translations.en
   const english = translations.en
@@ -107,23 +119,16 @@ export function getGlobalTranslations(language: string): Record<string, string> 
 
   function walk(enNode: any, trNode: any) {
     if (!enNode ||!trNode || typeof enNode!== 'object') return
-
     for (const key of Object.keys(enNode)) {
       const enVal = enNode[key]
       const trVal = trNode[key]
-
       if (typeof enVal === 'string' && typeof trVal === 'string') {
-        if (trVal && trVal!== enVal) {
-          result[enVal] = trVal
-        } else {
-          result[enVal] = trVal || enVal
-        }
+        result[enVal] = trVal || enVal
       } else if (typeof enVal === 'object' && typeof trVal === 'object') {
         walk(enVal, trVal)
       }
     }
   }
-
   walk(english, selected)
   return result
 }
