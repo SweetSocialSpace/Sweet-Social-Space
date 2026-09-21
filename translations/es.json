@@ -16,12 +16,12 @@
     "in": "EN",
     "loading": "Cargando...",
     "tags": {
-      "General": "General",
-      "Alert": "Alerta",
-      "Recommendation": "Recomendación",
-      "Free stuff": "Cosas gratis",
-      "Hot take": "Opinión",
-      "Lost & found": "Perdido y encontrado"
+      "general": "General",
+      "alert": "Alerta",
+      "recommendation": "Recomendación",
+      "free_stuff": "Cosas gratis",
+      "hot_take": "Opinión",
+      "lost_found": "Perdido y encontrado"
     }
   },
   "common": {
@@ -35,15 +35,15 @@
     "weather": "Clima",
     "live": "EN VIVO"
   },
-"location": {
-  "near": "CERCA DE",
-  "setLocation": "Establecer ubicación",
-  "locating": "Localizando...",
-  "miles": "millas"
-},
-"radius": {
-  "miles": "millas"
-}
+  "location": {
+    "near": "CERCA DE",
+    "setLocation": "Establecer ubicación",
+    "locating": "Localizando...",
+    "miles": "millas"
+  },
+  "radius": {
+    "miles": "millas"
+  },
   "filters": {
     "all": "Todo",
     "faith": "Fe",
