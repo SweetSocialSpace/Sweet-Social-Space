@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import type { UrlObject } from 'url'
-import { useLanguage } from '@/lib/language-context'
-import { useTranslations } from '@/lib/translations'
 
 type Action =
   | { kind: 'button'; label: string; onClick: () => void; primary?: boolean }
