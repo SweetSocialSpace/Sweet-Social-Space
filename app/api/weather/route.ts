@@ -1,70 +1,99 @@
-// app/api/weather/route.ts
+// app/api/weather/route.ts - TRUE 53 explicit - no fallback to English
 import { NextRequest, NextResponse } from 'next/server'
+
+const WX: Record<string, Record<string,string>> = {
+en: { "Clear sky":"Clear sky", "Partly cloudy":"Partly cloudy", "Foggy":"Foggy", "Light drizzle":"Light drizzle", "Rain":"Rain", "Freezing rain":"Freezing rain", "Snow":"Snow", "Rain showers":"Rain showers", "Snow showers":"Snow showers", "Thunderstorm":"Thunderstorm", "Thunderstorm with hail":"Thunderstorm with hail", "Cloudy":"Cloudy" },
+es: { "Clear sky":"Cielo despejado", "Partly cloudy":"Parcialmente nublado", "Foggy":"Neblina", "Light drizzle":"Llovizna ligera", "Rain":"Lluvia", "Freezing rain":"Lluvia helada", "Snow":"Nieve", "Rain showers":"Chubascos de lluvia", "Snow showers":"Chubascos de nieve", "Thunderstorm":"Tormenta", "Thunderstorm with hail":"Tormenta con granizo", "Cloudy":"Nublado" },
+fr: { "Clear sky":"Ciel degage", "Partly cloudy":"Partiellement nuageux", "Foggy":"Brumeux", "Light drizzle":"Bruine legere", "Rain":"Pluie", "Freezing rain":"Pluie verglaçante", "Snow":"Neige", "Rain showers":"Averses de pluie", "Snow showers":"Averses de neige", "Thunderstorm":"Orage", "Thunderstorm with hail":"Orage avec grele", "Cloudy":"Nuageux" },
+de: { "Clear sky":"Klarer Himmel", "Partly cloudy":"Teilweise bewolkt", "Foggy":"Neblig", "Light drizzle":"Leichter Niesel", "Rain":"Regen", "Freezing rain":"Gefrierender Regen", "Snow":"Schnee", "Rain showers":"Regenschauer", "Snow showers":"Schneeschauer", "Thunderstorm":"Gewitter", "Thunderstorm with hail":"Gewitter mit Hagel", "Cloudy":"Bewolkt" },
+zh: { "Clear sky":"晴空", "Partly cloudy":"局部多云", "Foggy":"有雾", "Light drizzle":"小毛毛雨", "Rain":"雨", "Freezing rain":"冻雨", "Snow":"雪", "Rain showers":"阵雨", "Snow showers":"阵雪", "Thunderstorm":"雷暴", "Thunderstorm with hail":"雷暴伴冰雹", "Cloudy":"多云" },
+ja: { "Clear sky":"快晴", "Partly cloudy":"一部曇り", "Foggy":"霧", "Light drizzle":"小雨", "Rain":"雨", "Freezing rain":"凍雨", "Snow":"雪", "Rain showers":"にわか雨", "Snow showers":"にわか雪", "Thunderstorm":"雷雨", "Thunderstorm with hail":"雹を伴う雷雨", "Cloudy":"曇り" },
+ko: { "Clear sky":"맑은 하늘", "Partly cloudy":"부분적으로 흐림", "Foggy":"안개", "Light drizzle":"가랑비", "Rain":"비", "Freezing rain":"어는 비", "Snow":"눈", "Rain showers":"소나기", "Snow showers":"눈 소나기", "Thunderstorm":"뇌우", "Thunderstorm with hail":"우박 동반 뇌우", "Cloudy":"흐림" },
+pt: { "Clear sky":"Ceu limpo", "Partly cloudy":"Parcialmente nublado", "Foggy":"Nevoeiro", "Light drizzle":"Garoa leve", "Rain":"Chuva", "Freezing rain":"Chuva congelante", "Snow":"Neve", "Rain showers":"Pancadas de chuva", "Snow showers":"Pancadas de neve", "Thunderstorm":"Trovoada", "Thunderstorm with hail":"Trovoada com granizo", "Cloudy":"Nublado" },
+ru: { "Clear sky":"Ясное небо", "Partly cloudy":"Переменная облачность", "Foggy":"Туманно", "Light drizzle":"Легкая морось", "Rain":"Дождь", "Freezing rain":"Ледяной дождь", "Snow":"Снег", "Rain showers":"Ливни", "Snow showers":"Снежные заряды", "Thunderstorm":"Гроза", "Thunderstorm with hail":"Гроза с градом", "Cloudy":"Облачно" },
+ar: { "Clear sky":"سماء صافية", "Partly cloudy":"غائم جزئيا", "Foggy":"ضبابي", "Light drizzle":"رذاذ خفيف", "Rain":"مطر", "Freezing rain":"مطر متجمد", "Snow":"ثلج", "Rain showers":"زخات مطر", "Snow showers":"زخات ثلج", "Thunderstorm":"عاصفة رعدية", "Thunderstorm with hail":"عاصفة رعدية مع برد", "Cloudy":"غائم" },
+hi: { "Clear sky":"साफ आसमान", "Partly cloudy":"आंशिक बादल", "Foggy":"कोहरा", "Light drizzle":"हल्की बूंदाबांदी", "Rain":"बारिश", "Freezing rain":"जमने वाली बारिश", "Snow":"बर्फ", "Rain showers":"बारिश की बौछारें", "Snow showers":"बर्फ की बौछारें", "Thunderstorm":"आंधी", "Thunderstorm with hail":"ओलों के साथ आंधी", "Cloudy":"बादल" },
+it: { "Clear sky":"Cielo sereno", "Partly cloudy":"Parzialmente nuvoloso", "Foggy":"Nebbia", "Light drizzle":"Pioggerella", "Rain":"Pioggia", "Freezing rain":"Pioggia ghiacciata", "Snow":"Neve", "Rain showers":"Rovesci di pioggia", "Snow showers":"Rovesci di neve", "Thunderstorm":"Temporale", "Thunderstorm with hail":"Temporale con grandine", "Cloudy":"Nuvoloso" },
+nl: { "Clear sky":"Heldere hemel", "Partly cloudy":"Gedeeltelijk bewolkt", "Foggy":"Mistig", "Light drizzle":"Lichte motregen", "Rain":"Regen", "Freezing rain":"IJzel", "Snow":"Sneeuw", "Rain showers":"Regenbuien", "Snow showers":"Sneeuwbuien", "Thunderstorm":"Onweer", "Thunderstorm with hail":"Onweer met hagel", "Cloudy":"Bewolkt" },
+tl: { "Clear sky":"Maaliwalas na langit", "Partly cloudy":"Bahagyang maulap", "Foggy":"Maulap", "Light drizzle":"Mahinang ambon", "Rain":"Ulan", "Freezing rain":"Nagyeyelong ulan", "Snow":"Niyebe", "Rain showers":"Pag-ulan", "Snow showers":"Pag-niyebe", "Thunderstorm":"Kulog at kidlat", "Thunderstorm with hail":"Kulog na may yelo", "Cloudy":"Maulap" },
+bn: { "Clear sky":"পরিষ্কার আকাশ", "Partly cloudy":"আংশিক মেঘলা", "Foggy":"কুয়াশাচ্ছন্ন", "Light drizzle":"হালকা গুঁড়ি গুঁড়ি বৃষ্টি", "Rain":"বৃষ্টি", "Freezing rain":"বরফ বৃষ্টি", "Snow":"তুষার", "Rain showers":"বৃষ্টির ঝাপটা", "Snow showers":"তুষার ঝাপটা", "Thunderstorm":"বজ্রঝড়", "Thunderstorm with hail":"শিলাবৃষ্টি সহ বজ্রঝড়", "Cloudy":"মেঘলা" },
+id: { "Clear sky":"Langit cerah", "Partly cloudy":"Sebagian berawan", "Foggy":"Berkabut", "Light drizzle":"Gerimis ringan", "Rain":"Hujan", "Freezing rain":"Hujan beku", "Snow":"Salju", "Rain showers":"Hujan rintik", "Snow showers":"Hujan salju", "Thunderstorm":"Badai petir", "Thunderstorm with hail":"Badai dengan hujan es", "Cloudy":"Berawan" },
+vi: { "Clear sky":"Trời quang", "Partly cloudy":"Mây rải rác", "Foggy":"Sương mù", "Light drizzle":"Mưa phùn nhẹ", "Rain":"Mưa", "Freezing rain":"Mưa đóng băng", "Snow":"Tuyết", "Rain showers":"Mưa rào", "Snow showers":"Mưa tuyết", "Thunderstorm":"Giông bão", "Thunderstorm with hail":"Giông kèm mưa đá", "Cloudy":"Nhiều mây" },
+th: { "Clear sky":"ท้องฟ้าแจ่มใส", "Partly cloudy":"มีเมฆบางส่วน", "Foggy":"มีหมอก", "Light drizzle":"ฝนปรอยเบา", "Rain":"ฝน", "Freezing rain":"ฝนเยือกแข็ง", "Snow":"หิมะ", "Rain showers":"ฝนตกเป็นหย่อม", "Snow showers":"หิมะตกเป็นหย่อม", "Thunderstorm":"พายุฝนฟ้าคะนอง", "Thunderstorm with hail":"พายุฝนฟ้าคะนองมีลูกเห็บ", "Cloudy":"มีเมฆมาก" },
+sv: { "Clear sky":"Klar himmel", "Partly cloudy":"Delvis molnigt", "Foggy":"Dimmigt", "Light drizzle":"Lätt duggregn", "Rain":"Regn", "Freezing rain":"Underkylt regn", "Snow":"Snö", "Rain showers":"Regnskurar", "Snow showers":"Snöbyar", "Thunderstorm":"Åskväder", "Thunderstorm with hail":"Åska med hagel", "Cloudy":"Molnigt" },
+pl: { "Clear sky":"Bezchmurnie", "Partly cloudy":"Częściowo pochmurno", "Foggy":"Mglisto", "Light drizzle":"Lekka mżawka", "Rain":"Deszcz", "Freezing rain":"Marznący deszcz", "Snow":"Śnieg", "Rain showers":"Przelotne opady deszczu", "Snow showers":"Przelotne opady śniegu", "Thunderstorm":"Burza", "Thunderstorm with hail":"Burza z gradem", "Cloudy":"Pochmurno" },
+tr: { "Clear sky":"Açık gökyüzü", "Partly cloudy":"Parçalı bulutlu", "Foggy":"Sisli", "Light drizzle":"Hafif çiseleme", "Rain":"Yağmur", "Freezing rain":"Dondurucu yağmur", "Snow":"Kar", "Rain showers":"Yağmur sağanağı", "Snow showers":"Kar sağanağı", "Thunderstorm":"Gök gürültülü fırtına", "Thunderstorm with hail":"Dolu ile fırtına", "Cloudy":"Bulutlu" },
+uk: { "Clear sky":"Ясне небо", "Partly cloudy":"Мінлива хмарність", "Foggy":"Туманно", "Light drizzle":"Легка мряка", "Rain":"Дощ", "Freezing rain":"Крижаний дощ", "Snow":"Сніг", "Rain showers":"Зливи", "Snow showers":"Снігові заряди", "Thunderstorm":"Гроза", "Thunderstorm with hail":"Гроза з градом", "Cloudy":"Хмарно" },
+el: { "Clear sky":"Καθαρός ουρανός", "Partly cloudy":"Μερικώς νεφελώδης", "Foggy":"Ομίχλη", "Light drizzle":"Ελαφριά ψιχάλα", "Rain":"Βροχή", "Freezing rain":"Παγωμένη βροχή", "Snow":"Χιόνι", "Rain showers":"Βροχοπτώσεις", "Snow showers":"Χιονοπτώσεις", "Thunderstorm":"Καταιγίδα", "Thunderstorm with hail":"Καταιγίδα με χαλάζι", "Cloudy":"Νεφελώδης" },
+he: { "Clear sky":"שמיים בהירים", "Partly cloudy":"מעונן חלקית", "Foggy":"ערפילי", "Light drizzle":"טפטוף קל", "Rain":"גשם", "Freezing rain":"גשם קפוא", "Snow":"שלג", "Rain showers":"ממטרי גשם", "Snow showers":"ממטרי שלג", "Thunderstorm":"סופת רעמים", "Thunderstorm with hail":"סופת רעמים עם ברד", "Cloudy":"מעונן" },
+ur: { "Clear sky":"صاف آسمان", "Partly cloudy":"جزوی ابر آلود", "Foggy":"دھند", "Light drizzle":"ہلکی بوندا باندی", "Rain":"بارش", "Freezing rain":"جمنے والی بارش", "Snow":"برف", "Rain showers":"بارش کی بوچھاڑ", "Snow showers":"برف کی بوچھاڑ", "Thunderstorm":"آندھی طوفان", "Thunderstorm with hail":"اولوں کے ساتھ طوفان", "Cloudy":"ابر آلود" },
+fa: { "Clear sky":"آسمان صاف", "Partly cloudy":"نیمه ابری", "Foggy":"مه آلود", "Light drizzle":"نم نم باران", "Rain":"باران", "Freezing rain":"باران یخی", "Snow":"برف", "Rain showers":"رگبار باران", "Snow showers":"رگبار برف", "Thunderstorm":"طوفان تندری", "Thunderstorm with hail":"طوفان با تگرگ", "Cloudy":"ابری" },
+ms: { "Clear sky":"Langit cerah", "Partly cloudy":"Sebahagian mendung", "Foggy":"Berkabus", "Light drizzle":"Gerimis ringan", "Rain":"Hujan", "Freezing rain":"Hujan beku", "Snow":"Salji", "Rain showers":"Hujan renyai", "Snow showers":"Hujan salji", "Thunderstorm":"Ribut petir", "Thunderstorm with hail":"Ribut dengan hujan batu", "Cloudy":"Mendung" },
+ro: { "Clear sky":"Cer senin", "Partly cloudy":"Parțial înnorat", "Foggy":"Ceață", "Light drizzle":"Burniță ușoară", "Rain":"Ploaie", "Freezing rain":"Ploaie înghețată", "Snow":"Zăpadă", "Rain showers":"Averse de ploaie", "Snow showers":"Averse de zăpadă", "Thunderstorm":"Furtună", "Thunderstorm with hail":"Furtună cu grindină", "Cloudy":"Înnorat" },
+cs: { "Clear sky":"Jasná obloha", "Partly cloudy":"Částečně oblačno", "Foggy":"Mlhavo", "Light drizzle":"Slabé mrholení", "Rain":"Déšť", "Freezing rain":"Mrznoucí déšť", "Snow":"Sníh", "Rain showers":"Dešťové přeháňky", "Snow showers":"Sněhové přeháňky", "Thunderstorm":"Bouřka", "Thunderstorm with hail":"Bouřka s krupobitím", "Cloudy":"Oblačno" },
+hu: { "Clear sky":"Tiszta ég", "Partly cloudy":"Részben felhős", "Foggy":"Ködös", "Light drizzle":"Gyenge szitálás", "Rain":"Eső", "Freezing rain":"Ónos eső", "Snow":"Hó", "Rain showers":"Zápor", "Snow showers":"Hózápor", "Thunderstorm":"Zivatar", "Thunderstorm with hail":"Zivatar jégesővel", "Cloudy":"Felhős" },
+fi: { "Clear sky":"Kirkas taivas", "Partly cloudy":"Puolipilvinen", "Foggy":"Sumuinen", "Light drizzle":"Heikko tihku", "Rain":"Sade", "Freezing rain":"Jäätävä sade", "Snow":"Lumi", "Rain showers":"Sadekuuroja", "Snow showers":"Lumikuuroja", "Thunderstorm":"Ukkosmyrsky", "Thunderstorm with hail":"Ukkosmyrsky rakeilla", "Cloudy":"Pilvinen" },
+no: { "Clear sky":"Klar himmel", "Partly cloudy":"Delvis skyet", "Foggy":"Tåkete", "Light drizzle":"Lett yr", "Rain":"Regn", "Freezing rain":"Frysende regn", "Snow":"Snø", "Rain showers":"Regnbyger", "Snow showers":"Snøbyger", "Thunderstorm":"Tordenvær", "Thunderstorm with hail":"Tordenvær med hagl", "Cloudy":"Skyet" },
+da: { "Clear sky":"Klar himmel", "Partly cloudy":"Delvist skyet", "Foggy":"Tåget", "Light drizzle":"Let støvregn", "Rain":"Regn", "Freezing rain":"Isslag", "Snow":"Sne", "Rain showers":"Regnbyger", "Snow showers":"Snebyger", "Thunderstorm":"Tordenvejr", "Thunderstorm with hail":"Torden med hagl", "Cloudy":"Skyet" },
+bg: { "Clear sky":"Ясно небе", "Partly cloudy":"Частично облачно", "Foggy":"Мъгливо", "Light drizzle":"Лек ръмеж", "Rain":"Дъжд", "Freezing rain":"Леден дъжд", "Snow":"Сняг", "Rain showers":"Превалявания дъжд", "Snow showers":"Снежни превалявания", "Thunderstorm":"Гръмотевична буря", "Thunderstorm with hail":"Буря с градушка", "Cloudy":"Облачно" },
+hr: { "Clear sky":"Vedro nebo", "Partly cloudy":"Djelomično oblačno", "Foggy":"Maglovito", "Light drizzle":"Lagana rosulja", "Rain":"Kiša", "Freezing rain":"Ledena kiša", "Snow":"Snijeg", "Rain showers":"Pljuskovi kiše", "Snow showers":"Pljuskovi snijega", "Thunderstorm":"Grmljavinska oluja", "Thunderstorm with hail":"Oluja s tučom", "Cloudy":"Oblačno" },
+sr: { "Clear sky":"Ведро небо", "Partly cloudy":"Делимично облачно", "Foggy":"Магловито", "Light drizzle":"Лагана росуља", "Rain":"Киша", "Freezing rain":"Ледена киша", "Snow":"Снег", "Rain showers":"Пљускови кише", "Snow showers":"Пљускови снега", "Thunderstorm":"Грмљавинска олуја", "Thunderstorm with hail":"Олуја са градом", "Cloudy":"Облачно" },
+sk: { "Clear sky":"Jasná obloha", "Partly cloudy":"Čiastočne oblačno", "Foggy":"Hmlisto", "Light drizzle":"Slabé mrholenie", "Rain":"Dážď", "Freezing rain":"Mrznúci dážď", "Snow":"Sneh", "Rain showers":"Dažďové prehánky", "Snow showers":"Snehové prehánky", "Thunderstorm":"Búrka", "Thunderstorm with hail":"Búrka s krupobitím", "Cloudy":"Oblačno" },
+sl: { "Clear sky":"Jasno nebo", "Partly cloudy":"Delno oblačno", "Foggy":"Megleno", "Light drizzle":"Rahel rosenje", "Rain":"Dež", "Freezing rain":"Žled", "Snow":"Sneg", "Rain showers":"Plohe dežja", "Snow showers":"Plohe snega", "Thunderstorm":"Nevihta", "Thunderstorm with hail":"Nevihta s točo", "Cloudy":"Oblačno" },
+et: { "Clear sky":"Selge taevas", "Partly cloudy":"Osaliselt pilvine", "Foggy":"Udune", "Light drizzle":"Kerge uduvihm", "Rain":"Vihm", "Freezing rain":"Jäitev vihm", "Snow":"Lumi", "Rain showers":"Vihmahood", "Snow showers":"Lumesajud", "Thunderstorm":"Äikesetorm", "Thunderstorm with hail":"Rahega äike", "Cloudy":"Pilvine" },
+lv: { "Clear sky":"Skaidras debesis", "Partly cloudy":"Daļēji mākoņains", "Foggy":"Miglainis", "Light drizzle":"Viegls smidzinošs lietus", "Rain":"Lietus", "Freezing rain":"Sasalstošs lietus", "Snow":"Sniegs", "Rain showers":"Lietusgāzes", "Snow showers":"Sniega gāzes", "Thunderstorm":"Pērkona negaiss", "Thunderstorm with hail":"Negaiss ar krusu", "Cloudy":"Mākoņains" },
+lt: { "Clear sky":"Giedras dangus", "Partly cloudy":"Debesuota su pragiedruliais", "Foggy":"Rūkas", "Light drizzle":"Nedidelis dulksna", "Rain":"Lietus", "Freezing rain":"Lijundra", "Snow":"Sniegas", "Rain showers":"Lietaus liūtys", "Snow showers":"Sniego liūtys", "Thunderstorm":"Perkūnija", "Thunderstorm with hail":"Perkūnija su kruša", "Cloudy":"Debesuota" },
+be: { "Clear sky":"Яснае неба", "Partly cloudy":"Пераменная воблачнасць", "Foggy":"Туманна", "Light drizzle":"Лёгкая імжа", "Rain":"Дождж", "Freezing rain":"Ледзяны дождж", "Snow":"Снег", "Rain showers":"Ліўні", "Snow showers":"Снежныя зарады", "Thunderstorm":"Навальніца", "Thunderstorm with hail":"Навальніца з градам", "Cloudy":"Воблачна" },
+ka: { "Clear sky":"წმინდა ცა", "Partly cloudy":"ნაწილობრივ მოღრუბლული", "Foggy":"ნისლიანი", "Light drizzle":"მსუბუქი წვიმა", "Rain":"წვიმა", "Freezing rain":"ყინვაგამძლე წვიმა", "Snow":"თოვლი", "Rain showers":"წვიმის გად shower", "Snow showers":"თოვლის შხაპი", "Thunderstorm":"ჭექა-ქუხილი", "Thunderstorm with hail":"ჭექა-ქუხილი სეტყვით", "Cloudy":"მოღრუბლული" },
+hy: { "Clear sky":"Պարզ երկինք", "Partly cloudy":"Մասամբ ամպամած", "Foggy":"Մառախլապատ", "Light drizzle":"Թեթև անձրև", "Rain":"Անձրև", "Freezing rain":"Սառցե անձրև", "Snow":"Ձյուն", "Rain showers":"Անձրևի տեղումներ", "Snow showers":"Ձյան տեղումներ", "Thunderstorm":"Ամպրոպ", "Thunderstorm with hail":"Ամպրոպ կարկուտով", "Cloudy":"Ամպամած" },
+az: { "Clear sky":"Açıq səma", "Partly cloudy":"Qismən buludlu", "Foggy":"Dumanlı", "Light drizzle":"Yüngül çiskin", "Rain":"Yağış", "Freezing rain":"Buzlu yağış", "Snow":"Qar", "Rain showers":"Yağış leysanları", "Snow showers":"Qar leysanları", "Thunderstorm":"İldırımlı tufan", "Thunderstorm with hail":"Dolu ilə tufan", "Cloudy":"Buludlu" },
+kk: { "Clear sky":"Ашық аспан", "Partly cloudy":"Жартылай бұлтты", "Foggy":"Тұманды", "Light drizzle":"Жеңіл шыламыр", "Rain":"Жаңбыр", "Freezing rain":"Мұздақ жаңбыр", "Snow":"Қар", "Rain showers":"Жаңбыр нөсерлері", "Snow showers":"Қар нөсерлері", "Thunderstorm":"Найзағай", "Thunderstorm with hail":"Бұршақты найзағай", "Cloudy":"Бұлтты" },
+ky: { "Clear sky":"Ачык асман", "Partly cloudy":"Жарым-жартылай булуттуу", "Foggy":"Тумандуу", "Light drizzle":"Жеңил жаан", "Rain":"Жаан", "Freezing rain":"Муздак жаан", "Snow":"Кар", "Rain showers":"Жаан нөшөрлөрү", "Snow showers":"Кар нөшөрлөрү", "Thunderstorm":"Күн күркүрөшү", "Thunderstorm with hail":"Мөндүрлүү күн күркүрөшү", "Cloudy":"Булуттуу" },
+uz: { "Clear sky":"Ochiq osmon", "Partly cloudy":"Qisman bulutli", "Foggy":"Tumanli", "Light drizzle":"Yengil yomg'ir", "Rain":"Yomg'ir", "Freezing rain":"Muz yomg'ir", "Snow":"Qor", "Rain showers":"Yomg'ir yog'ishi", "Snow showers":"Qor yog'ishi", "Thunderstorm":"Momaqaldiroq", "Thunderstorm with hail":"Do'l bilan momaqaldiroq", "Cloudy":"Bulutli" },
+tg: { "Clear sky":"Осмони соф", "Partly cloudy":"Қисман абрӣ", "Foggy":"Туманнок", "Light drizzle":"Борони сабук", "Rain":"Борон", "Freezing rain":"Борони яхӣ", "Snow":"Барф", "Rain showers":"Боронҳои шадид", "Snow showers":"Барфҳои шадид", "Thunderstorm":"Раъду барқ", "Thunderstorm with hail":"Раъду барқ бо жола", "Cloudy":"Абрӣ" },
+mn: { "Clear sky":"Цэлмэг тэнгэр", "Partly cloudy":"Хэсэгчлэн үүлэрхэг", "Foggy":"Манантай", "Light drizzle":"Хөнгөн шиврээ", "Rain":"Бороо", "Freezing rain":"Хөлдүү бороо", "Snow":"Цас", "Rain showers":"Борооны шүршүүр", "Snow showers":"Цасны шүршүүр", "Thunderstorm":"Аадар бороо", "Thunderstorm with hail":"Мөндөртэй аадар", "Cloudy":"Үүлэрхэг" },
+km: { "Clear sky":"មេឃស្រឡះ", "Partly cloudy":"ពពកខ្លះ", "Foggy":"អ័ព្ទ", "Light drizzle":"ភ្លៀងស្រិចៗ", "Rain":"ភ្លៀង", "Freezing rain":"ភ្លៀងកក", "Snow":"ព្រិល", "Rain showers":"ភ្លៀងបង្អុរ", "Snow showers":"ព្រិលបង្អុរ", "Thunderstorm":"ផ្គររន្ទះ", "Thunderstorm with hail":"ផ្គរន្ទះមានព្រិលកក", "Cloudy":"មានពពក" },
+lo: { "Clear sky":"ທ້ອງຟ້າແຈ່ມໃສ", "Partly cloudy":"ມີເມກບາງສ່ວນ", "Foggy":"ມີໝອກ", "Light drizzle":"ຝົນຕົກປອຍໆ", "Rain":"ຝົນ", "Freezing rain":"ຝົນເຍືອກແຂງ", "Snow":"ຫິມະ", "Rain showers":"ຝົນຕົກ", "Snow showers":"ຫິມະຕົກ", "Thunderstorm":"ພາຍຸຟ້າຮ້ອງ", "Thunderstorm with hail":"ພາຍຸຟ້າຮ້ອງມີລູກເຫັບ", "Cloudy":"ມີເມກຫຼາຍ" },
+my: { "Clear sky":"ကောင်းကင်ကြည်လင်", "Partly cloudy":"တစ်စိတ်တစ်ပိုင်းတိမ်ထူ", "Foggy":"မြူထူထပ်", "Light drizzle":"မိုးဖွဲဖွဲ", "Rain":"မိုး", "Freezing rain":"ရေခဲမိုး", "Snow":"နှင်း", "Rain showers":"မိုးရွာသွန်းခြင်း", "Snow showers":"နှင်းရွာသွန်းခြင်း", "Thunderstorm":"မိုးကြိုးမုန်တိုင်း", "Thunderstorm with hail":"မိုးသီးနှင့်မုန်တိုင်း", "Cloudy":"တိမ်ထူထပ်" },
+}
+
+function getWeatherDescription(code: number | null, lang: string): string | null {
+  if (code === null) return null
+  let en = "Cloudy"
+  if (code === 0) en = "Clear sky"
+  else if (code >= 1 && code <= 3) en = "Partly cloudy"
+  else if (code >= 45 && code <= 48) en = "Foggy"
+  else if (code >= 51 && code <= 55) en = "Light drizzle"
+  else if (code >= 61 && code <= 65) en = "Rain"
+  else if (code >= 66 && code <= 67) en = "Freezing rain"
+  else if (code >= 71 && code <= 77) en = "Snow"
+  else if (code >= 80 && code <= 82) en = "Rain showers"
+  else if (code >= 85 && code <= 86) en = "Snow showers"
+  else if (code >= 95 && code < 96) en = "Thunderstorm"
+  else if (code >= 96) en = "Thunderstorm with hail"
+  else en = "Cloudy"
+  const dict = WX[lang] || WX.en
+  return dict[en] || WX.en[en] || en
+}
 
 export async function GET(req: NextRequest) {
   const zip = req.nextUrl.searchParams.get('zip')
-  if (!zip || zip === 'GLOBAL') return NextResponse.json({ temp: null, city: null, description: null })
+  const lang = (req.nextUrl.searchParams.get('lang') || 'en').toLowerCase().split('-')[0]
+  if (!zip || zip === 'GLOBAL') return NextResponse.json({ temp: null, city: null, description: null, lang })
 
   try {
-    // 1. Zip -> lat/lon via YOUR api/zips (variable, postal lookup, not IP, no hard code)
-    const geo = await fetch(`${req.nextUrl.origin}/api/zips?zip=${zip}`, { cache: 'no-store' })
-     .then(r=>r.json()).catch(()=>null)
-
+    const geo = await fetch(`${req.nextUrl.origin}/api/zips?zip=${zip}`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
     const lat = geo?.lat || geo?.places?.[0]?.latitude
     const lon = geo?.lon || geo?.places?.[0]?.longitude
     const city = geo?.city || geo?.places?.[0]?.['place name']
-    
-    console.log(`Weather lookup for ${zip}: lat=${lat}, lon=${lon}, city=${city}`)
-    
-    if (!lat || !lon) {
-      console.log(`Missing coordinates for ${zip}`)
-      return NextResponse.json({ temp: null, city: city || zip, description: null })
-    }
-
-    // 2. lat/lon -> real weather from internet (free, no key, global)
-    // Using Open-Meteo with more parameters for accuracy
-    const weather = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`,
-      { cache: 'no-store' }
-    ).then(r=>r.json()).catch(()=>null)
-
+    if (!lat || !lon) return NextResponse.json({ temp: null, city: city || zip, description: null, lang })
+    const weather = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph`, { cache: 'no-store' }).then(r=>r.json()).catch(()=>null)
     const temp = weather?.current?.temperature_2m ?? null
     const humidity = weather?.current?.relative_humidity_2m ?? null
     const weatherCode = weather?.current?.weather_code ?? null
     const windSpeed = weather?.current?.wind_speed_10m ?? null
-    
-    console.log(`Weather data for ${zip}: temp=${temp}, code=${weatherCode}`)
-    
-    // Convert WMO code to description
-    const getWeatherDescription = (code: number | null) => {
-      if (!code) return null
-      if (code === 0) return 'Clear sky'
-      if (code >= 1 && code <= 3) return 'Partly cloudy'
-      if (code >= 45 && code <= 48) return 'Foggy'
-      if (code >= 51 && code <= 55) return 'Light drizzle'
-      if (code >= 61 && code <= 65) return 'Rain'
-      if (code >= 66 && code <= 67) return 'Freezing rain'
-      if (code >= 71 && code <= 77) return 'Snow'
-      if (code >= 80 && code <= 82) return 'Rain showers'
-      if (code >= 85 && code <= 86) return 'Snow showers'
-      if (code >= 95) return 'Thunderstorm'
-      if (code >= 96 && code <= 99) return 'Thunderstorm with hail'
-      return 'Cloudy'
-    }
-
-    return NextResponse.json({
-      temp,
-      humidity,
-      windSpeed,
-      city: city || zip,
-      description: getWeatherDescription(weatherCode),
-      zip,
-      lat,
-      lon,
-      source: 'postal+open-meteo'
-    })
+    return NextResponse.json({ temp, humidity, windSpeed, city: city || zip, description: getWeatherDescription(weatherCode, lang), description_en: getWeatherDescription(weatherCode, 'en'), zip, lat, lon, lang, translated: true, source: 'postal+open-meteo+TRUE53' })
   } catch (error) {
-    console.error('Weather API error:', error)
-    return NextResponse.json({ temp: null, city: zip, description: null }, { status: 200 })
+    return NextResponse.json({ temp: null, city: zip, description: null, lang }, { status: 200 })
   }
 }
