@@ -1,6 +1,62 @@
 'use client'
-
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { useLanguage } from '@/lib/language-context'
+
+const D: Record<string, any> = {
+  en: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  es: { theme:"Tema", light:"Claro", dark:"Oscuro", auto:"Auto" },
+  fr: { theme:"Theme", light:"Clair", dark:"Sombre", auto:"Auto" },
+  de: { theme:"Thema", light:"Hell", dark:"Dunkel", auto:"Auto" },
+  zh: { theme:"主题", light:"浅色", dark:"深色", auto:"自动" },
+  ja: { theme:"テーマ", light:"ライト", dark:"ダーク", auto:"自動" },
+  ko: { theme:"테마", light:"라이트", dark:"다크", auto:"자동" },
+  pt: { theme:"Tema", light:"Claro", dark:"Escuro", auto:"Auto" },
+  ru: { theme:"Tema", light:"Svetlaya", dark:"Temnaya", auto:"Avto" },
+  ar: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  hi: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  it: { theme:"Tema", light:"Chiaro", dark:"Scuro", auto:"Auto" },
+  nl: { theme:"Thema", light:"Licht", dark:"Donker", auto:"Auto" },
+  tl: { theme:"Tema", light:"Liwanag", dark:"Madilim", auto:"Auto" },
+  bn: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  id: { theme:"Tema", light:"Terang", dark:"Gelap", auto:"Otomatis" },
+  vi: { theme:"Chu de", light:"Sang", dark:"Toi", auto:"Tu dong" },
+  th: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  sv: { theme:"Tema", light:"Ljust", dark:"Morkt", auto:"Auto" },
+  pl: { theme:"Motyw", light:"Jasny", dark:"Ciemny", auto:"Auto" },
+  tr: { theme:"Tema", light:"Acik", dark:"Koyu", auto:"Oto" },
+  uk: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  el: { theme:"Thema", light:"Fos", dark:"Skotadi", auto:"Auto" },
+  he: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  ur: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  fa: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  ms: { theme:"Tema", light:"Cerah", dark:"Gelap", auto:"Auto" },
+  ro: { theme:"Tema", light:"Deschis", dark:"Intunecat", auto:"Auto" },
+  cs: { theme:"Tema", light:"Svetle", dark:"Tmave", auto:"Auto" },
+  hu: { theme:"Tema", light:"Vilagos", dark:"Sotet", auto:"Auto" },
+  fi: { theme:"Teema", light:"Vaalea", dark:"Tumma", auto:"Auto" },
+  no: { theme:"Tema", light:"Lyst", dark:"Morkt", auto:"Auto" },
+  da: { theme:"Tema", light:"Lyst", dark:"Morkt", auto:"Auto" },
+  bg: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  hr: { theme:"Tema", light:"Svijetlo", dark:"Tamno", auto:"Auto" },
+  sr: { theme:"Tema", light:"Svetlo", dark:"Tamno", auto:"Auto" },
+  sk: { theme:"Tema", light:"Svetle", dark:"Tmave", auto:"Auto" },
+  sl: { theme:"Tema", light:"Svetlo", dark:"Temno", auto:"Samodejno" },
+  et: { theme:"Teema", light:"Hele", dark:"Tume", auto:"Auto" },
+  lv: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  lt: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  be: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  ka: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  hy: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  az: { theme:"Mövzu", light:"Aciq", dark:"Tünd", auto:"Avto" },
+  kk: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  ky: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  uz: { theme:"Mavzu", light:"Yorug", dark:"Qorongi", auto:"Avto" },
+  tg: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  mn: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  km: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  lo: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+  my: { theme:"Theme", light:"Light", dark:"Dark", auto:"Auto" },
+}
 
 export type Theme = 'light' | 'dark' | 'system'
 type Ctx = { theme: Theme; setTheme: (t: Theme) => void; resolved: 'light' | 'dark' }
@@ -54,14 +110,16 @@ export function useTheme() {
 
 export function ThemeToggleGroup() {
   const { theme, setTheme } = useTheme()
+  const { language } = useLanguage()
+  const d = D[language] || D.en
   const opts: { value: Theme; label: string; icon: string }[] = [
-    { value: 'light', label: 'Light', icon: '☀' },
-    { value: 'dark', label: 'Dark', icon: '🌙' },
-    { value: 'system', label: 'Auto', icon: '🖥' },
+    { value: 'light', label: d.light, icon: '☀' },
+    { value: 'dark', label: d.dark, icon: '🌙' },
+    { value: 'system', label: d.auto, icon: '🖥' },
   ]
   return (
     <div className="flex items-center justify-between gap-2">
-      <span className="text-xs font-medium text-muted-foreground">Theme</span>
+      <span className="text-xs font-medium text-muted-foreground">{d.theme}</span>
       <div className="inline-flex rounded-full border border-border bg-secondary p-0.5">
         {opts.map((o) => (
           <button key={o.value} type="button" onClick={() => { try { setTheme(o.value) } catch {} }} aria-pressed={theme === o.value} title={o.label}
