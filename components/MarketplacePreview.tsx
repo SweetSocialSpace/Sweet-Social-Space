@@ -10,7 +10,7 @@ const D: Record<string, any> = {
   de: { marketplace:"🛒 Marktplatz", loading:"Laden...", near:"Nahe", live:"Live", highway:"Infobahn: Lokale + Externe Quellen", scanningData:"Marktplatzdaten scannen...", scanningLocal:"Lokale Angebote scannen...", dealsIn:"Lokale Angebote in", local:"Lokal", available:"Verfügbar" },
   zh: { marketplace:"🛒 市场", loading:"加载中...", near:"附近", live:"实时", highway:"信息高速公路：本地+外部来源", scanningData:"扫描市场数据...", scanningLocal:"扫描本地优惠...", dealsIn:"本地优惠", local:"本地", available:"可用" },
   ja: { marketplace:"🛒 マーケットプレイス", loading:"読み込み中...", near:"付近", live:"ライブ", highway:"情報ハイウェイ：ローカル+外部ソース", scanningData:"マーケットデータをスキャン中...", scanningLocal:"ローカルお得情報をスキャン中...", dealsIn:"ローカルお得情報", local:"ローカル", available:"利用可能" },
-  ko: { marketplace:"🛒 마켓플레이스", loading:"로드 중...", near:"근처", live:"라이브", highway:"정보 고속도로: 로컬 + 외부 소스", scanningData:"마켓 데이터 스캔 중...", scanningLocal:"로컬 특가 스캔 중...", dealsIn:"로컬 특가", local:"로컬", available:"이용 가능" },
+  ko: { marketplace:"🛒 마켓플레이스", loading:"로드 중...", near:"근처", live:"라이브", highway:"情報 고속도로: 로컬 + 외부 소스", scanningData:"마켓 데이터 스캔 중...", scanningLocal:"로컬 특가 스캔 중...", dealsIn:"로컬 특가", local:"로컬", available:"이용 가능" },
   pt: { marketplace:"🛒 Mercado", loading:"Carregando...", near:"Perto", live:"Ao Vivo", highway:"Rodovia Informação: Fontes Locais + Externas", scanningData:"Escaneando dados do mercado...", scanningLocal:"Escaneando ofertas locais...", dealsIn:"Ofertas Locais em", local:"Local", available:"Disponível" },
   ru: { marketplace:"🛒 Маркетплейс", loading:"Загрузка...", near:"Рядом", live:"Эфир", highway:"Инфо-магистраль: Локальные + Внешние Источники", scanningData:"Сканирование данных маркетплейса...", scanningLocal:"Сканирование локальных сделок...", dealsIn:"Локальные Сделки в", local:"Локально", available:"Доступно" },
   ar: { marketplace:"🛒 السوق", loading:"جاري التحميل...", near:"بالقرب", live:"مباشر", highway:"طريق المعلومات: مصادر محلية + خارجية", scanningData:"مسح بيانات السوق...", scanningLocal:"مسح العروض المحلية...", dealsIn:"عروض محلية في", local:"محلي", available:"متاح" },
@@ -29,7 +29,7 @@ const D: Record<string, any> = {
   el: { marketplace:"🛒 Αγορά", loading:"Φόρτωση...", near:"Κοντά", live:"Ζωντανά", highway:"Λεωφόρος Πληροφοριών: Τοπικές + Εξωτερικές Πηγές", scanningData:"Σάρωση δεδομένων αγοράς...", scanningLocal:"Σάρωση τοπικών προσφορών...", dealsIn:"Τοπικές Προσφορές σε", local:"Τοπικό", available:"Διαθέσιμο" },
   he: { marketplace:"🛒 שוק", loading:"טוען...", near:"ליד", live:"חי", highway:"כביש מידע: מקורות מקומיים + חיצוניים", scanningData:"סורק נתוני שוק...", scanningLocal:"סורק עסקאות מקומיות...", dealsIn:"עסקאות מקומיות ב", local:"מקומי", available:"זמין" },
   ur: { marketplace:"🛒 مارکیٹ پلیس", loading:"لوڈ ہو رہا...", near:"قریب", live:"لائیو", highway:"انفارمیشن ہائی وے: مقامی + بیرونی ذرائع", scanningData:"مارکیٹ پلیس ڈیٹا اسکین...", scanningLocal:"مقامی ڈیلز اسکین...", dealsIn:"مقامی ڈیلز", local:"مقامی", available:"دستیاب" },
-  fa: { marketplace:"🛒 بازار", loading:"در حال بارگذاری...", near:"نزدیک", live:"زنده", highway:"بزرگراه اطلاعات: منابع محلی + خارجی", scanningData:"اسکن داده‌های بازار...", scanningLocal:"اسکن معاملات محلی...", dealsIn:"معاملات محلی در", local:"محلی", available:"موجود" },
+  fa: { marketplace:"🛒 بازار", loading:"در حال بارگذاری...", near:"نزدیک", live:"زنده", highway:"بزرگراه اطلاعات: منابع محلی + خارجی", scanningData:"اسکن دادههای بازار...", scanningLocal:"اسکن معاملات محلی...", dealsIn:"معاملات محلی در", local:"محلی", available:"موجود" },
   ms: { marketplace:"🛒 Pasaran", loading:"Memuatkan...", near:"Dekat", live:"Live", highway:"Lebuh Raya Maklumat: Sumber Tempatan + Luaran", scanningData:"Mengimbas data pasaran...", scanningLocal:"Mengimbas tawaran tempatan...", dealsIn:"Tawaran Tempatan di", local:"Tempatan", available:"Tersedia" },
   ro: { marketplace:"🛒 Piață", loading:"Se încarcă...", near:"Aproape", live:"Live", highway:"Autostradă Info: Surse Locale + Externe", scanningData:"Scanare date piață...", scanningLocal:"Scanare oferte locale...", dealsIn:"Oferte Locale în", local:"Local", available:"Disponibil" },
   cs: { marketplace:"🛒 Tržiště", loading:"Načítání...", near:"Blízko", live:"Živě", highway:"Informační Dálnice: Místní + Externí Zdroje", scanningData:"Skenování dat tržiště...", scanningLocal:"Skenování místních nabídek...", dealsIn:"Místní Nabídky v", local:"Místní", available:"Dostupné" },
@@ -59,6 +59,22 @@ const D: Record<string, any> = {
   my: { marketplace:"🛒 ဈေးကွက်", loading:"တင်နေသည်...", near:"အနီး", live:"တိုက်ရိုက်", highway:"သတင်းအချက်အလက်အမြန်လမ်း: ဒေသခံ + ပြင်ပရင်းမြစ်များ", scanningData:"ဈေးကွက်ဒေတာစကင်န်ဖတ်နေသည်...", scanningLocal:"ဒေသခံအပေးအယူများစကင်န်ဖတ်နေသည်...", dealsIn:"ဒေသခံအပေးအယူများ", local:"ဒေသခံ", available:"ရနိုင်သည်" },
 }
 
+const ITEM_T: Record<string, Record<string,string>> = {
+  es: { "Weekend Garage Sales in":"Ventas de garaje de fin de semana en", "Estate Sales in":"Ventas de patrimonio en", "Thrift Stores near":"Tiendas de segunda mano cerca de", "Flea Markets in":"Mercados de pulgas en", "Local Deals in":"Ofertas Locales en", "This Weekend":"Este fin de semana", "This Week":"Esta semana", "Daily":"Diario", "Weekends":"Fines de semana", "Available":"Disponible", "Local":"Local" },
+  fr: { "Weekend Garage Sales in":"Ventes de garage week-end a", "Estate Sales in":"Ventes de succession a", "Thrift Stores near":"Friperies pres de", "Flea Markets in":"Marches aux puces a", "Local Deals in":"Offres Locales a", "This Weekend":"Ce week-end", "This Week":"Cette semaine", "Daily":"Quotidien", "Weekends":"Week-ends", "Available":"Disponible", "Local":"Local" },
+  de: { "Weekend Garage Sales in":"Wochenend-Garagenverkaufe in", "Estate Sales in":"Nachlassverkaufe in", "Thrift Stores near":"Second-Hand-Laden nahe", "Flea Markets in":"Flohmärkte in", "Local Deals in":"Lokale Angebote in", "This Weekend":"Dieses Wochenende", "This Week":"Diese Woche", "Daily":"Taglich", "Weekends":"Wochenenden", "Available":"Verfugbar", "Local":"Lokal" },
+}
+
+function tItem(text: string, lang: string): string {
+  if (lang === 'en' || !text) return text
+  const dict = ITEM_T[lang] || ITEM_T.es
+  if (!dict) return text
+  let out = text
+  const keys = Object.keys(dict).sort((a,b)=>b.length-a.length)
+  for (const k of keys) if (out.includes(k)) out = out.replaceAll(k, dict[k])
+  return out
+}
+
 type Item = { id: string; title: string; source?: string; sale_date?: string }
 
 export function MarketplacePreview(){
@@ -71,33 +87,26 @@ export function MarketplacePreview(){
   useEffect(()=>{
     if (!zip) return
     let mounted = true
-
     const load = async()=>{
       try {
         setLoading(true)
-        const res = await fetch(`/api/marketplace?zip=${encodeURIComponent(zip)}&city=${encodeURIComponent(city || '')}`)
+        // Pass lang to API so server returns translated if it supports it
+        const res = await fetch(`/api/marketplace?zip=${encodeURIComponent(zip)}&city=${encodeURIComponent(city || '')}&lang=${language}`)
         if (res.ok) {
           const data = await res.json()
-          if(mounted) {
-            setItems(data.items || [])
-            setLoading(false)
-          }
-        }
-      } catch (e) {
-        console.log('Marketplace error:', e)
+          if(mounted) { setItems((data.items || []).slice(0,6)); setLoading(false) }
+        } else throw new Error("fail")
+      } catch {
         if(mounted) {
-          setItems([
-            { id: 'fallback-1', title: `${d.dealsIn} ${city || zip}`, source: d.local, sale_date: d.available },
-          ])
+          setItems([{ id: 'fallback-1', title: `${d.dealsIn} ${city || zip}`, source: d.local, sale_date: d.available }])
           setLoading(false)
         }
       }
     }
-
     load()
-    const id = setInterval(()=>{ try { load() } catch {} }, 10*60*1000)
-    return ()=>{ mounted = false; try { clearInterval(id) } catch {} }
-  },[zip, city])
+    const id = setInterval(load, 10*60*1000)
+    return ()=>{ mounted=false; try{ clearInterval(id) }catch{} }
+  },[zip, city, language, d.dealsIn, d.local, d.available])
 
   if (!zip) return (<div className="bg-black/40 backdrop-blur-xl rounded-2xl p-5 border border-white/10 text-white"><p className="font-bold">{d.marketplace} • {d.loading}</p></div>)
 
@@ -107,7 +116,15 @@ export function MarketplacePreview(){
       <p className="text-xs text-white/50 mt-1">{d.highway}</p>
       {loading? <p className="text-sm mt-3 text-white/60">{d.scanningData}</p> :
       items.length===0? <p className="text-sm mt-3 text-white/60">{d.scanningLocal}</p> :
-      (<div className="mt-3 space-y-3">{items.map(i=>(<div key={i.id} className="bg-white/5 rounded-xl p-3"><div className="font-semibold truncate pr-2 text-xs">{i.title}</div><div className="flex gap-2 mt-1"><p className="text-xs text-white/50">{i.source}</p>{i.sale_date && <p className="text-xs text-white/40">• {i.sale_date}</p>}</div></div>))}</div>)}
+      (<div className="mt-3 space-y-3">{items.map(i=>(
+        <div key={i.id} className="bg-white/5 rounded-xl p-3">
+          <div className="font-semibold truncate pr-2 text-xs">{tItem(i.title, language)}</div>
+          <div className="flex gap-2 mt-1">
+            <p className="text-xs text-white/50">{tItem(i.source || '', language)}</p>
+            {i.sale_date && <p className="text-xs text-white/40">• {tItem(i.sale_date, language)}</p>}
+          </div>
+        </div>
+      ))}</div>)}
     </div>
   )
 }
