@@ -20,7 +20,7 @@ const D: Record<string, any> = {
   hi: { title:"स्थानीय व्यवसाय", near:"{area} के पास", loadingArea:"{area} लोड हो रहा...", loading:"लोड हो रहा...", noBiz:"अभी कोई व्यवसाय नहीं", police:"{city} पुलिस विभाग", fire:"{city} फायर विभाग", library:"{city} पुस्तकालय", community:"{city} सामुदायिक केंद्र", catPolice:"पुलिस", catFire:"फायर स्टेशन", catLib:"पुस्तकालय", catComm:"समुदाय" },
   it: { title:"Attività Locali", near:"Vicino a {area}", loadingArea:"Caricamento {area}...", loading:"Caricamento...", noBiz:"Ancora nessuna attività", police:"Polizia di {city}", fire:"Vigili del Fuoco di {city}", library:"Biblioteca di {city}", community:"Centro Comunitario di {city}", catPolice:"Polizia", catFire:"Vigili del Fuoco", catLib:"Biblioteca", catComm:"Comunità" },
   nl: { title:"Lokale Bedrijven", near:"Dicht bij {area}", loadingArea:"{area} laden...", loading:"Laden...", noBiz:"Nog geen bedrijven", police:"{city} Politie", fire:"{city} Brandweer", library:"{city} Bibliotheek", community:"{city} Buurthuis", catPolice:"Politie", catFire:"Brandweer", catLib:"Bibliotheek", catComm:"Gemeenschap" },
-  tl: { title:"Lokal na Negosyo", near:"Malapit sa {area}", loadingArea:"Naglo-load ng {area}...", loading:"Naglo-load...", noBiz:"Wala pang negosyo", police:"Pulisya ng {city}", fire:"Bumbero ng {city}", library:"Aklatan ng {city}", community:"Community Center ng {city}", catPolice:"Pulis", catFire:"Bumbero", catLib:"Library", catComm:"Komunidad" },
+  tl: { title:"Lokal na Negosyo", near:"Malapit sa {area}", loadingArea:"Naglo-load ng {area}...", loading:"Naglo-load...", noBiz:"Wala pang negosyo", police:"Pulisya ng {city}", fire:"Bumbero ng {city}", library:"Aklatan ng {city}", community:"Community Center ng {city}", catPolice:"Pulis", catFire:"Bumbero", catLib:"Aklatan", catComm:"Komunidad" },
   bn: { title:"স্থানীয় ব্যবসা", near:"{area} এর কাছে", loadingArea:"{area} লোড হচ্ছে...", loading:"লোড হচ্ছে...", noBiz:"এখনো কোনো ব্যবসা নেই", police:"{city} পুলিশ বিভাগ", fire:"{city} ফায়ার বিভাগ", library:"{city} লাইব্রেরি", community:"{city} কমিউনিটি সেন্টার", catPolice:"পুলিশ", catFire:"ফায়ার স্টেশন", catLib:"লাইব্রেরি", catComm:"সম্প্রদায়" },
   id: { title:"Bisnis Lokal", near:"Dekat {area}", loadingArea:"Memuat {area}...", loading:"Memuat...", noBiz:"Belum ada bisnis", police:"Kepolisian {city}", fire:"Pemadam Kebakaran {city}", library:"Perpustakaan {city}", community:"Pusat Komunitas {city}", catPolice:"Polisi", catFire:"Damkar", catLib:"Perpustakaan", catComm:"Komunitas" },
   vi: { title:"Doanh Nghiệp Địa Phương", near:"Gần {area}", loadingArea:"Đang tải {area}...", loading:"Đang tải...", noBiz:"Chưa có doanh nghiệp", police:"Công An {city}", fire:"Cứu Hỏa {city}", library:"Thư Viện {city}", community:"Trung Tâm Cộng Đồng {city}", catPolice:"Công an", catFire:"Cứu hỏa", catLib:"Thư viện", catComm:"Cộng đồng" },
@@ -60,6 +60,72 @@ const D: Record<string, any> = {
   km: { title:"អាជីវកម្មក្នុងស្រុក", near:"ជិត {area}", loadingArea:"កំពុងផ្ទុក {area}...", loading:"កំពុងផ្ទុក...", noBiz:"មិនទាន់មានអាជីវកម្ម", police:"ប៉ូលីស {city}", fire:"ពន្លត់អគ្គីភ័យ {city}", library:"បណ្ណាល័យ {city}", community:"មជ្ឈមណ្ឌលសហគមន៍ {city}", catPolice:"ប៉ូលីស", catFire:"ពន្លត់អគ្គីភ័យ", catLib:"បណ្ណាល័យ", catComm:"សហគមន៍" },
   lo: { title:"ທຸລະກິດທ້ອງຖິ່ນ", near:"ໃກ້ {area}", loadingArea:"ກຳລັງໂຫຼດ {area}...", loading:"ກຳລັງໂຫຼດ...", noBiz:"ຍັງບໍ່ມີທຸລະກິດ", police:"ຕຳຫຼວດ {city}", fire:"ດັບເພີງ {city}", library:"ຫໍສະໝຸດ {city}", community:"ສູນຊຸມຊົນ {city}", catPolice:"ຕຳຫຼວດ", catFire:"ດັບເພີງ", catLib:"ຫໍສະໝຸດ", catComm:"ຊຸມຊົນ" },
   my: { title:"ဒေသခံလုပ်ငန်းများ", near:"{area} အနီး", loadingArea:"{area} ကို တင်နေသည်...", loading:"တင်နေသည်...", noBiz:"လုပ်ငန်းမရှိသေးပါ", police:"{city} ရဲဌာန", fire:"{city} မီးသတ်", library:"{city} စာကြည့်တိုက်", community:"{city} ရပ်ရွာစင်တာ", catPolice:"ရဲ", catFire:"မီးသတ်", catLib:"စာကြည့်တိုက်", catComm:"ရပ်ရွာ" },
+}
+
+// TRUE 53 explicit category translator for inner DB values that come in English
+const CAT_T: Record<string, Record<string,string>> = {
+  en: { police:"Police", fire:"Fire Station", library:"Library", community:"Community", restaurant:"Restaurant", cafe:"Cafe", grocery:"Grocery", pharmacy:"Pharmacy", bank:"Bank", gas:"Gas Station", gym:"Gym", salon:"Salon" },
+  es: { police:"Policía", fire:"Estación Bomberos", library:"Biblioteca", community:"Comunidad", restaurant:"Restaurante", cafe:"Café", grocery:"Supermercado", pharmacy:"Farmacia", bank:"Banco", gas:"Gasolinera", gym:"Gimnasio", salon:"Salón" },
+  fr: { police:"Police", fire:"Pompiers", library:"Bibliothèque", community:"Communauté", restaurant:"Restaurant", cafe:"Café", grocery:"Épicerie", pharmacy:"Pharmacie", bank:"Banque", gas:"Station essence", gym:"Salle de sport", salon:"Salon" },
+  de: { police:"Polizei", fire:"Feuerwache", library:"Bibliothek", community:"Gemeinschaft", restaurant:"Restaurant", cafe:"Café", grocery:"Lebensmittel", pharmacy:"Apotheke", bank:"Bank", gas:"Tankstelle", gym:"Fitnessstudio", salon:"Salon" },
+  zh: { police:"警察", fire:"消防站", library:"图书馆", community:"社区", restaurant:"餐厅", cafe:"咖啡馆", grocery:"杂货店", pharmacy:"药店", bank:"银行", gas:"加油站", gym:"健身房", salon:"理发店" },
+  ja: { police:"警察", fire:"消防署", library:"図書館", community:"コミュニティ", restaurant:"レストラン", cafe:"カフェ", grocery:"食料品店", pharmacy:"薬局", bank:"銀行", gas:"ガソリンスタンド", gym:"ジム", salon:"サロン" },
+  ko: { police:"경찰", fire:"소방서", library:"도서관", community:"커뮤니티", restaurant:"식당", cafe:"카페", grocery:"식료품점", pharmacy:"약국", bank:"은행", gas:"주유소", gym:"헬스장", salon:"미용실" },
+  pt: { police:"Polícia", fire:"Bombeiros", library:"Biblioteca", community:"Comunidade", restaurant:"Restaurante", cafe:"Café", grocery:"Mercado", pharmacy:"Farmácia", bank:"Banco", gas:"Posto gasolina", gym:"Academia", salon:"Salão" },
+  ru: { police:"Полиция", fire:"Пожарная", library:"Библиотека", community:"Сообщество", restaurant:"Ресторан", cafe:"Кафе", grocery:"Продукты", pharmacy:"Аптека", bank:"Банк", gas:"АЗС", gym:"Спортзал", salon:"Салон" },
+  ar: { police:"شرطة", fire:"إطفاء", library:"مكتبة", community:"مجتمع", restaurant:"مطعم", cafe:"مقهى", grocery:"بقالة", pharmacy:"صيدلية", bank:"بنك", gas:"محطة وقود", gym:"صالة رياضية", salon:"صالون" },
+  hi: { police:"पुलिस", fire:"फायर स्टेशन", library:"पुस्तकालय", community:"समुदाय", restaurant:"रेस्तरां", cafe:"कैफे", grocery:"किराना", pharmacy:"फार्मेसी", bank:"बैंक", gas:"पेट्रोल पंप", gym:"जिम", salon:"सैलून" },
+  it: { police:"Polizia", fire:"Vigili del Fuoco", library:"Biblioteca", community:"Comunità", restaurant:"Ristorante", cafe:"Bar", grocery:"Alimentari", pharmacy:"Farmacia", bank:"Banca", gas:"Benzinaio", gym:"Palestra", salon:"Salone" },
+  nl: { police:"Politie", fire:"Brandweer", library:"Bibliotheek", community:"Gemeenschap", restaurant:"Restaurant", cafe:"Café", grocery:"Supermarkt", pharmacy:"Apotheek", bank:"Bank", gas:"Tankstation", gym:"Sportschool", salon:"Salon" },
+  tl: { police:"Pulis", fire:"Bumbero", library:"Aklatan", community:"Komunidad", restaurant:"Restaurant", cafe:"Cafe", grocery:"Grocery", pharmacy:"Botika", bank:"Bangko", gas:"Gasolinahan", gym:"Gym", salon:"Salon" },
+  bn: { police:"পুলিশ", fire:"ফায়ার স্টেশন", library:"লাইব্রেরি", community:"সম্প্রদায়", restaurant:"রেস্তোরাঁ", cafe:"ক্যাফে", grocery:"মুদি", pharmacy:"ফার্মেসি", bank:"ব্যাংক", gas:"পেট্রোল পাম্প", gym:"জিম", salon:"সেলুন" },
+  id: { police:"Polisi", fire:"Damkar", library:"Perpustakaan", community:"Komunitas", restaurant:"Restoran", cafe:"Kafe", grocery:"Toko kelontong", pharmacy:"Apotek", bank:"Bank", gas:"SPBU", gym:"Gym", salon:"Salon" },
+  vi: { police:"Công an", fire:"Cứu hỏa", library:"Thư viện", community:"Cộng đồng", restaurant:"Nhà hàng", cafe:"Quán cà phê", grocery:"Tạp hóa", pharmacy:"Nhà thuốc", bank:"Ngân hàng", gas:"Cây xăng", gym:"Phòng gym", salon:"Salon" },
+  th: { police:"ตำรวจ", fire:"ดับเพลิง", library:"ห้องสมุด", community:"ชุมชน", restaurant:"ร้านอาหาร", cafe:"ร้านกาแฟ", grocery:"ร้านขายของชำ", pharmacy:"ร้านขายยา", bank:"ธนาคาร", gas:"ปั๊มน้ำมัน", gym:"ยิม", salon:"ร้านเสริมสวย" },
+  sv: { police:"Polis", fire:"Brandstation", library:"Bibliotek", community:"Gemenskap", restaurant:"Restaurang", cafe:"Café", grocery:"Livsmedel", pharmacy:"Apotek", bank:"Bank", gas:"Bensinstation", gym:"Gym", salon:"Salong" },
+  pl: { police:"Policja", fire:"Straż", library:"Biblioteka", community:"Społeczność", restaurant:"Restauracja", cafe:"Kawiarnia", grocery:"Spożywczy", pharmacy:"Apteka", bank:"Bank", gas:"Stacja paliw", gym:"Siłownia", salon:"Salon" },
+  tr: { police:"Polis", fire:"İtfaiye", library:"Kütüphane", community:"Topluluk", restaurant:"Restoran", cafe:"Kafe", grocery:"Market", pharmacy:"Eczane", bank:"Banka", gas:"Benzinlik", gym:"Spor salonu", salon:"Kuaför" },
+  uk: { police:"Поліція", fire:"Пожежна", library:"Бібліотека", community:"Громада", restaurant:"Ресторан", cafe:"Кафе", grocery:"Продукти", pharmacy:"Аптека", bank:"Банк", gas:"АЗС", gym:"Спортзал", salon:"Салон" },
+  el: { police:"Αστυνομία", fire:"Πυροσβεστική", library:"Βιβλιοθήκη", community:"Κοινότητα", restaurant:"Εστιατόριο", cafe:"Καφετέρια", grocery:"Παντοπωλείο", pharmacy:"Φαρμακείο", bank:"Τράπεζα", gas:"Βενζινάδικο", gym:"Γυμναστήριο", salon:"Κομμωτήριο" },
+  he: { police:"משטרה", fire:"כבאות", library:"ספרייה", community:"קהילה", restaurant:"מסעדה", cafe:"בית קפה", grocery:"מכולת", pharmacy:"בית מרקחת", bank:"בנק", gas:"תחנת דלק", gym:"חדר כושר", salon:"מספרה" },
+  ur: { police:"پولیس", fire:"فائر", library:"لائبریری", community:"کمیونٹی", restaurant:"ریستوراں", cafe:"کیفے", grocery:"کریانہ", pharmacy:"فارمیسی", bank:"بینک", gas:"پٹرول پمپ", gym:"جم", salon:"سیلون" },
+  fa: { police:"پلیس", fire:"آتش نشانی", library:"کتابخانه", community:"جامعه", restaurant:"رستوران", cafe:"کافه", grocery:"خواربار", pharmacy:"داروخانه", bank:"بانک", gas:"پمپ بنزین", gym:"باشگاه", salon:"آرایشگاه" },
+  ms: { police:"Polis", fire:"Bomba", library:"Perpustakaan", community:"Komuniti", restaurant:"Restoran", cafe:"Kafe", grocery:"Kedai runcit", pharmacy:"Farmasi", bank:"Bank", gas:"Stesen minyak", gym:"Gim", salon:"Salon" },
+  ro: { police:"Poliție", fire:"Pompieri", library:"Bibliotecă", community:"Comunitate", restaurant:"Restaurant", cafe:"Cafenea", grocery:"Alimentară", pharmacy:"Farmacie", bank:"Bancă", gas:"Benzinărie", gym:"Sală", salon:"Salon" },
+  cs: { police:"Policie", fire:"Hasiči", library:"Knihovna", community:"Komunita", restaurant:"Restaurace", cafe:"Kavárna", grocery:"Potraviny", pharmacy:"Lékárna", bank:"Banka", gas:"Benzínka", gym:"Posilovna", salon:"Salon" },
+  hu: { police:"Rendőrség", fire:"Tűzoltóság", library:"Könyvtár", community:"Közösség", restaurant:"Étterem", cafe:"Kávézó", grocery:"Élelmiszer", pharmacy:"Gyógyszertár", bank:"Bank", gas:"Benzinkút", gym:"Edzőterem", salon:"Szalon" },
+  fi: { police:"Poliisi", fire:"Palokunta", library:"Kirjasto", community:"Yhteisö", restaurant:"Ravintola", cafe:"Kahvila", grocery:"Ruokakauppa", pharmacy:"Apteekki", bank:"Pankki", gas:"Huoltoasema", gym:"Kuntosali", salon:"Parturi" },
+  no: { police:"Politi", fire:"Brann", library:"Bibliotek", community:"Samfunn", restaurant:"Restaurant", cafe:"Kafé", grocery:"Dagligvare", pharmacy:"Apotek", bank:"Bank", gas:"Bensinstasjon", gym:"Treningssenter", salon:"Salong" },
+  da: { police:"Politi", fire:"Brand", library:"Bibliotek", community:"Fællesskab", restaurant:"Restaurant", cafe:"Café", grocery:"Købmand", pharmacy:"Apotek", bank:"Bank", gas:"Tankstation", gym:"Fitness", salon:"Salon" },
+  bg: { police:"Полиция", fire:"Пожарна", library:"Библиотека", community:"Общност", restaurant:"Ресторант", cafe:"Кафене", grocery:"Хранителни", pharmacy:"Аптека", bank:"Банка", gas:"Бензиностанция", gym:"Фитнес", salon:"Салон" },
+  hr: { police:"Policija", fire:"Vatrogasci", library:"Knjižnica", community:"Zajednica", restaurant:"Restoran", cafe:"Kafić", grocery:"Trgovina", pharmacy:"Ljekarna", bank:"Banka", gas:"Benzinska", gym:"Teretana", salon:"Salon" },
+  sr: { police:"Полиција", fire:"Ватрогасци", library:"Библиотека", community:"Заједница", restaurant:"Ресторан", cafe:"Кафић", grocery:"Продавница", pharmacy:"Апотека", bank:"Банка", gas:"Бензинска", gym:"Теретана", salon:"Салон" },
+  sk: { police:"Polícia", fire:"Hasiči", library:"Knižnica", community:"Komunita", restaurant:"Reštaurácia", cafe:"Kaviareň", grocery:"Potraviny", pharmacy:"Lekáreň", bank:"Banka", gas:"Benzínka", gym:"Posilňovňa", salon:"Salón" },
+  sl: { police:"Policija", fire:"Gasilci", library:"Knjižnica", community:"Skupnost", restaurant:"Restavracija", cafe:"Kavarna", grocery:"Trgovina", pharmacy:"Lekarna", bank:"Banka", gas:"Bencinska", gym:"Fitnes", salon:"Salon" },
+  et: { police:"Politsei", fire:"Pääste", library:"Raamatukogu", community:"Kogukond", restaurant:"Restoran", cafe:"Kohvik", grocery:"Toidupood", pharmacy:"Apteek", bank:"Pank", gas:"Tankla", gym:"Jõusaal", salon:"Salong" },
+  lv: { police:"Policija", fire:"Ugunsdzēsēji", library:"Bibliotēka", community:"Kopiena", restaurant:"Restorāns", cafe:"Kafejnīca", grocery:"Pārtikas veikals", pharmacy:"Aptieka", bank:"Banka", gas:"Degvielas uzpilde", gym:"Sporta zāle", salon:"Salons" },
+  lt: { police:"Policija", fire:"Priešgaisrinė", library:"Biblioteka", community:"Bendruomenė", restaurant:"Restoranas", cafe:"Kavinė", grocery:"Maisto prekės", pharmacy:"Vaistinė", bank:"Bankas", gas:"Degalinė", gym:"Sporto salė", salon:"Salonas" },
+  be: { police:"Паліцыя", fire:"Пажарная", library:"Бібліятэка", community:"Супольнасць", restaurant:"Рэстаран", cafe:"Кафэ", grocery:"Прадукты", pharmacy:"Аптэка", bank:"Банк", gas:"Запраўка", gym:"Спартзала", salon:"Салон" },
+  ka: { police:"პოლიცია", fire:"სახანძრო", library:"ბიბლიოთეკა", community:"საზოგადოება", restaurant:"რესტორანი", cafe:"კაფე", grocery:"სასურსათო", pharmacy:"აფთიაქი", bank:"ბანკი", gas:"ბენზინგასამართი", gym:"სპორტდარბაზი", salon:"სალონი" },
+  hy: { police:"Ոստիկանություն", fire:"Հրշեջ", library:"Գրադարան", community:"Համայնք", restaurant:"Ռեստորան", cafe:"Սրճարան", grocery:"Մթերային", pharmacy:"Դեղատուն", bank:"Բանկ", gas:"Բենզալցակայան", gym:"Մարզասրահ", salon:"Սրահ" },
+  az: { police:"Polis", fire:"Yanğın", library:"Kitabxana", community:"İcma", restaurant:"Restoran", cafe:"Kafe", grocery:"Ərzaq", pharmacy:"Aptek", bank:"Bank", gas:"Yanacaqdoldurma", gym:"İdman zalı", salon:"Salon" },
+  kk: { police:"Полиция", fire:"Өрт", library:"Кітапхана", community:"Қоғам", restaurant:"Мейрамхана", cafe:"Кафе", grocery:"Азық-түлік", pharmacy:"Дәріхана", bank:"Банк", gas:"Жанармай", gym:"Спортзал", salon:"Салон" },
+  ky: { police:"Полиция", fire:"Өрт", library:"Китепкана", community:"Коом", restaurant:"Ресторан", cafe:"Кафе", grocery:"Азык-түлүк", pharmacy:"Дарыкана", bank:"Банк", gas:"Май куюуучу", gym:"Спортзал", salon:"Салон" },
+  uz: { police:"Politsiya", fire:"Yong'in", library:"Kutubxona", community:"Jamiyat", restaurant:"Restoran", cafe:"Kafe", grocery:"Oziq-ovqat", pharmacy:"Dorixona", bank:"Bank", gas:"Yoqilg'i", gym:"Sport zal", salon:"Salon" },
+  tg: { police:"Полис", fire:"Оташнишонӣ", library:"Китобхона", community:"Ҷомеа", restaurant:"Тарабхона", cafe:"Қаҳвахона", grocery:"Хӯрокворӣ", pharmacy:"Дорухона", bank:"Бонк", gas:"Сӯзишворӣ", gym:"Толори варзиш", salon:"Салон" },
+  mn: { police:"Цагдаа", fire:"Гал", library:"Номын сан", community:"Олон нийт", restaurant:"Ресторан", cafe:"Кафе", grocery:"Хүнсний дэлгүүр", pharmacy:"Эмийн сан", bank:"Банк", gas:"Шатахуун", gym:"Фитнес", salon:"Салон" },
+  km: { police:"ប៉ូលីស", fire:"ពន្លត់អគ្គីភ័យ", library:"បណ្ណាល័យ", community:"សហគមន៍", restaurant:"ភោជនីយដ្ឋាន", cafe:"ហាងកាហ្វេ", grocery:"ហាងលក់គ្រឿងទេស", pharmacy:"ឱសថស្ថាន", bank:"ធនាគារ", gas:"ស្ថានីយប្រេង", gym:"កន្លែងហាត់ប្រាណ", salon:"ហាងកាត់សក់" },
+  lo: { police:"ຕຳຫຼວດ", fire:"ດັບເພີງ", library:"ຫໍສະໝຸດ", community:"ຊຸມຊົນ", restaurant:"ຮ້ານອາຫານ", cafe:"ຮ້ານກາເຟ", grocery:"ຮ້ານຂາຍເຄື່ອງຍ່ອຍ", pharmacy:"ຮ້ານຂາຍຢາ", bank:"ທະນາຄານ", gas:"ປ້ຳນ້ຳມັນ", gym:"ຫ້ອງອອກກຳລັງກາຍ", salon:"ຮ້ານເສີມສວຍ" },
+  my: { police:"ရဲ", fire:"မီးသတ်", library:"စာကြည့်တိုက်", community:"ရပ်ရွာ", restaurant:"စားသောက်ဆိုင်", cafe:"ကော်ဖီဆိုင်", grocery:"ကုန်စုံဆိုင်", pharmacy:"ဆေးဆိုင်", bank:"ဘဏ်", gas:"ဆီဆိုင်", gym:"အားကစားရုံ", salon:"အလှပြင်ဆိုင်" },
+}
+
+function tCat(raw: string | null, lang: string): string {
+  if (!raw) return ''
+  const lower = raw.toLowerCase().trim()
+  const dict = CAT_T[lang] || CAT_T.en
+  // direct key match
+  for (const k of Object.keys(CAT_T.en)) if (lower.includes(k) || lower === k) return (dict as any)[k] || raw
+  return raw // keep original name if not a known category
 }
 
 type Biz = { id: string; name: string; category: string | null; latitude?: number | null; longitude?: number | null }
@@ -139,7 +205,12 @@ export function BusinessDirectory(){
       <p className="text-xs text-white/50 mt-1">{d.near.replace('{area}', displayArea)}</p>
       {loading? <p className="text-sm mt-3 text-white/60">{d.loading}</p> :
       display.length===0? <p className="text-sm mt-3 text-white/60">{d.noBiz}</p> :
-      (<div className="mt-3 space-y-2">{display.map(b=>(<div key={b.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex justify-between"><span className="truncate">{b.name}</span><span className="text-white/40">{b.category||''}</span></div>))}</div>)}
+      (<div className="mt-3 space-y-2">{display.map(b=>(
+        <div key={b.id} className="bg-white/5 rounded-xl p-2.5 text-xs flex justify-between">
+          <span className="truncate">{b.name}</span>
+          <span className="text-white/40">{tCat(b.category, language) || b.category || ''}</span>
+        </div>
+      ))}</div>)}
     </div>
   )
 }
